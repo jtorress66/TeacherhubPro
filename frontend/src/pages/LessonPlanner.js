@@ -114,6 +114,26 @@ const LessonPlanner = () => {
   }, [planId, searchParams, t]);
 
   const loadPlanToForm = (plan) => {
+    // Ensure we always have 5 days
+    const loadedDays = DAYS.map((dayName, i) => {
+      const existingDay = plan.days?.[i];
+      return {
+        date: existingDay?.date || '',
+        day_name: existingDay?.day_name || dayName,
+        theme: existingDay?.theme || '',
+        dok_levels: existingDay?.dok_levels || [],
+        activities: ACTIVITY_TYPES.map(type => {
+          const existing = existingDay?.activities?.find(a => a.activity_type === type);
+          return existing || { activity_type: type, checked: false, notes: '' };
+        }),
+        materials: MATERIAL_TYPES.map(type => {
+          const existing = existingDay?.materials?.find(m => m.material_type === type);
+          return existing || { material_type: type, checked: false };
+        }),
+        notes: existingDay?.notes || ''
+      };
+    });
+
     setFormData({
       class_id: plan.class_id || '',
       week_start: plan.week_start || '',
@@ -122,29 +142,7 @@ const LessonPlanner = () => {
       story: plan.story || '',
       objective: plan.objective || '',
       skills: plan.skills?.length > 0 ? [...plan.skills, '', '', '', ''].slice(0, 4) : ['', '', '', ''],
-      days: plan.days?.length > 0 ? plan.days.map((day, i) => ({
-        date: day.date || '',
-        day_name: day.day_name || DAYS[i],
-        theme: day.theme || '',
-        dok_levels: day.dok_levels || [],
-        activities: ACTIVITY_TYPES.map(type => {
-          const existing = day.activities?.find(a => a.activity_type === type);
-          return existing || { activity_type: type, checked: false, notes: '' };
-        }),
-        materials: MATERIAL_TYPES.map(type => {
-          const existing = day.materials?.find(m => m.material_type === type);
-          return existing || { material_type: type, checked: false };
-        }),
-        notes: day.notes || ''
-      })) : DAYS.map((day, i) => ({
-        date: '',
-        day_name: day,
-        theme: '',
-        dok_levels: [],
-        activities: ACTIVITY_TYPES.map(type => ({ activity_type: type, checked: false, notes: '' })),
-        materials: MATERIAL_TYPES.map(type => ({ material_type: type, checked: false })),
-        notes: ''
-      })),
+      days: loadedDays,
       standards: plan.standards?.length > 0 ? plan.standards : [
         { week_index: 1, domain: 'listeningAndSpeaking', codes: [] },
         { week_index: 1, domain: 'foundationalSkills', codes: [] },
