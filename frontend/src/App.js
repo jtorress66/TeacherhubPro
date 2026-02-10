@@ -12,10 +12,13 @@ import AuthCallback from "./pages/AuthCallback";
 import Dashboard from "./pages/Dashboard";
 import PlannerList from "./pages/PlannerList";
 import LessonPlanner from "./pages/LessonPlanner";
+import Templates from "./pages/Templates";
 import Attendance from "./pages/Attendance";
+import AttendanceReports from "./pages/AttendanceReports";
 import Gradebook from "./pages/Gradebook";
 import Classes from "./pages/Classes";
 import Settings from "./pages/Settings";
+import SubstitutePacket from "./pages/SubstitutePacket";
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
