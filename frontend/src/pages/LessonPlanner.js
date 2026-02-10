@@ -326,9 +326,13 @@ const LessonPlanner = () => {
             <h1 className="text-3xl font-heading font-bold text-slate-800">{t('weeklyPlan')}</h1>
             <p className="text-slate-500">{planId === 'new' ? t('createPlan') : t('edit')}</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {planId !== 'new' && (
               <>
+                <Button variant="outline" onClick={() => setShowPrintView(true)} data-testid="print-plan-btn">
+                  <Printer className="h-4 w-4 mr-2" />
+                  {t('exportPdf')}
+                </Button>
                 <Button variant="outline" onClick={handleDuplicate} data-testid="duplicate-plan-btn">
                   <Copy className="h-4 w-4 mr-2" />
                   {t('duplicateLastWeek')}
@@ -345,6 +349,15 @@ const LessonPlanner = () => {
             </Button>
           </div>
         </div>
+
+        {/* PDF Print View Modal */}
+        {showPrintView && selectedPlan && (
+          <PlanPrintView 
+            plan={selectedPlan}
+            classInfo={classes.find(c => c.class_id === selectedPlan.class_id)}
+            onClose={() => setShowPrintView(false)}
+          />
+        )}
 
         {/* Plan Header Info */}
         <Card className="bg-white border-slate-100">
