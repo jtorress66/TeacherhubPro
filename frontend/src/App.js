@@ -83,8 +83,14 @@ const AppRouter = () => {
       <Route path="/planner/:planId" element={
         <ProtectedRoute><LessonPlanner /></ProtectedRoute>
       } />
+      <Route path="/templates" element={
+        <ProtectedRoute><Templates /></ProtectedRoute>
+      } />
       <Route path="/attendance" element={
         <ProtectedRoute><Attendance /></ProtectedRoute>
+      } />
+      <Route path="/attendance/reports" element={
+        <ProtectedRoute><AttendanceReports /></ProtectedRoute>
       } />
       <Route path="/gradebook" element={
         <ProtectedRoute><Gradebook /></ProtectedRoute>
@@ -94,6 +100,9 @@ const AppRouter = () => {
       } />
       <Route path="/classes/:classId" element={
         <ProtectedRoute><Classes /></ProtectedRoute>
+      } />
+      <Route path="/substitute-packet" element={
+        <ProtectedRoute><SubstitutePacket /></ProtectedRoute>
       } />
       <Route path="/settings" element={
         <ProtectedRoute><Settings /></ProtectedRoute>
