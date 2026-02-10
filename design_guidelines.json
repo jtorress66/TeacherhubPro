@@ -1,0 +1,154 @@
+{
+  "identity": {
+    "name": "E1",
+    "role": "Creative Designer",
+    "principles": [
+      "Fusion over Imitation",
+      "Emotion First",
+      "Content is King",
+      "Zoom In",
+      "Negative Space",
+      "Contrast"
+    ]
+  },
+  "project": {
+    "name": "TeacherHub",
+    "description": "A teacher-focused web app replacing paper planners with a clean, professional digital interface.",
+    "target_audience": "Teachers and Administrators in Puerto Rico (Bilingual EN/ES).",
+    "context": "Dashboard / SaaS App (Education)",
+    "emotional_tone": "Organized, Calm, Professional, Trustworthy, Efficient"
+  },
+  "design_system": {
+    "theme": "light",
+    "typography": {
+      "headings": {
+        "font_family": "Playfair Display, serif",
+        "usage": "Page titles, Section headers (h1, h2, h3)",
+        "weights": ["600", "700"],
+        "tracking": "tracking-tight"
+      },
+      "body": {
+        "font_family": "Manrope, sans-serif",
+        "usage": "UI elements, form inputs, data tables, paragraphs",
+        "weights": ["400", "500", "600"],
+        "tracking": "tracking-normal"
+      },
+      "mono": {
+        "font_family": "JetBrains Mono, monospace",
+        "usage": "Grades, Standard Codes (e.g., RF 4.3)",
+        "weights": ["400", "500"]
+      }
+    },
+    "colors": {
+      "palette_name": "Organic & Earthy (Paper & Ink)",
+      "primary": {
+        "name": "Deep Slate Ink",
+        "hex": "#334155",
+        "tailwind": "slate-700",
+        "usage": "Primary Text, Active Borders, Strong CTAs"
+      },
+      "background": {
+        "name": "Warm Paper",
+        "hex": "#FAFAF9",
+        "tailwind": "stone-50",
+        "usage": "App Background, Canvas"
+      },
+      "surface": {
+        "name": "Pure White",
+        "hex": "#FFFFFF",
+        "tailwind": "white",
+        "usage": "Cards, Input Fields, Modals"
+      },
+      "accent": {
+        "name": "Sage Growth",
+        "hex": "#84CC16",
+        "tailwind": "lime-600",
+        "usage": "Success states, Progress bars, Primary Buttons (muted)"
+      },
+      "secondary_accent": {
+        "name": "Clay Terracotta",
+        "hex": "#D97706",
+        "tailwind": "amber-600",
+        "usage": "Alerts, Highlights, 'Due Soon' tags"
+      },
+      "border": {
+        "name": "Pencil Grey",
+        "hex": "#E5E7EB",
+        "tailwind": "gray-200",
+        "usage": "Dividers, Inactive Inputs"
+      }
+    },
+    "spacing": {
+      "scale": "Generous (2x standard)",
+      "container_padding": "p-6 md:p-12",
+      "grid_gap": "gap-6 md:gap-8",
+      "section_spacing": "py-12 md:py-20"
+    },
+    "visual_enhancers": {
+      "texture": "Subtle noise/grain overlay on the main background to mimic paper texture.",
+      "shadows": "Soft, diffuse shadows (shadow-sm, shadow-md) to lift elements slightly off the 'paper'.",
+      "borders": "1px solid borders with low opacity (border-slate-200) to mimic printed lines.",
+      "radius": "rounded-md (Standard, not too round, not too sharp - professional)"
+    }
+  },
+  "layout_strategies": {
+    "dashboard": {
+      "type": "Bento Grid (Mode B: High Density)",
+      "grid_cols": "grid-cols-1 md:grid-cols-3 lg:grid-cols-4",
+      "gap": "gap-6",
+      "widgets": [
+        { "name": "Welcome/Overview", "span": "col-span-full md:col-span-2" },
+        { "name": "Quick Actions", "span": "col-span-1" },
+        { "name": "Today's Schedule", "span": "col-span-1 row-span-2" },
+        { "name": "Recent Plans", "span": "col-span-2" }
+      ]
+    },
+    "planner": {
+      "type": "Horizontal Week View / Expandable Cards",
+      "structure": "A horizontal scroll or grid of 5 columns (Mon-Fri). Clicking a day expands to the detailed form.",
+      "form_layout": "Two-column layout mimicking the paper form: Left for Unit/Story info, Right for Date/Standards."
+    }
+  },
+  "components": {
+    "buttons": {
+      "style": "Pill-shaped or slightly rounded (rounded-md).",
+      "primary": "bg-slate-800 text-white hover:bg-slate-700 shadow-sm",
+      "secondary": "bg-white border border-slate-200 text-slate-700 hover:bg-stone-50"
+    },
+    "cards": {
+      "style": "bg-white border border-slate-100 shadow-sm rounded-lg p-6 hover:shadow-md transition-shadow duration-200"
+    },
+    "inputs": {
+      "style": "bg-stone-50 border-slate-200 focus:border-slate-400 focus:ring-1 focus:ring-slate-400 rounded-md"
+    },
+    "navigation": {
+      "style": "Sidebar or Topbar with clear, legible icons. Active state: bg-stone-100 text-slate-900 font-medium."
+    }
+  },
+  "assets": {
+    "icons_library": "lucide-react",
+    "images": [
+      {
+        "category": "Login/Landing Hero",
+        "url": "https://images.unsplash.com/photo-1542810634-71277d95dcbb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwzfHx0ZWFjaGVyJTIwY2xhc3Nyb29tJTIwaGFwcHl8ZW58MHx8fHwxNzcwNzY0MjMyfDA&ixlib=rb-4.1.0&q=85",
+        "description": "Group of children sitting, conveying a warm, active classroom environment."
+      },
+      {
+        "category": "Dashboard Texture",
+        "url": "https://images.unsplash.com/photo-1736979110931-ac9c6fa82dbd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwyfHxtaW5pbWFsaXN0JTIwd2hpdGUlMjBwYXBlciUyMHRleHR1cmV8ZW58MHx8fHwxNzcwNzY0MjM2fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Subtle white paper texture for background overlay."
+      }
+    ]
+  },
+  "universal_guidelines": [
+    "Use 'sonner' for toasts.",
+    "Use 'lucide-react' for icons.",
+    "Ensure all interactive elements have 'data-testid'.",
+    "Do not use 'transition: all'.",
+    "Do not center align the app container.",
+    "Use 'Manrope' for all UI text, 'Playfair Display' for major headings.",
+    "Maintain a 'Paper & Ink' aesthetic: high contrast text, off-white backgrounds.",
+    "Forms must be dense but legible, mimicking the paper reference."
+  ],
+  "instructions_to_main_agent": "Implement the 'TeacherHub' with a focus on the 'Paper Replacement' metaphor. The UI should feel like a high-end digital planner. Use the provided image URLs to structure the 'Lesson Planner' form fields exactly (Unit, Story, Standards, Expectations). Ensure the 'Gradebook' uses a clean data-grid layout. Prioritize the 'Organic & Earthy' color palette."
+}
