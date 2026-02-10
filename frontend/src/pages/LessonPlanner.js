@@ -44,6 +44,7 @@ const LessonPlanner = () => {
   const [plans, setPlans] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [activeDay, setActiveDay] = useState(0);
+  const [showPrintView, setShowPrintView] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState({
