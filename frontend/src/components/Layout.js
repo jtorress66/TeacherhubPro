@@ -14,7 +14,10 @@ import {
   Menu,
   X,
   Globe,
-  ChevronRight
+  ChevronRight,
+  FileText,
+  BarChart3,
+  Briefcase
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -28,9 +31,12 @@ const Layout = ({ children }) => {
   const navItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: t('dashboard') },
     { path: '/planner', icon: Calendar, label: t('planner') },
+    { path: '/templates', icon: FileText, label: language === 'es' ? 'Plantillas' : 'Templates' },
     { path: '/attendance', icon: ClipboardCheck, label: t('attendance') },
+    { path: '/attendance/reports', icon: BarChart3, label: language === 'es' ? 'Reportes' : 'Reports' },
     { path: '/gradebook', icon: BookOpen, label: t('gradebook') },
     { path: '/classes', icon: Users, label: t('classes') },
+    { path: '/substitute-packet', icon: Briefcase, label: language === 'es' ? 'Paquete Sustituto' : 'Sub Packet' },
     { path: '/settings', icon: Settings, label: t('settings') },
   ];
 
