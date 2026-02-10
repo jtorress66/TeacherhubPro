@@ -229,7 +229,7 @@ export const PlanPrintView = ({ plan, classInfo, onClose }) => {
                 {/* Day Theme Row */}
                 <tr>
                   <td style={{ border: '1px solid black', padding: '3px', fontWeight: 'bold' }}>Day Theme</td>
-                  {(plan.days || []).map((day, i) => (
+                  {planDays.map((day, i) => (
                     <td key={i} style={{ border: '1px solid black', padding: '3px', textAlign: 'center' }}>
                       {day.theme || ''}
                     </td>
@@ -241,7 +241,7 @@ export const PlanPrintView = ({ plan, classInfo, onClose }) => {
                   <td style={{ border: '1px solid black', padding: '3px', fontWeight: 'bold', fontSize: '6pt' }}>
                     Type of Taxonomy: Webb (2005) Levels
                   </td>
-                  {(plan.days || []).map((day, i) => (
+                  {planDays.map((day, i) => (
                     <td key={i} style={{ border: '1px solid black', padding: '2px', fontSize: '6pt' }}>
                       {[1, 2, 3, 4].map(level => (
                         <div key={level} style={{ marginBottom: '2px' }}>
@@ -264,7 +264,7 @@ export const PlanPrintView = ({ plan, classInfo, onClose }) => {
                 {/* Activities Row */}
                 <tr>
                   <td style={{ border: '1px solid black', padding: '3px', fontWeight: 'bold' }}>Activities</td>
-                  {(plan.days || []).map((day, i) => (
+                  {planDays.map((day, i) => (
                     <td key={i} style={{ border: '1px solid black', padding: '2px', fontSize: '6pt' }}>
                       {Object.keys(ACTIVITY_LABELS).map(actType => {
                         const activity = day.activities?.find(a => a.activity_type === actType);
@@ -290,7 +290,7 @@ export const PlanPrintView = ({ plan, classInfo, onClose }) => {
                 {/* Materials Row */}
                 <tr>
                   <td style={{ border: '1px solid black', padding: '3px', fontWeight: 'bold' }}>Materials</td>
-                  {(plan.days || []).map((day, i) => (
+                  {planDays.map((day, i) => (
                     <td key={i} style={{ border: '1px solid black', padding: '2px', fontSize: '6pt' }}>
                       {Object.keys(MATERIAL_LABELS).map(matType => {
                         const material = day.materials?.find(m => m.material_type === matType);
