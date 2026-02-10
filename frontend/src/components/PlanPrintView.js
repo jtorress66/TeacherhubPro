@@ -70,6 +70,20 @@ export const PlanPrintView = ({ plan, classInfo, onClose }) => {
   const printRef = useRef();
   const lang = language === 'es' ? 'es' : 'en';
 
+  // Ensure we always have 5 days
+  const planDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((dayName, i) => {
+    const existingDay = plan.days?.[i];
+    return {
+      date: existingDay?.date || '',
+      day_name: existingDay?.day_name || dayName,
+      theme: existingDay?.theme || '',
+      dok_levels: existingDay?.dok_levels || [],
+      activities: existingDay?.activities || [],
+      materials: existingDay?.materials || [],
+      notes: existingDay?.notes || ''
+    };
+  });
+
   const handlePrint = () => {
     const printContent = printRef.current;
     const printWindow = window.open('', '_blank');
