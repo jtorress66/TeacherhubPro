@@ -150,3 +150,77 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
 - lesson_plans
 - attendance_sessions
 - grade_categories, assignments, grades
+
+---
+## Update 2026-02-10 - Phase 2 Features
+
+### New Features Implemented
+
+#### 1. PDF Export (Matching School Paper Format)
+- **Component:** `/app/frontend/src/components/PlanPrintView.js`
+- **Access:** Click "Exportar PDF" button on any saved lesson plan
+- **Features:**
+  - School header matching "Colegio De La Inmaculada Concepción" format
+  - Unit, Story, Teacher, Grade, Date range info
+  - Objective and Skills sections
+  - Daily plan table with Mon-Fri columns
+  - Webb's DOK taxonomy level checkboxes
+  - Activities and Materials checklists
+  - Standards by domain (Listening/Speaking, Reading, Writing, Language)
+  - Expectations section
+  - Subject integration
+  - Signature lines for Teacher and Principal
+- **Print:** Opens browser print dialog for PDF save
+
+#### 2. Template Gallery
+- **Page:** `/app/frontend/src/pages/Templates.js`
+- **Route:** `/templates`
+- **Features:**
+  - Save any lesson plan as reusable template
+  - View all saved templates
+  - Use template to create new plan
+  - Delete templates
+- **Workflow:** Plan → Save as Template → Use later
+
+#### 3. Attendance Reports
+- **Page:** `/app/frontend/src/pages/AttendanceReports.js`  
+- **Route:** `/attendance/reports`
+- **Features:**
+  - Date range filtering (Desde/Hasta)
+  - Class selector
+  - Summary stats: Present, Absent, Tardy, Excused, Attendance Rate
+  - Student detail table with individual rates
+  - Color-coded attendance percentages (90%+ green, 80%+ amber, <80% red)
+  - Print functionality
+
+#### 4. Substitute Packet
+- **Page:** `/app/frontend/src/pages/SubstitutePacket.js`
+- **Route:** `/substitute-packet`
+- **Features:**
+  - Class selector
+  - Auto-generates complete substitute packet
+  - Includes:
+    - Cover page with class info
+    - Emergency contacts (Office, Nurse)
+    - Current week's lesson plan
+    - Student roster table
+    - Seating chart (5x5 grid)
+    - Notes sections (Daily Routines, Emergency Procedures, Special Needs, Additional Notes)
+  - Print-ready PDF generation
+
+### Navigation Updates
+- New sidebar items:
+  - Plantillas / Templates
+  - Reportes / Reports  
+  - Paquete Sustituto / Sub Packet
+
+### Files Added
+- `/app/frontend/src/components/PlanPrintView.js`
+- `/app/frontend/src/pages/Templates.js`
+- `/app/frontend/src/pages/AttendanceReports.js`
+- `/app/frontend/src/pages/SubstitutePacket.js`
+
+### Files Modified
+- `/app/frontend/src/App.js` - Added new routes
+- `/app/frontend/src/components/Layout.js` - Added navigation items
+- `/app/frontend/src/pages/LessonPlanner.js` - Added PDF export button
