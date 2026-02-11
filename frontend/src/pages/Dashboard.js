@@ -64,28 +64,29 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      <div className="space-y-8">
+      <div className="space-y-8 animate-fade-in">
         {/* Welcome Header with School Info */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 p-6 bg-gradient-to-br from-white to-green-50/50 rounded-2xl border border-slate-100 shadow-sm">
+          <div className="flex items-center gap-5">
             {school?.logo_url && (
               <img 
                 src={school.logo_url} 
                 alt={school.name} 
-                className="h-16 w-16 object-contain rounded-lg border border-slate-200 bg-white p-1"
+                className="h-16 w-16 object-contain rounded-xl border border-slate-200 bg-white p-2 shadow-sm"
                 data-testid="school-logo"
               />
             )}
             <div>
               {school?.name && (
-                <p className="text-sm text-lime-700 font-medium mb-1" data-testid="school-name">
+                <p className="text-sm text-green-600 font-semibold mb-1 uppercase tracking-wide" data-testid="school-name">
                   {school.name}
                 </p>
               )}
-              <h1 className="text-3xl font-heading font-bold text-slate-800">
-                {t('welcome')}, {user?.name?.split(' ')[0] || 'Teacher'}!
+              <h1 className="text-3xl md:text-4xl font-heading font-bold text-slate-800">
+                {t('welcome')}, <span className="gradient-text">{user?.name?.split(' ')[0] || 'Teacher'}</span>!
               </h1>
-              <p className="text-slate-500 mt-1">
+              <p className="text-slate-500 mt-2 flex items-center gap-2">
+                <Clock className="h-4 w-4" />
                 {new Date(today).toLocaleDateString(language === 'es' ? 'es-PR' : 'en-US', {
                   weekday: 'long',
                   year: 'numeric',
@@ -96,7 +97,11 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="flex gap-3">
-            <Button onClick={() => navigate('/planner/new')} className="gap-2" data-testid="new-plan-btn">
+            <Button 
+              onClick={() => navigate('/planner/new')} 
+              className="gap-2 bg-green-600 hover:bg-green-700 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5" 
+              data-testid="new-plan-btn"
+            >
               <Plus className="h-4 w-4" />
               {t('createPlan')}
             </Button>
@@ -104,39 +109,39 @@ const Dashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="bg-white border-slate-100">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-slate-100">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 stagger-children">
+          <Card className="bg-white border-slate-100 card-hover animate-fade-in opacity-0" style={{ animationDelay: '0ms', animationFillMode: 'forwards' }}>
+            <CardContent className="p-5">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-slate-100">
                   <BookOpen className="h-5 w-5 text-slate-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-slate-800">{stats.total_classes || 0}</p>
+                  <p className="text-3xl font-bold text-slate-800">{stats.total_classes || 0}</p>
                   <p className="text-sm text-slate-500">{t('totalClasses')}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
-          <Card className="bg-white border-slate-100">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-lime-100">
-                  <Users className="h-5 w-5 text-lime-600" />
+          <Card className="bg-white border-slate-100 card-hover animate-fade-in opacity-0" style={{ animationDelay: '50ms', animationFillMode: 'forwards' }}>
+            <CardContent className="p-5">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-green-100">
+                  <Users className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-slate-800">{stats.total_students || 0}</p>
+                  <p className="text-3xl font-bold text-slate-800">{stats.total_students || 0}</p>
                   <p className="text-sm text-slate-500">{t('totalStudents')}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
-          <Card className="bg-white border-slate-100">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-amber-100">
+          <Card className="bg-white border-slate-100 card-hover animate-fade-in opacity-0" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
+            <CardContent className="p-5">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-amber-100">
                   <Calendar className="h-5 w-5 text-amber-600" />
                 </div>
                 <div>
