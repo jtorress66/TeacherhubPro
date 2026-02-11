@@ -171,6 +171,7 @@ class LessonPlanCreate(BaseModel):
     week_end: str
     unit: Optional[str] = None
     story: Optional[str] = None
+    teacher_name: Optional[str] = None
     objective: Optional[str] = None
     skills: List[str] = []
     days: List[PlanDay] = []
@@ -190,6 +191,7 @@ class LessonPlanResponse(BaseModel):
     week_end: str
     unit: Optional[str] = None
     story: Optional[str] = None
+    teacher_name: Optional[str] = None
     objective: Optional[str] = None
     skills: List[str] = []
     days: List[Dict] = []
