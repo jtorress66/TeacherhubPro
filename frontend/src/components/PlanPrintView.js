@@ -185,7 +185,7 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
               <div style={{ padding: '8px', borderRight: '1px solid black' }}>
                 <div><strong>Unit:</strong> {plan.unit || '_____'}</div>
                 <div><strong>Story:</strong> {plan.story || '_____'}</div>
-                <div><strong>Teacher:</strong> {classInfo?.teacher_name || '_____'}</div>
+                <div><strong>Teacher:</strong> {plan.teacher_name || '_____'}</div>
                 <div><strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}</div>
               </div>
               <div style={{ padding: '8px' }}>
