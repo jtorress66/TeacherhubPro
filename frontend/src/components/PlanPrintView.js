@@ -45,15 +45,15 @@ const STANDARD_LABELS = {
 const Checkbox = ({ checked }) => (
   <span style={{
     display: 'inline-block',
-    width: '10px',
-    height: '10px',
+    width: '12px',
+    height: '12px',
     border: '1px solid black',
     background: checked ? 'black' : 'white',
     verticalAlign: 'middle',
-    marginRight: '3px',
+    marginRight: '4px',
     textAlign: 'center',
-    lineHeight: '8px',
-    fontSize: '10px',
+    lineHeight: '10px',
+    fontSize: '11px',
     fontWeight: 'bold',
     color: 'white'
   }}>{checked ? '✓' : ''}</span>
@@ -90,13 +90,13 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
         <style>
           @page { 
             size: 11in 8.5in; 
-            margin: 0.25in; 
+            margin: 0.2in; 
           }
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { font-family: Arial, sans-serif; }
           .page {
             width: 100%;
-            height: 100%;
+            min-height: 100%;
             page-break-after: always;
             page-break-inside: avoid;
           }
@@ -128,19 +128,19 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
     return plan.expectations?.find(e => e.week_index === weekIndex)?.text || '';
   };
 
-  // Header component with inline styles
+  // Header component with inline styles - LARGER
   const Header = () => (
-    <div style={{ textAlign: 'center', borderBottom: '2px solid black', paddingBottom: '5px', marginBottom: '8px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-        {school?.logo_url && <img src={school.logo_url} alt="Logo" style={{ height: '35px' }} />}
+    <div style={{ textAlign: 'center', borderBottom: '2px solid black', paddingBottom: '6px', marginBottom: '10px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px' }}>
+        {school?.logo_url && <img src={school.logo_url} alt="Logo" style={{ height: '45px' }} />}
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontWeight: 'bold', fontSize: '11pt' }}>{school?.name || 'Colegio De La Inmaculada Concepción'}</div>
-          <div style={{ fontSize: '8pt' }}>{school?.address || 'P.O. Box 3400, Manatí, Puerto Rico 00674'}</div>
-          <div style={{ fontSize: '8pt' }}>{school?.phone ? `Tel. ${school.phone}` : 'Tel. (787) 854-2079 / (787)854-5265'}</div>
-          <div style={{ fontSize: '8pt' }}>{school?.email || 'Cicmanati@outlook.com'}</div>
+          <div style={{ fontWeight: 'bold', fontSize: '14pt' }}>{school?.name || 'Colegio De La Inmaculada Concepción'}</div>
+          <div style={{ fontSize: '10pt' }}>{school?.address || 'P.O. Box 3400, Manatí, Puerto Rico 00674'}</div>
+          <div style={{ fontSize: '10pt' }}>{school?.phone ? `Tel. ${school.phone}` : 'Tel. (787) 854-2079 / (787)854-5265'}</div>
+          <div style={{ fontSize: '10pt' }}>{school?.email || 'Cicmanati@outlook.com'}</div>
         </div>
       </div>
-      <div style={{ fontWeight: 'bold', fontSize: '12pt', marginTop: '5px' }}>Teacher's Planning</div>
+      <div style={{ fontWeight: 'bold', fontSize: '16pt', marginTop: '6px' }}>Teacher's Planning</div>
     </div>
   );
 
@@ -167,52 +167,52 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
         <div ref={printRef} style={{ fontFamily: 'Arial, sans-serif', padding: '10px', background: 'white' }}>
           
           {/* ===== PAGE 1: Daily Plan ===== */}
-          <div className="page" style={{ fontSize: '8pt', lineHeight: '1.2' }}>
+          <div className="page" style={{ fontSize: '10pt', lineHeight: '1.3' }}>
             <Header />
             
-            {/* Info Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '6px' }}>
-              <div style={{ padding: '5px', borderRight: '1px solid black', fontSize: '9pt' }}>
+            {/* Info Grid - LARGER */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '8px' }}>
+              <div style={{ padding: '8px', borderRight: '1px solid black', fontSize: '11pt' }}>
                 <div><strong>Unit:</strong> {plan.unit || '_____'}</div>
                 <div><strong>Story:</strong> {plan.story || '_____'}</div>
                 <div><strong>Teacher:</strong> {plan.teacher_name || '_____'}</div>
                 <div><strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}</div>
               </div>
-              <div style={{ padding: '5px', fontSize: '9pt' }}>
+              <div style={{ padding: '8px', fontSize: '11pt' }}>
                 <div><strong>Date</strong></div>
                 <div>From: {plan.week_start || '_____'} To: {plan.week_end || '_____'}</div>
               </div>
             </div>
 
-            {/* Objective */}
-            <div style={{ border: '1px solid black', padding: '5px', marginBottom: '6px' }}>
-              <div style={{ fontWeight: 'bold', borderBottom: '1px solid black', marginBottom: '3px', fontSize: '9pt' }}>
+            {/* Objective - LARGER */}
+            <div style={{ border: '1px solid black', padding: '8px', marginBottom: '8px' }}>
+              <div style={{ fontWeight: 'bold', borderBottom: '1px solid black', marginBottom: '5px', fontSize: '11pt' }}>
                 Objective of the week:
               </div>
-              <div style={{ fontSize: '8pt' }}>{plan.objective || '_____'}</div>
+              <div style={{ fontSize: '10pt' }}>{plan.objective || '_____'}</div>
             </div>
 
-            {/* Skills */}
-            <div style={{ border: '1px solid black', padding: '5px', marginBottom: '6px' }}>
-              <div style={{ fontWeight: 'bold', borderBottom: '1px solid black', marginBottom: '3px', fontSize: '9pt' }}>
+            {/* Skills - LARGER */}
+            <div style={{ border: '1px solid black', padding: '8px', marginBottom: '8px' }}>
+              <div style={{ fontWeight: 'bold', borderBottom: '1px solid black', marginBottom: '5px', fontSize: '11pt' }}>
                 Skills of the week:
               </div>
-              <ol style={{ marginLeft: '15px', fontSize: '8pt' }}>
+              <ol style={{ marginLeft: '20px', fontSize: '10pt' }}>
                 {(plan.skills || []).filter(s => s).map((skill, i) => (
-                  <li key={i} style={{ marginBottom: '1px' }}>{skill}</li>
+                  <li key={i} style={{ marginBottom: '2px' }}>{skill}</li>
                 ))}
               </ol>
             </div>
 
-            {/* Daily Plan Table */}
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '7pt', tableLayout: 'fixed' }}>
+            {/* Daily Plan Table - LARGER FONTS */}
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9pt', tableLayout: 'fixed' }}>
               <thead>
                 <tr>
-                  <th style={{ border: '1px solid black', padding: '3px', width: '12%', background: '#f0f0f0', fontSize: '7pt' }}></th>
+                  <th style={{ border: '1px solid black', padding: '5px', width: '13%', background: '#f0f0f0', fontSize: '9pt' }}></th>
                   {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, dayIdx) => (
-                    <th key={day} style={{ border: '1px solid black', padding: '3px', width: '17.6%', background: '#f0f0f0', textAlign: 'center', fontSize: '8pt' }}>
+                    <th key={day} style={{ border: '1px solid black', padding: '5px', width: '17.4%', background: '#f0f0f0', textAlign: 'center', fontSize: '10pt' }}>
                       {DAY_LABELS[day][lang]}
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginTop: '2px', fontSize: '7pt' }}>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '3px', fontSize: '9pt' }}>
                         {['E', 'C', 'A'].map(eca => (
                           <span key={eca}>
                             {eca}<Checkbox checked={planDays[dayIdx]?.eca?.[eca]} />
@@ -226,9 +226,9 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
               <tbody>
                 {/* Day Theme */}
                 <tr>
-                  <td style={{ border: '1px solid black', padding: '3px', fontWeight: 'bold', fontSize: '7pt' }}>Day Theme</td>
+                  <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', fontSize: '9pt' }}>Day Theme</td>
                   {planDays.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '3px', textAlign: 'center', fontSize: '7pt' }}>
+                    <td key={i} style={{ border: '1px solid black', padding: '5px', textAlign: 'center', fontSize: '9pt' }}>
                       {day.theme || ''}
                     </td>
                   ))}
@@ -236,13 +236,13 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
                 
                 {/* DOK Levels */}
                 <tr>
-                  <td style={{ border: '1px solid black', padding: '3px', fontWeight: 'bold', fontSize: '6pt' }}>
+                  <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', fontSize: '8pt' }}>
                     Type of Taxonomy: Webb (2005) Levels
                   </td>
                   {planDays.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '2px', fontSize: '6pt' }}>
+                    <td key={i} style={{ border: '1px solid black', padding: '4px', fontSize: '8pt' }}>
                       {[1, 2, 3, 4].map(level => (
-                        <div key={level} style={{ marginBottom: '1px' }}>
+                        <div key={level} style={{ marginBottom: '2px' }}>
                           <Checkbox checked={day.dok_levels?.includes(level)} /> Level {level}
                         </div>
                       ))}
@@ -252,13 +252,13 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
 
                 {/* Activities */}
                 <tr>
-                  <td style={{ border: '1px solid black', padding: '3px', fontWeight: 'bold', fontSize: '7pt' }}>Activities</td>
+                  <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', fontSize: '9pt' }}>Activities</td>
                   {planDays.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '2px', fontSize: '6pt' }}>
+                    <td key={i} style={{ border: '1px solid black', padding: '4px', fontSize: '8pt' }}>
                       {Object.keys(ACTIVITY_LABELS).map(actType => {
                         const activity = day.activities?.find(a => a.activity_type === actType);
                         return (
-                          <div key={actType} style={{ marginBottom: '1px', lineHeight: '1.1' }}>
+                          <div key={actType} style={{ marginBottom: '2px', lineHeight: '1.2' }}>
                             <Checkbox checked={activity?.checked} /> {ACTIVITY_LABELS[actType][lang]}
                             {/* Show notes for "Other" activity */}
                             {actType === 'other' && activity?.checked && activity?.notes && (
@@ -273,13 +273,13 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
 
                 {/* Materials */}
                 <tr>
-                  <td style={{ border: '1px solid black', padding: '3px', fontWeight: 'bold', fontSize: '7pt' }}>Materials</td>
+                  <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', fontSize: '9pt' }}>Materials</td>
                   {planDays.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '2px', fontSize: '6pt' }}>
+                    <td key={i} style={{ border: '1px solid black', padding: '4px', fontSize: '8pt' }}>
                       {Object.keys(MATERIAL_LABELS).map(matType => {
                         const material = day.materials?.find(m => m.material_type === matType);
                         return (
-                          <div key={matType} style={{ marginBottom: '1px', lineHeight: '1.1' }}>
+                          <div key={matType} style={{ marginBottom: '2px', lineHeight: '1.2' }}>
                             <Checkbox checked={material?.checked} /> {MATERIAL_LABELS[matType][lang]}
                           </div>
                         );
@@ -292,34 +292,34 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
           </div>
 
           {/* ===== PAGE 2: Standards ===== */}
-          <div className="page" style={{ pageBreakBefore: 'always', fontSize: '9pt', lineHeight: '1.3' }}>
+          <div className="page" style={{ pageBreakBefore: 'always', fontSize: '11pt', lineHeight: '1.4' }}>
             <Header />
             
-            {/* Unit Info repeated */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '10px' }}>
-              <div style={{ padding: '6px', borderRight: '1px solid black', fontSize: '9pt' }}>
+            {/* Unit Info repeated - LARGER */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '12px' }}>
+              <div style={{ padding: '8px', borderRight: '1px solid black', fontSize: '11pt' }}>
                 <div><strong>Unit:</strong> {plan.unit || '_____'}</div>
                 <div><strong>Story:</strong> {plan.story || '_____'}</div>
                 <div><strong>Teacher:</strong> {plan.teacher_name || '_____'}</div>
                 <div><strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}</div>
               </div>
-              <div style={{ padding: '6px', fontSize: '9pt' }}>
+              <div style={{ padding: '8px', fontSize: '11pt' }}>
                 <div><strong>Date</strong></div>
                 <div>From: {plan.week_start || '_____'} To: {plan.week_end || '_____'}</div>
               </div>
             </div>
 
-            {/* Standards Grid */}
+            {/* Standards Grid - LARGER */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '15px' }}>
               {/* First Week */}
-              <div style={{ padding: '10px', borderRight: '1px solid black' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '10pt', borderBottom: '1px solid black', marginBottom: '10px', paddingBottom: '3px' }}>
+              <div style={{ padding: '12px', borderRight: '1px solid black' }}>
+                <div style={{ fontWeight: 'bold', fontSize: '12pt', borderBottom: '1px solid black', marginBottom: '12px', paddingBottom: '5px' }}>
                   Standard: First Week
                 </div>
                 {['listeningAndSpeaking', 'foundationalSkills', 'reading', 'writing', 'language'].map(domain => {
                   const standard = getStandardsForWeek(1).find(s => s.domain === domain);
                   return (
-                    <div key={domain} style={{ marginBottom: '6px', fontSize: '9pt' }}>
+                    <div key={domain} style={{ marginBottom: '8px', fontSize: '11pt' }}>
                       <Checkbox checked={standard?.codes?.length > 0} />
                       <strong> {STANDARD_LABELS[domain][lang]}</strong>
                       {standard?.codes?.length > 0 && (
@@ -330,21 +330,21 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
                     </div>
                   );
                 })}
-                <div style={{ border: '1px solid black', padding: '8px', marginTop: '12px', minHeight: '80px' }}>
+                <div style={{ border: '1px solid black', padding: '10px', marginTop: '15px', minHeight: '100px' }}>
                   <strong>Expectations:</strong>
-                  <div style={{ marginTop: '5px' }}>{getExpectationForWeek(1)}</div>
+                  <div style={{ marginTop: '8px', fontSize: '10pt' }}>{getExpectationForWeek(1)}</div>
                 </div>
               </div>
 
               {/* Second Week */}
-              <div style={{ padding: '10px' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '10pt', borderBottom: '1px solid black', marginBottom: '10px', paddingBottom: '3px' }}>
+              <div style={{ padding: '12px' }}>
+                <div style={{ fontWeight: 'bold', fontSize: '12pt', borderBottom: '1px solid black', marginBottom: '12px', paddingBottom: '5px' }}>
                   Standard: Second Week
                 </div>
                 {['listeningAndSpeaking', 'foundationalSkills', 'reading', 'writing', 'language'].map(domain => {
                   const standard = getStandardsForWeek(2).find(s => s.domain === domain);
                   return (
-                    <div key={domain} style={{ marginBottom: '6px', fontSize: '9pt' }}>
+                    <div key={domain} style={{ marginBottom: '8px', fontSize: '11pt' }}>
                       <Checkbox checked={standard?.codes?.length > 0} />
                       <strong> {STANDARD_LABELS[domain][lang]}</strong>
                       {standard?.codes?.length > 0 && (
@@ -355,17 +355,17 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
                     </div>
                   );
                 })}
-                <div style={{ border: '1px solid black', padding: '8px', marginTop: '12px', minHeight: '80px' }}>
+                <div style={{ border: '1px solid black', padding: '10px', marginTop: '15px', minHeight: '100px' }}>
                   <strong>Expectations:</strong>
-                  <div style={{ marginTop: '5px' }}>{getExpectationForWeek(2)}</div>
+                  <div style={{ marginTop: '8px', fontSize: '10pt' }}>{getExpectationForWeek(2)}</div>
                 </div>
               </div>
             </div>
 
-            {/* Integration Section */}
-            <div style={{ border: '1px solid black', padding: '10px' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '10pt', marginBottom: '10px' }}>Integration with other subjects:</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', fontSize: '9pt' }}>
+            {/* Integration Section - LARGER */}
+            <div style={{ border: '1px solid black', padding: '12px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '12pt', marginBottom: '12px' }}>Integration with other subjects:</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '25px', fontSize: '11pt' }}>
                 {['mathematics', 'spanish', 'socialStudies', 'science', 'health', 'art', 'physicalEducation', 'religion'].map(subject => (
                   <span key={subject}>
                     <Checkbox checked={plan.subject_integration?.includes(subject)} />
@@ -376,11 +376,11 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
             </div>
 
             {/* Signature Section */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', marginTop: '50px' }}>
-              <div style={{ borderTop: '1px solid black', paddingTop: '5px', textAlign: 'center', fontSize: '9pt' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '100px', marginTop: '50px' }}>
+              <div style={{ borderTop: '1px solid black', paddingTop: '8px', textAlign: 'center', fontSize: '11pt' }}>
                 Teacher's Signature / Date
               </div>
-              <div style={{ borderTop: '1px solid black', paddingTop: '5px', textAlign: 'center', fontSize: '9pt' }}>
+              <div style={{ borderTop: '1px solid black', paddingTop: '8px', textAlign: 'center', fontSize: '11pt' }}>
                 Principal's Signature / Date
               </div>
             </div>
