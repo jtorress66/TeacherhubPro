@@ -126,16 +126,27 @@ const Landing = () => {
             <BookOpen className="h-8 w-8 text-slate-700" />
             <span className="text-2xl font-heading font-bold text-slate-800">TeacherHub</span>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleLanguage}
-            className="flex items-center gap-2"
-            data-testid="language-toggle"
-          >
-            <Globe className="h-4 w-4" />
-            {language === 'es' ? 'EN' : 'ES'}
-          </Button>
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+              className="hidden sm:flex"
+              data-testid="nav-pricing-btn"
+            >
+              {language === 'es' ? 'Precios' : 'Pricing'}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleLanguage}
+              className="flex items-center gap-2"
+              data-testid="language-toggle"
+            >
+              <Globe className="h-4 w-4" />
+              {language === 'es' ? 'EN' : 'ES'}
+            </Button>
+          </div>
         </div>
       </header>
 
