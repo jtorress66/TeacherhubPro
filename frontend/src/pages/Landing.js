@@ -287,86 +287,21 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="max-w-7xl mx-auto px-6 py-16 md:py-24">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-heading font-bold text-slate-800 mb-4">
-            {language === 'es' ? 'Planes y Precios' : 'Plans & Pricing'}
-          </h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            {language === 'es' 
-              ? 'Comienza con 7 días gratis. Cancela en cualquier momento.' 
-              : 'Start with a 7-day free trial. Cancel anytime.'}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {pricingPlans.map((plan) => (
-            <Card 
-              key={plan.id} 
-              className={`relative bg-white ${plan.popular ? 'ring-2 ring-lime-500 shadow-lg' : 'border-slate-200'}`}
-              data-testid={`landing-plan-${plan.id}`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-lime-500 text-white shadow">
-                    {language === 'es' ? 'Más Popular' : 'Most Popular'}
-                  </Badge>
-                </div>
-              )}
-              
-              <CardHeader className="text-center pb-2 pt-6">
-                <div className="mx-auto mb-3 p-3 rounded-full bg-slate-100">
-                  <plan.icon className="h-6 w-6 text-slate-700" />
-                </div>
-                <CardTitle className="text-xl font-heading">{plan.name}</CardTitle>
-                <CardDescription className="text-sm">{plan.description}</CardDescription>
-              </CardHeader>
-              
-              <CardContent className="text-center">
-                <div className="mb-4">
-                  <span className="text-4xl font-bold text-slate-800">{plan.price}</span>
-                  <span className="text-slate-500">{plan.period}</span>
-                </div>
-                
-                {plan.savings && (
-                  <Badge variant="secondary" className="mb-4 bg-green-100 text-green-800">
-                    {plan.savings}
-                  </Badge>
-                )}
-                
-                <ul className="space-y-2 text-left text-sm mb-6">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                      <span className="text-slate-600">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                
-                <Button 
-                  className={`w-full ${plan.popular ? 'bg-lime-600 hover:bg-lime-700' : ''}`}
-                  onClick={() => {
-                    // Scroll to the auth card at the top
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  data-testid={`landing-cta-${plan.id}`}
-                >
-                  {language === 'es' ? 'Comenzar Gratis' : 'Start Free'}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <p className="text-center text-sm text-slate-500 mt-8">
+      {/* CTA Section */}
+      <section className="max-w-7xl mx-auto px-6 py-16 text-center">
+        <h2 className="text-2xl md:text-3xl font-heading font-bold text-slate-800 mb-4">
+          {language === 'es' ? '¿Listo para comenzar?' : 'Ready to get started?'}
+        </h2>
+        <p className="text-slate-600 mb-6 max-w-xl mx-auto">
           {language === 'es' 
-            ? '¿Necesitas un plan para tu distrito escolar? ' 
-            : 'Need a plan for your school district? '}
-          <a href="mailto:support@teacherhub.com" className="text-lime-600 hover:underline">
-            {language === 'es' ? 'Contáctanos' : 'Contact us'}
-          </a>
+            ? 'Comienza con 7 días gratis. Sin compromiso.' 
+            : 'Start with a 7-day free trial. No commitment required.'}
         </p>
+        <Link to="/pricing">
+          <Button size="lg" className="bg-lime-600 hover:bg-lime-700" data-testid="cta-pricing-btn">
+            {language === 'es' ? 'Ver Planes y Precios' : 'View Plans & Pricing'}
+          </Button>
+        </Link>
       </section>
 
       {/* Footer */}
