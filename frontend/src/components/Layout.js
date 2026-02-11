@@ -17,7 +17,8 @@ import {
   ChevronRight,
   FileText,
   BarChart3,
-  Briefcase
+  Briefcase,
+  CreditCard
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
