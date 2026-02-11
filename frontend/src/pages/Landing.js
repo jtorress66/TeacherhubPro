@@ -70,12 +70,14 @@ const Landing = () => {
   ];
 
   return (
-    <div className="min-h-screen paper-bg">
+    <div className="min-h-screen hero-gradient">
       {/* Header */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <header className="border-b border-slate-200/50 glass sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <BookOpen className="h-8 w-8 text-slate-700" />
+            <div className="p-2 rounded-xl bg-gradient-to-br from-green-600 to-green-700 shadow-lg">
+              <BookOpen className="h-6 w-6 text-white" />
+            </div>
             <span className="text-2xl font-heading font-bold text-slate-800">TeacherHubPro</span>
           </div>
           <div className="flex items-center gap-4">
@@ -83,7 +85,7 @@ const Landing = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="hidden sm:flex"
+                className="hidden sm:flex hover:bg-green-50 hover:text-green-700"
                 data-testid="nav-pricing-btn"
               >
                 {language === 'es' ? 'Precios' : 'Pricing'}
@@ -93,7 +95,7 @@ const Landing = () => {
               variant="ghost"
               size="sm"
               onClick={toggleLanguage}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 hover:bg-slate-100"
               data-testid="language-toggle"
             >
               <Globe className="h-4 w-4" />
@@ -104,29 +106,45 @@ const Landing = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 py-12 md:py-20">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+      <section className="max-w-7xl mx-auto px-6 py-16 md:py-24">
+        <div className="grid md:grid-cols-2 gap-16 items-center">
           {/* Left - Content */}
-          <div className="space-y-6">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-slate-800 tracking-tight leading-tight">
+          <div className="space-y-8 animate-fade-in-up">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-medium">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-600"></span>
+              </span>
+              {language === 'es' ? '7 días de prueba gratis' : '7-day free trial'}
+            </div>
+            
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-slate-800 tracking-tight leading-[1.1]">
               {language === 'es' 
-                ? 'Tu planificador digital de confianza' 
-                : 'Your trusted digital planner'}
+                ? 'Tu planificador digital ' 
+                : 'Your trusted '}
+              <span className="gradient-text">{language === 'es' ? 'de confianza' : 'digital planner'}</span>
             </h1>
-            <p className="text-lg text-slate-600 leading-relaxed">
+            
+            <p className="text-lg text-slate-600 leading-relaxed max-w-lg">
               {language === 'es'
                 ? 'Reemplaza tu planificador de papel con una solución digital que se siente familiar. Planifica lecciones, toma asistencia y administra notas en un solo lugar.'
                 : 'Replace your paper planner with a digital solution that feels familiar. Plan lessons, take attendance, and manage grades in one place.'}
             </p>
             
             {/* Features Grid */}
-            <div className="grid grid-cols-2 gap-4 pt-4">
+            <div className="grid grid-cols-2 gap-4 pt-4 stagger-children">
               {features.map((feature, i) => (
-                <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-white border border-slate-100 shadow-sm">
-                  <feature.icon className="h-5 w-5 text-lime-600 mt-0.5 flex-shrink-0" />
+                <div 
+                  key={i} 
+                  className="flex items-start gap-3 p-4 rounded-xl bg-white/80 border border-slate-100 shadow-sm card-hover animate-fade-in opacity-0"
+                  style={{ animationDelay: `${i * 100}ms`, animationFillMode: 'forwards' }}
+                >
+                  <div className="p-2 rounded-lg bg-green-100">
+                    <feature.icon className="h-5 w-5 text-green-600" />
+                  </div>
                   <div>
-                    <p className="font-medium text-slate-800 text-sm">{feature.title}</p>
-                    <p className="text-xs text-slate-500">{feature.desc}</p>
+                    <p className="font-semibold text-slate-800 text-sm">{feature.title}</p>
+                    <p className="text-xs text-slate-500 mt-1">{feature.desc}</p>
                   </div>
                 </div>
               ))}
@@ -134,19 +152,19 @@ const Landing = () => {
           </div>
 
           {/* Right - Auth Card */}
-          <div className="flex justify-center">
-            <Card className="w-full max-w-md shadow-lg border-slate-100">
-              <CardHeader className="text-center pb-2">
+          <div className="flex justify-center animate-scale-in">
+            <Card className="w-full max-w-md shadow-2xl border-slate-100/50 bg-white/95 backdrop-blur-sm">
+              <CardHeader className="text-center pb-2 pt-8">
                 <CardTitle className="font-heading text-2xl">{language === 'es' ? 'Comenzar' : 'Get Started'}</CardTitle>
                 <CardDescription>
                   {language === 'es' ? 'Inicia sesión o crea una cuenta' : 'Sign in or create an account'}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-6">
                 {/* Google Login */}
                 <Button 
                   variant="outline" 
-                  className="w-full flex items-center justify-center gap-3 h-11"
+                  className="w-full flex items-center justify-center gap-3 h-12 hover:bg-slate-50 hover:border-slate-300 transition-colors"
                   onClick={handleGoogleLogin}
                   data-testid="google-login-btn"
                 >
