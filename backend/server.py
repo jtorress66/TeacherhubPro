@@ -907,6 +907,7 @@ async def update_plan(plan_id: str, plan_data: LessonPlanCreate, user: dict = De
         "week_end": plan_data.week_end,
         "unit": plan_data.unit,
         "story": plan_data.story,
+        "teacher_name": plan_data.teacher_name,
         "objective": plan_data.objective,
         "skills": plan_data.skills,
         "days": [d.model_dump() for d in plan_data.days],
