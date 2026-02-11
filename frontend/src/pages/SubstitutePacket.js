@@ -199,7 +199,7 @@ const SubstitutePacket = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col md:flex-row gap-4 flex-wrap">
               <Select value={selectedClass} onValueChange={setSelectedClass}>
                 <SelectTrigger className="w-full md:w-64" data-testid="packet-class-select">
                   <SelectValue placeholder={language === 'es' ? 'Seleccionar clase' : 'Select class'} />
@@ -219,26 +219,27 @@ const SubstitutePacket = () => {
               >
                 {generating ? t('loading') : (language === 'es' ? 'Generar Paquete' : 'Generate Packet')}
               </Button>
-              {packetData && (
-                <>
-                  <Button 
-                    onClick={() => setIsEditing(!isEditing)} 
-                    variant={isEditing ? "default" : "outline"} 
-                    className="gap-2"
-                    data-testid="edit-packet-btn"
-                  >
-                    {isEditing ? <Save className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
-                    {isEditing 
-                      ? (language === 'es' ? 'Guardar Cambios' : 'Save Changes')
-                      : (language === 'es' ? 'Editar' : 'Edit')}
-                  </Button>
-                  <Button onClick={handlePrint} variant="outline" className="gap-2" data-testid="print-packet-btn">
-                    <Printer className="h-4 w-4" />
-                    {language === 'es' ? 'Imprimir' : 'Print'}
-                  </Button>
-                </>
-              )}
             </div>
+            {/* Action buttons shown after generating */}
+            {packetData && (
+              <div className="flex gap-3 mt-4 pt-4 border-t">
+                <Button 
+                  onClick={() => setIsEditing(!isEditing)} 
+                  variant={isEditing ? "default" : "outline"} 
+                  className="gap-2"
+                  data-testid="edit-packet-btn"
+                >
+                  {isEditing ? <Save className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
+                  {isEditing 
+                    ? (language === 'es' ? 'Listo' : 'Done')
+                    : (language === 'es' ? 'Editar Paquete' : 'Edit Packet')}
+                </Button>
+                <Button onClick={handlePrint} variant="outline" className="gap-2" data-testid="print-packet-btn">
+                  <Printer className="h-4 w-4" />
+                  {language === 'es' ? 'Imprimir' : 'Print'}
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
