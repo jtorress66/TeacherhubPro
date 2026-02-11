@@ -81,6 +81,7 @@ class SchoolCreate(BaseModel):
     address: Optional[str] = None
     phone: Optional[str] = None
     email: Optional[str] = None
+    logo_url: Optional[str] = None
 
 class SchoolResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -89,6 +90,7 @@ class SchoolResponse(BaseModel):
     address: Optional[str] = None
     phone: Optional[str] = None
     email: Optional[str] = None
+    logo_url: Optional[str] = None
     created_at: str
 
 # Class Models
