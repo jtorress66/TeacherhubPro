@@ -154,8 +154,48 @@ const Pricing = () => {
     return 0;
   };
 
-  return (
-    <Layout>
+  // Public pricing page wrapper for unauthenticated users
+  const PublicWrapper = ({ children }) => (
+    <div className="min-h-screen paper-bg">
+      {/* Header */}
+      <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <Link to="/" className="flex items-center gap-3">
+            <BookOpen className="h-8 w-8 text-slate-700" />
+            <span className="text-2xl font-heading font-bold text-slate-800">TeacherHub</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <Link to="/">
+              <Button variant="ghost" size="sm" className="gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                {language === 'es' ? 'Volver' : 'Back'}
+              </Button>
+            </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleLanguage}
+              className="flex items-center gap-2"
+            >
+              <Globe className="h-4 w-4" />
+              {language === 'es' ? 'EN' : 'ES'}
+            </Button>
+          </div>
+        </div>
+      </header>
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        {children}
+      </main>
+      {/* Footer */}
+      <footer className="border-t border-slate-200 bg-white mt-16">
+        <div className="max-w-7xl mx-auto px-6 py-8 text-center text-slate-500 text-sm">
+          <p>© 2024 TeacherHub. {language === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p>
+        </div>
+      </footer>
+    </div>
+  );
+
+  const pricingContent = (
       <div className="space-y-8">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto">
