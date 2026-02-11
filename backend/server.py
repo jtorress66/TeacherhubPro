@@ -70,7 +70,7 @@ SUBSCRIPTION_PLANS = {
 FREE_TRIAL_DAYS = 7
 
 # Create the main app
-app = FastAPI(title="TeacherHub API", version="1.0.0")
+app = FastAPI(title="TeacherHubPro API", version="1.0.0")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
