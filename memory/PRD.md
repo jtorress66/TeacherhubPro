@@ -224,3 +224,38 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
 - `/app/frontend/src/App.js` - Added new routes
 - `/app/frontend/src/components/Layout.js` - Added navigation items
 - `/app/frontend/src/pages/LessonPlanner.js` - Added PDF export button
+
+---
+## Update 2026-02-11 - E/C/A Checkboxes & School Branding
+
+### Changes Made
+
+#### 1. E/C/A Checkboxes (Enrichment/Core/Assessment)
+- Added E/C/A selection to each day in Lesson Planner
+- E = Enriquecimiento (Enrichment)
+- C = Central (Core)
+- A = Evaluación (Assessment)
+- Fixed PDF to show "E☐ C☐ A☐" instead of "RE [ ]C [ ]A"
+- Checkboxes appear below each day column in PDF
+
+#### 2. School Logo Upload
+- Added `logo_url` field to School model
+- New Settings section "Escuela" for school configuration
+- Fields: Logo URL, School Name, Address, Phone, Email
+- Logo displays in PDF header next to school name
+
+#### 3. Dashboard School Branding
+- School logo appears next to welcome message
+- School name displayed in lime green above welcome text
+- Both logo and name pulled from school settings
+
+### Files Modified
+- `/app/backend/server.py` - Added eca to PlanDay, logo_url to School
+- `/app/frontend/src/pages/LessonPlanner.js` - Added E/C/A toggle UI
+- `/app/frontend/src/components/PlanPrintView.js` - Fixed E/C/A display, added school prop
+- `/app/frontend/src/pages/Dashboard.js` - Added school logo/name display
+- `/app/frontend/src/pages/Settings.js` - Added School settings section
+
+### Database Updates
+- `schools` collection now includes `logo_url` field
+- `lesson_plans.days` now includes `eca` object `{E: bool, C: bool, A: bool}`
