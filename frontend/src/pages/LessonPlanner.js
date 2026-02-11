@@ -150,6 +150,7 @@ const LessonPlanner = () => {
       week_end: plan.week_end || '',
       unit: plan.unit || '',
       story: plan.story || '',
+      teacher_name: plan.teacher_name || '',
       objective: plan.objective || '',
       skills: plan.skills?.length > 0 ? [...plan.skills, '', '', '', ''].slice(0, 4) : ['', '', '', ''],
       days: loadedDays,
