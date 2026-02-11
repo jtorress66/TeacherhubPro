@@ -3,16 +3,18 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from './ui/button';
 import { Printer, X } from 'lucide-react';
 
-// School header matching paper format
-const SchoolHeader = () => (
+// School header matching paper format - now accepts school data and logo
+const SchoolHeader = ({ school }) => (
   <div className="text-center mb-4 border-b-2 border-black pb-3">
     <div className="flex items-center justify-center gap-4">
+      {school?.logo_url && (
+        <img src={school.logo_url} alt="School Logo" style={{ height: '50px', width: 'auto' }} />
+      )}
       <div className="text-xs">
-        <div className="font-bold text-sm">Colegio De La Inmaculada Concepción</div>
-        <div>P.O. Box 3400</div>
-        <div>Manatí, Puerto Rico 00674</div>
-        <div>Tel. (787) 854-2079 / (787)854-5265</div>
-        <div>Cicmanati@outlook.com</div>
+        <div className="font-bold text-sm">{school?.name || 'Colegio De La Inmaculada Concepción'}</div>
+        <div>{school?.address || 'P.O. Box 3400, Manatí, Puerto Rico 00674'}</div>
+        <div>{school?.phone ? `Tel. ${school.phone}` : 'Tel. (787) 854-2079 / (787)854-5265'}</div>
+        <div>{school?.email || 'Cicmanati@outlook.com'}</div>
       </div>
     </div>
     <div className="font-bold text-lg mt-2">Teacher's Planning</div>
