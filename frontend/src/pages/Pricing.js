@@ -329,6 +329,8 @@ const Pricing = () => {
                 >
                   {loadingCheckout && selectedPlan === plan.id ? (
                     <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {language === 'es' ? 'Procesando...' : 'Processing...'}</>
+                  ) : !user ? (
+                    language === 'es' ? 'Registrarse Gratis' : 'Sign Up Free'
                   ) : subscriptionStatus?.status === 'admin' ? (
                     language === 'es' ? 'Acceso de Admin' : 'Admin Access'
                   ) : subscriptionStatus?.status === 'active' && subscriptionStatus?.plan === plan.id ? (
@@ -356,8 +358,14 @@ const Pricing = () => {
           </p>
         </div>
       </div>
-    </Layout>
   );
+
+  // Return appropriate wrapper based on authentication status
+  if (user) {
+    return <Layout>{pricingContent}</Layout>;
+  }
+  
+  return <PublicWrapper>{pricingContent}</PublicWrapper>;
 };
 
 export default Pricing;
