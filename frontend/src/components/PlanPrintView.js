@@ -283,23 +283,23 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
 
                 {/* Activities Row */}
                 <tr>
-                  <td style={{ border: '1px solid black', padding: '3px', fontWeight: 'bold' }}>Activities</td>
+                  <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold' }}>Activities</td>
                   {planDays.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '2px', fontSize: '6pt' }}>
+                    <td key={i} style={{ border: '1px solid black', padding: '4px', fontSize: '8pt' }}>
                       {Object.keys(ACTIVITY_LABELS).map(actType => {
                         const activity = day.activities?.find(a => a.activity_type === actType);
                         return (
-                          <div key={actType} style={{ marginBottom: '1px' }}>
+                          <div key={actType} style={{ marginBottom: '2px' }}>
                             <span style={{ 
                               display: 'inline-block', 
-                              width: '7px', 
-                              height: '7px', 
+                              width: '9px', 
+                              height: '9px', 
                               border: '1px solid black',
                               background: activity?.checked ? 'black' : 'white',
-                              marginRight: '2px',
+                              marginRight: '3px',
                               verticalAlign: 'middle'
                             }}></span>
-                            <span style={{ fontSize: '5pt' }}>{ACTIVITY_LABELS[actType][lang]}</span>
+                            <span style={{ fontSize: '7pt' }}>{ACTIVITY_LABELS[actType][lang]}</span>
                           </div>
                         );
                       })}
