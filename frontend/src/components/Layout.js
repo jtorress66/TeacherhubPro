@@ -79,16 +79,18 @@ const Layout = ({ children }) => {
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-0 left-0 z-50 h-full w-64 bg-white border-r border-slate-200 transform transition-transform duration-200 ease-in-out",
+        "fixed top-0 left-0 z-50 h-full w-64 bg-white/90 backdrop-blur-xl border-r border-slate-200/50 transform transition-transform duration-200 ease-in-out shadow-xl lg:shadow-none",
         "lg:translate-x-0",
         sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b border-slate-100">
+          <div className="p-6 border-b border-slate-200/50">
             <div className="flex items-center justify-between">
-              <Link to="/dashboard" className="flex items-center gap-3">
-                <BookOpen className="h-7 w-7 text-slate-700" />
+              <Link to="/dashboard" className="flex items-center gap-3 group">
+                <div className="p-2 rounded-xl bg-gradient-to-br from-green-600 to-green-700 shadow-lg group-hover:shadow-xl transition-shadow">
+                  <BookOpen className="h-5 w-5 text-white" />
+                </div>
                 <span className="text-xl font-heading font-bold text-slate-800">TeacherHubPro</span>
               </Link>
               <Button 
@@ -112,29 +114,29 @@ const Layout = ({ children }) => {
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
+                    "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
                     isActive 
-                      ? "bg-stone-100 text-slate-900 font-medium" 
-                      : "text-slate-600 hover:bg-stone-50 hover:text-slate-900"
+                      ? "bg-green-100 text-green-700 font-medium shadow-sm" 
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-800"
                   )}
                   data-testid={`nav-${item.path.slice(1)}`}
                 >
-                  <item.icon className="h-5 w-5" />
+                  <item.icon className={cn("h-5 w-5", isActive && "text-green-600")} />
                   <span>{item.label}</span>
-                  {isActive && <ChevronRight className="h-4 w-4 ml-auto" />}
+                  {isActive && <ChevronRight className="h-4 w-4 ml-auto text-green-500" />}
                 </Link>
               );
             })}
           </nav>
 
           {/* User Section */}
-          <div className="p-4 border-t border-slate-100">
+          <div className="p-4 border-t border-slate-200/50 bg-slate-50/50">
             <div className="flex items-center gap-3 mb-4 px-2">
-              <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center overflow-hidden shadow-md">
                 {user?.picture ? (
                   <img src={user.picture} alt={user.name} className="h-full w-full object-cover" />
                 ) : (
-                  <span className="text-sm font-medium text-slate-600">
+                  <span className="text-sm font-medium text-white">
                     {user?.name?.charAt(0) || 'T'}
                   </span>
                 )}
@@ -149,7 +151,7 @@ const Layout = ({ children }) => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="flex-1"
+                className="flex-1 hover:bg-slate-100"
                 onClick={toggleLanguage}
               >
                 <Globe className="h-4 w-4 mr-2" />
@@ -158,7 +160,7 @@ const Layout = ({ children }) => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="flex-1"
+                className="flex-1 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
                 onClick={handleLogout}
                 data-testid="logout-btn"
               >
