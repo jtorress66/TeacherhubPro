@@ -61,7 +61,7 @@ const Layout = ({ children }) => {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <span className="text-lg font-heading font-bold text-slate-800">TeacherHub</span>
+            <span className="text-lg font-heading font-bold text-slate-800">TeacherHubPro</span>
           </div>
           <Button variant="ghost" size="icon" onClick={toggleLanguage}>
             <Globe className="h-5 w-5" />
@@ -89,7 +89,7 @@ const Layout = ({ children }) => {
             <div className="flex items-center justify-between">
               <Link to="/dashboard" className="flex items-center gap-3">
                 <BookOpen className="h-7 w-7 text-slate-700" />
-                <span className="text-xl font-heading font-bold text-slate-800">TeacherHub</span>
+                <span className="text-xl font-heading font-bold text-slate-800">TeacherHubPro</span>
               </Link>
               <Button 
                 variant="ghost" 
