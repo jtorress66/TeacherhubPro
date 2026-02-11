@@ -285,6 +285,19 @@ const LessonPlanner = () => {
     }));
   };
 
+  const toggleECA = (dayIndex, ecaType) => {
+    setFormData(prev => ({
+      ...prev,
+      days: prev.days.map((day, i) => {
+        if (i !== dayIndex) return day;
+        return {
+          ...day,
+          eca: { ...day.eca, [ecaType]: !day.eca[ecaType] }
+        };
+      })
+    }));
+  };
+
   const updateStandard = (weekIndex, domain, value) => {
     setFormData(prev => ({
       ...prev,
