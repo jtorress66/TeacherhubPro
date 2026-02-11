@@ -79,15 +79,16 @@ const Landing = () => {
             <span className="text-2xl font-heading font-bold text-slate-800">TeacherHub</span>
           </div>
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
-              className="hidden sm:flex"
-              data-testid="nav-pricing-btn"
-            >
-              {language === 'es' ? 'Precios' : 'Pricing'}
-            </Button>
+            <Link to="/pricing">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden sm:flex"
+                data-testid="nav-pricing-btn"
+              >
+                {language === 'es' ? 'Precios' : 'Pricing'}
+              </Button>
+            </Link>
             <Button
               variant="ghost"
               size="sm"
