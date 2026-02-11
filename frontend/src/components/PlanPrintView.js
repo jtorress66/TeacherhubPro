@@ -207,9 +207,9 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
               <div style={{ fontWeight: 'bold', borderBottom: '1px solid black', marginBottom: '5px' }}>
                 Skills of the week:
               </div>
-              <ol style={{ marginLeft: '20px' }}>
+              <ol style={{ marginLeft: '20px', listStyleType: 'decimal' }}>
                 {(plan.skills || []).filter(s => s).map((skill, i) => (
-                  <li key={i}>{skill}</li>
+                  <li key={i} style={{ marginBottom: '2px' }}>{skill}</li>
                 ))}
               </ol>
             </div>
