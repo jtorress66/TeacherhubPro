@@ -259,3 +259,53 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
 ### Database Updates
 - `schools` collection now includes `logo_url` field
 - `lesson_plans.days` now includes `eca` object `{E: bool, C: bool, A: bool}`
+
+---
+## Update 2026-02-11 - Teacher Name & Other Activity Notes
+
+### Changes Made
+
+#### 1. Teacher Name Field
+- Added `teacher_name` field to `LessonPlanCreate` and `LessonPlanResponse` Pydantic models
+- Added `teacher_name` to plan creation and update API endpoints
+- Frontend already had the input field (line 429-435 in LessonPlanner.js)
+- Field saves and loads correctly with lesson plans
+
+#### 2. "Other" Activity Notes Input
+- Added `handleActivityNoteChange` function to LessonPlanner.js
+- When "Otro" (Other) activity checkbox is selected, a text input appears
+- Teachers can specify custom activities using this field
+- Notes save with the `activities` array in the `days` structure
+- Backend `PlanDayActivity` model already supported `notes` field
+
+### Files Modified
+- `/app/backend/server.py` - Lines 169, 184, 867, 910: Added teacher_name to models and API endpoints
+- `/app/frontend/src/pages/LessonPlanner.js` - Lines 282-294, 604-648: Added handleActivityNoteChange and conditional input
+
+### Test Results
+- Backend: 100% pass
+- Frontend: 100% pass
+- Test report: `/app/test_reports/iteration_3.json`
+
+### Database Updates
+- `lesson_plans` collection now includes `teacher_name` field
+- `lesson_plans.days.activities` includes `notes` field for all activity types (used for "other")
+
+---
+## Prioritized Backlog (Updated 2026-02-11)
+
+### P1 (High Priority - Next)
+- Drag-and-Drop Seating Chart Editor
+- Quick Week Copy (duplicate + shift dates by 7 days)
+- Bulk student import (CSV)
+
+### P2 (Medium Priority)
+- Audit Log for grades/attendance changes
+- Student/Parent Portal (read-only views)
+- Advanced Gradebook (weighting, drop lowest, late policies)
+- Google Classroom Integration
+
+### P3 (Future)
+- Email notifications for absences
+- Admin panel with school-wide reporting
+- Report card generation
