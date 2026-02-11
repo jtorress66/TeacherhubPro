@@ -70,6 +70,53 @@ const Landing = () => {
     { icon: BookOpen, title: language === 'es' ? 'Exportar PDF' : 'PDF Export', desc: language === 'es' ? 'Exporta planes en el formato de tu escuela' : "Export plans in your school's format" }
   ];
 
+  const pricingPlans = [
+    {
+      id: 'individual_monthly',
+      name: language === 'es' ? 'Mensual' : 'Monthly',
+      price: '$9.99',
+      period: language === 'es' ? '/mes' : '/month',
+      description: language === 'es' ? 'Para maestros individuales' : 'For individual teachers',
+      icon: Star,
+      features: [
+        language === 'es' ? 'Planificador de lecciones' : 'Lesson Planner',
+        language === 'es' ? 'Seguimiento de asistencia' : 'Attendance Tracker',
+        language === 'es' ? 'Cuaderno de notas' : 'Gradebook',
+        language === 'es' ? 'Exportar a PDF' : 'PDF Export',
+      ],
+      popular: false,
+    },
+    {
+      id: 'individual_yearly',
+      name: language === 'es' ? 'Anual' : 'Yearly',
+      price: '$79',
+      period: language === 'es' ? '/año' : '/year',
+      savings: language === 'es' ? 'Ahorra $40' : 'Save $40',
+      description: language === 'es' ? 'Mejor valor' : 'Best value',
+      icon: Crown,
+      features: [
+        language === 'es' ? 'Todo en Mensual' : 'Everything in Monthly',
+        language === 'es' ? 'Soporte prioritario' : 'Priority Support',
+        language === 'es' ? '2 meses gratis' : '2 months free',
+      ],
+      popular: true,
+    },
+    {
+      id: 'school',
+      name: language === 'es' ? 'Escuelas' : 'Schools',
+      price: '$6',
+      period: language === 'es' ? '/maestro/mes' : '/teacher/month',
+      description: language === 'es' ? 'Para escuelas y distritos' : 'For schools & districts',
+      icon: Building,
+      features: [
+        language === 'es' ? 'Panel de administrador' : 'Admin Dashboard',
+        language === 'es' ? 'Logo de la escuela' : 'School Branding',
+        language === 'es' ? 'Gestión de usuarios' : 'User Management',
+      ],
+      popular: false,
+    }
+  ];
+
   return (
     <div className="min-h-screen paper-bg">
       {/* Header */}
