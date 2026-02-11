@@ -27,8 +27,47 @@ JWT_SECRET = os.environ.get('JWT_SECRET', 'teacherhub-secret-key-change-in-produ
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_DAYS = 7
 
+# Stripe Configuration
+STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', 'sk_test_emergent')
+
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Subscription Plans
+SUBSCRIPTION_PLANS = {
+    "individual_monthly": {
+        "name": "Individual Monthly",
+        "price": 9.99,
+        "interval": "month",
+        "description": "Full access for individual teachers",
+        "features": ["Lesson Planner", "Attendance Tracker", "Gradebook", "PDF Export", "Templates"]
+    },
+    "individual_yearly": {
+        "name": "Individual Yearly",
+        "price": 79.00,
+        "interval": "year",
+        "description": "Save $40 with annual billing",
+        "features": ["Lesson Planner", "Attendance Tracker", "Gradebook", "PDF Export", "Templates", "Priority Support"]
+    },
+    "school": {
+        "name": "School Plan",
+        "price_per_teacher": 6.00,
+        "interval": "year",
+        "min_teachers": 10,
+        "description": "$6/teacher/month billed yearly",
+        "features": ["All Individual Features", "Admin Dashboard", "School Branding", "Bulk Import", "Reports"]
+    },
+    "district": {
+        "name": "District Plan",
+        "price_per_teacher": 4.00,
+        "interval": "year",
+        "min_teachers": 100,
+        "description": "$4/teacher/month billed yearly",
+        "features": ["All School Features", "District Analytics", "SSO Integration", "Dedicated Support"]
+    }
+}
+
+FREE_TRIAL_DAYS = 7
 
 # Create the main app
 app = FastAPI(title="TeacherHub API", version="1.0.0")
