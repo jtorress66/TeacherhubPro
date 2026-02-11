@@ -1,154 +1,177 @@
 {
   "identity": {
-    "name": "E1",
-    "role": "Creative Designer",
-    "principles": [
-      "Fusion over Imitation",
-      "Emotion First",
-      "Content is King",
-      "Zoom In",
-      "Negative Space",
-      "Contrast"
-    ]
+    "name": "TeacherHubPro",
+    "archetype": "The Modern Academic",
+    "vibe": "Organized, Calm, Trustworthy, Tactile",
+    "core_philosophy": "Digital efficiency with the soul of a paper planner."
   },
-  "project": {
-    "name": "TeacherHub",
-    "description": "A teacher-focused web app replacing paper planners with a clean, professional digital interface.",
-    "target_audience": "Teachers and Administrators in Puerto Rico (Bilingual EN/ES).",
-    "context": "Dashboard / SaaS App (Education)",
-    "emotional_tone": "Organized, Calm, Professional, Trustworthy, Efficient"
-  },
-  "design_system": {
-    "theme": "light",
-    "typography": {
+  "typography": {
+    "font_family": {
+      "heading": "Playfair Display, serif",
+      "body": "Manrope, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "usage_rules": {
       "headings": {
-        "font_family": "Playfair Display, serif",
-        "usage": "Page titles, Section headers (h1, h2, h3)",
+        "font": "Playfair Display",
         "weights": ["600", "700"],
-        "tracking": "tracking-tight"
+        "tracking": "tracking-tight",
+        "usage": "Page titles, Hero sections, 'Welcome Back' messages. NEVER for small UI labels."
       },
       "body": {
-        "font_family": "Manrope, sans-serif",
-        "usage": "UI elements, form inputs, data tables, paragraphs",
+        "font": "Manrope",
         "weights": ["400", "500", "600"],
-        "tracking": "tracking-normal"
+        "usage": "All UI text, paragraphs, form labels, buttons."
       },
-      "mono": {
-        "font_family": "JetBrains Mono, monospace",
-        "usage": "Grades, Standard Codes (e.g., RF 4.3)",
-        "weights": ["400", "500"]
+      "data": {
+        "font": "Manrope (Tabular Nums) or JetBrains Mono",
+        "usage": "Grades, Dates, Currency, Attendance codes."
       }
-    },
-    "colors": {
-      "palette_name": "Organic & Earthy (Paper & Ink)",
-      "primary": {
-        "name": "Deep Slate Ink",
-        "hex": "#334155",
-        "tailwind": "slate-700",
-        "usage": "Primary Text, Active Borders, Strong CTAs"
-      },
+    }
+  },
+  "colors": {
+    "palette": {
       "background": {
         "name": "Warm Paper",
-        "hex": "#FAFAF9",
-        "tailwind": "stone-50",
-        "usage": "App Background, Canvas"
+        "hsl": "40 30% 98%",
+        "hex": "#FAF9F6",
+        "usage": "Global app background. MUST have noise texture overlay."
       },
       "surface": {
-        "name": "Pure White",
+        "name": "Clean White",
+        "hsl": "0 0% 100%",
         "hex": "#FFFFFF",
-        "tailwind": "white",
-        "usage": "Cards, Input Fields, Modals"
+        "usage": "Cards, Sidebar, Modals, Input fields."
+      },
+      "primary": {
+        "name": "Academic Navy",
+        "hsl": "215 25% 27%",
+        "hex": "#334155",
+        "usage": "Primary text, Active states, Sidebar active items."
       },
       "accent": {
-        "name": "Sage Growth",
-        "hex": "#84CC16",
-        "tailwind": "lime-600",
-        "usage": "Success states, Progress bars, Primary Buttons (muted)"
+        "name": "Growth Green",
+        "hsl": "85 50% 45%",
+        "hex": "#65A30D",
+        "usage": "Primary Buttons, Success states, 'New' badges. (Refined from harsh lime)."
       },
       "secondary_accent": {
-        "name": "Clay Terracotta",
-        "hex": "#D97706",
-        "tailwind": "amber-600",
-        "usage": "Alerts, Highlights, 'Due Soon' tags"
+        "name": "Correction Red",
+        "hsl": "0 70% 60%",
+        "hex": "#EF4444",
+        "usage": "Destructive actions, Missing assignments, Alerts."
       },
-      "border": {
+      "muted": {
         "name": "Pencil Grey",
-        "hex": "#E5E7EB",
-        "tailwind": "gray-200",
-        "usage": "Dividers, Inactive Inputs"
+        "hsl": "215 15% 45%",
+        "hex": "#64748B",
+        "usage": "Secondary text, Icons, Borders."
       }
     },
-    "spacing": {
-      "scale": "Generous (2x standard)",
-      "container_padding": "p-6 md:p-12",
-      "grid_gap": "gap-6 md:gap-8",
-      "section_spacing": "py-12 md:py-20"
+    "gradients": {
+      "hero_overlay": "linear-gradient(180deg, rgba(255,255,255,0) 0%, #FAF9F6 100%)",
+      "subtle_glow": "radial-gradient(circle at 50% 50%, rgba(101, 163, 13, 0.15), transparent 70%)"
+    }
+  },
+  "visual_enhancers": {
+    "texture": {
+      "name": "Paper Noise",
+      "css_class": "paper-bg",
+      "implementation": "background-image: url(\"data:image/svg+xml,...\"); background-blend-mode: soft-light;",
+      "rule": "Apply to the <body> or main app container. Do not apply to Cards."
     },
-    "visual_enhancers": {
-      "texture": "Subtle noise/grain overlay on the main background to mimic paper texture.",
-      "shadows": "Soft, diffuse shadows (shadow-sm, shadow-md) to lift elements slightly off the 'paper'.",
-      "borders": "1px solid borders with low opacity (border-slate-200) to mimic printed lines.",
-      "radius": "rounded-md (Standard, not too round, not too sharp - professional)"
+    "shadows": {
+      "card": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+      "float": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+      "inner": "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)"
+    },
+    "radius": {
+      "default": "0.75rem",
+      "button": "0.5rem",
+      "card": "1rem"
     }
   },
   "layout_strategies": {
     "dashboard": {
-      "type": "Bento Grid (Mode B: High Density)",
-      "grid_cols": "grid-cols-1 md:grid-cols-3 lg:grid-cols-4",
+      "type": "Bento Grid",
+      "grid_cols": "grid-cols-1 md:grid-cols-4 lg:grid-cols-12",
       "gap": "gap-6",
-      "widgets": [
-        { "name": "Welcome/Overview", "span": "col-span-full md:col-span-2" },
-        { "name": "Quick Actions", "span": "col-span-1" },
-        { "name": "Today's Schedule", "span": "col-span-1 row-span-2" },
-        { "name": "Recent Plans", "span": "col-span-2" }
+      "rules": [
+        "Welcome/Stats: col-span-full or col-span-8",
+        "Quick Actions: col-span-4 (Sidebar style or Card)",
+        "Recent Plans: col-span-6",
+        "Calendar Preview: col-span-6"
       ]
     },
-    "planner": {
-      "type": "Horizontal Week View / Expandable Cards",
-      "structure": "A horizontal scroll or grid of 5 columns (Mon-Fri). Clicking a day expands to the detailed form.",
-      "form_layout": "Two-column layout mimicking the paper form: Left for Unit/Story info, Right for Date/Standards."
+    "landing_page": {
+      "type": "Asymmetric Tetris",
+      "rules": [
+        "Hero: Left align text, Right align image (or vice versa).",
+        "Features: Alternating Zig-Zag layout.",
+        "Pricing: 4-column grid (1 col mobile, 2 col tablet, 4 col desktop)."
+      ]
+    },
+    "bilingual_support": {
+      "rule": "All buttons and containers must accommodate 30% more text length for Spanish translations. Avoid fixed widths on text containers."
     }
   },
   "components": {
     "buttons": {
-      "style": "Pill-shaped or slightly rounded (rounded-md).",
-      "primary": "bg-slate-800 text-white hover:bg-slate-700 shadow-sm",
-      "secondary": "bg-white border border-slate-200 text-slate-700 hover:bg-stone-50"
+      "primary": "bg-accent text-white hover:bg-accent/90 shadow-sm transition-all hover:-translate-y-0.5",
+      "secondary": "bg-white border border-input hover:bg-accent/10 text-primary shadow-sm",
+      "ghost": "hover:bg-muted/20 text-muted-foreground hover:text-primary"
     },
     "cards": {
-      "style": "bg-white border border-slate-100 shadow-sm rounded-lg p-6 hover:shadow-md transition-shadow duration-200"
+      "default": "bg-white rounded-xl border border-border/50 shadow-card hover:shadow-float transition-shadow duration-300",
+      "interactive": "cursor-pointer hover:border-accent/50"
     },
     "inputs": {
-      "style": "bg-stone-50 border-slate-200 focus:border-slate-400 focus:ring-1 focus:ring-slate-400 rounded-md"
+      "default": "bg-white border-input focus:ring-2 focus:ring-accent/20 focus:border-accent rounded-lg"
     },
-    "navigation": {
-      "style": "Sidebar or Topbar with clear, legible icons. Active state: bg-stone-100 text-slate-900 font-medium."
+    "sidebar": {
+      "style": "bg-white/80 backdrop-blur-md border-r border-border h-screen sticky top-0",
+      "item": "flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:text-primary hover:bg-accent/10 transition-colors",
+      "active": "bg-accent/15 text-accent font-medium"
     }
   },
-  "assets": {
-    "icons_library": "lucide-react",
-    "images": [
-      {
-        "category": "Login/Landing Hero",
-        "url": "https://images.unsplash.com/photo-1542810634-71277d95dcbb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwzfHx0ZWFjaGVyJTIwY2xhc3Nyb29tJTIwaGFwcHl8ZW58MHx8fHwxNzcwNzY0MjMyfDA&ixlib=rb-4.1.0&q=85",
-        "description": "Group of children sitting, conveying a warm, active classroom environment."
-      },
-      {
-        "category": "Dashboard Texture",
-        "url": "https://images.unsplash.com/photo-1736979110931-ac9c6fa82dbd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwyfHxtaW5pbWFsaXN0JTIwd2hpdGUlMjBwYXBlciUyMHRleHR1cmV8ZW58MHx8fHwxNzcwNzY0MjM2fDA&ixlib=rb-4.1.0&q=85",
-        "description": "Subtle white paper texture for background overlay."
-      }
-    ]
+  "image_urls": {
+    "hero": {
+      "url": "https://images.unsplash.com/photo-1557734864-c78b6dfef1b1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHwxfHx0ZWFjaGVyJTIwY2xhc3Nyb29tJTIwaGFwcHklMjBzdHVkZW50c3xlbnwwfHx8fDE3NzA4NTMzMTl8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Teacher collaborating with students",
+      "usage": "Landing Page Hero Section"
+    },
+    "features": {
+      "url": "https://images.unsplash.com/photo-1542810634-71277d95dcbb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHwyfHx0ZWFjaGVyJTIwY2xhc3Nyb29tJTIwaGFwcHklMjBzdHVkZW50c3xlbnwwfHx8fDE3NzA4NTMzMTl8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Students learning",
+      "usage": "Feature section background or side image"
+    }
   },
-  "universal_guidelines": [
-    "Use 'sonner' for toasts.",
-    "Use 'lucide-react' for icons.",
-    "Ensure all interactive elements have 'data-testid'.",
-    "Do not use 'transition: all'.",
-    "Do not center align the app container.",
-    "Use 'Manrope' for all UI text, 'Playfair Display' for major headings.",
-    "Maintain a 'Paper & Ink' aesthetic: high contrast text, off-white backgrounds.",
-    "Forms must be dense but legible, mimicking the paper reference."
+  "instructions_to_main_agent": [
+    "1. APPLY THE PAPER TEXTURE: Ensure the 'paper-bg' class is applied to the main layout wrapper.",
+    "2. TYPOGRAPHY: Use 'Playfair Display' ONLY for main page headings. Use 'Manrope' for everything else.",
+    "3. SPACING: Increase padding inside cards. Use 'p-6' or 'p-8' instead of 'p-4'.",
+    "4. BILINGUAL: Ensure UI elements don't break with longer Spanish text.",
+    "5. SHADOWS: Use soft, diffuse shadows. Avoid harsh black shadows.",
+    "6. DATA-TESTID: Add 'data-testid' to all interactive elements (buttons, inputs, links)."
   ],
-  "instructions_to_main_agent": "Implement the 'TeacherHub' with a focus on the 'Paper Replacement' metaphor. The UI should feel like a high-end digital planner. Use the provided image URLs to structure the 'Lesson Planner' form fields exactly (Unit, Story, Standards, Expectations). Ensure the 'Gradebook' uses a clean data-grid layout. Prioritize the 'Organic & Earthy' color palette."
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use 'sonner' for toasts. Sonner component are located in /app/src/components/ui/sonner.tsx"
+  ]
 }
