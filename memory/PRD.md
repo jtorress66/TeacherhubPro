@@ -115,6 +115,9 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
 - District Plan: $4/teacher/month (min 100 teachers)
 - 7-day free trial for all new users
 - Admin role bypasses payment requirements
+- **Public pricing page** accessible from landing page
+- **Subscription access control** - users blocked after trial expires until they subscribe
+- Trial expired users are redirected to pricing page with alert message
 
 ### PDF Export (Completed)
 - Two-page landscape format matching user's paper planner
