@@ -38,6 +38,7 @@ const Layout = ({ children }) => {
     { path: '/gradebook', icon: BookOpen, label: t('gradebook') },
     { path: '/classes', icon: Users, label: t('classes') },
     { path: '/substitute-packet', icon: Briefcase, label: language === 'es' ? 'Paquete Sustituto' : 'Sub Packet' },
+    { path: '/pricing', icon: CreditCard, label: language === 'es' ? 'Suscripción' : 'Pricing' },
     { path: '/settings', icon: Settings, label: t('settings') },
   ];
 
