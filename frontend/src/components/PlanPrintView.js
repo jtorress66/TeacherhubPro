@@ -334,7 +334,7 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
 
           {/* Page 2: Standards and Expectations */}
           <div className="page" style={{ pageBreakBefore: 'always' }}>
-            <SchoolHeader />
+            <SchoolHeader school={school} />
             
             {/* Standards Section */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black' }}>
