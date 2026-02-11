@@ -260,6 +260,10 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
                         return (
                           <div key={actType} style={{ marginBottom: '1px', lineHeight: '1.1' }}>
                             <Checkbox checked={activity?.checked} /> {ACTIVITY_LABELS[actType][lang]}
+                            {/* Show notes for "Other" activity */}
+                            {actType === 'other' && activity?.checked && activity?.notes && (
+                              <span style={{ fontStyle: 'italic', marginLeft: '3px' }}>: {activity.notes}</span>
+                            )}
                           </div>
                         );
                       })}
