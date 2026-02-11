@@ -145,21 +145,21 @@ const Dashboard = () => {
                   <Calendar className="h-5 w-5 text-amber-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-slate-800">{stats.total_plans || 0}</p>
+                  <p className="text-3xl font-bold text-slate-800">{stats.total_plans || 0}</p>
                   <p className="text-sm text-slate-500">{t('totalPlans')}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
-          <Card className="bg-white border-slate-100">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-blue-100">
+          <Card className="bg-white border-slate-100 card-hover animate-fade-in opacity-0" style={{ animationDelay: '150ms', animationFillMode: 'forwards' }}>
+            <CardContent className="p-5">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-blue-100">
                   <ClipboardCheck className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-slate-800">
+                  <p className="text-3xl font-bold text-slate-800">
                     {stats.attendance_complete || 0}/{stats.total_classes || 0}
                   </p>
                   <p className="text-sm text-slate-500">{t('attendance')}</p>
@@ -172,11 +172,13 @@ const Dashboard = () => {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Attendance Pending */}
-          <Card className="lg:col-span-1 bg-white border-slate-100">
+          <Card className="lg:col-span-1 bg-white border-slate-100 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-heading">{t('attendancePending')}</CardTitle>
-                <AlertCircle className="h-5 w-5 text-amber-500" />
+                <div className="p-2 rounded-lg bg-amber-100">
+                  <AlertCircle className="h-5 w-5 text-amber-600" />
+                </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -185,15 +187,15 @@ const Dashboard = () => {
                   {dashboardData.attendance_pending.map((cls) => (
                     <div 
                       key={cls.class_id}
-                      className="flex items-center justify-between p-3 rounded-lg bg-amber-50 border border-amber-100 cursor-pointer hover:bg-amber-100 transition-colors"
+                      className="flex items-center justify-between p-4 rounded-xl bg-amber-50 border border-amber-100 cursor-pointer hover:bg-amber-100 hover:shadow-sm transition-all"
                       onClick={() => navigate(`/attendance?class=${cls.class_id}`)}
                       data-testid={`attendance-pending-${cls.class_id}`}
                     >
                       <div>
-                        <p className="font-medium text-slate-800">{cls.name}</p>
+                        <p className="font-semibold text-slate-800">{cls.name}</p>
                         <p className="text-sm text-slate-500">{cls.grade}-{cls.section}</p>
                       </div>
-                      <Button size="sm" variant="ghost">
+                      <Button size="sm" variant="ghost" className="hover:bg-amber-200">
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     </div>
