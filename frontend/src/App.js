@@ -155,10 +155,10 @@ const AppRouter = () => {
       } />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/subscription/success" element={
-        <ProtectedRoute><SubscriptionSuccess /></ProtectedRoute>
+        <ProtectedRoute requireSubscription={false}><SubscriptionSuccess /></ProtectedRoute>
       } />
       <Route path="/settings" element={
-        <ProtectedRoute><Settings /></ProtectedRoute>
+        <ProtectedRoute requireSubscription={false}><Settings /></ProtectedRoute>
       } />
       {/* Fallback redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
