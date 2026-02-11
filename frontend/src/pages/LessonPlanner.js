@@ -524,6 +524,33 @@ const LessonPlanner = () => {
                       data-testid={`day-theme-${dayIndex}`}
                     />
                   </div>
+
+                  {/* E/C/A - Enrichment, Core, Assessment */}
+                  <div className="space-y-2">
+                    <Label>E / C / A</Label>
+                    <div className="flex gap-4">
+                      {[
+                        { key: 'E', label: language === 'es' ? 'Enriquecimiento' : 'Enrichment' },
+                        { key: 'C', label: language === 'es' ? 'Central' : 'Core' },
+                        { key: 'A', label: language === 'es' ? 'Evaluación' : 'Assessment' }
+                      ].map(({ key, label }) => (
+                        <div 
+                          key={key}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${
+                            formData.days[dayIndex].eca?.[key]
+                              ? 'bg-lime-50 border-lime-300 text-lime-800'
+                              : 'bg-white border-slate-200 hover:bg-stone-50'
+                          }`}
+                          onClick={() => toggleECA(dayIndex, key)}
+                          data-testid={`eca-${dayIndex}-${key}`}
+                        >
+                          <Checkbox checked={formData.days[dayIndex].eca?.[key] || false} />
+                          <span className="font-medium">{key}</span>
+                          <span className="text-xs text-slate-500 hidden sm:inline">({label})</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                   
                   {/* DOK Levels */}
                   <div className="space-y-2">
