@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import axios from 'axios';
@@ -9,14 +10,16 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Switch } from '../components/ui/switch';
 import { Separator } from '../components/ui/separator';
+import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
-import { User, Globe, Shield, Save, Building2, Upload, Image } from 'lucide-react';
+import { User, Globe, Shield, Save, Building2, Image, CreditCard, Crown } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const Settings = () => {
   const { user, updateProfile } = useAuth();
   const { t, language, toggleLanguage } = useLanguage();
+  const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [savingSchool, setSavingSchool] = useState(false);
   const [name, setName] = useState(user?.name || '');
@@ -26,9 +29,11 @@ const Settings = () => {
   const [schoolPhone, setSchoolPhone] = useState('');
   const [schoolEmail, setSchoolEmail] = useState('');
   const [schoolLogo, setSchoolLogo] = useState('');
+  const [subscriptionStatus, setSubscriptionStatus] = useState(null);
 
   useEffect(() => {
-    const fetchSchool = async () => {
+    const fetchData = async () => {
+      // Fetch school data
       if (user?.school_id) {
         try {
           const res = await axios.get(`${API}/schools/${user.school_id}`, { withCredentials: true });
@@ -42,8 +47,16 @@ const Settings = () => {
           console.error('Error fetching school:', error);
         }
       }
+      
+      // Fetch subscription status
+      try {
+        const subRes = await axios.get(`${API}/subscription/status`, { withCredentials: true });
+        setSubscriptionStatus(subRes.data);
+      } catch (error) {
+        console.error('Error fetching subscription:', error);
+      }
     };
-    fetchSchool();
+    fetchData();
   }, [user?.school_id]);
 
   const handleSaveProfile = async () => {
