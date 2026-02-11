@@ -14,7 +14,7 @@ import { Check, Star, Users, Building, Crown, Loader2, BookOpen, Globe, ArrowLef
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const Pricing = () => {
-  const { t, language } = useLanguage();
+  const { t, language, toggleLanguage } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
