@@ -202,6 +202,18 @@ const Pricing = () => {
 
   const pricingContent = (
       <div className="space-y-8">
+        {/* Trial Expired Alert */}
+        {trialExpired && (
+          <Alert className="bg-amber-50 border-amber-200 max-w-2xl mx-auto">
+            <AlertCircle className="h-5 w-5 text-amber-600" />
+            <AlertDescription className="text-amber-800">
+              {language === 'es' 
+                ? 'Tu período de prueba ha expirado. Selecciona un plan para continuar usando TeacherHub.' 
+                : 'Your free trial has expired. Please select a plan to continue using TeacherHub.'}
+            </AlertDescription>
+          </Alert>
+        )}
+        
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto">
           <h1 className="text-4xl font-heading font-bold text-slate-800 mb-4">
