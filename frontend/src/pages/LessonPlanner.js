@@ -375,6 +375,7 @@ const LessonPlanner = () => {
           <PlanPrintView 
             plan={selectedPlan}
             classInfo={classes.find(c => c.class_id === selectedPlan.class_id)}
+            school={school}
             onClose={() => setShowPrintView(false)}
           />
         )}
