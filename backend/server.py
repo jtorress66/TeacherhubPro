@@ -310,6 +310,29 @@ class GradesBulkUpdate(BaseModel):
     assignment_id: str
     grades: List[GradeEntry]
 
+# Subscription Models
+class SubscriptionCreate(BaseModel):
+    plan_id: str
+    quantity: int = 1  # For school/district plans, this is number of teachers
+
+class CheckoutRequest(BaseModel):
+    plan_id: str
+    quantity: int = 1
+    origin_url: str
+
+class SubscriptionResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    subscription_id: str
+    user_id: str
+    plan_id: str
+    status: str  # active, trialing, past_due, canceled, expired
+    quantity: int = 1
+    current_period_start: str
+    current_period_end: str
+    trial_end: Optional[str] = None
+    stripe_subscription_id: Optional[str] = None
+    created_at: str
+
 # ==================== AUTHENTICATION HELPERS ====================
 
 def generate_user_id():
