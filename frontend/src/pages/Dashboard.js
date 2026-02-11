@@ -60,24 +60,40 @@ const Dashboard = () => {
 
   const stats = dashboardData?.stats || {};
   const today = dashboardData?.today || new Date().toISOString().split('T')[0];
+  const school = dashboardData?.school;
 
   return (
     <Layout>
       <div className="space-y-8">
-        {/* Welcome Header */}
+        {/* Welcome Header with School Info */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-heading font-bold text-slate-800">
-              {t('welcome')}, {user?.name?.split(' ')[0] || 'Teacher'}!
-            </h1>
-            <p className="text-slate-500 mt-1">
-              {new Date(today).toLocaleDateString(language === 'es' ? 'es-PR' : 'en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </p>
+          <div className="flex items-center gap-4">
+            {school?.logo_url && (
+              <img 
+                src={school.logo_url} 
+                alt={school.name} 
+                className="h-16 w-16 object-contain rounded-lg border border-slate-200 bg-white p-1"
+                data-testid="school-logo"
+              />
+            )}
+            <div>
+              {school?.name && (
+                <p className="text-sm text-lime-700 font-medium mb-1" data-testid="school-name">
+                  {school.name}
+                </p>
+              )}
+              <h1 className="text-3xl font-heading font-bold text-slate-800">
+                {t('welcome')}, {user?.name?.split(' ')[0] || 'Teacher'}!
+              </h1>
+              <p className="text-slate-500 mt-1">
+                {new Date(today).toLocaleDateString(language === 'es' ? 'es-PR' : 'en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </p>
+            </div>
           </div>
           <div className="flex gap-3">
             <Button onClick={() => navigate('/planner/new')} className="gap-2" data-testid="new-plan-btn">
