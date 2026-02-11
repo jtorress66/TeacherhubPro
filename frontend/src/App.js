@@ -19,6 +19,8 @@ import Gradebook from "./pages/Gradebook";
 import Classes from "./pages/Classes";
 import Settings from "./pages/Settings";
 import SubstitutePacket from "./pages/SubstitutePacket";
+import Pricing from "./pages/Pricing";
+import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
