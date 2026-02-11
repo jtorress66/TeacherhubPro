@@ -603,11 +603,44 @@ async def create_school(school_data: SchoolCreate, user: dict = Depends(get_curr
         "address": school_data.address,
         "phone": school_data.phone,
         "email": school_data.email,
+        "logo_url": school_data.logo_url,
         "created_at": now
     }
     
     await db.schools.insert_one(school_doc)
     return SchoolResponse(**school_doc)
+
+@api_router.put("/schools/{school_id}", response_model=SchoolResponse)
+async def update_school(school_id: str, request: Request, user: dict = Depends(get_current_user)):
+    """Update school settings"""
+    school = await db.schools.find_one({"school_id": school_id}, {"_id": 0})
+    if not school:
+        raise HTTPException(status_code=404, detail="School not found")
+    
+    # Allow teachers to update their own school's settings
+    if user.get("school_id") != school_id and user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    body = await request.json()
+    update_fields = {}
+    
+    for field in ["name", "address", "phone", "email", "logo_url"]:
+        if field in body:
+            update_fields[field] = body[field]
+    
+    if update_fields:
+        await db.schools.update_one({"school_id": school_id}, {"$set": update_fields})
+    
+    updated = await db.schools.find_one({"school_id": school_id}, {"_id": 0})
+    return SchoolResponse(**updated)
+
+@api_router.get("/schools/{school_id}", response_model=SchoolResponse)
+async def get_school(school_id: str, user: dict = Depends(get_current_user)):
+    """Get school by ID"""
+    school = await db.schools.find_one({"school_id": school_id}, {"_id": 0})
+    if not school:
+        raise HTTPException(status_code=404, detail="School not found")
+    return SchoolResponse(**school)
 
 # ==================== CLASS ENDPOINTS ====================
 
