@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
+import axios from "axios";
 
 // Contexts
 import { LanguageProvider } from "./contexts/LanguageContext";
@@ -22,10 +23,14 @@ import SubstitutePacket from "./pages/SubstitutePacket";
 import Pricing from "./pages/Pricing";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 
-// Protected Route component
-const ProtectedRoute = ({ children }) => {
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Protected Route component with subscription check
+const ProtectedRoute = ({ children, requireSubscription = true }) => {
   const { user, loading, checkAuth } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
+  const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+  const [subLoading, setSubLoading] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
@@ -42,6 +47,30 @@ const ProtectedRoute = ({ children }) => {
     verify();
   }, [checkAuth, location.state]);
 
+  // Check subscription status after user is verified
+  useEffect(() => {
+    const checkSubscription = async () => {
+      if (!user || !requireSubscription) {
+        setSubLoading(false);
+        return;
+      }
+      
+      try {
+        const res = await axios.get(`${API}/subscription/status`, { withCredentials: true });
+        setSubscriptionStatus(res.data);
+      } catch (error) {
+        console.error('Error checking subscription:', error);
+        setSubscriptionStatus({ has_access: false, status: 'none' });
+      } finally {
+        setSubLoading(false);
+      }
+    };
+    
+    if (user) {
+      checkSubscription();
+    }
+  }, [user, requireSubscription]);
+
   if (loading || isChecking) {
     return (
       <div className="min-h-screen flex items-center justify-center paper-bg">
@@ -55,6 +84,24 @@ const ProtectedRoute = ({ children }) => {
 
   if (!user) {
     return <Navigate to="/" replace />;
+  }
+
+  // Check subscription access (only if requireSubscription is true)
+  if (requireSubscription && !subLoading && subscriptionStatus && !subscriptionStatus.has_access) {
+    // Redirect to pricing page if trial expired or no subscription
+    return <Navigate to="/pricing" state={{ trialExpired: subscriptionStatus.status === 'trial_expired' }} replace />;
+  }
+
+  // Still loading subscription status
+  if (requireSubscription && subLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center paper-bg">
+        <div className="text-center space-y-4">
+          <div className="h-12 w-12 border-4 border-slate-200 border-t-slate-600 rounded-full animate-spin mx-auto" />
+          <p className="text-slate-600">Verifying access...</p>
+        </div>
+      </div>
+    );
   }
 
   return children;
