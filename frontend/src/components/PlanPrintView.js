@@ -41,20 +41,21 @@ const STANDARD_LABELS = {
   language: { en: 'Language', es: 'Lenguaje' }
 };
 
-// Checkbox component with checkmark
+// Checkbox component with white checkmark on black background
 const Checkbox = ({ checked }) => (
   <span style={{
     display: 'inline-block',
     width: '10px',
     height: '10px',
     border: '1px solid black',
-    background: 'white',
+    background: checked ? 'black' : 'white',
     verticalAlign: 'middle',
     marginRight: '3px',
     textAlign: 'center',
-    lineHeight: '9px',
-    fontSize: '9px',
-    fontWeight: 'bold'
+    lineHeight: '8px',
+    fontSize: '10px',
+    fontWeight: 'bold',
+    color: 'white'
   }}>{checked ? '✓' : ''}</span>
 );
 
