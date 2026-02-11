@@ -166,7 +166,7 @@ const translations = {
     dashboard: 'Panel',
     planner: 'Planificador',
     attendance: 'Asistencia',
-    gradebook: 'Calificaciones',
+    gradebook: 'Notas',
     classes: 'Clases',
     settings: 'Configuración',
     logout: 'Cerrar Sesión',
