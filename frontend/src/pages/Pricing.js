@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -8,8 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
+import { Alert, AlertDescription } from '../components/ui/alert';
 import { toast } from 'sonner';
-import { Check, Star, Users, Building, Crown, Loader2, BookOpen, Globe, ArrowLeft } from 'lucide-react';
+import { Check, Star, Users, Building, Crown, Loader2, BookOpen, Globe, ArrowLeft, AlertCircle } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -17,11 +18,15 @@ const Pricing = () => {
   const { t, language, toggleLanguage } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [teacherCount, setTeacherCount] = useState(10);
   const [loadingCheckout, setLoadingCheckout] = useState(false);
+  
+  // Check if user was redirected due to trial expiration
+  const trialExpired = location.state?.trialExpired;
 
   useEffect(() => {
     const fetchStatus = async () => {
