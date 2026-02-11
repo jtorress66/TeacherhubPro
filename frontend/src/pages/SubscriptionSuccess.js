@@ -65,8 +65,8 @@ const SubscriptionSuccess = () => {
                 </h2>
                 <p className="text-slate-600">
                   {language === 'es' 
-                    ? 'Tu cuenta ha sido activada. Disfruta de todas las funciones de TeacherHub.' 
-                    : 'Your account has been activated. Enjoy all TeacherHub features.'}
+                    ? 'Tu cuenta ha sido activada. Disfruta de todas las funciones de TeacherHubPro.' 
+                    : 'Your account has been activated. Enjoy all TeacherHubPro features.'}
                 </p>
                 {subscription && (
                   <div className="bg-slate-50 p-4 rounded-lg text-left text-sm">
