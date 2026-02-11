@@ -151,6 +151,7 @@ class PlanDay(BaseModel):
     day_name: str  # Monday, Tuesday, etc.
     theme: Optional[str] = None
     dok_levels: List[int] = []  # 1=Memory, 2=Processing, 3=Strategic, 4=Extended
+    eca: Dict[str, bool] = {"E": False, "C": False, "A": False}  # E=Enrichment, C=Core, A=Assessment
     activities: List[PlanDayActivity] = []
     materials: List[PlanDayMaterial] = []
     notes: Optional[str] = None
