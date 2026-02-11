@@ -279,6 +279,21 @@ const LessonPlanner = () => {
     }));
   };
 
+  const handleActivityNoteChange = (dayIndex, activityIndex, value) => {
+    setFormData(prev => ({
+      ...prev,
+      days: prev.days.map((day, i) => {
+        if (i !== dayIndex) return day;
+        return {
+          ...day,
+          activities: day.activities.map((a, ai) => 
+            ai === activityIndex ? { ...a, notes: value } : a
+          )
+        };
+      })
+    }));
+  };
+
   const toggleMaterial = (dayIndex, materialIndex) => {
     setFormData(prev => ({
       ...prev,
