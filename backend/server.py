@@ -444,10 +444,11 @@ async def process_google_session(request: Request, response: Response):
         raise HTTPException(status_code=400, detail="session_id required")
     
     # Call Emergent Auth to get user data
+    emergent_auth_url = os.environ.get('EMERGENT_AUTH_URL', 'https://demobackend.emergentagent.com')
     async with httpx.AsyncClient() as client:
         try:
             auth_response = await client.get(
-                "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
+                f"{emergent_auth_url}/auth/v1/env/oauth/session-data",
                 headers={"X-Session-ID": session_id}
             )
             if auth_response.status_code != 200:
