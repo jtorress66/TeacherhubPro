@@ -619,16 +619,31 @@ const LessonPlanner = () => {
                         {formData.days[dayIndex].activities.map((activity, ai) => (
                           <div 
                             key={activity.activity_type}
-                            className={`flex items-center gap-3 p-2 rounded border cursor-pointer ${
+                            className={`flex flex-col gap-2 p-2 rounded border ${
                               activity.checked ? 'bg-lime-50 border-lime-200' : 'bg-white border-slate-200'
                             }`}
-                            onClick={() => toggleActivity(dayIndex, ai)}
                           >
-                            <Checkbox 
-                              checked={activity.checked}
-                              data-testid={`activity-${dayIndex}-${ai}`}
-                            />
-                            <span className="text-sm">{t(activity.activity_type)}</span>
+                            <div 
+                              className="flex items-center gap-3 cursor-pointer"
+                              onClick={() => toggleActivity(dayIndex, ai)}
+                            >
+                              <Checkbox 
+                                checked={activity.checked}
+                                data-testid={`activity-${dayIndex}-${ai}`}
+                              />
+                              <span className="text-sm">{t(activity.activity_type)}</span>
+                            </div>
+                            {/* Show text input for "Other" when checked */}
+                            {activity.activity_type === 'other' && activity.checked && (
+                              <Input
+                                value={activity.notes || ''}
+                                onChange={(e) => handleActivityNoteChange(dayIndex, ai, e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                                placeholder={language === 'es' ? 'Especificar otra actividad...' : 'Specify other activity...'}
+                                className="ml-6 text-sm"
+                                data-testid={`activity-other-notes-${dayIndex}`}
+                              />
+                            )}
                           </div>
                         ))}
                       </div>
