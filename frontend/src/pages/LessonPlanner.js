@@ -90,12 +90,18 @@ const LessonPlanner = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [classesRes, plansRes] = await Promise.all([
+        const [classesRes, plansRes, dashboardRes] = await Promise.all([
           axios.get(`${API}/classes`, { withCredentials: true }),
-          axios.get(`${API}/plans`, { withCredentials: true })
+          axios.get(`${API}/plans`, { withCredentials: true }),
+          axios.get(`${API}/dashboard`, { withCredentials: true })
         ]);
         setClasses(classesRes.data);
         setPlans(plansRes.data);
+        
+        // Get school info from dashboard
+        if (dashboardRes.data.school) {
+          setSchool(dashboardRes.data.school);
+        }
 
         if (planId && planId !== 'new') {
           const planRes = await axios.get(`${API}/plans/${planId}`, { withCredentials: true });
