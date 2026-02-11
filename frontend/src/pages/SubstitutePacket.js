@@ -4,12 +4,13 @@ import axios from 'axios';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Skeleton } from '../components/ui/skeleton';
 import { Badge } from '../components/ui/badge';
-import { Separator } from '../components/ui/separator';
 import { toast } from 'sonner';
-import { Printer, FileText, Users, Calendar, BookOpen, AlertCircle, Phone, Mail } from 'lucide-react';
+import { Printer, FileText, Users, AlertCircle, Edit2, Save } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -21,6 +22,16 @@ const SubstitutePacket = () => {
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
   const [packetData, setPacketData] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  
+  // Editable fields
+  const [editableData, setEditableData] = useState({
+    mainOfficeExt: 'Ext. 100',
+    nurseExt: 'Ext. 105',
+    dailyRoutines: '',
+    emergencyProcedures: '',
+    additionalNotes: ''
+  });
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -50,7 +61,6 @@ const SubstitutePacket = () => {
         axios.get(`${API}/plans?class_id=${selectedClass}`, { withCredentials: true })
       ]);
 
-      // Get current week's plan
       const today = new Date();
       const currentPlan = plansRes.data.find(p => {
         if (!p.week_start) return false;
@@ -64,6 +74,15 @@ const SubstitutePacket = () => {
         students: studentsRes.data,
         currentPlan: currentPlan,
         generatedAt: new Date().toISOString()
+      });
+      
+      // Reset editable fields
+      setEditableData({
+        mainOfficeExt: 'Ext. 100',
+        nurseExt: 'Ext. 105',
+        dailyRoutines: '',
+        emergencyProcedures: '',
+        additionalNotes: ''
       });
     } catch (error) {
       console.error('Error generating packet:', error);
@@ -103,7 +122,7 @@ const SubstitutePacket = () => {
           .alert-box { background: #fff3cd; border: 1px solid #ffc107; padding: 10px; border-radius: 5px; margin-bottom: 15px; }
           .seating-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 10px; }
           .seat { border: 1px solid #333; padding: 8px; text-align: center; min-height: 50px; font-size: 9pt; }
-          .notes-area { border: 1px solid #333; min-height: 100px; padding: 10px; margin-top: 10px; }
+          .notes-area { border: 1px solid #333; min-height: 100px; padding: 10px; margin-top: 10px; white-space: pre-wrap; }
           @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           }
@@ -132,6 +151,10 @@ const SubstitutePacket = () => {
       friday: language === 'es' ? 'Viernes' : 'Friday'
     };
     return days[dayKey] || dayKey;
+  };
+
+  const handleFieldChange = (field, value) => {
+    setEditableData(prev => ({ ...prev, [field]: value }));
   };
 
   if (loading) {
@@ -197,10 +220,23 @@ const SubstitutePacket = () => {
                 {generating ? t('loading') : (language === 'es' ? 'Generar Paquete' : 'Generate Packet')}
               </Button>
               {packetData && (
-                <Button onClick={handlePrint} variant="outline" className="gap-2" data-testid="print-packet-btn">
-                  <Printer className="h-4 w-4" />
-                  {language === 'es' ? 'Imprimir' : 'Print'}
-                </Button>
+                <>
+                  <Button 
+                    onClick={() => setIsEditing(!isEditing)} 
+                    variant={isEditing ? "default" : "outline"} 
+                    className="gap-2"
+                    data-testid="edit-packet-btn"
+                  >
+                    {isEditing ? <Save className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
+                    {isEditing 
+                      ? (language === 'es' ? 'Guardar Cambios' : 'Save Changes')
+                      : (language === 'es' ? 'Editar' : 'Edit')}
+                  </Button>
+                  <Button onClick={handlePrint} variant="outline" className="gap-2" data-testid="print-packet-btn">
+                    <Printer className="h-4 w-4" />
+                    {language === 'es' ? 'Imprimir' : 'Print'}
+                  </Button>
+                </>
               )}
             </div>
           </CardContent>
@@ -210,8 +246,13 @@ const SubstitutePacket = () => {
         {packetData && (
           <Card className="bg-white border-slate-100">
             <CardHeader className="pb-3">
-              <CardTitle className="font-heading text-lg">
+              <CardTitle className="font-heading text-lg flex items-center gap-2">
                 {language === 'es' ? 'Vista Previa del Paquete' : 'Packet Preview'}
+                {isEditing && (
+                  <Badge variant="secondary" className="ml-2">
+                    {language === 'es' ? 'Modo Edición' : 'Edit Mode'}
+                  </Badge>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -229,7 +270,7 @@ const SubstitutePacket = () => {
                     </p>
                   </div>
 
-                  {/* Emergency Info */}
+                  {/* Emergency Info - Editable */}
                   <div className="alert-box bg-amber-50 border border-amber-200 p-4 rounded-lg mb-6">
                     <div className="flex items-center gap-2 font-bold text-amber-800 mb-2">
                       <AlertCircle className="h-5 w-5" />
@@ -237,10 +278,30 @@ const SubstitutePacket = () => {
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <strong>{language === 'es' ? 'Oficina Principal' : 'Main Office'}:</strong> Ext. 100
+                        <strong>{language === 'es' ? 'Oficina Principal' : 'Main Office'}:</strong>{' '}
+                        {isEditing ? (
+                          <Input 
+                            value={editableData.mainOfficeExt}
+                            onChange={(e) => handleFieldChange('mainOfficeExt', e.target.value)}
+                            className="inline-block w-32 h-8 ml-2"
+                            data-testid="main-office-input"
+                          />
+                        ) : (
+                          <span>{editableData.mainOfficeExt}</span>
+                        )}
                       </div>
                       <div>
-                        <strong>{language === 'es' ? 'Enfermería' : 'Nurse'}:</strong> Ext. 105
+                        <strong>{language === 'es' ? 'Enfermería' : 'Nurse'}:</strong>{' '}
+                        {isEditing ? (
+                          <Input 
+                            value={editableData.nurseExt}
+                            onChange={(e) => handleFieldChange('nurseExt', e.target.value)}
+                            className="inline-block w-32 h-8 ml-2"
+                            data-testid="nurse-ext-input"
+                          />
+                        ) : (
+                          <span>{editableData.nurseExt}</span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -376,7 +437,6 @@ const SubstitutePacket = () => {
                         {student.first_name}<br/>{student.last_name}
                       </div>
                     ))}
-                    {/* Fill empty seats */}
                     {Array.from({ length: Math.max(0, 25 - (packetData.students?.length || 0)) }).map((_, i) => (
                       <div key={`empty-${i}`} className="seat border p-2 text-center text-xs min-h-12 bg-slate-50">
                         -
@@ -385,7 +445,7 @@ const SubstitutePacket = () => {
                   </div>
                 </div>
 
-                {/* Page 5: Notes */}
+                {/* Page 5: Notes - EDITABLE */}
                 <div className="page border border-slate-200 rounded-lg p-6" style={{ pageBreakBefore: 'always' }}>
                   <h3 className="section-title text-lg font-bold border-b pb-2 mb-4">
                     {language === 'es' ? 'Notas para el Sustituto' : 'Notes for Substitute'}
@@ -394,16 +454,36 @@ const SubstitutePacket = () => {
                   <div className="space-y-4">
                     <div>
                       <label className="font-bold block mb-2">{language === 'es' ? 'Rutinas Diarias' : 'Daily Routines'}:</label>
-                      <div className="notes-area border p-3 min-h-24 bg-slate-50">
-                        {/* Empty for handwriting */}
-                      </div>
+                      {isEditing ? (
+                        <Textarea 
+                          value={editableData.dailyRoutines}
+                          onChange={(e) => handleFieldChange('dailyRoutines', e.target.value)}
+                          className="min-h-24"
+                          placeholder={language === 'es' ? 'Ingrese las rutinas diarias...' : 'Enter daily routines...'}
+                          data-testid="daily-routines-input"
+                        />
+                      ) : (
+                        <div className="notes-area border p-3 min-h-24 bg-slate-50 whitespace-pre-wrap">
+                          {editableData.dailyRoutines || (language === 'es' ? '(Sin información)' : '(No information)')}
+                        </div>
+                      )}
                     </div>
 
                     <div>
                       <label className="font-bold block mb-2">{language === 'es' ? 'Procedimientos de Emergencia' : 'Emergency Procedures'}:</label>
-                      <div className="notes-area border p-3 min-h-24 bg-slate-50">
-                        {/* Empty for handwriting */}
-                      </div>
+                      {isEditing ? (
+                        <Textarea 
+                          value={editableData.emergencyProcedures}
+                          onChange={(e) => handleFieldChange('emergencyProcedures', e.target.value)}
+                          className="min-h-24"
+                          placeholder={language === 'es' ? 'Ingrese los procedimientos de emergencia...' : 'Enter emergency procedures...'}
+                          data-testid="emergency-procedures-input"
+                        />
+                      ) : (
+                        <div className="notes-area border p-3 min-h-24 bg-slate-50 whitespace-pre-wrap">
+                          {editableData.emergencyProcedures || (language === 'es' ? '(Sin información)' : '(No information)')}
+                        </div>
+                      )}
                     </div>
 
                     <div>
@@ -414,14 +494,27 @@ const SubstitutePacket = () => {
                             • <strong>{s.first_name} {s.last_name}:</strong> {s.accommodations}
                           </div>
                         ))}
+                        {!packetData.students?.some(s => s.accommodations) && (
+                          <span className="text-slate-400">{language === 'es' ? '(Ninguno)' : '(None)'}</span>
+                        )}
                       </div>
                     </div>
 
                     <div>
                       <label className="font-bold block mb-2">{language === 'es' ? 'Notas Adicionales' : 'Additional Notes'}:</label>
-                      <div className="notes-area border p-3 min-h-24 bg-slate-50">
-                        {/* Empty for handwriting */}
-                      </div>
+                      {isEditing ? (
+                        <Textarea 
+                          value={editableData.additionalNotes}
+                          onChange={(e) => handleFieldChange('additionalNotes', e.target.value)}
+                          className="min-h-24"
+                          placeholder={language === 'es' ? 'Ingrese notas adicionales...' : 'Enter additional notes...'}
+                          data-testid="additional-notes-input"
+                        />
+                      ) : (
+                        <div className="notes-area border p-3 min-h-24 bg-slate-50 whitespace-pre-wrap">
+                          {editableData.additionalNotes || (language === 'es' ? '(Sin información)' : '(No information)')}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
