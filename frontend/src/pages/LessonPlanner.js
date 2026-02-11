@@ -123,6 +123,7 @@ const LessonPlanner = () => {
         day_name: existingDay?.day_name || dayName,
         theme: existingDay?.theme || '',
         dok_levels: existingDay?.dok_levels || [],
+        eca: existingDay?.eca || { E: false, C: false, A: false },
         activities: ACTIVITY_TYPES.map(type => {
           const existing = existingDay?.activities?.find(a => a.activity_type === type);
           return existing || { activity_type: type, checked: false, notes: '' };
