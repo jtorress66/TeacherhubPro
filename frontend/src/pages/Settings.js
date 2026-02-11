@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import axios from 'axios';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -9,13 +10,41 @@ import { Label } from '../components/ui/label';
 import { Switch } from '../components/ui/switch';
 import { Separator } from '../components/ui/separator';
 import { toast } from 'sonner';
-import { User, Globe, Bell, Shield, Save } from 'lucide-react';
+import { User, Globe, Shield, Save, Building2, Upload, Image } from 'lucide-react';
+
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const Settings = () => {
   const { user, updateProfile } = useAuth();
-  const { t, language, setLanguage, toggleLanguage } = useLanguage();
+  const { t, language, toggleLanguage } = useLanguage();
   const [saving, setSaving] = useState(false);
+  const [savingSchool, setSavingSchool] = useState(false);
   const [name, setName] = useState(user?.name || '');
+  const [school, setSchool] = useState(null);
+  const [schoolName, setSchoolName] = useState('');
+  const [schoolAddress, setSchoolAddress] = useState('');
+  const [schoolPhone, setSchoolPhone] = useState('');
+  const [schoolEmail, setSchoolEmail] = useState('');
+  const [schoolLogo, setSchoolLogo] = useState('');
+
+  useEffect(() => {
+    const fetchSchool = async () => {
+      if (user?.school_id) {
+        try {
+          const res = await axios.get(`${API}/schools/${user.school_id}`, { withCredentials: true });
+          setSchool(res.data);
+          setSchoolName(res.data.name || '');
+          setSchoolAddress(res.data.address || '');
+          setSchoolPhone(res.data.phone || '');
+          setSchoolEmail(res.data.email || '');
+          setSchoolLogo(res.data.logo_url || '');
+        } catch (error) {
+          console.error('Error fetching school:', error);
+        }
+      }
+    };
+    fetchSchool();
+  }, [user?.school_id]);
 
   const handleSaveProfile = async () => {
     setSaving(true);
@@ -26,6 +55,26 @@ const Settings = () => {
       toast.error(t('error'));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSaveSchool = async () => {
+    if (!user?.school_id) return;
+    
+    setSavingSchool(true);
+    try {
+      await axios.put(`${API}/schools/${user.school_id}`, {
+        name: schoolName,
+        address: schoolAddress,
+        phone: schoolPhone,
+        email: schoolEmail,
+        logo_url: schoolLogo
+      }, { withCredentials: true });
+      toast.success(language === 'es' ? 'Escuela actualizada' : 'School updated');
+    } catch (error) {
+      toast.error(t('error'));
+    } finally {
+      setSavingSchool(false);
     }
   };
 
