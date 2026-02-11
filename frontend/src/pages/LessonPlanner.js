@@ -425,25 +425,35 @@ const LessonPlanner = () => {
                 />
               </div>
               
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                  <Label>{t('from')}</Label>
-                  <Input 
-                    type="date"
-                    value={formData.week_start}
-                    onChange={(e) => setFormData(prev => ({ ...prev, week_start: e.target.value }))}
-                    data-testid="week-start-input"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('to')}</Label>
-                  <Input 
-                    type="date"
-                    value={formData.week_end}
-                    onChange={(e) => setFormData(prev => ({ ...prev, week_end: e.target.value }))}
-                    data-testid="week-end-input"
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label>{t('teacher')}</Label>
+                <Input 
+                  value={formData.teacher_name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, teacher_name: e.target.value }))}
+                  placeholder={language === 'es' ? 'Nombre del maestro' : 'Teacher name'}
+                  data-testid="teacher-name-input"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="space-y-2">
+                <Label>{t('from')}</Label>
+                <Input 
+                  type="date"
+                  value={formData.week_start}
+                  onChange={(e) => setFormData(prev => ({ ...prev, week_start: e.target.value }))}
+                  data-testid="week-start-input"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>{t('to')}</Label>
+                <Input 
+                  type="date"
+                  value={formData.week_end}
+                  onChange={(e) => setFormData(prev => ({ ...prev, week_end: e.target.value }))}
+                  data-testid="week-end-input"
+                />
               </div>
             </div>
           </CardContent>
