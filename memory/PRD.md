@@ -130,28 +130,30 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
 
 ## Prioritized Backlog
 
-### P0 (Critical - Next Phase)
-- PDF export matching school's paper format
-- Print-friendly styles
+### P0 (Critical - Completed)
+- ✅ PDF export matching school's paper format
+- ✅ Print-friendly styles
+- ✅ Stripe subscription integration
+- ✅ Pricing visible on landing page
 
-### P1 (High Priority)
-- Templates gallery
-- Duplicate last week with date shift
+### P1 (High Priority - Next)
+- Drag-and-Drop Seating Chart Editor
+- Quick Week Copy (duplicate week + shift dates by 7 days)
+- Templates gallery improvements
 - Attendance reports by date range
-- Student grade view
 
 ### P2 (Medium Priority)
 - Bulk student import (CSV)
-- Seating chart
 - Behavior/notes log
-- Substitute packet generation
 - File repository
+- Audit log for grades/attendance changes
 
 ### P3 (Future)
 - Parent/student portal (read-only)
 - Email notifications for absences
 - Google Classroom integration
 - Admin panel with school-wide reporting
+- Advanced gradebook: category weighting, drop lowest, late policies
 
 ## Next Tasks
 1. Implement PDF export with school format
