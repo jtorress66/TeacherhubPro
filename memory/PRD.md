@@ -86,23 +86,43 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
    - Language toggle (EN/ES)
    - Account info display
 
-## What's Been Implemented (2026-02-10)
+## What's Been Implemented (2026-02-11)
 
 ### Backend (/app/backend/server.py)
-- Complete FastAPI application with 40+ endpoints
+- Complete FastAPI application with 45+ endpoints
 - Auth: register, login, logout, session, profile
 - Classes: CRUD + students management
 - Lesson Plans: CRUD + duplicate + templates
 - Attendance: sessions, records, reports
 - Gradebook: categories, assignments, grades bulk update
 - Dashboard aggregation endpoint
+- **Stripe Subscriptions:** Plans, checkout sessions, webhooks, status checks
+- Substitute Packet generation
 
 ### Frontend (/app/frontend/src/)
-- 10 pages: Landing, AuthCallback, Dashboard, PlannerList, LessonPlanner, Attendance, Gradebook, Classes, Settings
+- 12 pages: Landing, AuthCallback, Dashboard, PlannerList, LessonPlanner, Attendance, Gradebook, Classes, Settings, Pricing, SubstitutePacket, SubscriptionSuccess
 - Bilingual context with 100+ translations
 - Auth context with session management
 - Layout component with responsive sidebar
 - Design following Paper & Ink aesthetic
+- **Pricing section on Landing page** (visible to unauthenticated users)
+- **Subscription status on Settings page**
+
+### Stripe Integration (2026-02-11)
+- Individual Monthly: $9.99/month
+- Individual Yearly: $79/year (Save $40)
+- School Plan: $6/teacher/month (min 10 teachers)
+- District Plan: $4/teacher/month (min 100 teachers)
+- 7-day free trial for all new users
+- Admin role bypasses payment requirements
+
+### PDF Export (Completed)
+- Two-page landscape format matching user's paper planner
+- Teacher name, unit, story, objective fields
+- E/C/A checkboxes for daily activities
+- Skills as numbered list
+- Standards grid
+- "Otro" activity notes
 
 ### Test Results
 - Backend: 100% pass
