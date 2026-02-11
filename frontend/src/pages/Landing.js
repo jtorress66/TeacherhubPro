@@ -65,7 +65,7 @@ const Landing = () => {
   const features = [
     { icon: Calendar, title: language === 'es' ? 'Planificador Semanal' : 'Weekly Planner', desc: language === 'es' ? 'Planifica tus lecciones como en tu planificador de papel' : 'Plan lessons just like your paper planner' },
     { icon: Users, title: language === 'es' ? 'Asistencia Fácil' : 'Easy Attendance', desc: language === 'es' ? 'Toma asistencia rápidamente desde cualquier dispositivo' : 'Take attendance quickly from any device' },
-    { icon: ClipboardList, title: language === 'es' ? 'Libro de Calificaciones' : 'Gradebook', desc: language === 'es' ? 'Administra tareas y calificaciones eficientemente' : 'Manage assignments and grades efficiently' },
+    { icon: ClipboardList, title: language === 'es' ? 'Cuaderno de Notas' : 'Gradebook', desc: language === 'es' ? 'Administra tareas y notas eficientemente' : 'Manage assignments and grades efficiently' },
     { icon: BookOpen, title: language === 'es' ? 'Exportar PDF' : 'PDF Export', desc: language === 'es' ? 'Exporta planes en el formato de tu escuela' : "Export plans in your school's format" }
   ];
 
@@ -103,7 +103,7 @@ const Landing = () => {
             </h1>
             <p className="text-lg text-slate-600 leading-relaxed">
               {language === 'es'
-                ? 'Reemplaza tu planificador de papel con una solución digital que se siente familiar. Planifica lecciones, toma asistencia y administra calificaciones en un solo lugar.'
+                ? 'Reemplaza tu planificador de papel con una solución digital que se siente familiar. Planifica lecciones, toma asistencia y administra notas en un solo lugar.'
                 : 'Replace your paper planner with a digital solution that feels familiar. Plan lessons, take attendance, and manage grades in one place.'}
             </p>
             
