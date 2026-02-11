@@ -1443,6 +1443,279 @@ async def get_templates(user: dict = Depends(get_current_user)):
     
     return [LessonPlanResponse(**t) for t in templates]
 
+# ==================== SUBSCRIPTION ENDPOINTS ====================
+
+@api_router.get("/subscription/plans")
+async def get_subscription_plans():
+    """Get available subscription plans"""
+    return SUBSCRIPTION_PLANS
+
+@api_router.get("/subscription/status")
+async def get_subscription_status(user: dict = Depends(get_current_user)):
+    """Get current user's subscription status"""
+    # Admins have full access without payment
+    if user.get("role") == "admin":
+        return {
+            "has_access": True,
+            "status": "admin",
+            "plan": "admin",
+            "message": "Admin accounts have full access"
+        }
+    
+    # Check for active subscription
+    subscription = await db.subscriptions.find_one(
+        {"user_id": user["user_id"], "status": {"$in": ["active", "trialing"]}},
+        {"_id": 0}
+    )
+    
+    if subscription:
+        # Check if trial has expired
+        if subscription.get("status") == "trialing" and subscription.get("trial_end"):
+            trial_end = datetime.fromisoformat(subscription["trial_end"].replace('Z', '+00:00'))
+            if datetime.now(timezone.utc) > trial_end:
+                # Update subscription status
+                await db.subscriptions.update_one(
+                    {"subscription_id": subscription["subscription_id"]},
+                    {"$set": {"status": "expired"}}
+                )
+                return {
+                    "has_access": False,
+                    "status": "trial_expired",
+                    "plan": None,
+                    "message": "Your free trial has expired. Please subscribe to continue."
+                }
+        
+        return {
+            "has_access": True,
+            "status": subscription["status"],
+            "plan": subscription["plan_id"],
+            "subscription": subscription,
+            "message": "Active subscription"
+        }
+    
+    # No subscription - check if user is within initial trial period
+    user_data = await db.users.find_one({"user_id": user["user_id"]})
+    if user_data:
+        created_at = datetime.fromisoformat(user_data["created_at"].replace('Z', '+00:00'))
+        trial_end = created_at + timedelta(days=FREE_TRIAL_DAYS)
+        now = datetime.now(timezone.utc)
+        
+        if now < trial_end:
+            days_left = (trial_end - now).days
+            return {
+                "has_access": True,
+                "status": "trialing",
+                "plan": "free_trial",
+                "trial_ends": trial_end.isoformat(),
+                "days_left": days_left,
+                "message": f"Free trial: {days_left} days remaining"
+            }
+    
+    return {
+        "has_access": False,
+        "status": "none",
+        "plan": None,
+        "message": "No active subscription. Please subscribe to access all features."
+    }
+
+@api_router.post("/subscription/checkout")
+async def create_checkout_session(request: CheckoutRequest, user: dict = Depends(get_current_user)):
+    """Create a Stripe checkout session for subscription"""
+    import stripe
+    stripe.api_key = STRIPE_API_KEY
+    
+    plan = SUBSCRIPTION_PLANS.get(request.plan_id)
+    if not plan:
+        raise HTTPException(status_code=400, detail="Invalid plan ID")
+    
+    # Calculate price
+    if request.plan_id in ["school", "district"]:
+        min_teachers = plan["min_teachers"]
+        if request.quantity < min_teachers:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Minimum {min_teachers} teachers required for {plan['name']}"
+            )
+        # Price per teacher per month * 12 months * quantity
+        total_price = int(plan["price_per_teacher"] * 12 * request.quantity * 100)  # In cents
+    else:
+        total_price = int(plan["price"] * 100)  # In cents
+    
+    try:
+        # Create Stripe checkout session
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': plan["name"],
+                        'description': plan["description"],
+                    },
+                    'unit_amount': total_price,
+                    'recurring': {
+                        'interval': plan["interval"],
+                        'interval_count': 1,
+                    },
+                },
+                'quantity': 1,
+            }],
+            mode='subscription',
+            success_url=f"{request.origin_url}/subscription/success?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{request.origin_url}/pricing",
+            customer_email=user.get("email"),
+            metadata={
+                'user_id': user["user_id"],
+                'plan_id': request.plan_id,
+                'quantity': str(request.quantity)
+            },
+            subscription_data={
+                'trial_period_days': FREE_TRIAL_DAYS,
+                'metadata': {
+                    'user_id': user["user_id"],
+                    'plan_id': request.plan_id,
+                }
+            }
+        )
+        
+        return {"checkout_url": checkout_session.url, "session_id": checkout_session.id}
+    except Exception as e:
+        logger.error(f"Stripe checkout error: {e}")
+        raise HTTPException(status_code=500, detail=f"Payment processing error: {str(e)}")
+
+@api_router.get("/subscription/success")
+async def subscription_success(session_id: str, user: dict = Depends(get_current_user)):
+    """Handle successful subscription checkout"""
+    import stripe
+    stripe.api_key = STRIPE_API_KEY
+    
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+        
+        if session.payment_status == "paid" or session.status == "complete":
+            # Create subscription record
+            now = datetime.now(timezone.utc)
+            subscription_id = f"sub_{uuid.uuid4().hex[:12]}"
+            
+            subscription_doc = {
+                "subscription_id": subscription_id,
+                "user_id": user["user_id"],
+                "plan_id": session.metadata.get("plan_id", "individual_monthly"),
+                "quantity": int(session.metadata.get("quantity", 1)),
+                "status": "active",
+                "stripe_subscription_id": session.subscription,
+                "stripe_customer_id": session.customer,
+                "current_period_start": now.isoformat(),
+                "current_period_end": (now + timedelta(days=30)).isoformat(),
+                "trial_end": (now + timedelta(days=FREE_TRIAL_DAYS)).isoformat() if session.subscription else None,
+                "created_at": now.isoformat(),
+                "updated_at": now.isoformat()
+            }
+            
+            # Upsert subscription
+            await db.subscriptions.update_one(
+                {"user_id": user["user_id"]},
+                {"$set": subscription_doc},
+                upsert=True
+            )
+            
+            # Update user's subscription status
+            await db.users.update_one(
+                {"user_id": user["user_id"]},
+                {"$set": {"subscription_status": "active", "subscription_plan": subscription_doc["plan_id"]}}
+            )
+            
+            return {"status": "success", "subscription": subscription_doc}
+        
+        return {"status": "pending", "message": "Payment not yet confirmed"}
+    except Exception as e:
+        logger.error(f"Subscription success error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/subscription/cancel")
+async def cancel_subscription(user: dict = Depends(get_current_user)):
+    """Cancel user's subscription"""
+    import stripe
+    stripe.api_key = STRIPE_API_KEY
+    
+    subscription = await db.subscriptions.find_one(
+        {"user_id": user["user_id"], "status": {"$in": ["active", "trialing"]}},
+        {"_id": 0}
+    )
+    
+    if not subscription:
+        raise HTTPException(status_code=404, detail="No active subscription found")
+    
+    try:
+        # Cancel on Stripe if exists
+        if subscription.get("stripe_subscription_id"):
+            stripe.Subscription.modify(
+                subscription["stripe_subscription_id"],
+                cancel_at_period_end=True
+            )
+        
+        # Update local record
+        await db.subscriptions.update_one(
+            {"subscription_id": subscription["subscription_id"]},
+            {"$set": {"status": "canceled", "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        await db.users.update_one(
+            {"user_id": user["user_id"]},
+            {"$set": {"subscription_status": "canceled"}}
+        )
+        
+        return {"status": "canceled", "message": "Subscription will end at the current billing period"}
+    except Exception as e:
+        logger.error(f"Cancel subscription error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/subscription/webhook")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhooks"""
+    import stripe
+    stripe.api_key = STRIPE_API_KEY
+    
+    payload = await request.body()
+    sig_header = request.headers.get('stripe-signature')
+    
+    # In production, verify the webhook signature
+    # For now, process the event directly
+    try:
+        event = stripe.Event.construct_from(
+            payload.decode('utf-8'), stripe.api_key
+        )
+    except Exception as e:
+        logger.error(f"Webhook error: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+    
+    # Handle the event
+    if event['type'] == 'customer.subscription.updated':
+        subscription = event['data']['object']
+        user_id = subscription.get('metadata', {}).get('user_id')
+        if user_id:
+            status = subscription['status']
+            await db.subscriptions.update_one(
+                {"stripe_subscription_id": subscription['id']},
+                {"$set": {"status": status, "updated_at": datetime.now(timezone.utc).isoformat()}}
+            )
+    elif event['type'] == 'customer.subscription.deleted':
+        subscription = event['data']['object']
+        await db.subscriptions.update_one(
+            {"stripe_subscription_id": subscription['id']},
+            {"$set": {"status": "expired", "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+    elif event['type'] == 'invoice.payment_failed':
+        invoice = event['data']['object']
+        subscription_id = invoice.get('subscription')
+        if subscription_id:
+            await db.subscriptions.update_one(
+                {"stripe_subscription_id": subscription_id},
+                {"$set": {"status": "past_due", "updated_at": datetime.now(timezone.utc).isoformat()}}
+            )
+    
+    return {"received": True}
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/health")
