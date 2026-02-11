@@ -219,24 +219,24 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
             </div>
 
             {/* Daily Plan Table */}
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '7pt' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9pt' }}>
               <thead>
                 <tr>
-                  <th style={{ border: '1px solid black', padding: '3px', width: '12%' }}></th>
+                  <th style={{ border: '1px solid black', padding: '5px', width: '12%' }}></th>
                   {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, dayIdx) => (
-                    <th key={day} style={{ border: '1px solid black', padding: '3px', textAlign: 'center', background: '#f0f0f0' }}>
+                    <th key={day} style={{ border: '1px solid black', padding: '5px', textAlign: 'center', background: '#f0f0f0', fontSize: '10pt' }}>
                       {DAY_LABELS[day][lang]}
-                      <div style={{ marginTop: '3px', display: 'flex', justifyContent: 'center', gap: '4px' }}>
+                      <div style={{ marginTop: '4px', display: 'flex', justifyContent: 'center', gap: '6px' }}>
                         {['E', 'C', 'A'].map(eca => (
-                          <span key={eca} style={{ display: 'inline-flex', alignItems: 'center', gap: '1px' }}>
+                          <span key={eca} style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
                             {eca}
                             <span style={{ 
                               display: 'inline-block', 
-                              width: '8px', 
-                              height: '8px', 
+                              width: '10px', 
+                              height: '10px', 
                               border: '1px solid black',
                               background: planDays[dayIdx]?.eca?.[eca] ? 'black' : 'white',
-                              marginLeft: '1px'
+                              marginLeft: '2px'
                             }}></span>
                           </span>
                         ))}
@@ -248,9 +248,9 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
               <tbody>
                 {/* Day Theme Row */}
                 <tr>
-                  <td style={{ border: '1px solid black', padding: '3px', fontWeight: 'bold' }}>Day Theme</td>
+                  <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold' }}>Day Theme</td>
                   {planDays.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '3px', textAlign: 'center' }}>
+                    <td key={i} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
                       {day.theme || ''}
                     </td>
                   ))}
@@ -258,23 +258,23 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
                 
                 {/* DOK Levels Row */}
                 <tr>
-                  <td style={{ border: '1px solid black', padding: '3px', fontWeight: 'bold', fontSize: '6pt' }}>
+                  <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', fontSize: '8pt' }}>
                     Type of Taxonomy: Webb (2005) Levels
                   </td>
                   {planDays.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '2px', fontSize: '6pt' }}>
+                    <td key={i} style={{ border: '1px solid black', padding: '4px', fontSize: '8pt' }}>
                       {[1, 2, 3, 4].map(level => (
-                        <div key={level} style={{ marginBottom: '2px' }}>
+                        <div key={level} style={{ marginBottom: '3px' }}>
                           <span style={{ 
                             display: 'inline-block', 
-                            width: '8px', 
-                            height: '8px', 
+                            width: '10px', 
+                            height: '10px', 
                             border: '1px solid black',
                             background: day.dok_levels?.includes(level) ? 'black' : 'white',
-                            marginRight: '3px',
+                            marginRight: '4px',
                             verticalAlign: 'middle'
                           }}></span>
-                          <span style={{ fontSize: '5pt' }}>Level {level}</span>
+                          <span style={{ fontSize: '7pt' }}>Level {level}</span>
                         </div>
                       ))}
                     </td>
