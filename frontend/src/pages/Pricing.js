@@ -208,8 +208,8 @@ const Pricing = () => {
             <AlertCircle className="h-5 w-5 text-amber-600" />
             <AlertDescription className="text-amber-800">
               {language === 'es' 
-                ? 'Tu período de prueba ha expirado. Selecciona un plan para continuar usando TeacherHub.' 
-                : 'Your free trial has expired. Please select a plan to continue using TeacherHub.'}
+                ? 'Tu período de prueba ha expirado. Selecciona un plan para continuar usando TeacherHubPro.' 
+                : 'Your free trial has expired. Please select a plan to continue using TeacherHubPro.'}
             </AlertDescription>
           </Alert>
         )}
