@@ -54,6 +54,7 @@ const LessonPlanner = () => {
     week_end: '',
     unit: '',
     story: '',
+    teacher_name: '',  // Teacher name field
     objective: '',
     skills: ['', '', '', ''],
     days: DAYS.map((day, i) => ({
