@@ -67,7 +67,7 @@ const STANDARD_LABELS = {
   language: { en: 'Language', es: 'Lenguaje' }
 };
 
-export const PlanPrintView = ({ plan, classInfo, onClose }) => {
+export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
   const { language } = useLanguage();
   const printRef = useRef();
   const lang = language === 'es' ? 'es' : 'en';
@@ -80,6 +80,7 @@ export const PlanPrintView = ({ plan, classInfo, onClose }) => {
       day_name: existingDay?.day_name || dayName,
       theme: existingDay?.theme || '',
       dok_levels: existingDay?.dok_levels || [],
+      eca: existingDay?.eca || { E: false, C: false, A: false },
       activities: existingDay?.activities || [],
       materials: existingDay?.materials || [],
       notes: existingDay?.notes || ''
