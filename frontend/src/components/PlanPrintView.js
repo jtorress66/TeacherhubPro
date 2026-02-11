@@ -97,39 +97,43 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
       <head>
         <title>Lesson Plan - ${plan.unit || 'Plan'}</title>
         <style>
-          @page { size: letter; margin: 0.5in; }
+          @page { size: letter landscape; margin: 0.4in; }
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: Arial, sans-serif; font-size: 9pt; line-height: 1.3; }
+          body { font-family: Arial, sans-serif; font-size: 10pt; line-height: 1.4; }
           .page { page-break-after: always; }
           .page:last-child { page-break-after: avoid; }
-          .header { text-align: center; border-bottom: 2px solid black; padding-bottom: 8px; margin-bottom: 10px; }
-          .header h1 { font-size: 11pt; margin-top: 5px; }
-          .header .school-name { font-size: 12pt; font-weight: bold; }
-          .header .school-info { font-size: 8pt; }
-          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; border: 1px solid black; }
-          .info-box { padding: 5px; border: 1px solid black; }
-          .info-box label { font-weight: bold; font-size: 8pt; }
-          .objective-box { border: 1px solid black; padding: 8px; margin-bottom: 10px; }
-          .objective-box h3 { font-size: 9pt; font-weight: bold; border-bottom: 1px solid black; margin-bottom: 5px; }
-          .skills-list { margin-left: 15px; }
-          .week-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 8pt; }
-          .week-table th, .week-table td { border: 1px solid black; padding: 3px; vertical-align: top; }
-          .week-table th { background: #f0f0f0; font-size: 8pt; }
+          .header { text-align: center; border-bottom: 2px solid black; padding-bottom: 8px; margin-bottom: 12px; width: 100%; }
+          .header-content { display: flex; align-items: center; justify-content: center; gap: 15px; }
+          .header-text { text-align: center; }
+          .header h1 { font-size: 14pt; margin-top: 8px; }
+          .header .school-name { font-size: 14pt; font-weight: bold; }
+          .header .school-info { font-size: 9pt; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; border: 1px solid black; }
+          .info-box { padding: 6px; border: 1px solid black; }
+          .info-box label { font-weight: bold; font-size: 9pt; }
+          .objective-box { border: 1px solid black; padding: 10px; margin-bottom: 12px; }
+          .objective-box h3 { font-size: 11pt; font-weight: bold; border-bottom: 1px solid black; margin-bottom: 6px; }
+          .skills-list { margin-left: 18px; }
+          .week-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 9pt; }
+          .week-table th, .week-table td { border: 1px solid black; padding: 4px; vertical-align: top; }
+          .week-table th { background: #f0f0f0; font-size: 10pt; }
           .day-header { font-weight: bold; text-align: center; }
-          .checkbox { display: inline-block; width: 10px; height: 10px; border: 1px solid black; margin-right: 3px; vertical-align: middle; }
+          .checkbox { display: inline-block; width: 11px; height: 11px; border: 1px solid black; margin-right: 3px; vertical-align: middle; }
           .checkbox.checked { background: black; }
-          .checkbox.checked::after { content: '✓'; color: white; font-size: 8px; display: block; text-align: center; line-height: 10px; }
-          .dok-section { font-size: 7pt; }
+          .checkbox.checked::after { content: '✓'; color: white; font-size: 9px; display: block; text-align: center; line-height: 11px; }
+          .dok-section { font-size: 8pt; }
           .dok-item { margin-bottom: 2px; }
-          .standards-section { border: 1px solid black; margin-bottom: 10px; }
+          .standards-section { border: 1px solid black; margin-bottom: 12px; }
           .standards-header { display: grid; grid-template-columns: 1fr 1fr; }
-          .standards-week { padding: 5px; border: 1px solid black; }
-          .standards-week h4 { font-size: 9pt; font-weight: bold; border-bottom: 1px solid black; margin-bottom: 5px; }
-          .standard-row { display: flex; gap: 5px; margin-bottom: 3px; font-size: 8pt; }
-          .expectations-box { border: 1px solid black; padding: 5px; margin-top: 5px; min-height: 40px; }
-          .integration-section { border: 1px solid black; padding: 5px; margin-top: 10px; font-size: 8pt; }
+          .standards-week { padding: 6px; border: 1px solid black; }
+          .standards-week h4 { font-size: 11pt; font-weight: bold; border-bottom: 1px solid black; margin-bottom: 6px; }
+          .standard-row { display: flex; gap: 6px; margin-bottom: 4px; font-size: 9pt; }
+          .expectations-box { border: 1px solid black; padding: 6px; margin-top: 6px; min-height: 50px; }
+          .integration-section { border: 1px solid black; padding: 6px; margin-top: 12px; font-size: 9pt; }
           @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .header { text-align: center !important; }
+            .header-content { justify-content: center !important; }
           }
         </style>
       </head>
