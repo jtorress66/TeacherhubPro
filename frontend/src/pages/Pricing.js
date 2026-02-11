@@ -167,7 +167,7 @@ const Pricing = () => {
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-3">
             <BookOpen className="h-8 w-8 text-slate-700" />
-            <span className="text-2xl font-heading font-bold text-slate-800">TeacherHub</span>
+            <span className="text-2xl font-heading font-bold text-slate-800">TeacherHubPro</span>
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/">
@@ -194,7 +194,7 @@ const Pricing = () => {
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white mt-16">
         <div className="max-w-7xl mx-auto px-6 py-8 text-center text-slate-500 text-sm">
-          <p>© 2024 TeacherHub. {language === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p>
+          <p>© 2026 TeacherHubPro. {language === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p>
         </div>
       </footer>
     </div>
