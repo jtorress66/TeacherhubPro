@@ -135,6 +135,102 @@ const Settings = () => {
           </CardContent>
         </Card>
 
+        {/* School Settings */}
+        <Card className="bg-white border-slate-100">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-amber-100">
+                <Building2 className="h-5 w-5 text-amber-600" />
+              </div>
+              <div>
+                <CardTitle className="text-lg">{language === 'es' ? 'Escuela' : 'School'}</CardTitle>
+                <CardDescription>{language === 'es' ? 'Configuración de la escuela para PDF' : 'School settings for PDF export'}</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Logo Preview & URL */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Image className="h-4 w-4" />
+                {language === 'es' ? 'Logo de la Escuela (URL)' : 'School Logo (URL)'}
+              </Label>
+              <div className="flex gap-3 items-start">
+                {schoolLogo && (
+                  <div className="h-20 w-20 border rounded-lg bg-white p-1 flex items-center justify-center">
+                    <img 
+                      src={schoolLogo} 
+                      alt="School Logo" 
+                      className="max-h-full max-w-full object-contain"
+                      onError={(e) => e.target.style.display = 'none'}
+                    />
+                  </div>
+                )}
+                <Input 
+                  value={schoolLogo}
+                  onChange={(e) => setSchoolLogo(e.target.value)}
+                  placeholder="https://example.com/logo.png"
+                  className="flex-1"
+                  data-testid="school-logo-input"
+                />
+              </div>
+              <p className="text-xs text-slate-500">
+                {language === 'es' 
+                  ? 'Ingresa la URL de la imagen del logo de tu escuela'
+                  : 'Enter the URL of your school logo image'}
+              </p>
+            </div>
+            
+            <Separator />
+            
+            <div className="space-y-2">
+              <Label>{language === 'es' ? 'Nombre de la Escuela' : 'School Name'}</Label>
+              <Input 
+                value={schoolName}
+                onChange={(e) => setSchoolName(e.target.value)}
+                placeholder="Colegio De La Inmaculada Concepción"
+                data-testid="school-name-input"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>{language === 'es' ? 'Dirección' : 'Address'}</Label>
+              <Input 
+                value={schoolAddress}
+                onChange={(e) => setSchoolAddress(e.target.value)}
+                placeholder="P.O. Box 3400, Manatí, Puerto Rico 00674"
+                data-testid="school-address-input"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>{language === 'es' ? 'Teléfono' : 'Phone'}</Label>
+                <Input 
+                  value={schoolPhone}
+                  onChange={(e) => setSchoolPhone(e.target.value)}
+                  placeholder="(787) 854-2079"
+                  data-testid="school-phone-input"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>{language === 'es' ? 'Correo' : 'Email'}</Label>
+                <Input 
+                  value={schoolEmail}
+                  onChange={(e) => setSchoolEmail(e.target.value)}
+                  placeholder="school@example.com"
+                  data-testid="school-email-input"
+                />
+              </div>
+            </div>
+            
+            <Button onClick={handleSaveSchool} disabled={savingSchool} data-testid="save-school-btn">
+              <Save className="h-4 w-4 mr-2" />
+              {savingSchool ? t('loading') : (language === 'es' ? 'Guardar Escuela' : 'Save School')}
+            </Button>
+          </CardContent>
+        </Card>
+
         {/* Language Settings */}
         <Card className="bg-white border-slate-100">
           <CardHeader>
