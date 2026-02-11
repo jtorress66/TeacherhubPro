@@ -33,19 +33,19 @@ h1, h2, h3, .font-heading {
         --secondary-foreground: 215 25% 27%;
         --muted: 40 20% 94%;
         --muted-foreground: 215 15% 45%;
-        --accent: 82 78% 45%;
+        --accent: 85 50% 45%;
         --accent-foreground: 0 0% 100%;
         --destructive: 0 84% 60%;
         --destructive-foreground: 0 0% 98%;
         --border: 220 13% 91%;
         --input: 220 13% 91%;
-        --ring: 215 25% 27%;
-        --chart-1: 82 78% 45%;
+        --ring: 85 50% 45%;
+        --chart-1: 85 50% 45%;
         --chart-2: 36 90% 50%;
         --chart-3: 197 37% 24%;
         --chart-4: 43 74% 66%;
         --chart-5: 27 87% 67%;
-        --radius: 0.5rem;
+        --radius: 0.75rem;
     }
     .dark {
         --background: 215 25% 10%;
@@ -60,7 +60,7 @@ h1, h2, h3, .font-heading {
         --secondary-foreground: 40 30% 98%;
         --muted: 215 25% 20%;
         --muted-foreground: 215 15% 65%;
-        --accent: 82 78% 45%;
+        --accent: 85 50% 45%;
         --accent-foreground: 0 0% 100%;
         --destructive: 0 62% 30%;
         --destructive-foreground: 0 0% 98%;
@@ -85,12 +85,69 @@ h1, h2, h3, .font-heading {
     }
 }
 
-/* Paper texture effect */
+/* Paper texture effect - enhanced */
 .paper-bg {
-    background-color: hsl(var(--background));
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    background-blend-mode: soft-light;
-    background-size: 200px 200px;
+    background-color: #FAF9F6;
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(101, 163, 13, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(51, 65, 85, 0.03) 0%, transparent 50%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-blend-mode: normal, normal, soft-light;
+    background-size: 100% 100%, 100% 100%, 200px 200px;
+}
+
+/* Hero gradient backgrounds */
+.hero-gradient {
+    background: linear-gradient(135deg, #FAF9F6 0%, #f0f9eb 50%, #FAF9F6 100%);
+}
+
+.gradient-accent {
+    background: linear-gradient(135deg, hsl(85 50% 45%) 0%, hsl(85 60% 40%) 100%);
+}
+
+/* Glass morphism effect */
+.glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-dark {
+    background: rgba(51, 65, 85, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* Enhanced card styles */
+.card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -8px rgba(51, 65, 85, 0.15);
+}
+
+/* Button enhancements */
+.btn-glow {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-glow:hover::before {
+    left: 100%;
 }
 
 /* Custom scrollbar */
@@ -119,13 +176,104 @@ h1, h2, h3, .font-heading {
     to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
 .animate-fade-in {
-    animation: fadeIn 0.3s ease-out forwards;
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.animate-slide-in-right {
+    animation: slideInRight 0.4s ease-out forwards;
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+}
+
+.animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
 }
 
 .animate-delay-100 { animation-delay: 100ms; }
 .animate-delay-200 { animation-delay: 200ms; }
 .animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-400 { animation-delay: 400ms; }
+.animate-delay-500 { animation-delay: 500ms; }
+
+/* Staggered animations for lists */
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+
+/* Gradient text */
+.gradient-text {
+    background: linear-gradient(135deg, #334155 0%, #65A30D 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Decorative elements */
+.decorative-dots {
+    background-image: radial-gradient(circle, #65A30D 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.decorative-lines {
+    background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(101, 163, 13, 0.05) 10px,
+        rgba(101, 163, 13, 0.05) 20px
+    );
+}
+
+/* Focus states */
+.focus-ring:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(101, 163, 13, 0.3);
+}
+
+/* Selection styling */
+::selection {
+    background: rgba(101, 163, 13, 0.2);
+    color: #334155;
+}
 
 /* Print styles */
 @media print {
