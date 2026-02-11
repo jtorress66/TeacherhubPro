@@ -315,6 +315,108 @@ const Settings = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Subscription Info */}
+        <Card className="bg-white border-slate-100">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-purple-100">
+                <CreditCard className="h-5 w-5 text-purple-600" />
+              </div>
+              <div>
+                <CardTitle className="text-lg">{language === 'es' ? 'Suscripción' : 'Subscription'}</CardTitle>
+                <CardDescription>{language === 'es' ? 'Tu plan y estado de suscripción' : 'Your plan and subscription status'}</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {subscriptionStatus ? (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">{language === 'es' ? 'Estado' : 'Status'}</span>
+                  <Badge 
+                    className={
+                      subscriptionStatus.status === 'admin' ? 'bg-purple-100 text-purple-800' :
+                      subscriptionStatus.status === 'active' ? 'bg-green-100 text-green-800' :
+                      subscriptionStatus.status === 'trialing' ? 'bg-amber-100 text-amber-800' :
+                      'bg-red-100 text-red-800'
+                    }
+                  >
+                    {subscriptionStatus.status === 'admin' && (language === 'es' ? 'Admin' : 'Admin')}
+                    {subscriptionStatus.status === 'active' && (language === 'es' ? 'Activo' : 'Active')}
+                    {subscriptionStatus.status === 'trialing' && (language === 'es' ? 'Prueba Gratis' : 'Free Trial')}
+                    {subscriptionStatus.status === 'none' && (language === 'es' ? 'Sin Plan' : 'No Plan')}
+                    {subscriptionStatus.status === 'trial_expired' && (language === 'es' ? 'Expirado' : 'Expired')}
+                  </Badge>
+                </div>
+                
+                <Separator />
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">{language === 'es' ? 'Plan' : 'Plan'}</span>
+                  <span className="font-medium text-slate-800 flex items-center gap-2">
+                    {subscriptionStatus.plan === 'admin' && <Crown className="h-4 w-4 text-purple-500" />}
+                    {subscriptionStatus.plan === 'free_trial' && (language === 'es' ? 'Prueba Gratis' : 'Free Trial')}
+                    {subscriptionStatus.plan === 'individual_monthly' && (language === 'es' ? 'Mensual Individual' : 'Individual Monthly')}
+                    {subscriptionStatus.plan === 'individual_yearly' && (language === 'es' ? 'Anual Individual' : 'Individual Yearly')}
+                    {subscriptionStatus.plan === 'school' && (language === 'es' ? 'Plan Escolar' : 'School Plan')}
+                    {subscriptionStatus.plan === 'district' && (language === 'es' ? 'Plan de Distrito' : 'District Plan')}
+                    {subscriptionStatus.plan === 'admin' && (language === 'es' ? 'Acceso Admin' : 'Admin Access')}
+                    {!subscriptionStatus.plan && 'N/A'}
+                  </span>
+                </div>
+                
+                {subscriptionStatus.days_left !== undefined && (
+                  <>
+                    <Separator />
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-600">{language === 'es' ? 'Días Restantes' : 'Days Remaining'}</span>
+                      <span className="font-medium text-amber-600">{subscriptionStatus.days_left} {language === 'es' ? 'días' : 'days'}</span>
+                    </div>
+                  </>
+                )}
+                
+                {subscriptionStatus.subscription?.current_period_end && (
+                  <>
+                    <Separator />
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-600">{language === 'es' ? 'Próxima Facturación' : 'Next Billing'}</span>
+                      <span className="font-medium text-slate-800">
+                        {new Date(subscriptionStatus.subscription.current_period_end).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </>
+                )}
+                
+                <Separator />
+                
+                <div className="pt-2">
+                  {subscriptionStatus.status !== 'admin' && (
+                    <Button 
+                      onClick={() => navigate('/pricing')} 
+                      variant={subscriptionStatus.has_access ? "outline" : "default"}
+                      className="w-full"
+                      data-testid="manage-subscription-btn"
+                    >
+                      {subscriptionStatus.has_access 
+                        ? (language === 'es' ? 'Cambiar Plan' : 'Change Plan')
+                        : (language === 'es' ? 'Suscribirse' : 'Subscribe Now')}
+                    </Button>
+                  )}
+                  {subscriptionStatus.status === 'admin' && (
+                    <p className="text-sm text-center text-purple-600">
+                      {language === 'es' 
+                        ? 'Las cuentas de administrador tienen acceso completo sin pago' 
+                        : 'Admin accounts have full access without payment'}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <p className="text-slate-500">{language === 'es' ? 'Cargando...' : 'Loading...'}</p>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </Layout>
   );
