@@ -1336,11 +1336,17 @@ async def get_dashboard(user: dict = Depends(get_current_user)):
     total_students = await db.students.count_documents({"class_id": {"$in": class_ids}})
     total_plans = await db.lesson_plans.count_documents({"teacher_id": user["user_id"], "is_template": False})
     
+    # Get school info
+    school = None
+    if user.get("school_id"):
+        school = await db.schools.find_one({"school_id": user.get("school_id")}, {"_id": 0})
+    
     return {
         "user": {
             "name": user["name"],
             "role": user.get("role", "teacher")
         },
+        "school": school,
         "today": today,
         "classes": classes,
         "attendance_pending": [c for c in classes if c["class_id"] not in attendance_taken_ids],
