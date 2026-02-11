@@ -273,32 +273,32 @@ const Landing = () => {
       </section>
 
       {/* Hero Image Section */}
-      <section className="max-w-7xl mx-auto px-6 pb-20">
-        <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+      <section className="max-w-7xl mx-auto px-6 pb-24">
+        <div className="relative rounded-3xl overflow-hidden shadow-2xl animate-fade-in-up" style={{ animationDelay: '300ms' }}>
           <img 
-            src="https://images.unsplash.com/photo-1542810634-71277d95dcbb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwzfHx0ZWFjaGVyJTIwY2xhc3Nyb29tJTIwaGFwcHl8ZW58MHx8fHwxNzcwNzY0MjMyfDA&ixlib=rb-4.1.0&q=85&w=1200"
+            src="https://images.unsplash.com/photo-1557734864-c78b6dfef1b1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHwxfHx0ZWFjaGVyJTIwY2xhc3Nyb29tJTIwaGFwcHklMjBzdHVkZW50c3xlbnwwfHx8fDE3NzA4NTMzMTl8MA&ixlib=rb-4.1.0&q=85"
             alt="Classroom"
-            className="w-full h-64 md:h-96 object-cover"
+            className="w-full h-72 md:h-[28rem] object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
-          <div className="absolute bottom-6 left-6 right-6 text-white">
-            <p className="text-xl md:text-2xl font-heading font-semibold">
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
+          <div className="absolute bottom-8 left-8 right-8 text-white">
+            <p className="text-2xl md:text-3xl font-heading font-semibold mb-4">
               {language === 'es' 
                 ? 'Diseñado por maestros, para maestros'
                 : 'Designed by teachers, for teachers'}
             </p>
-            <div className="flex items-center gap-4 mt-3">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-lime-400" />
-                <span className="text-sm">{language === 'es' ? 'Fácil de usar' : 'Easy to use'}</span>
+            <div className="flex flex-wrap items-center gap-6">
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+                <CheckCircle className="h-5 w-5 text-green-400" />
+                <span className="text-sm font-medium">{language === 'es' ? 'Fácil de usar' : 'Easy to use'}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-lime-400" />
-                <span className="text-sm">{language === 'es' ? 'Bilingüe' : 'Bilingual'}</span>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+                <CheckCircle className="h-5 w-5 text-green-400" />
+                <span className="text-sm font-medium">{language === 'es' ? 'Bilingüe' : 'Bilingual'}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-lime-400" />
-                <span className="text-sm">{language === 'es' ? 'Exportar PDF' : 'PDF Export'}</span>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+                <CheckCircle className="h-5 w-5 text-green-400" />
+                <span className="text-sm font-medium">{language === 'es' ? 'Exportar PDF' : 'PDF Export'}</span>
               </div>
             </div>
           </div>
@@ -306,26 +306,48 @@ const Landing = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="max-w-7xl mx-auto px-6 py-16 text-center">
-        <h2 className="text-2xl md:text-3xl font-heading font-bold text-slate-800 mb-4">
-          {language === 'es' ? '¿Listo para comenzar?' : 'Ready to get started?'}
-        </h2>
-        <p className="text-slate-600 mb-6 max-w-xl mx-auto">
-          {language === 'es' 
-            ? 'Comienza con 7 días gratis. Sin compromiso.' 
-            : 'Start with a 7-day free trial. No commitment required.'}
-        </p>
-        <Link to="/pricing">
-          <Button size="lg" className="bg-lime-600 hover:bg-lime-700" data-testid="cta-pricing-btn">
-            {language === 'es' ? 'Ver Planes y Precios' : 'View Plans & Pricing'}
-          </Button>
-        </Link>
+      <section className="py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900"></div>
+        <div className="absolute inset-0 decorative-dots opacity-10"></div>
+        <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-6">
+            {language === 'es' ? '¿Listo para comenzar?' : 'Ready to get started?'}
+          </h2>
+          <p className="text-slate-300 mb-8 text-lg max-w-xl mx-auto">
+            {language === 'es' 
+              ? 'Únete a miles de maestros que ya transformaron su forma de planificar.' 
+              : 'Join thousands of teachers who have transformed how they plan.'}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/pricing">
+              <Button size="lg" className="bg-green-600 hover:bg-green-500 text-white shadow-lg btn-glow px-8 h-12" data-testid="cta-pricing-btn">
+                {language === 'es' ? 'Ver Planes y Precios' : 'View Plans & Pricing'}
+              </Button>
+            </Link>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-white/30 text-white hover:bg-white/10 h-12 px-8"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            >
+              {language === 'es' ? 'Comenzar Gratis' : 'Start Free'}
+            </Button>
+          </div>
+        </div>
       </section>
 
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white">
-        <div className="max-w-7xl mx-auto px-6 py-8 text-center text-slate-500 text-sm">
-          <p>© 2026 TeacherHubPro. {language === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p>
+        <div className="max-w-7xl mx-auto px-6 py-10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-green-600 to-green-700">
+                <BookOpen className="h-5 w-5 text-white" />
+              </div>
+              <span className="font-heading font-bold text-slate-800">TeacherHubPro</span>
+            </div>
+            <p className="text-slate-500 text-sm">© 2026 TeacherHubPro. {language === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p>
+          </div>
         </div>
       </footer>
     </div>
