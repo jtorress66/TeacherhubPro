@@ -193,14 +193,16 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
               <span style={{ fontSize: '9pt' }}>{plan.objective || '_____'}</span>
             </div>
 
-            {/* Skills - Compact inline */}
-            <div style={{ border: '1px solid black', padding: '4px 6px', marginBottom: '5px' }}>
-              <span style={{ fontWeight: 'bold', fontSize: '10pt' }}>Skills of the week: </span>
-              <span style={{ fontSize: '9pt' }}>
+            {/* Skills - Numbered list */}
+            <div style={{ border: '1px solid black', padding: '5px 6px', marginBottom: '5px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '10pt', borderBottom: '1px solid black', marginBottom: '3px', paddingBottom: '2px' }}>
+                Skills of the week:
+              </div>
+              <ol style={{ marginLeft: '18px', fontSize: '9pt' }}>
                 {(plan.skills || []).filter(s => s).map((skill, i) => (
-                  <span key={i}>{i + 1}. {skill}{i < (plan.skills || []).filter(s => s).length - 1 ? ' | ' : ''}</span>
+                  <li key={i} style={{ marginBottom: '1px' }}>{skill}</li>
                 ))}
-              </span>
+              </ol>
             </div>
 
             {/* Daily Plan Table - Optimized to fit */}
