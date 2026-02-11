@@ -41,17 +41,21 @@ const STANDARD_LABELS = {
   language: { en: 'Language', es: 'Lenguaje' }
 };
 
-// Checkbox component
+// Checkbox component with checkmark
 const Checkbox = ({ checked }) => (
   <span style={{
     display: 'inline-block',
-    width: '8px',
-    height: '8px',
+    width: '10px',
+    height: '10px',
     border: '1px solid black',
-    background: checked ? 'black' : 'white',
+    background: 'white',
     verticalAlign: 'middle',
-    marginRight: '3px'
-  }}></span>
+    marginRight: '3px',
+    textAlign: 'center',
+    lineHeight: '9px',
+    fontSize: '9px',
+    fontWeight: 'bold'
+  }}>{checked ? '✓' : ''}</span>
 );
 
 export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
