@@ -219,11 +219,24 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
               <thead>
                 <tr>
                   <th style={{ border: '1px solid black', padding: '3px', width: '12%' }}></th>
-                  {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map(day => (
+                  {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, dayIdx) => (
                     <th key={day} style={{ border: '1px solid black', padding: '3px', textAlign: 'center', background: '#f0f0f0' }}>
                       {DAY_LABELS[day][lang]}
-                      <br />
-                      <small>RE [ ]C [ ]A</small>
+                      <div style={{ marginTop: '3px', display: 'flex', justifyContent: 'center', gap: '4px' }}>
+                        {['E', 'C', 'A'].map(eca => (
+                          <span key={eca} style={{ display: 'inline-flex', alignItems: 'center', gap: '1px' }}>
+                            {eca}
+                            <span style={{ 
+                              display: 'inline-block', 
+                              width: '8px', 
+                              height: '8px', 
+                              border: '1px solid black',
+                              background: planDays[dayIdx]?.eca?.[eca] ? 'black' : 'white',
+                              marginLeft: '1px'
+                            }}></span>
+                          </span>
+                        ))}
+                      </div>
                     </th>
                   ))}
                 </tr>
