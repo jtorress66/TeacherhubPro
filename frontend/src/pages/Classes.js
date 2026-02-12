@@ -694,8 +694,79 @@ const Classes = () => {
                       </p>
                     </div>
 
-                    <DialogFooter>
-                      <Button variant="outline" onClick={() => setPortalDialog({ open: false, student: null, token: null, loading: false })}>
+                    {/* Expiration Info */}
+                    {portalDialog.expiresAt && (
+                      <div className="bg-amber-50 border border-amber-100 rounded-lg p-3">
+                        <div className="flex items-center gap-2 text-amber-800">
+                          <Calendar className="h-4 w-4" />
+                          <p className="text-sm">
+                            {language === 'es' ? 'Expira:' : 'Expires:'} {new Date(portalDialog.expiresAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Email Section */}
+                    <div className="border-t pt-4 mt-4">
+                      <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
+                        <Mail className="h-4 w-4" />
+                        {language === 'es' ? 'Enviar por Email' : 'Send via Email'}
+                      </h4>
+                      
+                      <div className="space-y-3">
+                        <div className="space-y-2">
+                          <Label>{language === 'es' ? 'Email del Padre/Madre' : 'Parent Email'}</Label>
+                          <Input 
+                            type="email"
+                            value={portalDialog.parentEmail}
+                            onChange={(e) => setPortalDialog(prev => ({ ...prev, parentEmail: e.target.value }))}
+                            placeholder="parent@email.com"
+                            data-testid="portal-parent-email"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label>{language === 'es' ? 'Expiración (días)' : 'Expiration (days)'}</Label>
+                          <Select 
+                            value={String(portalDialog.expiresDays)} 
+                            onValueChange={(v) => setPortalDialog(prev => ({ ...prev, expiresDays: parseInt(v) }))}
+                          >
+                            <SelectTrigger className="w-full" data-testid="portal-expire-days">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="7">7 {language === 'es' ? 'días' : 'days'}</SelectItem>
+                              <SelectItem value="14">14 {language === 'es' ? 'días' : 'days'}</SelectItem>
+                              <SelectItem value="30">30 {language === 'es' ? 'días' : 'days'}</SelectItem>
+                              <SelectItem value="60">60 {language === 'es' ? 'días' : 'days'}</SelectItem>
+                              <SelectItem value="90">90 {language === 'es' ? 'días' : 'days'}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <Button 
+                          onClick={sendPortalEmail} 
+                          disabled={!portalDialog.parentEmail || portalDialog.sendingEmail}
+                          className="w-full bg-green-600 hover:bg-green-700"
+                          data-testid="send-portal-email-btn"
+                        >
+                          {portalDialog.sendingEmail ? (
+                            <>
+                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              {language === 'es' ? 'Enviando...' : 'Sending...'}
+                            </>
+                          ) : (
+                            <>
+                              <Mail className="h-4 w-4 mr-2" />
+                              {language === 'es' ? 'Enviar Email' : 'Send Email'}
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <DialogFooter className="border-t pt-4">
+                      <Button variant="outline" onClick={() => setPortalDialog(prev => ({ ...prev, open: false }))}>
                         {language === 'es' ? 'Cerrar' : 'Close'}
                       </Button>
                       <Button onClick={() => window.open(portalDialog.token, '_blank')}>
