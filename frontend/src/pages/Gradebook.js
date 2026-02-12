@@ -62,6 +62,8 @@ const Gradebook = () => {
   
   const [loading, setLoading] = useState(true);
   const [classes, setClasses] = useState([]);
+  const [semesters, setSemesters] = useState([]);
+  const [selectedSemester, setSelectedSemester] = useState('');
   const [selectedClass, setSelectedClass] = useState(searchParams.get('class') || '');
   const [categories, setCategories] = useState([]);
   const [assignments, setAssignments] = useState([]);
@@ -80,19 +82,38 @@ const Gradebook = () => {
   });
 
   useEffect(() => {
-    const fetchClasses = async () => {
+    const fetchInitialData = async () => {
       try {
-        const res = await axios.get(`${API}/classes`, { withCredentials: true });
-        setClasses(res.data);
-        if (!selectedClass && res.data.length > 0) {
-          setSelectedClass(res.data[0].class_id);
+        const [classesRes, semestersRes] = await Promise.all([
+          axios.get(`${API}/classes`, { withCredentials: true }),
+          axios.get(`${API}/semesters`, { withCredentials: true })
+        ]);
+        
+        setClasses(classesRes.data);
+        setSemesters(semestersRes.data);
+        
+        // Set active semester as default
+        const activeSem = semestersRes.data.find(s => s.is_active);
+        if (activeSem) {
+          setSelectedSemester(activeSem.semester_id);
+        } else if (semestersRes.data.length > 0) {
+          setSelectedSemester(semestersRes.data[0].semester_id);
+        }
+        
+        if (!selectedClass && classesRes.data.length > 0) {
+          setSelectedClass(classesRes.data[0].class_id);
         }
       } catch (error) {
-        console.error('Error fetching classes:', error);
+        console.error('Error fetching data:', error);
       }
     };
-    fetchClasses();
-  }, [selectedClass]);
+    fetchInitialData();
+  }, []);
+
+  // Filter classes by semester
+  const filteredClasses = selectedSemester 
+    ? classes.filter(c => c.semester_id === selectedSemester || !c.semester_id)
+    : classes;
 
   useEffect(() => {
     if (!selectedClass) {
