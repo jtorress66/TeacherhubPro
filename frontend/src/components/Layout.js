@@ -91,14 +91,35 @@ const Layout = ({ children }) => {
         sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         <div className="flex flex-col h-full">
-          {/* Logo */}
+          {/* Logo - School branded or default */}
           <div className="p-6 border-b border-slate-200/50">
             <div className="flex items-center justify-between">
               <Link to="/dashboard" className="flex items-center gap-3 group">
-                <div className="p-2 rounded-xl bg-gradient-to-br from-green-600 to-green-700 shadow-lg group-hover:shadow-xl transition-shadow">
-                  <BookOpen className="h-5 w-5 text-white" />
+                {school?.logo_url ? (
+                  <img 
+                    src={school.logo_url} 
+                    alt={school.name} 
+                    className="h-10 w-10 object-contain rounded-lg border bg-white p-1"
+                  />
+                ) : (
+                  <div 
+                    className="p-2 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow"
+                    style={{ background: `linear-gradient(135deg, ${branding.primary_color}, ${branding.secondary_color})` }}
+                  >
+                    <BookOpen className="h-5 w-5 text-white" />
+                  </div>
+                )}
+                <div className="flex flex-col">
+                  <span 
+                    className="text-lg font-heading font-bold leading-tight"
+                    style={{ color: branding.secondary_color }}
+                  >
+                    {school?.name || 'TeacherHubPro'}
+                  </span>
+                  {school?.name && (
+                    <span className="text-xs text-slate-500">TeacherHubPro</span>
+                  )}
                 </div>
-                <span className="text-xl font-heading font-bold text-slate-800">TeacherHubPro</span>
               </Link>
               <Button 
                 variant="ghost" 
