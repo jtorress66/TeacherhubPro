@@ -269,6 +269,7 @@ class AttendanceSessionResponse(BaseModel):
 # Gradebook Models
 class CategoryCreate(BaseModel):
     name: str
+    name_es: Optional[str] = None
     weight_percent: float = 100.0
 
 class CategoryResponse(BaseModel):
@@ -276,6 +277,7 @@ class CategoryResponse(BaseModel):
     category_id: str
     class_id: str
     name: str
+    name_es: Optional[str] = None
     weight_percent: float
     created_at: str
 
