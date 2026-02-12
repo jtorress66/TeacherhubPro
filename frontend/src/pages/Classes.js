@@ -580,6 +580,75 @@ const Classes = () => {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Parent Portal Link Dialog */}
+        <Dialog open={portalDialog.open} onOpenChange={(open) => !open && setPortalDialog({ open: false, student: null, token: null, loading: false })}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Link className="h-5 w-5 text-green-600" />
+                {language === 'es' ? 'Portal de Padres' : 'Parent Portal'}
+              </DialogTitle>
+            </DialogHeader>
+            
+            {portalDialog.student && (
+              <div className="space-y-4">
+                <div className="p-4 bg-slate-50 rounded-lg">
+                  <p className="text-sm text-slate-500 mb-1">
+                    {language === 'es' ? 'Estudiante' : 'Student'}
+                  </p>
+                  <p className="font-medium text-slate-800">
+                    {portalDialog.student.first_name} {portalDialog.student.last_name}
+                  </p>
+                </div>
+
+                {portalDialog.loading ? (
+                  <div className="text-center py-4">
+                    <div className="animate-spin h-8 w-8 border-2 border-green-600 border-t-transparent rounded-full mx-auto"></div>
+                    <p className="text-sm text-slate-500 mt-2">
+                      {language === 'es' ? 'Generando enlace...' : 'Generating link...'}
+                    </p>
+                  </div>
+                ) : portalDialog.token && (
+                  <>
+                    <div className="space-y-2">
+                      <Label>{language === 'es' ? 'Enlace de acceso' : 'Access Link'}</Label>
+                      <div className="flex gap-2">
+                        <Input 
+                          value={portalDialog.token}
+                          readOnly
+                          className="font-mono text-xs"
+                          data-testid="portal-link-input"
+                        />
+                        <Button variant="outline" size="icon" onClick={copyPortalLink} data-testid="copy-portal-link-btn">
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-3">
+                      <p className="text-sm text-blue-800">
+                        {language === 'es' 
+                          ? 'Comparta este enlace con los padres del estudiante. El portal es de solo lectura.'
+                          : 'Share this link with the student\'s parents. The portal is read-only.'}
+                      </p>
+                    </div>
+
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setPortalDialog({ open: false, student: null, token: null, loading: false })}>
+                        {language === 'es' ? 'Cerrar' : 'Close'}
+                      </Button>
+                      <Button onClick={() => window.open(portalDialog.token, '_blank')}>
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        {language === 'es' ? 'Abrir Portal' : 'Open Portal'}
+                      </Button>
+                    </DialogFooter>
+                  </>
+                )}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
