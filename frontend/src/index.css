@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;500;600;700&family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -15,9 +15,20 @@ div[style*="position: fixed"][style*="bottom"]:has(a[href*="emergent"]) {
     opacity: 0 !important;
 }
 
+/* School Branding CSS Variables */
+:root {
+    --school-primary: #65A30D;
+    --school-secondary: #334155;
+    --school-accent: #F59E0B;
+    --school-font: 'Manrope';
+    --school-primary-hsl: 85 50% 45%;
+    --school-secondary-hsl: 215 25% 27%;
+    --school-accent-hsl: 36 90% 50%;
+}
+
 body {
     margin: 0;
-    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+    font-family: var(--school-font, 'Manrope'), -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -28,6 +39,31 @@ code, .font-mono {
 
 h1, h2, h3, .font-heading {
     font-family: 'Playfair Display', serif;
+}
+
+/* School-branded utility classes */
+.school-primary {
+    color: var(--school-primary);
+}
+
+.school-primary-bg {
+    background-color: var(--school-primary);
+}
+
+.school-secondary {
+    color: var(--school-secondary);
+}
+
+.school-secondary-bg {
+    background-color: var(--school-secondary);
+}
+
+.school-accent {
+    color: var(--school-accent);
+}
+
+.school-accent-bg {
+    background-color: var(--school-accent);
 }
 
 @layer base {
