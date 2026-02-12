@@ -762,12 +762,13 @@ const AdminPanel = () => {
             </div>
 
             <DialogFooter>
-              <Button variant="outline" onClick={() => setUserDialog(false)}>
+              <Button variant="outline" onClick={() => setUserDialog(false)} data-testid="user-dialog-cancel">
                 {language === 'es' ? 'Cancelar' : 'Cancel'}
               </Button>
               <Button 
                 onClick={saveUser} 
                 disabled={saving || !userForm.name || !userForm.email || !userForm.school_id || (!editingUser && !userForm.password)}
+                data-testid="user-dialog-save"
               >
                 {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 {language === 'es' ? 'Guardar' : 'Save'}
