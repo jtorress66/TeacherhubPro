@@ -18,12 +18,14 @@ import Templates from "./pages/Templates";
 import Attendance from "./pages/Attendance";
 import AttendanceReports from "./pages/AttendanceReports";
 import Gradebook from "./pages/Gradebook";
+import GradebookReports from "./pages/GradebookReports";
 import Classes from "./pages/Classes";
 import Settings from "./pages/Settings";
 import SubstitutePacket from "./pages/SubstitutePacket";
 import Pricing from "./pages/Pricing";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import AdminPanel from "./pages/AdminPanel";
+import ParentPortal from "./pages/ParentPortal";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
