@@ -12,11 +12,12 @@ import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '../components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Switch } from '../components/ui/switch';
 import { toast } from 'sonner';
 import { 
   Building2, Users, BookOpen, GraduationCap, Calendar, 
   Plus, Edit, Trash2, Key, Loader2, Search, Upload,
-  Palette, Shield, ChevronRight, BarChart3, School
+  Palette, Shield, ChevronRight, BarChart3, School, CalendarDays
 } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -30,13 +31,16 @@ const AdminPanel = () => {
   const [overview, setOverview] = useState(null);
   const [schools, setSchools] = useState([]);
   const [users, setUsers] = useState([]);
+  const [semesters, setSemesters] = useState([]);
   const [activeTab, setActiveTab] = useState('overview');
   
   // Dialog states
   const [schoolDialog, setSchoolDialog] = useState(false);
   const [userDialog, setUserDialog] = useState(false);
+  const [semesterDialog, setSemesterDialog] = useState(false);
   const [editingSchool, setEditingSchool] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
+  const [editingSemester, setEditingSemester] = useState(null);
   const [saving, setSaving] = useState(false);
   
   // Form states
@@ -46,6 +50,9 @@ const AdminPanel = () => {
   });
   const [userForm, setUserForm] = useState({
     email: '', name: '', password: '', school_id: '', role: 'teacher'
+  });
+  const [semesterForm, setSemesterForm] = useState({
+    name: '', name_es: '', start_date: '', end_date: '', year_term: '2024-2025', is_active: false
   });
   
   // Search
