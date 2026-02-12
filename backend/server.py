@@ -1454,8 +1454,8 @@ async def get_subscription_plans():
 @api_router.get("/subscription/status")
 async def get_subscription_status(user: dict = Depends(get_current_user)):
     """Get current user's subscription status"""
-    # Admins have full access without payment
-    if user.get("role") == "admin":
+    # Super Admins and Admins have full access without payment
+    if user.get("role") in ["admin", "super_admin"]:
         return {
             "has_access": True,
             "status": "admin",
