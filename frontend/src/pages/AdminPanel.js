@@ -69,19 +69,84 @@ const AdminPanel = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [overviewRes, schoolsRes, usersRes] = await Promise.all([
+      const [overviewRes, schoolsRes, usersRes, semestersRes] = await Promise.all([
         axios.get(`${API}/super-admin/overview`, { withCredentials: true }),
         axios.get(`${API}/super-admin/schools`, { withCredentials: true }),
-        axios.get(`${API}/super-admin/users`, { withCredentials: true })
+        axios.get(`${API}/super-admin/users`, { withCredentials: true }),
+        axios.get(`${API}/semesters`, { withCredentials: true })
       ]);
       setOverview(overviewRes.data);
       setSchools(schoolsRes.data.schools || []);
       setUsers(usersRes.data.users || []);
+      setSemesters(semestersRes.data || []);
     } catch (error) {
       toast.error('Error loading admin data');
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Semester handlers
+  const openSemesterDialog = (semester = null) => {
+    if (semester) {
+      setEditingSemester(semester);
+      setSemesterForm({
+        name: semester.name,
+        name_es: semester.name_es || '',
+        start_date: semester.start_date,
+        end_date: semester.end_date,
+        year_term: semester.year_term,
+        is_active: semester.is_active
+      });
+    } else {
+      setEditingSemester(null);
+      setSemesterForm({
+        name: '', name_es: '', start_date: '', end_date: '', year_term: '2024-2025', is_active: false
+      });
+    }
+    setSemesterDialog(true);
+  };
+
+  const saveSemester = async () => {
+    setSaving(true);
+    try {
+      if (editingSemester) {
+        await axios.put(`${API}/semesters/${editingSemester.semester_id}`, semesterForm, { withCredentials: true });
+        toast.success(language === 'es' ? 'Semestre actualizado' : 'Semester updated');
+      } else {
+        await axios.post(`${API}/semesters`, semesterForm, { withCredentials: true });
+        toast.success(language === 'es' ? 'Semestre creado' : 'Semester created');
+      }
+      setSemesterDialog(false);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteSemester = async (semesterId) => {
+    if (!window.confirm(language === 'es' ? '¿Eliminar este semestre?' : 'Delete this semester?')) return;
+    try {
+      await axios.delete(`${API}/semesters/${semesterId}`, { withCredentials: true });
+      toast.success(language === 'es' ? 'Semestre eliminado' : 'Semester deleted');
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error');
+    }
+  };
+
+  const toggleSemesterActive = async (semester) => {
+    try {
+      await axios.put(`${API}/semesters/${semester.semester_id}`, {
+        is_active: !semester.is_active
+      }, { withCredentials: true });
+      fetchData();
+      toast.success(language === 'es' ? 'Estado actualizado' : 'Status updated');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error');
     }
   };
 
