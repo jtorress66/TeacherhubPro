@@ -461,6 +461,107 @@ const Settings = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Admin Management - Only visible to admins */}
+        {user?.role === 'admin' && (
+          <Card className="bg-white border-slate-100 shadow-sm">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-purple-100">
+                  <UserCog className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    {language === 'es' ? 'Gestión de Usuarios' : 'User Management'}
+                    <Badge className="bg-purple-100 text-purple-800">Admin</Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    {language === 'es' ? 'Gestionar roles de usuarios' : 'Manage user roles'}
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {loadingUsers ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+                </div>
+              ) : allUsers.length > 0 ? (
+                <div className="space-y-3">
+                  {allUsers.map((u) => (
+                    <div 
+                      key={u.user_id} 
+                      className="flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-100/50 transition-colors"
+                      data-testid={`user-row-${u.user_id}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-white font-medium shadow-sm">
+                          {u.name?.charAt(0) || u.email?.charAt(0) || '?'}
+                        </div>
+                        <div>
+                          <p className="font-medium text-slate-800">{u.name || 'Unknown'}</p>
+                          <p className="text-sm text-slate-500">{u.email}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        {u.user_id === user?.user_id ? (
+                          <Badge className="bg-purple-100 text-purple-800">
+                            {language === 'es' ? 'Tú (Admin)' : 'You (Admin)'}
+                          </Badge>
+                        ) : (
+                          <Select
+                            value={u.role}
+                            onValueChange={(value) => handleUpdateUserRole(u.user_id, value)}
+                            disabled={updatingRole === u.user_id}
+                          >
+                            <SelectTrigger 
+                              className="w-32" 
+                              data-testid={`role-select-${u.user_id}`}
+                            >
+                              {updatingRole === u.user_id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <SelectValue />
+                              )}
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="teacher">
+                                <span className="flex items-center gap-2">
+                                  <Users className="h-4 w-4" />
+                                  {language === 'es' ? 'Maestro' : 'Teacher'}
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="admin">
+                                <span className="flex items-center gap-2">
+                                  <Crown className="h-4 w-4 text-purple-500" />
+                                  Admin
+                                </span>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-slate-500 py-8">
+                  {language === 'es' ? 'No hay usuarios' : 'No users found'}
+                </p>
+              )}
+              
+              <div className="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
+                <p className="text-sm text-amber-800">
+                  <strong>{language === 'es' ? 'Nota:' : 'Note:'}</strong>{' '}
+                  {language === 'es' 
+                    ? 'Los usuarios con rol de Admin tienen acceso completo a todas las funciones sin necesidad de suscripción.'
+                    : 'Users with Admin role have full access to all features without requiring a subscription.'}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </Layout>
   );
