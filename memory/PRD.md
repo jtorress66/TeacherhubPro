@@ -476,6 +476,62 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
 - Test report: `/app/test_reports/iteration_5.json`
 - Test file: `/app/backend/tests/test_gradebook_gpa.py`
 
+
+---
+## Update 2026-02-12 - Parent Portal & Gradebook Reports
+
+### Features Implemented
+
+#### Gradebook Reports (Complete)
+- **Page:** `/app/frontend/src/pages/GradebookReports.js`
+- **Route:** `/gradebook/reports`
+- **Features:**
+  - Class selector dropdown
+  - Statistics cards: Class GPA, Average %, Students count, Assignments count
+  - Grade Distribution visualization (A, B, C, D, F counts in colored boxes)
+  - Student Detail table with: Name, Assignments Completed, Points, Percentage, GPA, Letter Grade
+  - Print button for reports
+  - GPA Scale reference section
+
+#### Parent Portal (Complete)
+- **Page:** `/app/frontend/src/pages/ParentPortal.js`
+- **Route:** `/portal/{token}` (PUBLIC - no auth required)
+- **Access:** Teachers generate unique links from Classes page (green link icon)
+- **Features:**
+  - Student info card with name, GPA, letter grade
+  - Quick stats: GPA, Grade %, Attendance Rate, Classes
+  - Three tabs:
+    - **Calificaciones (Grades):** Per-class grades with recent assignments
+    - **Asistencia (Attendance):** Summary and history
+    - **Tareas (Assignments):** Upcoming and completed assignments with scores
+  - Completely read-only (no edit functionality)
+  - "Portal de Solo Lectura" badge visible
+  - Error handling for invalid tokens
+  - Bilingual support (Spanish/English)
+
+#### Portal Link Generation
+- **Location:** Classes page → Student row → Green link icon
+- **Dialog shows:**
+  - Student name
+  - Unique access URL
+  - Copy to clipboard button
+  - "Open Portal" button (new tab)
+
+### Backend API Endpoints Added
+- `GET /api/gradebook/report/{class_id}` - Gradebook report with student averages
+- `POST /api/students/{student_id}/portal-token` - Generate portal access token
+- `GET /api/portal/{token}` - Get student data (PUBLIC, no auth)
+- `DELETE /api/students/{student_id}/portal-token` - Revoke portal access
+
+### Database Collection Added
+- `portal_tokens`: `{ token, student_id, school_id, created_at, created_by }`
+
+### Test Results
+- Backend: 100% (11/11 tests passed)
+- Frontend: 100% (all features verified)
+- Test report: `/app/test_reports/iteration_6.json`
+- Test file: `/app/backend/tests/test_portal_gradebook_reports.py`
+
 ### Data Model Updates
 - `CategoryCreate` and `CategoryResponse` now include `name_es` field for bilingual support
 
