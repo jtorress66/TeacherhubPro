@@ -62,30 +62,41 @@ const Dashboard = () => {
 
   const stats = dashboardData?.stats || {};
   const today = dashboardData?.today || new Date().toISOString().split('T')[0];
-  const school = dashboardData?.school;
+  // Use school from context instead of dashboardData
+  const dashboardSchool = dashboardData?.school || school;
 
   return (
     <Layout>
       <div className="space-y-8 animate-fade-in">
         {/* Welcome Header with School Info */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 p-6 bg-gradient-to-br from-white to-green-50/50 rounded-2xl border border-slate-100 shadow-sm">
+        <div 
+          className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 p-6 rounded-2xl border shadow-sm"
+          style={{ 
+            background: `linear-gradient(135deg, white 0%, ${branding.primary_color}08 100%)`,
+            borderColor: `${branding.primary_color}20`
+          }}
+        >
           <div className="flex items-center gap-5">
-            {school?.logo_url && (
+            {dashboardSchool?.logo_url && (
               <img 
-                src={school.logo_url} 
-                alt={school.name} 
+                src={dashboardSchool.logo_url} 
+                alt={dashboardSchool.name} 
                 className="h-16 w-16 object-contain rounded-xl border border-slate-200 bg-white p-2 shadow-sm"
                 data-testid="school-logo"
               />
             )}
             <div>
-              {school?.name && (
-                <p className="text-sm text-green-600 font-semibold mb-1 uppercase tracking-wide" data-testid="school-name">
-                  {school.name}
+              {dashboardSchool?.name && (
+                <p 
+                  className="text-sm font-semibold mb-1 uppercase tracking-wide" 
+                  style={{ color: branding.primary_color }}
+                  data-testid="school-name"
+                >
+                  {dashboardSchool.name}
                 </p>
               )}
               <h1 className="text-3xl md:text-4xl font-heading font-bold text-slate-800">
-                {t('welcome')}, <span className="gradient-text">{user?.name?.split(' ')[0] || 'Teacher'}</span>!
+                {t('welcome')}, <span style={{ color: branding.primary_color }}>{user?.name?.split(' ')[0] || 'Teacher'}</span>!
               </h1>
               <p className="text-slate-500 mt-2 flex items-center gap-2">
                 <Clock className="h-4 w-4" />
@@ -101,7 +112,8 @@ const Dashboard = () => {
           <div className="flex gap-3">
             <Button 
               onClick={() => navigate('/planner/new')} 
-              className="gap-2 bg-green-600 hover:bg-green-700 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5" 
+              className="gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5" 
+              style={{ backgroundColor: branding.primary_color }}
               data-testid="new-plan-btn"
             >
               <Plus className="h-4 w-4" />
@@ -115,8 +127,8 @@ const Dashboard = () => {
           <Card className="bg-white border-slate-100 card-hover animate-fade-in opacity-0" style={{ animationDelay: '0ms', animationFillMode: 'forwards' }}>
             <CardContent className="p-5">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-slate-100">
-                  <BookOpen className="h-5 w-5 text-slate-600" />
+                <div className="p-3 rounded-xl" style={{ backgroundColor: `${branding.secondary_color}10` }}>
+                  <BookOpen className="h-5 w-5" style={{ color: branding.secondary_color }} />
                 </div>
                 <div>
                   <p className="text-3xl font-bold text-slate-800">{stats.total_classes || 0}</p>
