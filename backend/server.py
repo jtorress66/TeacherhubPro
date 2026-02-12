@@ -1673,19 +1673,28 @@ async def cancel_subscription(user: dict = Depends(get_current_user)):
 
 @api_router.post("/subscription/webhook")
 async def stripe_webhook(request: Request):
-    """Handle Stripe webhooks"""
+    """Handle Stripe webhooks with signature verification"""
     import stripe
     stripe.api_key = STRIPE_API_KEY
     
     payload = await request.body()
     sig_header = request.headers.get('stripe-signature')
     
-    # In production, verify the webhook signature
-    # For now, process the event directly
+    # Verify webhook signature for security
     try:
-        event = stripe.Event.construct_from(
-            payload.decode('utf-8'), stripe.api_key
-        )
+        if STRIPE_WEBHOOK_SECRET and sig_header:
+            event = stripe.Webhook.construct_event(
+                payload, sig_header, STRIPE_WEBHOOK_SECRET
+            )
+        else:
+            # Fallback for development/testing without signature
+            import json
+            event = stripe.Event.construct_from(
+                json.loads(payload), stripe.api_key
+            )
+    except stripe.error.SignatureVerificationError as e:
+        logger.error(f"Webhook signature verification failed: {e}")
+        raise HTTPException(status_code=400, detail="Invalid signature")
     except Exception as e:
         logger.error(f"Webhook error: {e}")
         raise HTTPException(status_code=400, detail=str(e))
