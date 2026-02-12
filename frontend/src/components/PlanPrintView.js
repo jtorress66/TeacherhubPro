@@ -65,10 +65,14 @@ const Checkbox = ({ checked, size = 10 }) => (
   }}>{checked ? '✓' : ''}</span>
 );
 
-export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
+export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) => {
   const { language } = useLanguage();
+  const { school: contextSchool, branding } = useSchool();
   const printRef = useRef();
   const lang = language === 'es' ? 'es' : 'en';
+  
+  // Use prop school if provided, otherwise use context school
+  const school = propSchool || contextSchool;
 
   const planDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((dayName, i) => {
     const existingDay = plan.days?.[i];
@@ -84,6 +88,11 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
     };
   });
 
+  // Get school colors for PDF
+  const primaryColor = school?.branding?.primary_color || branding?.primary_color || '#65A30D';
+  const secondaryColor = school?.branding?.secondary_color || branding?.secondary_color || '#334155';
+  const accentColor = school?.branding?.accent_color || branding?.accent_color || '#F59E0B';
+
   const handlePrint = () => {
     const printContent = printRef.current;
     const printWindow = window.open('', '_blank');
@@ -94,6 +103,11 @@ export const PlanPrintView = ({ plan, classInfo, school, onClose }) => {
       <head>
         <title>Lesson Plan - ${plan.unit || 'Plan'}</title>
         <style>
+          :root {
+            --school-primary: ${primaryColor};
+            --school-secondary: ${secondaryColor};
+            --school-accent: ${accentColor};
+          }
           @page { 
             size: 11in 8.5in; 
             margin: 0.2in 0.25in; 
