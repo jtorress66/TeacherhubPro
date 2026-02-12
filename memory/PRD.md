@@ -438,6 +438,47 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
 
 ### P3 (Future)
 - Email notifications for absences
+
+---
+## Update 2026-02-12 - Gradebook GPA System Implementation
+
+### Features Implemented
+
+#### GPA Calculation & Display (Complete)
+- **Location:** `/app/frontend/src/pages/Gradebook.js`
+- **GPA Scale (School's Custom):**
+  - A: 4.00 - 3.50 (≥87.5%)
+  - B: 3.49 - 2.50 (62.5% - 87.4%)
+  - C: 2.49 - 1.60 (40% - 62.4%)
+  - D: 1.59 - 0.80 (20% - 39.9%)
+  - F: 0.79 - 0 (<20%)
+- **Display:** Each student shows:
+  - Letter grade in colored badge (green A, blue B, yellow C, orange D, red F)
+  - GPA value (e.g., "3.18 GPA")
+  - Percentage (e.g., "79.5%")
+
+#### Category Management (Complete)
+- **Access:** "Categorías" button in Gradebook header
+- **Features:**
+  - GPA scale reference display (5 color-coded boxes)
+  - Total weight percentage indicator (red if >100%)
+  - Create new categories with bilingual names (EN/ES) and weight
+  - Edit existing categories inline
+  - Delete categories (blocked if assignments exist)
+
+### Backend API Endpoints Added
+- `PUT /api/categories/{category_id}` - Update category name, name_es, weight_percent
+- `DELETE /api/categories/{category_id}` - Delete category (fails if has assignments)
+
+### Test Results
+- Backend: 100% (11/11 tests passed)
+- Frontend: 100% (all features verified)
+- Test report: `/app/test_reports/iteration_5.json`
+- Test file: `/app/backend/tests/test_gradebook_gpa.py`
+
+### Data Model Updates
+- `CategoryCreate` and `CategoryResponse` now include `name_es` field for bilingual support
+
 - Google Classroom Integration
 - Report card generation
 
