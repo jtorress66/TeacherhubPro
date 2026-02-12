@@ -68,6 +68,9 @@ const Gradebook = () => {
   const [students, setStudents] = useState([]);
   const [grades, setGrades] = useState({});
   const [showNewAssignment, setShowNewAssignment] = useState(false);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
+  const [newCategory, setNewCategory] = useState({ name: '', name_es: '', weight: 10 });
+  const [editingCategory, setEditingCategory] = useState(null);
   const [newAssignment, setNewAssignment] = useState({
     title: '',
     category_id: '',
