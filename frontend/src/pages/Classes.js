@@ -186,14 +186,29 @@ const Classes = () => {
   };
 
   const generatePortalLink = async (student) => {
-    setPortalDialog({ open: true, student, token: null, loading: true });
+    const parentEmail = student.parent_email || '';
+    setPortalDialog({ 
+      open: true, 
+      student, 
+      token: null, 
+      loading: true,
+      expiresAt: null,
+      parentEmail,
+      expiresDays: 30,
+      sendingEmail: false
+    });
     try {
-      const res = await axios.post(`${API}/students/${student.student_id}/portal-token`, {}, { withCredentials: true });
+      const res = await axios.post(`${API}/students/${student.student_id}/portal-token?expires_days=30`, {}, { withCredentials: true });
       const fullUrl = `${window.location.origin}/portal/${res.data.token}`;
-      setPortalDialog(prev => ({ ...prev, token: fullUrl, loading: false }));
+      setPortalDialog(prev => ({ 
+        ...prev, 
+        token: fullUrl, 
+        loading: false,
+        expiresAt: res.data.expires_at
+      }));
     } catch (error) {
       toast.error(language === 'es' ? 'Error al generar enlace' : 'Error generating link');
-      setPortalDialog({ open: false, student: null, token: null, loading: false });
+      setPortalDialog(prev => ({ ...prev, open: false, loading: false }));
     }
   };
 
@@ -201,6 +216,29 @@ const Classes = () => {
     if (portalDialog.token) {
       navigator.clipboard.writeText(portalDialog.token);
       toast.success(language === 'es' ? 'Enlace copiado!' : 'Link copied!');
+    }
+  };
+
+  const sendPortalEmail = async () => {
+    if (!portalDialog.parentEmail || !portalDialog.student) return;
+    
+    setPortalDialog(prev => ({ ...prev, sendingEmail: true }));
+    try {
+      await axios.post(`${API}/portal/email`, {
+        student_id: portalDialog.student.student_id,
+        parent_email: portalDialog.parentEmail,
+        expires_days: portalDialog.expiresDays
+      }, { withCredentials: true });
+      
+      toast.success(
+        language === 'es' 
+          ? `Email enviado a ${portalDialog.parentEmail}` 
+          : `Email sent to ${portalDialog.parentEmail}`
+      );
+      setPortalDialog(prev => ({ ...prev, sendingEmail: false }));
+    } catch (error) {
+      toast.error(language === 'es' ? 'Error al enviar email' : 'Error sending email');
+      setPortalDialog(prev => ({ ...prev, sendingEmail: false }));
     }
   };
 
