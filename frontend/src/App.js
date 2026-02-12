@@ -175,10 +175,12 @@ function App() {
   return (
     <LanguageProvider>
       <AuthProvider>
-        <BrowserRouter>
-          <Toaster position="top-right" richColors />
-          <AppRouter />
-        </BrowserRouter>
+        <SchoolProvider>
+          <BrowserRouter>
+            <Toaster position="top-right" richColors />
+            <AppRouter />
+          </BrowserRouter>
+        </SchoolProvider>
       </AuthProvider>
     </LanguageProvider>
   );
