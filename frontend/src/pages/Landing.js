@@ -276,7 +276,7 @@ const Landing = () => {
       <section className="max-w-7xl mx-auto px-6 pb-24">
         <div className="relative rounded-3xl overflow-hidden shadow-2xl animate-fade-in-up" style={{ animationDelay: '300ms' }}>
           <img 
-            src="https://images.unsplash.com/photo-1557734864-c78b6dfef1b1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHwxfHx0ZWFjaGVyJTIwY2xhc3Nyb29tJTIwaGFwcHklMjBzdHVkZW50c3xlbnwwfHx8fDE3NzA4NTMzMTl8MA&ixlib=rb-4.1.0&q=85"
+            src="https://images.unsplash.com/photo-1681487097558-8856c9212cb0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxNzV8MHwxfHNlYXJjaHwyfHx0dXRvciUyMHRlYWNoaW5nJTIwc21hbGwlMjBncm91cCUyMGNoaWxkcmVuJTIwYm9va3N8ZW58MHx8fHwxNzcwODY2Njk4fDA&ixlib=rb-4.1.0&q=85"
             alt="Classroom"
             className="w-full h-72 md:h-[28rem] object-cover"
           />
