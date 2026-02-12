@@ -1786,6 +1786,51 @@ async def update_user_role(data: UpdateUserRoleRequest, request: Request):
     
     return {"message": "User role updated successfully", "user": updated_user}
 
+# ==================== ONE-TIME ADMIN SETUP ====================
+
+class AdminSetupRequest(BaseModel):
+    email: str
+    setup_key: str
+
+@api_router.post("/setup/first-admin")
+async def setup_first_admin(data: AdminSetupRequest):
+    """
+    One-time endpoint to create the first admin user.
+    Only works if no admin exists yet.
+    Requires the correct setup key for security.
+    """
+    # Security key - change this to something unique
+    SETUP_KEY = "TeacherHubPro2026SecureSetup"
+    
+    # Verify setup key
+    if data.setup_key != SETUP_KEY:
+        raise HTTPException(status_code=403, detail="Invalid setup key")
+    
+    # Check if any admin already exists
+    existing_admin = await db.users.find_one({"role": "admin"})
+    if existing_admin:
+        raise HTTPException(
+            status_code=400, 
+            detail="Admin already exists. This endpoint is disabled. Use the Settings page to manage admins."
+        )
+    
+    # Find the user by email
+    user = await db.users.find_one({"email": data.email})
+    if not user:
+        raise HTTPException(status_code=404, detail=f"User with email {data.email} not found. Please register first.")
+    
+    # Upgrade to admin
+    await db.users.update_one(
+        {"email": data.email},
+        {"$set": {"role": "admin", "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {
+        "success": True,
+        "message": f"User {data.email} has been upgraded to admin!",
+        "note": "This endpoint is now disabled. Use Settings > User Management to add more admins."
+    }
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/health")
