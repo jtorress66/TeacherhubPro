@@ -772,6 +772,7 @@ async def create_class(class_data: ClassCreate, user: dict = Depends(get_current
         "section": class_data.section,
         "subject": class_data.subject,
         "year_term": class_data.year_term,
+        "semester_id": class_data.semester_id,
         "created_at": now
     }
     
