@@ -390,21 +390,65 @@ const Gradebook = () => {
           </div>
         </div>
 
-        {/* Class Selector */}
+        {/* Semester and Class Selector */}
         <Card className="bg-white border-slate-100">
           <CardContent className="p-4">
-            <Select value={selectedClass} onValueChange={setSelectedClass}>
-              <SelectTrigger className="w-full md:w-64" data-testid="gradebook-class-select">
-                <SelectValue placeholder={language === 'es' ? 'Seleccionar clase' : 'Select class'} />
-              </SelectTrigger>
-              <SelectContent>
-                {classes.map(cls => (
-                  <SelectItem key={cls.class_id} value={cls.class_id}>
-                    {cls.name} ({cls.grade}-{cls.section})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex flex-col md:flex-row gap-4">
+              {/* Semester Selector */}
+              {semesters.length > 0 && (
+                <div className="flex-1">
+                  <Label className="text-sm text-slate-500 mb-1.5 block">
+                    {language === 'es' ? 'Semestre' : 'Semester'}
+                  </Label>
+                  <Select value={selectedSemester} onValueChange={setSelectedSemester}>
+                    <SelectTrigger className="w-full" data-testid="gradebook-semester-select">
+                      <SelectValue placeholder={language === 'es' ? 'Todos los semestres' : 'All semesters'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">{language === 'es' ? 'Todos los semestres' : 'All semesters'}</SelectItem>
+                      {semesters.map(sem => (
+                        <SelectItem key={sem.semester_id} value={sem.semester_id}>
+                          {language === 'es' ? sem.name_es || sem.name : sem.name}
+                          {sem.is_active && (
+                            <span className="ml-2 text-green-600 text-xs">(Activo)</span>
+                          )}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              
+              {/* Class Selector */}
+              <div className="flex-1">
+                <Label className="text-sm text-slate-500 mb-1.5 block">
+                  {language === 'es' ? 'Clase' : 'Class'}
+                </Label>
+                <Select value={selectedClass} onValueChange={setSelectedClass}>
+                  <SelectTrigger className="w-full" data-testid="gradebook-class-select">
+                    <SelectValue placeholder={language === 'es' ? 'Seleccionar clase' : 'Select class'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredClasses.map(cls => (
+                      <SelectItem key={cls.class_id} value={cls.class_id}>
+                        {cls.name} ({cls.grade}-{cls.section})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            {/* Active Semester Indicator */}
+            {selectedSemester && semesters.find(s => s.semester_id === selectedSemester) && (
+              <div className="mt-3 p-2 bg-green-50 border border-green-100 rounded-lg">
+                <p className="text-sm text-green-800 flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 rounded-full bg-green-500"></span>
+                  {language === 'es' ? 'Trabajando en:' : 'Working on:'} {' '}
+                  <strong>{semesters.find(s => s.semester_id === selectedSemester)?.name}</strong>
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -413,7 +457,7 @@ const Gradebook = () => {
           {categories.map(cat => (
             <Card key={cat.category_id} className="bg-white border-slate-100">
               <CardContent className="p-4">
-                <p className="font-medium text-slate-800">{cat.name}</p>
+                <p className="font-medium text-slate-800">{language === 'es' ? cat.name_es || cat.name : cat.name}</p>
                 <p className="text-sm text-slate-500">{cat.weight_percent}% {language === 'es' ? 'del total' : 'of total'}</p>
                 <Badge variant="secondary" className="mt-2">
                   {assignments.filter(a => a.category_id === cat.category_id).length} {t('assignments').toLowerCase()}
@@ -422,6 +466,7 @@ const Gradebook = () => {
             </Card>
           ))}
         </div>
+
 
         {/* Grade Grid */}
         <Card className="bg-white border-slate-100">
