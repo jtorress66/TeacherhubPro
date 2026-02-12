@@ -48,6 +48,8 @@ const Classes = () => {
     accommodations: ''
   });
 
+  const [portalDialog, setPortalDialog] = useState({ open: false, student: null, token: null, loading: false });
+
   useEffect(() => {
     const fetchClasses = async () => {
       try {
