@@ -456,7 +456,7 @@ const AdminPanel = () => {
                   className="pl-10"
                 />
               </div>
-              <Button onClick={() => openUserDialog()}>
+              <Button onClick={() => openUserDialog()} data-testid="new-user-btn">
                 <Plus className="h-4 w-4 mr-2" />
                 {language === 'es' ? 'Nuevo Usuario' : 'New User'}
               </Button>
