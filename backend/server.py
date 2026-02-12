@@ -1419,6 +1419,252 @@ async def get_gradebook(class_id: str, user: dict = Depends(get_current_user)):
         "grades": grades_map
     }
 
+@api_router.get("/gradebook/report/{class_id}")
+async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_user)):
+    """Get gradebook report for a class with student averages"""
+    class_doc = await db.classes.find_one({"class_id": class_id}, {"_id": 0})
+    if not class_doc:
+        raise HTTPException(status_code=404, detail="Class not found")
+    
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    students = await db.students.find({"class_id": class_id}, {"_id": 0}).to_list(100)
+    assignments = await db.assignments.find({"class_id": class_id}, {"_id": 0}).to_list(100)
+    categories = await db.grade_categories.find({"class_id": class_id}, {"_id": 0}).to_list(50)
+    
+    # Get all grades
+    assignment_ids = [a["assignment_id"] for a in assignments]
+    grades = await db.grades.find({"assignment_id": {"$in": assignment_ids}}, {"_id": 0}).to_list(10000)
+    
+    # Build grades map
+    grades_map = {}
+    for grade in grades:
+        key = f"{grade['student_id']}_{grade['assignment_id']}"
+        grades_map[key] = grade
+    
+    # Calculate student averages
+    student_reports = []
+    for student in students:
+        total_points = 0
+        max_points = 0
+        assignments_completed = 0
+        
+        for assignment in assignments:
+            key = f"{student['student_id']}_{assignment['assignment_id']}"
+            grade = grades_map.get(key)
+            if grade and grade.get('score') is not None:
+                total_points += grade['score']
+                max_points += assignment['points']
+                assignments_completed += 1
+        
+        average = (total_points / max_points * 100) if max_points > 0 else None
+        
+        student_reports.append({
+            "student_id": student["student_id"],
+            "first_name": student.get("first_name", ""),
+            "last_name": student.get("last_name", ""),
+            "assignments_completed": assignments_completed,
+            "total_points": total_points,
+            "max_points": max_points,
+            "average": average
+        })
+    
+    return {
+        "class_id": class_id,
+        "class_name": class_doc.get("name", ""),
+        "students": student_reports,
+        "total_assignments": len(assignments),
+        "categories": categories
+    }
+
+# ==================== PARENT PORTAL ENDPOINTS ====================
+
+@api_router.post("/students/{student_id}/portal-token")
+async def generate_portal_token(student_id: str, user: dict = Depends(get_current_user)):
+    """Generate or get portal access token for a student"""
+    student = await db.students.find_one({"student_id": student_id}, {"_id": 0})
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    # Check permission
+    class_doc = await db.classes.find_one({"class_id": student["class_id"]}, {"_id": 0})
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    # Check if token already exists
+    existing = await db.portal_tokens.find_one({"student_id": student_id}, {"_id": 0})
+    if existing:
+        return {
+            "token": existing["token"],
+            "portal_url": f"/portal/{existing['token']}",
+            "created_at": existing["created_at"]
+        }
+    
+    # Generate new token
+    token = f"portal_{uuid.uuid4().hex}"
+    now = datetime.now(timezone.utc).isoformat()
+    
+    await db.portal_tokens.insert_one({
+        "token": token,
+        "student_id": student_id,
+        "school_id": student.get("school_id"),
+        "created_at": now,
+        "created_by": user["user_id"]
+    })
+    
+    return {
+        "token": token,
+        "portal_url": f"/portal/{token}",
+        "created_at": now
+    }
+
+@api_router.get("/portal/{token}")
+async def get_portal_data(token: str):
+    """Get student portal data (public endpoint, no auth required)"""
+    # Find token
+    token_doc = await db.portal_tokens.find_one({"token": token}, {"_id": 0})
+    if not token_doc:
+        raise HTTPException(status_code=404, detail="Invalid or expired access link")
+    
+    student_id = token_doc["student_id"]
+    
+    # Get student info
+    student = await db.students.find_one({"student_id": student_id}, {"_id": 0})
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    # Get school info
+    school = None
+    if student.get("school_id"):
+        school = await db.schools.find_one({"school_id": student["school_id"]}, {"_id": 0})
+    
+    # Get all classes the student is in
+    classes_data = []
+    classes = await db.classes.find({"class_id": student["class_id"]}, {"_id": 0}).to_list(20)
+    
+    for cls in classes:
+        # Get assignments for this class
+        assignments = await db.assignments.find({"class_id": cls["class_id"]}, {"_id": 0}).to_list(100)
+        
+        # Get grades for this student
+        assignment_ids = [a["assignment_id"] for a in assignments]
+        grades = await db.grades.find({
+            "student_id": student_id,
+            "assignment_id": {"$in": assignment_ids}
+        }, {"_id": 0}).to_list(100)
+        grades_map = {g["assignment_id"]: g for g in grades}
+        
+        # Calculate average
+        total_points = 0
+        max_points = 0
+        assignments_with_grades = []
+        
+        for assignment in assignments:
+            grade = grades_map.get(assignment["assignment_id"])
+            score = grade.get("score") if grade else None
+            
+            assignments_with_grades.append({
+                "assignment_id": assignment["assignment_id"],
+                "title": assignment.get("title", ""),
+                "points": assignment.get("points", 0),
+                "due_date": assignment.get("due_date"),
+                "score": score
+            })
+            
+            if score is not None:
+                total_points += score
+                max_points += assignment.get("points", 0)
+        
+        average = (total_points / max_points * 100) if max_points > 0 else None
+        
+        # Get attendance for this class
+        attendance_records = await db.attendance_records.find({
+            "student_id": student_id,
+            "class_id": cls["class_id"]
+        }, {"_id": 0}).sort("date", -1).to_list(30)
+        
+        attendance_summary = {"present": 0, "absent": 0, "tardy": 0, "excused": 0, "total": 0}
+        for record in attendance_records:
+            status = record.get("status", "present")
+            attendance_summary[status] = attendance_summary.get(status, 0) + 1
+            attendance_summary["total"] += 1
+        
+        # Recent grades (last 5 graded assignments)
+        recent_grades = [
+            {
+                "assignment_id": a["assignment_id"],
+                "title": a["title"],
+                "points": a["points"],
+                "score": a["score"]
+            }
+            for a in assignments_with_grades if a["score"] is not None
+        ][-5:]
+        
+        classes_data.append({
+            "class_id": cls["class_id"],
+            "name": cls.get("name", ""),
+            "subject": cls.get("subject", ""),
+            "grade": cls.get("grade", ""),
+            "section": cls.get("section", ""),
+            "average": average,
+            "assignments": assignments_with_grades,
+            "recent_grades": recent_grades,
+            "attendance": attendance_summary,
+            "attendance_history": [
+                {"date": r.get("date"), "status": r.get("status")}
+                for r in attendance_records[:10]
+            ]
+        })
+    
+    # Get upcoming assignments (next 7 days)
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    week_from_now = (datetime.now(timezone.utc) + timedelta(days=7)).strftime("%Y-%m-%d")
+    
+    upcoming = []
+    for cls in classes_data:
+        for a in cls["assignments"]:
+            if a["due_date"] and today <= a["due_date"] <= week_from_now and a["score"] is None:
+                upcoming.append({
+                    "assignment_id": a["assignment_id"],
+                    "title": a["title"],
+                    "points": a["points"],
+                    "due_date": a["due_date"],
+                    "class_name": cls["name"]
+                })
+    
+    upcoming.sort(key=lambda x: x["due_date"])
+    
+    return {
+        "student": {
+            "student_id": student["student_id"],
+            "first_name": student.get("first_name", ""),
+            "last_name": student.get("last_name", ""),
+            "grade": student.get("grade", "")
+        },
+        "school": {
+            "name": school.get("name") if school else None,
+            "logo_url": school.get("logo_url") if school else None
+        } if school else None,
+        "classes": classes_data,
+        "upcoming_assignments": upcoming[:5],
+        "language": "es"
+    }
+
+@api_router.delete("/students/{student_id}/portal-token")
+async def revoke_portal_token(student_id: str, user: dict = Depends(get_current_user)):
+    """Revoke portal access token for a student"""
+    student = await db.students.find_one({"student_id": student_id}, {"_id": 0})
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    class_doc = await db.classes.find_one({"class_id": student["class_id"]}, {"_id": 0})
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    await db.portal_tokens.delete_many({"student_id": student_id})
+    return {"message": "Portal access revoked"}
+
 # ==================== DASHBOARD ENDPOINTS ====================
 
 @api_router.get("/dashboard")
