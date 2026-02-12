@@ -298,6 +298,10 @@ const Gradebook = () => {
             <p className="text-slate-500">{t('assignments')}</p>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setShowCategoryManager(true)} data-testid="manage-categories-btn">
+              <FolderPlus className="h-4 w-4 mr-2" />
+              {language === 'es' ? 'Categorías' : 'Categories'}
+            </Button>
             <Dialog open={showNewAssignment} onOpenChange={setShowNewAssignment}>
               <DialogTrigger asChild>
                 <Button data-testid="new-assignment-btn">
@@ -330,7 +334,7 @@ const Gradebook = () => {
                       <SelectContent>
                         {categories.map(cat => (
                           <SelectItem key={cat.category_id} value={cat.category_id}>
-                            {cat.name}
+                            {language === 'es' ? cat.name_es : cat.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
