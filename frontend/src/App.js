@@ -22,6 +22,7 @@ import Settings from "./pages/Settings";
 import SubstitutePacket from "./pages/SubstitutePacket";
 import Pricing from "./pages/Pricing";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
+import AdminPanel from "./pages/AdminPanel";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
