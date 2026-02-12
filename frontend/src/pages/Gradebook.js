@@ -482,9 +482,22 @@ const Gradebook = () => {
                           );
                         })}
                         <td className="p-3 text-center">
-                          <Badge variant="outline" className="font-mono">
-                            {calculateStudentAverage(student.student_id)}%
-                          </Badge>
+                          {(() => {
+                            const gradeInfo = getStudentGradeInfo(student.student_id);
+                            return (
+                              <div className="flex flex-col items-center gap-1">
+                                <Badge className={`font-bold text-sm px-3 py-1 ${gradeInfo.color}`}>
+                                  {gradeInfo.letter}
+                                </Badge>
+                                <div className="text-xs text-slate-500 font-mono">
+                                  {gradeInfo.gpa !== '-' ? `${gradeInfo.gpa} GPA` : '-'}
+                                </div>
+                                <div className="text-xs text-slate-400">
+                                  {gradeInfo.percentage !== '-' ? `${gradeInfo.percentage}%` : ''}
+                                </div>
+                              </div>
+                            );
+                          })()}
                         </td>
                       </tr>
                     ))}
@@ -494,6 +507,168 @@ const Gradebook = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Category Manager Dialog */}
+        <Dialog open={showCategoryManager} onOpenChange={setShowCategoryManager}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>
+                {language === 'es' ? 'Gestionar Categorías de Calificación' : 'Manage Grade Categories'}
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-6">
+              {/* GPA Scale Reference */}
+              <div className="bg-slate-50 rounded-lg p-4">
+                <h4 className="font-medium text-sm text-slate-700 mb-2">
+                  {language === 'es' ? 'Escala de Calificaciones' : 'Grade Scale'}
+                </h4>
+                <div className="grid grid-cols-5 gap-2 text-center text-xs">
+                  <div className="bg-green-100 text-green-800 rounded p-2">
+                    <div className="font-bold">A</div>
+                    <div>4.00 - 3.50</div>
+                  </div>
+                  <div className="bg-blue-100 text-blue-800 rounded p-2">
+                    <div className="font-bold">B</div>
+                    <div>3.49 - 2.50</div>
+                  </div>
+                  <div className="bg-yellow-100 text-yellow-800 rounded p-2">
+                    <div className="font-bold">C</div>
+                    <div>2.49 - 1.60</div>
+                  </div>
+                  <div className="bg-orange-100 text-orange-800 rounded p-2">
+                    <div className="font-bold">D</div>
+                    <div>1.59 - 0.80</div>
+                  </div>
+                  <div className="bg-red-100 text-red-800 rounded p-2">
+                    <div className="font-bold">F</div>
+                    <div>0.79 - 0</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Existing Categories */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium text-slate-700">
+                    {language === 'es' ? 'Categorías Actuales' : 'Current Categories'}
+                  </h4>
+                  <Badge variant={totalWeight === 100 ? 'default' : 'destructive'}>
+                    {language === 'es' ? 'Peso Total' : 'Total Weight'}: {totalWeight}%
+                  </Badge>
+                </div>
+                
+                {categories.map(cat => (
+                  <div key={cat.category_id} className="flex items-center gap-3 p-3 bg-white border rounded-lg">
+                    {editingCategory === cat.category_id ? (
+                      <>
+                        <Input
+                          value={cat.name}
+                          onChange={(e) => setCategories(categories.map(c => 
+                            c.category_id === cat.category_id ? { ...c, name: e.target.value } : c
+                          ))}
+                          className="flex-1"
+                          placeholder="Category name"
+                        />
+                        <Input
+                          value={cat.name_es || ''}
+                          onChange={(e) => setCategories(categories.map(c => 
+                            c.category_id === cat.category_id ? { ...c, name_es: e.target.value } : c
+                          ))}
+                          className="flex-1"
+                          placeholder="Nombre en español"
+                        />
+                        <Input
+                          type="number"
+                          value={cat.weight_percent}
+                          onChange={(e) => setCategories(categories.map(c => 
+                            c.category_id === cat.category_id ? { ...c, weight_percent: parseInt(e.target.value) || 0 } : c
+                          ))}
+                          className="w-20"
+                          min="0"
+                          max="100"
+                        />
+                        <span className="text-slate-500">%</span>
+                        <Button size="sm" onClick={() => handleUpdateCategory(cat.category_id, {
+                          name: cat.name,
+                          name_es: cat.name_es,
+                          weight_percent: cat.weight_percent
+                        })}>
+                          <Save className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => setEditingCategory(null)}>
+                          {language === 'es' ? 'Cancelar' : 'Cancel'}
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex-1">
+                          <div className="font-medium">{language === 'es' ? cat.name_es : cat.name}</div>
+                          <div className="text-xs text-slate-500">
+                            {assignments.filter(a => a.category_id === cat.category_id).length} {language === 'es' ? 'asignaciones' : 'assignments'}
+                          </div>
+                        </div>
+                        <Badge variant="outline">{cat.weight_percent}%</Badge>
+                        <Button size="sm" variant="ghost" onClick={() => setEditingCategory(cat.category_id)}>
+                          <Settings className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="text-red-600 hover:bg-red-50"
+                          onClick={() => handleDeleteCategory(cat.category_id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                ))}
+
+                {categories.length === 0 && (
+                  <p className="text-center text-slate-500 py-4">
+                    {language === 'es' ? 'No hay categorías. Crea una para comenzar.' : 'No categories. Create one to get started.'}
+                  </p>
+                )}
+              </div>
+
+              {/* Add New Category */}
+              <div className="border-t pt-4">
+                <h4 className="font-medium text-slate-700 mb-3">
+                  {language === 'es' ? 'Agregar Nueva Categoría' : 'Add New Category'}
+                </h4>
+                <div className="flex items-center gap-3">
+                  <Input
+                    placeholder={language === 'es' ? 'Nombre (inglés)' : 'Name (English)'}
+                    value={newCategory.name}
+                    onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
+                    className="flex-1"
+                  />
+                  <Input
+                    placeholder={language === 'es' ? 'Nombre (español)' : 'Name (Spanish)'}
+                    value={newCategory.name_es}
+                    onChange={(e) => setNewCategory({ ...newCategory, name_es: e.target.value })}
+                    className="flex-1"
+                  />
+                  <Input
+                    type="number"
+                    placeholder="%"
+                    value={newCategory.weight}
+                    onChange={(e) => setNewCategory({ ...newCategory, weight: parseInt(e.target.value) || 0 })}
+                    className="w-20"
+                    min="0"
+                    max="100"
+                  />
+                  <span className="text-slate-500">%</span>
+                  <Button onClick={handleAddCategory} disabled={!newCategory.name}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    {language === 'es' ? 'Agregar' : 'Add'}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
