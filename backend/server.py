@@ -646,7 +646,7 @@ async def update_profile(request: Request, user: dict = Depends(get_current_user
 @api_router.get("/schools", response_model=List[SchoolResponse])
 async def get_schools(user: dict = Depends(get_current_user)):
     """Get all schools (admin only)"""
-    if user.get("role") != "admin":
+    if user.get("role") not in ["admin", "super_admin"]:
         # Return only user's school
         school = await db.schools.find_one({"school_id": user.get("school_id")}, {"_id": 0})
         return [SchoolResponse(**school)] if school else []
@@ -657,7 +657,7 @@ async def get_schools(user: dict = Depends(get_current_user)):
 @api_router.post("/schools", response_model=SchoolResponse)
 async def create_school(school_data: SchoolCreate, user: dict = Depends(get_current_user)):
     """Create a new school (admin only)"""
-    if user.get("role") != "admin":
+    if user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Admin access required")
     
     school_id = f"school_{uuid.uuid4().hex[:8]}"
@@ -684,7 +684,7 @@ async def update_school(school_id: str, request: Request, user: dict = Depends(g
         raise HTTPException(status_code=404, detail="School not found")
     
     # Allow teachers to update their own school's settings
-    if user.get("school_id") != school_id and user.get("role") != "admin":
+    if user.get("school_id") != school_id and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     body = await request.json()
@@ -748,7 +748,7 @@ async def get_class(class_id: str, user: dict = Depends(get_current_user)):
     if not class_doc:
         raise HTTPException(status_code=404, detail="Class not found")
     
-    if class_doc["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     return ClassResponse(**class_doc)
@@ -760,7 +760,7 @@ async def update_class(class_id: str, class_data: ClassCreate, user: dict = Depe
     if not class_doc:
         raise HTTPException(status_code=404, detail="Class not found")
     
-    if class_doc["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     update_data = class_data.model_dump(exclude_unset=True)
@@ -776,7 +776,7 @@ async def delete_class(class_id: str, user: dict = Depends(get_current_user)):
     if not class_doc:
         raise HTTPException(status_code=404, detail="Class not found")
     
-    if class_doc["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     await db.classes.delete_one({"class_id": class_id})
@@ -791,7 +791,7 @@ async def get_students(class_id: str, user: dict = Depends(get_current_user)):
     if not class_doc:
         raise HTTPException(status_code=404, detail="Class not found")
     
-    if class_doc["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     students = await db.students.find({"class_id": class_id}, {"_id": 0}).to_list(100)
@@ -804,7 +804,7 @@ async def create_student(class_id: str, student_data: StudentCreate, user: dict 
     if not class_doc:
         raise HTTPException(status_code=404, detail="Class not found")
     
-    if class_doc["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     student_id = f"student_{uuid.uuid4().hex[:8]}"
@@ -833,7 +833,7 @@ async def bulk_import_students(class_id: str, request: Request, user: dict = Dep
     if not class_doc:
         raise HTTPException(status_code=404, detail="Class not found")
     
-    if class_doc["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     body = await request.json()
@@ -869,7 +869,7 @@ async def update_student(student_id: str, student_data: StudentCreate, user: dic
         raise HTTPException(status_code=404, detail="Student not found")
     
     class_doc = await db.classes.find_one({"class_id": student["class_id"]}, {"_id": 0})
-    if class_doc["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     update_data = student_data.model_dump(exclude_unset=True)
@@ -886,7 +886,7 @@ async def delete_student(student_id: str, user: dict = Depends(get_current_user)
         raise HTTPException(status_code=404, detail="Student not found")
     
     class_doc = await db.classes.find_one({"class_id": student["class_id"]}, {"_id": 0})
-    if class_doc["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     await db.students.delete_one({"student_id": student_id})
@@ -949,7 +949,7 @@ async def get_plan(plan_id: str, user: dict = Depends(get_current_user)):
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
     
-    if plan["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if plan["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     return LessonPlanResponse(**plan)
@@ -961,7 +961,7 @@ async def update_plan(plan_id: str, plan_data: LessonPlanCreate, user: dict = De
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
     
-    if plan["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if plan["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     now = datetime.now(timezone.utc).isoformat()
@@ -994,7 +994,7 @@ async def delete_plan(plan_id: str, user: dict = Depends(get_current_user)):
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
     
-    if plan["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if plan["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     await db.lesson_plans.delete_one({"plan_id": plan_id})
@@ -1007,7 +1007,7 @@ async def duplicate_plan(plan_id: str, request: Request, user: dict = Depends(ge
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
     
-    if plan["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if plan["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     body = await request.json()
@@ -1095,7 +1095,7 @@ async def get_attendance_session(session_id: str, user: dict = Depends(get_curre
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
     
-    if session["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if session["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     return AttendanceSessionResponse(**session)
@@ -1107,7 +1107,7 @@ async def submit_attendance(session_id: str, user: dict = Depends(get_current_us
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
     
-    if session["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if session["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     await db.attendance_sessions.update_one(
@@ -1129,7 +1129,7 @@ async def get_attendance_report(
     if not class_doc:
         raise HTTPException(status_code=404, detail="Class not found")
     
-    if class_doc["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     query = {"class_id": class_id}
@@ -1181,7 +1181,7 @@ async def create_category(class_id: str, category_data: CategoryCreate, user: di
     if not class_doc:
         raise HTTPException(status_code=404, detail="Class not found")
     
-    if class_doc["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     category_id = f"cat_{uuid.uuid4().hex[:8]}"
@@ -1218,7 +1218,7 @@ async def create_assignment(assignment_data: AssignmentCreate, user: dict = Depe
     if not class_doc:
         raise HTTPException(status_code=404, detail="Class not found")
     
-    if class_doc["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     assignment_id = f"assign_{uuid.uuid4().hex[:8]}"
@@ -1247,7 +1247,7 @@ async def get_assignment(assignment_id: str, user: dict = Depends(get_current_us
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
     
-    if assignment["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if assignment["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     return AssignmentResponse(**assignment)
@@ -1259,7 +1259,7 @@ async def update_assignment(assignment_id: str, assignment_data: AssignmentCreat
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
     
-    if assignment["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if assignment["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     update_data = assignment_data.model_dump(exclude_unset=True)
@@ -1275,7 +1275,7 @@ async def delete_assignment(assignment_id: str, user: dict = Depends(get_current
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
     
-    if assignment["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if assignment["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     await db.assignments.delete_one({"assignment_id": assignment_id})
@@ -1289,7 +1289,7 @@ async def get_grades(assignment_id: str, user: dict = Depends(get_current_user))
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
     
-    if assignment["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if assignment["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     grades = await db.grades.find({"assignment_id": assignment_id}, {"_id": 0}).to_list(100)
@@ -1302,7 +1302,7 @@ async def bulk_update_grades(grades_data: GradesBulkUpdate, user: dict = Depends
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
     
-    if assignment["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if assignment["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     now = datetime.now(timezone.utc).isoformat()
@@ -1345,7 +1345,7 @@ async def get_gradebook(class_id: str, user: dict = Depends(get_current_user)):
     if not class_doc:
         raise HTTPException(status_code=404, detail="Class not found")
     
-    if class_doc["teacher_id"] != user["user_id"] and user.get("role") != "admin":
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
     students = await db.students.find({"class_id": class_id}, {"_id": 0}).to_list(100)
@@ -1740,7 +1740,7 @@ async def get_all_users(request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     
     # Check if user is admin
-    if user.get('role') != 'admin':
+    if user.get('role') not in ['admin', 'super_admin']:
         raise HTTPException(status_code=403, detail="Admin access required")
     
     users = await db.users.find(
@@ -1758,7 +1758,7 @@ async def update_user_role(data: UpdateUserRoleRequest, request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     
     # Check if user is admin
-    if user.get('role') != 'admin':
+    if user.get('role') not in ['admin', 'super_admin']:
         raise HTTPException(status_code=403, detail="Admin access required")
     
     # Validate role
