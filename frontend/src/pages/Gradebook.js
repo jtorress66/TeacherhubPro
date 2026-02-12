@@ -180,6 +180,7 @@ const Gradebook = () => {
     }
   };
 
+  // Calculate student's weighted average percentage
   const calculateStudentAverage = (studentId) => {
     let totalWeighted = 0;
     let totalWeight = 0;
@@ -205,9 +206,76 @@ const Gradebook = () => {
       }
     });
 
-    if (totalWeight === 0) return '-';
-    return (totalWeighted * (100 / totalWeight)).toFixed(1);
+    if (totalWeight === 0) return null;
+    return (totalWeighted * (100 / totalWeight));
   };
+
+  // Get full grade info for a student (percentage, GPA, letter)
+  const getStudentGradeInfo = (studentId) => {
+    const percentage = calculateStudentAverage(studentId);
+    if (percentage === null) {
+      return { percentage: '-', gpa: '-', letter: '-', color: 'bg-slate-100 text-slate-600' };
+    }
+    const gpa = GPA_SCALE.percentageToGPA(percentage);
+    const letter = GPA_SCALE.getLetterGrade(gpa);
+    const color = GPA_SCALE.getGradeColor(letter);
+    return {
+      percentage: percentage.toFixed(1),
+      gpa: gpa.toFixed(2),
+      letter,
+      color
+    };
+  };
+
+  // Category management functions
+  const handleAddCategory = async () => {
+    if (!newCategory.name || !selectedClass) return;
+    try {
+      const res = await axios.post(`${API}/classes/${selectedClass}/categories`, {
+        name: newCategory.name,
+        name_es: newCategory.name_es || newCategory.name,
+        weight_percent: newCategory.weight
+      }, { withCredentials: true });
+      setCategories([...categories, res.data]);
+      setNewCategory({ name: '', name_es: '', weight: 10 });
+      toast.success(language === 'es' ? 'Categoría creada' : 'Category created');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error creating category');
+    }
+  };
+
+  const handleUpdateCategory = async (categoryId, updates) => {
+    try {
+      await axios.put(`${API}/categories/${categoryId}`, updates, { withCredentials: true });
+      setCategories(categories.map(c => 
+        c.category_id === categoryId ? { ...c, ...updates } : c
+      ));
+      setEditingCategory(null);
+      toast.success(language === 'es' ? 'Categoría actualizada' : 'Category updated');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error updating category');
+    }
+  };
+
+  const handleDeleteCategory = async (categoryId) => {
+    const catAssignments = assignments.filter(a => a.category_id === categoryId);
+    if (catAssignments.length > 0) {
+      toast.error(language === 'es' 
+        ? 'No se puede eliminar una categoría con asignaciones' 
+        : 'Cannot delete category with assignments');
+      return;
+    }
+    try {
+      await axios.delete(`${API}/categories/${categoryId}`, { withCredentials: true });
+      setCategories(categories.filter(c => c.category_id !== categoryId));
+      toast.success(language === 'es' ? 'Categoría eliminada' : 'Category deleted');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error deleting category');
+    }
+  };
+
+  // Calculate total weight percentage
+  const totalWeight = categories.reduce((sum, cat) => sum + (cat.weight_percent || 0), 0);
 
   if (loading && classes.length === 0) {
     return (
