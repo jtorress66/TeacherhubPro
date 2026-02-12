@@ -317,6 +317,10 @@ const AdminPanel = () => {
               <Building2 className="h-4 w-4" />
               {language === 'es' ? 'Escuelas' : 'Schools'}
             </TabsTrigger>
+            <TabsTrigger value="semesters" className="gap-2">
+              <CalendarDays className="h-4 w-4" />
+              {language === 'es' ? 'Semestres' : 'Semesters'}
+            </TabsTrigger>
             <TabsTrigger value="users" className="gap-2">
               <Users className="h-4 w-4" />
               {language === 'es' ? 'Usuarios' : 'Users'}
