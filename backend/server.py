@@ -1198,6 +1198,52 @@ async def create_category(class_id: str, category_data: CategoryCreate, user: di
     await db.grade_categories.insert_one(category_doc)
     return CategoryResponse(**category_doc)
 
+@api_router.put("/categories/{category_id}")
+async def update_category(category_id: str, data: dict, user: dict = Depends(get_current_user)):
+    """Update a grade category"""
+    category = await db.grade_categories.find_one({"category_id": category_id}, {"_id": 0})
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    class_doc = await db.classes.find_one({"class_id": category["class_id"]}, {"_id": 0})
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    update_data = {}
+    if "name" in data:
+        update_data["name"] = data["name"]
+    if "name_es" in data:
+        update_data["name_es"] = data["name_es"]
+    if "weight_percent" in data:
+        update_data["weight_percent"] = data["weight_percent"]
+    
+    if update_data:
+        await db.grade_categories.update_one(
+            {"category_id": category_id},
+            {"$set": update_data}
+        )
+    
+    return {"message": "Category updated"}
+
+@api_router.delete("/categories/{category_id}")
+async def delete_category(category_id: str, user: dict = Depends(get_current_user)):
+    """Delete a grade category"""
+    category = await db.grade_categories.find_one({"category_id": category_id}, {"_id": 0})
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    class_doc = await db.classes.find_one({"class_id": category["class_id"]}, {"_id": 0})
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    # Check if category has assignments
+    assignments_count = await db.assignments.count_documents({"category_id": category_id})
+    if assignments_count > 0:
+        raise HTTPException(status_code=400, detail="Cannot delete category with assignments")
+    
+    await db.grade_categories.delete_one({"category_id": category_id})
+    return {"message": "Category deleted"}
+
 @api_router.get("/assignments", response_model=List[AssignmentResponse])
 async def get_assignments(
     class_id: Optional[str] = None,
