@@ -13,7 +13,7 @@ import { Skeleton } from '../components/ui/skeleton';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { toast } from 'sonner';
-import { Plus, BookOpen, Save, Trash2, FileDown } from 'lucide-react';
+import { Plus, BookOpen, Save, Trash2, FileDown, Settings, FolderPlus } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -23,6 +23,37 @@ const DEFAULT_CATEGORIES = [
   { name: 'Test', name_es: 'Examen', weight: 30 },
   { name: 'Project', name_es: 'Proyecto', weight: 20 }
 ];
+
+// GPA Scale Configuration (School's custom scale)
+const GPA_SCALE = {
+  // Letter grade ranges based on GPA
+  getLetterGrade: (gpa) => {
+    if (gpa >= 3.50) return 'A';
+    if (gpa >= 2.50) return 'B';
+    if (gpa >= 1.60) return 'C';
+    if (gpa >= 0.80) return 'D';
+    return 'F';
+  },
+  // Convert percentage to GPA (4.0 scale)
+  percentageToGPA: (percentage) => {
+    if (percentage === null || percentage === undefined || percentage === '-') return null;
+    const pct = parseFloat(percentage);
+    if (isNaN(pct)) return null;
+    // Linear conversion: 100% = 4.0, 0% = 0.0
+    return Math.max(0, Math.min(4.0, (pct / 100) * 4.0));
+  },
+  // Get color for letter grade
+  getGradeColor: (letter) => {
+    switch (letter) {
+      case 'A': return 'bg-green-100 text-green-800 border-green-200';
+      case 'B': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'C': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'D': return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'F': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-slate-100 text-slate-800 border-slate-200';
+    }
+  }
+};
 
 const Gradebook = () => {
   const [searchParams] = useSearchParams();
