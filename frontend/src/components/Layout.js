@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useSchool } from '../contexts/SchoolContext';
 import { Button } from './ui/button';
 import { 
   LayoutDashboard, 
@@ -28,6 +29,7 @@ const Layout = ({ children }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { t, language, toggleLanguage } = useLanguage();
+  const { school, branding } = useSchool();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navItems = [
