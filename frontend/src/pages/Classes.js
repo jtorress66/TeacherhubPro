@@ -163,6 +163,25 @@ const Classes = () => {
     }
   };
 
+  const generatePortalLink = async (student) => {
+    setPortalDialog({ open: true, student, token: null, loading: true });
+    try {
+      const res = await axios.post(`${API}/students/${student.student_id}/portal-token`, {}, { withCredentials: true });
+      const fullUrl = `${window.location.origin}/portal/${res.data.token}`;
+      setPortalDialog(prev => ({ ...prev, token: fullUrl, loading: false }));
+    } catch (error) {
+      toast.error(language === 'es' ? 'Error al generar enlace' : 'Error generating link');
+      setPortalDialog({ open: false, student: null, token: null, loading: false });
+    }
+  };
+
+  const copyPortalLink = () => {
+    if (portalDialog.token) {
+      navigator.clipboard.writeText(portalDialog.token);
+      toast.success(language === 'es' ? 'Enlace copiado!' : 'Link copied!');
+    }
+  };
+
   const selectClass = (cls) => {
     setSelectedClass(cls);
     fetchStudents(cls.class_id);
