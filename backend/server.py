@@ -1726,6 +1726,66 @@ async def stripe_webhook(request: Request):
     
     return {"received": True}
 
+# ==================== ADMIN MANAGEMENT ENDPOINTS ====================
+
+class UpdateUserRoleRequest(BaseModel):
+    user_id: str
+    role: str  # 'teacher' or 'admin'
+
+@api_router.get("/admin/users")
+async def get_all_users(request: Request):
+    """Get all users (admin only)"""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    # Check if user is admin
+    if user.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    users = await db.users.find(
+        {},
+        {"_id": 0, "user_id": 1, "email": 1, "name": 1, "role": 1, "school_id": 1, "created_at": 1}
+    ).to_list(length=100)
+    
+    return {"users": users}
+
+@api_router.put("/admin/users/role")
+async def update_user_role(data: UpdateUserRoleRequest, request: Request):
+    """Update a user's role (admin only)"""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    # Check if user is admin
+    if user.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Validate role
+    if data.role not in ['teacher', 'admin']:
+        raise HTTPException(status_code=400, detail="Invalid role. Must be 'teacher' or 'admin'")
+    
+    # Prevent admin from demoting themselves
+    if data.user_id == user.get('user_id') and data.role != 'admin':
+        raise HTTPException(status_code=400, detail="Cannot demote yourself from admin")
+    
+    # Update user role
+    result = await db.users.update_one(
+        {"user_id": data.user_id},
+        {"$set": {"role": data.role, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get updated user
+    updated_user = await db.users.find_one(
+        {"user_id": data.user_id},
+        {"_id": 0, "user_id": 1, "email": 1, "name": 1, "role": 1}
+    )
+    
+    return {"message": "User role updated successfully", "user": updated_user}
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/health")
