@@ -149,18 +149,48 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     return plan.expectations?.find(e => e.week_index === weekIndex)?.text || '';
   };
 
-  // Header component - LARGER
+  // Header component - LARGER with school branding
   const Header = () => (
-    <div style={{ textAlign: 'center', borderBottom: '2px solid black', paddingBottom: '6px', marginBottom: '10px' }}>
+    <div style={{ 
+      textAlign: 'center', 
+      borderBottom: `3px solid ${primaryColor}`, 
+      paddingBottom: '6px', 
+      marginBottom: '10px' 
+    }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px' }}>
-        {school?.logo_url && <img src={school.logo_url} alt="Logo" style={{ height: '48px' }} />}
+        {school?.logo_url && (
+          <img 
+            src={school.logo_url} 
+            alt="Logo" 
+            style={{ height: '52px', objectFit: 'contain' }} 
+          />
+        )}
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontWeight: 'bold', fontSize: '14pt' }}>{school?.name || 'Colegio De La Inmaculada Concepción'}</div>
-          <div style={{ fontSize: '10pt' }}>{school?.address || 'P.O. Box 3400, Manatí, Puerto Rico 00674'}</div>
-          <div style={{ fontSize: '10pt' }}>{school?.phone ? `Tel. ${school.phone}` : 'Tel. (787) 854-2079 / (787)854-5265'} | {school?.email || 'Cicmanati@outlook.com'}</div>
+          <div style={{ 
+            fontWeight: 'bold', 
+            fontSize: '15pt', 
+            color: secondaryColor 
+          }}>
+            {school?.name || 'School Name'}
+          </div>
+          {school?.address && (
+            <div style={{ fontSize: '10pt', color: '#666' }}>{school.address}</div>
+          )}
+          <div style={{ fontSize: '10pt', color: '#666' }}>
+            {school?.phone && `Tel. ${school.phone}`}
+            {school?.phone && school?.email && ' | '}
+            {school?.email}
+          </div>
         </div>
       </div>
-      <div style={{ fontWeight: 'bold', fontSize: '15pt', marginTop: '5px' }}>Teacher's Planning</div>
+      <div style={{ 
+        fontWeight: 'bold', 
+        fontSize: '15pt', 
+        marginTop: '5px',
+        color: primaryColor
+      }}>
+        {lang === 'es' ? 'Planificación del Maestro' : "Teacher's Planning"}
+      </div>
     </div>
   );
 
