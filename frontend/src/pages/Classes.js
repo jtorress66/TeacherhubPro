@@ -52,29 +52,47 @@ const Classes = () => {
     accommodations: ''
   });
 
-  const [portalDialog, setPortalDialog] = useState({ open: false, student: null, token: null, loading: false });
+  const [portalDialog, setPortalDialog] = useState({ 
+    open: false, 
+    student: null, 
+    token: null, 
+    loading: false,
+    expiresAt: null,
+    parentEmail: '',
+    expiresDays: 30,
+    sendingEmail: false
+  });
 
   useEffect(() => {
-    const fetchClasses = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get(`${API}/classes`, { withCredentials: true });
-        setClasses(res.data);
+        const [classesRes, semestersRes] = await Promise.all([
+          axios.get(`${API}/classes`, { withCredentials: true }),
+          axios.get(`${API}/semesters`, { withCredentials: true })
+        ]);
+        
+        setClasses(classesRes.data);
+        setSemesters(semestersRes.data);
+        
+        // Find active semester
+        const active = semestersRes.data.find(s => s.is_active);
+        if (active) setActiveSemester(active);
         
         if (classId) {
-          const cls = res.data.find(c => c.class_id === classId);
+          const cls = classesRes.data.find(c => c.class_id === classId);
           if (cls) {
             setSelectedClass(cls);
             fetchStudents(classId);
           }
         }
       } catch (error) {
-        console.error('Error fetching classes:', error);
+        console.error('Error fetching data:', error);
         toast.error(t('error'));
       } finally {
         setLoading(false);
       }
     };
-    fetchClasses();
+    fetchData();
   }, [classId, t]);
 
   const fetchStudents = async (id) => {
