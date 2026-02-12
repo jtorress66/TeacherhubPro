@@ -141,8 +141,8 @@ const Dashboard = () => {
           <Card className="bg-white border-slate-100 card-hover animate-fade-in opacity-0" style={{ animationDelay: '50ms', animationFillMode: 'forwards' }}>
             <CardContent className="p-5">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-green-100">
-                  <Users className="h-5 w-5 text-green-600" />
+                <div className="p-3 rounded-xl" style={{ backgroundColor: `${branding.primary_color}15` }}>
+                  <Users className="h-5 w-5" style={{ color: branding.primary_color }} />
                 </div>
                 <div>
                   <p className="text-3xl font-bold text-slate-800">{stats.total_students || 0}</p>
@@ -155,8 +155,8 @@ const Dashboard = () => {
           <Card className="bg-white border-slate-100 card-hover animate-fade-in opacity-0" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
             <CardContent className="p-5">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-amber-100">
-                  <Calendar className="h-5 w-5 text-amber-600" />
+                <div className="p-3 rounded-xl" style={{ backgroundColor: `${branding.accent_color}20` }}>
+                  <Calendar className="h-5 w-5" style={{ color: branding.accent_color }} />
                 </div>
                 <div>
                   <p className="text-3xl font-bold text-slate-800">{stats.total_plans || 0}</p>
