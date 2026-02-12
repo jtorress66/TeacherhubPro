@@ -120,13 +120,17 @@ const Layout = ({ children }) => {
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
                     "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
-                    isActive 
-                      ? "bg-green-100 text-green-700 font-medium shadow-sm" 
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+                    item.superAdmin 
+                      ? isActive 
+                        ? "bg-purple-100 text-purple-700 font-medium shadow-sm"
+                        : "text-purple-600 hover:bg-purple-50 hover:text-purple-700 border border-purple-200"
+                      : isActive 
+                        ? "bg-green-100 text-green-700 font-medium shadow-sm" 
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-800"
                   )}
                   data-testid={`nav-${item.path.slice(1)}`}
                 >
-                  <item.icon className={cn("h-5 w-5", isActive && "text-green-600")} />
+                  <item.icon className={cn("h-5 w-5", item.superAdmin ? "text-purple-600" : isActive && "text-green-600")} />
                   <span>{item.label}</span>
                   {isActive && <ChevronRight className="h-4 w-4 ml-auto text-green-500" />}
                 </Link>
