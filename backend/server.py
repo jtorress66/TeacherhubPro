@@ -714,7 +714,7 @@ async def get_school(school_id: str, user: dict = Depends(get_current_user)):
 async def get_classes(user: dict = Depends(get_current_user)):
     """Get classes for current teacher"""
     query = {"teacher_id": user["user_id"]}
-    if user.get("role") == "admin":
+    if user.get("role") in ["admin", "super_admin"]:
         query = {"school_id": user.get("school_id")}
     
     classes = await db.classes.find(query, {"_id": 0}).to_list(100)
