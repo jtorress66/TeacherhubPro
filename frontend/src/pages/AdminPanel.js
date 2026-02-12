@@ -688,10 +688,10 @@ const AdminPanel = () => {
             </div>
 
             <DialogFooter>
-              <Button variant="outline" onClick={() => setSchoolDialog(false)}>
+              <Button variant="outline" onClick={() => setSchoolDialog(false)} data-testid="school-dialog-cancel">
                 {language === 'es' ? 'Cancelar' : 'Cancel'}
               </Button>
-              <Button onClick={saveSchool} disabled={saving || !schoolForm.name}>
+              <Button onClick={saveSchool} disabled={saving || !schoolForm.name} data-testid="school-dialog-save">
                 {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 {language === 'es' ? 'Guardar' : 'Save'}
               </Button>
