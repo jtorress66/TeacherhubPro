@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useSchool } from '../contexts/SchoolContext';
 import { Button } from './ui/button';
 import { Printer, X } from 'lucide-react';
 
