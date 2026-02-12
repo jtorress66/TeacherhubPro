@@ -4,6 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide Emergent Badge */
+.Emergent-Badge,
+[class*="Emergent-Badge"],
+[class*="emergent-badge"],
+a[href*="emergentagent.com"]:has(img),
+div[style*="position: fixed"][style*="bottom"]:has(a[href*="emergent"]) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
 body {
     margin: 0;
     font-family: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
