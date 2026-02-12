@@ -526,6 +526,69 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
 ### Database Collection Added
 - `portal_tokens`: `{ token, student_id, school_id, created_at, created_by }`
 
+
+---
+## Update 2026-02-12 - Semester System & Portal Email
+
+### Features Implemented
+
+#### Semester System (Complete)
+- **Admin Panel Tab:** New "Semestres" tab with full CRUD operations
+- **Semester Fields:**
+  - Name (English & Spanish)
+  - Start/End Dates
+  - School Year (e.g., 2024-2025)
+  - Active Status (only one can be active at a time)
+- **Gradebook Integration:**
+  - Semester selector dropdown
+  - "Trabajando en: [Semester]" indicator when semester selected
+  - Classes filtered by semester
+- **Reports Integration:**
+  - Semester filter in Gradebook Reports
+  - Semester name included in print header
+
+#### Parent Portal Email (Complete)
+- **Email Provider:** Resend API
+- **Dialog Features:**
+  - Parent email input field
+  - Expiration selector (7, 14, 30, 60, 90 days)
+  - Expiration date display ("Expira: [date]")
+  - "Enviar Email" button
+- **Email Content:**
+  - Bilingual (Spanish/English)
+  - School branding (name from school profile)
+  - Portal access button
+  - Copy-paste URL
+  - Expiration warning
+
+### Backend API Endpoints Added
+- `GET /api/semesters` - List school's semesters
+- `GET /api/semesters/active` - Get active semester
+- `POST /api/semesters` - Create semester (admin only)
+- `PUT /api/semesters/{id}` - Update semester
+- `DELETE /api/semesters/{id}` - Delete semester (fails if has classes)
+- `POST /api/portal/email` - Send portal link via Resend
+
+### Database Collections Added/Updated
+- `semesters`: `{ semester_id, school_id, name, name_es, start_date, end_date, year_term, is_active, created_at }`
+- `portal_tokens`: Added `expires_at` field
+- `classes`: Added `semester_id` field
+
+### Environment Variables Added
+- `RESEND_API_KEY` - Resend API key for email sending
+- `SENDER_EMAIL` - Email sender address (onboarding@resend.dev for testing)
+
+### Test Results
+- Backend: 100% (18/18 tests passed)
+- Frontend: 100% (all UI features verified)
+- Test report: `/app/test_reports/iteration_7.json`
+- Test file: `/app/backend/tests/test_semester_portal_email.py`
+
+### Notes
+- Resend API is in test mode - emails only work with verified addresses
+- In production, use a verified domain for sender email
+- Portal tokens expire based on selected duration (default 30 days)
+
 ### Test Results
 - Backend: 100% (11/11 tests passed)
 - Frontend: 100% (all features verified)
