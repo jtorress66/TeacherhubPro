@@ -364,7 +364,7 @@ const AdminPanel = () => {
           <TabsContent value="schools" className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">{language === 'es' ? 'Gestión de Escuelas' : 'School Management'}</h2>
-              <Button onClick={() => openSchoolDialog()}>
+              <Button onClick={() => openSchoolDialog()} data-testid="new-school-btn">
                 <Plus className="h-4 w-4 mr-2" />
                 {language === 'es' ? 'Nueva Escuela' : 'New School'}
               </Button>
