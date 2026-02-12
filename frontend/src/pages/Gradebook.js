@@ -447,8 +447,9 @@ const Gradebook = () => {
                           </div>
                         </th>
                       ))}
-                      <th className="text-center p-3 font-medium text-slate-700 min-w-20">
-                        {language === 'es' ? 'Promedio' : 'Average'}
+                      <th className="text-center p-3 font-medium text-slate-700 min-w-28">
+                        <div>{language === 'es' ? 'Nota' : 'Grade'}</div>
+                        <div className="text-xs text-slate-500 font-normal">GPA</div>
                       </th>
                     </tr>
                   </thead>
