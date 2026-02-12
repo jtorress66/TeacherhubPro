@@ -1611,7 +1611,7 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
 # ==================== PARENT PORTAL ENDPOINTS ====================
 
 @api_router.post("/students/{student_id}/portal-token")
-async def generate_portal_token(student_id: str, user: dict = Depends(get_current_user)):
+async def generate_portal_token(student_id: str, expires_days: int = 30, user: dict = Depends(get_current_user)):
     """Generate or get portal access token for a student"""
     student = await db.students.find_one({"student_id": student_id}, {"_id": 0})
     if not student:
@@ -1622,32 +1622,149 @@ async def generate_portal_token(student_id: str, user: dict = Depends(get_curren
     if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
-    # Check if token already exists
+    # Check if valid token already exists
     existing = await db.portal_tokens.find_one({"student_id": student_id}, {"_id": 0})
     if existing:
-        return {
-            "token": existing["token"],
-            "portal_url": f"/portal/{existing['token']}",
-            "created_at": existing["created_at"]
-        }
+        # Check if expired
+        if existing.get("expires_at"):
+            expires_at = datetime.fromisoformat(existing["expires_at"].replace("Z", "+00:00"))
+            if expires_at > datetime.now(timezone.utc):
+                return {
+                    "token": existing["token"],
+                    "portal_url": f"/portal/{existing['token']}",
+                    "created_at": existing["created_at"],
+                    "expires_at": existing.get("expires_at")
+                }
+            else:
+                # Token expired, delete it
+                await db.portal_tokens.delete_one({"token": existing["token"]})
+        else:
+            return {
+                "token": existing["token"],
+                "portal_url": f"/portal/{existing['token']}",
+                "created_at": existing["created_at"],
+                "expires_at": existing.get("expires_at")
+            }
     
-    # Generate new token
+    # Generate new token with expiration
     token = f"portal_{uuid.uuid4().hex}"
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(timezone.utc)
+    expires_at = (now + timedelta(days=expires_days)).isoformat()
     
     await db.portal_tokens.insert_one({
         "token": token,
         "student_id": student_id,
         "school_id": student.get("school_id"),
-        "created_at": now,
+        "created_at": now.isoformat(),
+        "expires_at": expires_at,
         "created_by": user["user_id"]
     })
     
     return {
         "token": token,
         "portal_url": f"/portal/{token}",
-        "created_at": now
+        "created_at": now.isoformat(),
+        "expires_at": expires_at
     }
+
+@api_router.post("/portal/email")
+async def send_portal_email(data: PortalEmailRequest, user: dict = Depends(get_current_user)):
+    """Send portal link to parent via email"""
+    student = await db.students.find_one({"student_id": data.student_id}, {"_id": 0})
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    # Check permission
+    class_doc = await db.classes.find_one({"class_id": student["class_id"]}, {"_id": 0})
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    # Generate or get token with expiration
+    token_result = await generate_portal_token(data.student_id, data.expires_days, user)
+    
+    # Get school info for branding
+    school = await db.schools.find_one({"school_id": student.get("school_id")}, {"_id": 0})
+    school_name = school.get("name", "TeacherHubPro") if school else "TeacherHubPro"
+    
+    # Build email HTML
+    portal_url = f"https://teacherdash-2.preview.emergentagent.com/portal/{token_result['token']}"
+    expires_date = datetime.fromisoformat(token_result['expires_at'].replace("Z", "+00:00")).strftime("%B %d, %Y")
+    
+    html_content = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #65A30D 0%, #4A7C10 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">{school_name}</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Portal del Estudiante / Student Portal</p>
+        </div>
+        
+        <div style="background: #f8fafc; padding: 30px; border: 1px solid #e2e8f0; border-top: none;">
+            <p style="color: #334155; font-size: 16px; margin: 0 0 15px 0;">
+                Estimado padre/madre de familia,<br><br>
+                Le compartimos el acceso al portal del estudiante para <strong>{student.get('first_name', '')} {student.get('last_name', '')}</strong>.
+            </p>
+            
+            <p style="color: #64748b; font-size: 14px; margin: 0 0 20px 0;">
+                Dear Parent/Guardian,<br><br>
+                We are sharing the student portal access for <strong>{student.get('first_name', '')} {student.get('last_name', '')}</strong>.
+            </p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{portal_url}" 
+                   style="background: #65A30D; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                    Acceder al Portal / Access Portal
+                </a>
+            </div>
+            
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                <p style="color: #64748b; font-size: 12px; margin: 0 0 10px 0;">
+                    O copie este enlace / Or copy this link:
+                </p>
+                <p style="color: #334155; font-size: 12px; word-break: break-all; margin: 0; font-family: monospace; background: #f1f5f9; padding: 10px; border-radius: 4px;">
+                    {portal_url}
+                </p>
+            </div>
+            
+            <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                <p style="color: #92400e; font-size: 13px; margin: 0;">
+                    ⚠️ Este enlace expira el <strong>{expires_date}</strong>.<br>
+                    This link expires on <strong>{expires_date}</strong>.
+                </p>
+            </div>
+            
+            <p style="color: #64748b; font-size: 13px; margin: 20px 0 0 0;">
+                Este portal es de solo lectura. Para cualquier pregunta, contacte al maestro.<br>
+                <em>This portal is read-only. For any questions, please contact the teacher.</em>
+            </p>
+        </div>
+        
+        <div style="background: #334155; padding: 20px; border-radius: 0 0 10px 10px; text-align: center;">
+            <p style="color: #94a3b8; font-size: 12px; margin: 0;">
+                Enviado desde {school_name} vía TeacherHubPro<br>
+                Sent from {school_name} via TeacherHubPro
+            </p>
+        </div>
+    </div>
+    """
+    
+    params = {
+        "from": SENDER_EMAIL,
+        "to": [data.parent_email],
+        "subject": f"Portal del Estudiante - {student.get('first_name', '')} {student.get('last_name', '')} | {school_name}",
+        "html": html_content
+    }
+    
+    try:
+        email = await asyncio.to_thread(resend.Emails.send, params)
+        return {
+            "status": "success",
+            "message": f"Email sent to {data.parent_email}",
+            "email_id": email.get("id"),
+            "portal_url": portal_url,
+            "expires_at": token_result['expires_at']
+        }
+    except Exception as e:
+        logging.error(f"Failed to send email: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
 
 @api_router.get("/portal/{token}")
 async def get_portal_data(token: str):
@@ -1656,6 +1773,12 @@ async def get_portal_data(token: str):
     token_doc = await db.portal_tokens.find_one({"token": token}, {"_id": 0})
     if not token_doc:
         raise HTTPException(status_code=404, detail="Invalid or expired access link")
+    
+    # Check expiration
+    if token_doc.get("expires_at"):
+        expires_at = datetime.fromisoformat(token_doc["expires_at"].replace("Z", "+00:00"))
+        if expires_at < datetime.now(timezone.utc):
+            raise HTTPException(status_code=410, detail="This access link has expired. Please contact the teacher for a new link.")
     
     student_id = token_doc["student_id"]
     
