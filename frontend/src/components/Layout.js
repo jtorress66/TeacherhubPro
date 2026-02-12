@@ -136,6 +136,10 @@ const Layout = ({ children }) => {
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             {navItems.map((item) => {
               const isActive = location.pathname.startsWith(item.path);
+              const activeStyle = item.superAdmin 
+                ? { backgroundColor: '#f3e8ff', color: '#7c3aed' }
+                : { backgroundColor: `${branding.primary_color}15`, color: branding.primary_color };
+              
               return (
                 <Link
                   key={item.path}
@@ -145,17 +149,26 @@ const Layout = ({ children }) => {
                     "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
                     item.superAdmin 
                       ? isActive 
-                        ? "bg-purple-100 text-purple-700 font-medium shadow-sm"
+                        ? "font-medium shadow-sm"
                         : "text-purple-600 hover:bg-purple-50 hover:text-purple-700 border border-purple-200"
                       : isActive 
-                        ? "bg-green-100 text-green-700 font-medium shadow-sm" 
+                        ? "font-medium shadow-sm" 
                         : "text-slate-600 hover:bg-slate-100 hover:text-slate-800"
                   )}
+                  style={isActive ? activeStyle : {}}
                   data-testid={`nav-${item.path.slice(1)}`}
                 >
-                  <item.icon className={cn("h-5 w-5", item.superAdmin ? "text-purple-600" : isActive && "text-green-600")} />
+                  <item.icon 
+                    className="h-5 w-5" 
+                    style={isActive && !item.superAdmin ? { color: branding.primary_color } : item.superAdmin ? { color: '#7c3aed' } : {}}
+                  />
                   <span>{item.label}</span>
-                  {isActive && <ChevronRight className="h-4 w-4 ml-auto text-green-500" />}
+                  {isActive && (
+                    <ChevronRight 
+                      className="h-4 w-4 ml-auto" 
+                      style={{ color: item.superAdmin ? '#7c3aed' : branding.primary_color }}
+                    />
+                  )}
                 </Link>
               );
             })}
