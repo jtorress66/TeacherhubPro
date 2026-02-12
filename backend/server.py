@@ -820,6 +820,100 @@ async def delete_class(class_id: str, user: dict = Depends(get_current_user)):
     await db.classes.delete_one({"class_id": class_id})
     return {"message": "Class deleted"}
 
+# ==================== SEMESTER ENDPOINTS ====================
+
+@api_router.get("/semesters")
+async def get_semesters(user: dict = Depends(get_current_user)):
+    """Get semesters for user's school"""
+    school_id = user.get("school_id", "school_default")
+    semesters = await db.semesters.find({"school_id": school_id}, {"_id": 0}).sort("start_date", -1).to_list(20)
+    return semesters
+
+@api_router.get("/semesters/active")
+async def get_active_semester(user: dict = Depends(get_current_user)):
+    """Get the currently active semester"""
+    school_id = user.get("school_id", "school_default")
+    semester = await db.semesters.find_one({"school_id": school_id, "is_active": True}, {"_id": 0})
+    if not semester:
+        # Return the most recent semester if none is active
+        semester = await db.semesters.find_one({"school_id": school_id}, {"_id": 0}, sort=[("start_date", -1)])
+    return semester
+
+@api_router.post("/semesters", response_model=SemesterResponse)
+async def create_semester(data: SemesterCreate, user: dict = Depends(get_current_user)):
+    """Create a new semester (Admin/Super Admin only)"""
+    if user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Only admins can create semesters")
+    
+    school_id = user.get("school_id", "school_default")
+    semester_id = f"sem_{uuid.uuid4().hex[:8]}"
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # If this semester is active, deactivate others
+    if data.is_active:
+        await db.semesters.update_many(
+            {"school_id": school_id},
+            {"$set": {"is_active": False}}
+        )
+    
+    semester_doc = {
+        "semester_id": semester_id,
+        "school_id": school_id,
+        "name": data.name,
+        "name_es": data.name_es or data.name,
+        "start_date": data.start_date,
+        "end_date": data.end_date,
+        "year_term": data.year_term,
+        "is_active": data.is_active,
+        "created_at": now
+    }
+    
+    await db.semesters.insert_one(semester_doc)
+    return SemesterResponse(**semester_doc)
+
+@api_router.put("/semesters/{semester_id}")
+async def update_semester(semester_id: str, data: dict, user: dict = Depends(get_current_user)):
+    """Update a semester"""
+    if user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Only admins can update semesters")
+    
+    semester = await db.semesters.find_one({"semester_id": semester_id}, {"_id": 0})
+    if not semester:
+        raise HTTPException(status_code=404, detail="Semester not found")
+    
+    school_id = user.get("school_id", "school_default")
+    
+    # If setting this as active, deactivate others
+    if data.get("is_active"):
+        await db.semesters.update_many(
+            {"school_id": school_id, "semester_id": {"$ne": semester_id}},
+            {"$set": {"is_active": False}}
+        )
+    
+    update_data = {}
+    for key in ["name", "name_es", "start_date", "end_date", "year_term", "is_active"]:
+        if key in data:
+            update_data[key] = data[key]
+    
+    if update_data:
+        await db.semesters.update_one({"semester_id": semester_id}, {"$set": update_data})
+    
+    return {"message": "Semester updated"}
+
+@api_router.delete("/semesters/{semester_id}")
+async def delete_semester(semester_id: str, user: dict = Depends(get_current_user)):
+    """Delete a semester"""
+    if user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Only admins can delete semesters")
+    
+    # Check if semester has classes
+    class_count = await db.classes.count_documents({"semester_id": semester_id})
+    if class_count > 0:
+        raise HTTPException(status_code=400, detail=f"Cannot delete semester with {class_count} classes")
+    
+    await db.semesters.delete_one({"semester_id": semester_id})
+    return {"message": "Semester deleted"}
+
 # ==================== STUDENT ENDPOINTS ====================
 
 @api_router.get("/classes/{class_id}/students", response_model=List[StudentResponse])
