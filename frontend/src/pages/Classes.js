@@ -463,6 +463,14 @@ const Classes = () => {
                             <Button 
                               variant="ghost" 
                               size="icon"
+                              onClick={() => generatePortalLink(student)}
+                              title={language === 'es' ? 'Portal de Padres' : 'Parent Portal'}
+                            >
+                              <Link className="h-4 w-4 text-green-600" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
                               onClick={() => setEditingStudent(student)}
                             >
                               <Edit className="h-4 w-4" />
