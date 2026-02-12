@@ -342,6 +342,33 @@ class SubscriptionResponse(BaseModel):
     stripe_subscription_id: Optional[str] = None
     created_at: str
 
+# Semester Models
+class SemesterCreate(BaseModel):
+    name: str
+    name_es: Optional[str] = None
+    start_date: str
+    end_date: str
+    year_term: str = "2024-2025"
+    is_active: bool = False
+
+class SemesterResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    semester_id: str
+    school_id: str
+    name: str
+    name_es: Optional[str] = None
+    start_date: str
+    end_date: str
+    year_term: str
+    is_active: bool
+    created_at: str
+
+# Portal Email Request
+class PortalEmailRequest(BaseModel):
+    student_id: str
+    parent_email: EmailStr
+    expires_days: int = 30
+
 # ==================== AUTHENTICATION HELPERS ====================
 
 def generate_user_id():
