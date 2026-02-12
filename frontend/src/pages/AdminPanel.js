@@ -520,6 +520,98 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
+          {/* Semesters Tab */}
+          <TabsContent value="semesters" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">{language === 'es' ? 'Gestión de Semestres' : 'Semester Management'}</h2>
+              <Button onClick={() => openSemesterDialog()} data-testid="new-semester-btn">
+                <Plus className="h-4 w-4 mr-2" />
+                {language === 'es' ? 'Nuevo Semestre' : 'New Semester'}
+              </Button>
+            </div>
+
+            <Card>
+              <CardContent className="p-0">
+                {semesters.length === 0 ? (
+                  <div className="p-8 text-center text-slate-500">
+                    <CalendarDays className="h-12 w-12 mx-auto mb-4 text-slate-300" />
+                    <p>{language === 'es' ? 'No hay semestres. Crea uno para comenzar.' : 'No semesters. Create one to get started.'}</p>
+                  </div>
+                ) : (
+                  <div className="divide-y">
+                    {semesters.map(semester => (
+                      <div key={semester.semester_id} className="p-4 flex items-center justify-between hover:bg-slate-50">
+                        <div className="flex items-center gap-4">
+                          <div className={`p-2 rounded-lg ${semester.is_active ? 'bg-green-100' : 'bg-slate-100'}`}>
+                            <CalendarDays className={`h-5 w-5 ${semester.is_active ? 'text-green-600' : 'text-slate-500'}`} />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium text-slate-800">
+                                {language === 'es' ? semester.name_es || semester.name : semester.name}
+                              </p>
+                              {semester.is_active && (
+                                <Badge className="bg-green-100 text-green-800 text-xs">
+                                  {language === 'es' ? 'Activo' : 'Active'}
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-slate-500">
+                              {new Date(semester.start_date).toLocaleDateString()} - {new Date(semester.end_date).toLocaleDateString()}
+                            </p>
+                            <p className="text-xs text-slate-400">{semester.year_term}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-slate-500">
+                              {language === 'es' ? 'Activo' : 'Active'}
+                            </span>
+                            <Switch 
+                              checked={semester.is_active}
+                              onCheckedChange={() => toggleSemesterActive(semester)}
+                            />
+                          </div>
+                          <Button variant="outline" size="sm" onClick={() => openSemesterDialog(semester)} data-testid={`edit-semester-${semester.semester_id}`}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-red-600 hover:bg-red-50"
+                            onClick={() => deleteSemester(semester.semester_id)}
+                            data-testid={`delete-semester-${semester.semester_id}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Info Card */}
+            <Card className="bg-blue-50 border-blue-100">
+              <CardContent className="p-4">
+                <div className="flex gap-3">
+                  <CalendarDays className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-blue-800 font-medium">
+                      {language === 'es' ? 'Sobre los Semestres' : 'About Semesters'}
+                    </p>
+                    <p className="text-sm text-blue-700 mt-1">
+                      {language === 'es' 
+                        ? 'Los semestres organizan las clases, calificaciones y reportes. Solo un semestre puede estar activo a la vez. Los maestros verán el semestre activo por defecto.'
+                        : 'Semesters organize classes, grades, and reports. Only one semester can be active at a time. Teachers will see the active semester by default.'}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Users Tab */}
           <TabsContent value="users" className="space-y-4">
             <div className="flex justify-between items-center gap-4">
