@@ -1193,6 +1193,7 @@ async def create_category(class_id: str, category_data: CategoryCreate, user: di
         "category_id": category_id,
         "class_id": class_id,
         "name": category_data.name,
+        "name_es": category_data.name_es or category_data.name,
         "weight_percent": category_data.weight_percent,
         "created_at": now
     }
