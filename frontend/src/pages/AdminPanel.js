@@ -417,10 +417,10 @@ const AdminPanel = () => {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={() => openSchoolDialog(school)}>
+                        <Button variant="outline" size="sm" onClick={() => openSchoolDialog(school)} data-testid={`edit-school-${school.school_id}`}>
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="sm" className="text-red-600 hover:bg-red-50" onClick={() => deleteSchool(school.school_id)}>
+                        <Button variant="outline" size="sm" className="text-red-600 hover:bg-red-50" onClick={() => deleteSchool(school.school_id)} data-testid={`delete-school-${school.school_id}`}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
