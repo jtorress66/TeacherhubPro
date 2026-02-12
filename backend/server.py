@@ -1831,6 +1831,392 @@ async def setup_first_admin(data: AdminSetupRequest):
         "note": "This endpoint is now disabled. Use Settings > User Management to add more admins."
     }
 
+# ==================== SUPER ADMIN ENDPOINTS ====================
+
+class SchoolCreate(BaseModel):
+    name: str
+    address: Optional[str] = ""
+    phone: Optional[str] = ""
+    email: Optional[str] = ""
+    logo_url: Optional[str] = ""
+    # Branding
+    primary_color: Optional[str] = "#65A30D"  # Green default
+    secondary_color: Optional[str] = "#334155"  # Slate default
+    accent_color: Optional[str] = "#F59E0B"  # Amber default
+    font_family: Optional[str] = "Manrope"
+
+class SchoolUpdate(BaseModel):
+    name: Optional[str] = None
+    address: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    logo_url: Optional[str] = None
+    primary_color: Optional[str] = None
+    secondary_color: Optional[str] = None
+    accent_color: Optional[str] = None
+    font_family: Optional[str] = None
+
+class UserCreate(BaseModel):
+    email: str
+    name: str
+    password: str
+    school_id: str
+    role: Optional[str] = "teacher"
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    school_id: Optional[str] = None
+    role: Optional[str] = None
+
+async def require_super_admin(request: Request):
+    """Helper to check if user is super admin"""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    if user.get('role') != 'super_admin':
+        raise HTTPException(status_code=403, detail="Super Admin access required")
+    return user
+
+# --- Platform Overview ---
+@api_router.get("/super-admin/overview")
+async def get_platform_overview(request: Request):
+    """Get platform-wide statistics"""
+    await require_super_admin(request)
+    
+    total_schools = await db.schools.count_documents({})
+    total_users = await db.users.count_documents({})
+    total_teachers = await db.users.count_documents({"role": "teacher"})
+    total_admins = await db.users.count_documents({"role": {"$in": ["admin", "super_admin"]}})
+    total_classes = await db.classes.count_documents({})
+    total_students = await db.students.count_documents({})
+    total_plans = await db.lesson_plans.count_documents({})
+    
+    # Recent users
+    recent_users = await db.users.find(
+        {}, 
+        {"_id": 0, "user_id": 1, "email": 1, "name": 1, "role": 1, "school_id": 1, "created_at": 1}
+    ).sort("created_at", -1).limit(5).to_list(length=5)
+    
+    # Schools with user counts
+    schools = await db.schools.find({}, {"_id": 0}).to_list(length=100)
+    for school in schools:
+        school['user_count'] = await db.users.count_documents({"school_id": school.get('school_id')})
+        school['class_count'] = await db.classes.count_documents({"school_id": school.get('school_id')})
+    
+    return {
+        "stats": {
+            "total_schools": total_schools,
+            "total_users": total_users,
+            "total_teachers": total_teachers,
+            "total_admins": total_admins,
+            "total_classes": total_classes,
+            "total_students": total_students,
+            "total_plans": total_plans
+        },
+        "recent_users": recent_users,
+        "schools": schools
+    }
+
+# --- School Management ---
+@api_router.get("/super-admin/schools")
+async def get_all_schools(request: Request):
+    """Get all schools with details"""
+    await require_super_admin(request)
+    
+    schools = await db.schools.find({}, {"_id": 0}).to_list(length=100)
+    
+    # Add user/class counts
+    for school in schools:
+        school['user_count'] = await db.users.count_documents({"school_id": school.get('school_id')})
+        school['class_count'] = await db.classes.count_documents({"school_id": school.get('school_id')})
+        school['student_count'] = await db.students.count_documents({"school_id": school.get('school_id')})
+    
+    return {"schools": schools}
+
+@api_router.post("/super-admin/schools")
+async def create_school(data: SchoolCreate, request: Request):
+    """Create a new school"""
+    await require_super_admin(request)
+    
+    school_id = f"school_{uuid.uuid4().hex[:12]}"
+    
+    school_doc = {
+        "school_id": school_id,
+        "name": data.name,
+        "address": data.address,
+        "phone": data.phone,
+        "email": data.email,
+        "logo_url": data.logo_url,
+        "branding": {
+            "primary_color": data.primary_color,
+            "secondary_color": data.secondary_color,
+            "accent_color": data.accent_color,
+            "font_family": data.font_family
+        },
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.schools.insert_one(school_doc)
+    
+    # Return without _id
+    school_doc.pop('_id', None)
+    return {"message": "School created successfully", "school": school_doc}
+
+@api_router.put("/super-admin/schools/{school_id}")
+async def update_school(school_id: str, data: SchoolUpdate, request: Request):
+    """Update a school"""
+    await require_super_admin(request)
+    
+    update_data = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    
+    if data.name is not None:
+        update_data["name"] = data.name
+    if data.address is not None:
+        update_data["address"] = data.address
+    if data.phone is not None:
+        update_data["phone"] = data.phone
+    if data.email is not None:
+        update_data["email"] = data.email
+    if data.logo_url is not None:
+        update_data["logo_url"] = data.logo_url
+    if data.primary_color is not None:
+        update_data["branding.primary_color"] = data.primary_color
+    if data.secondary_color is not None:
+        update_data["branding.secondary_color"] = data.secondary_color
+    if data.accent_color is not None:
+        update_data["branding.accent_color"] = data.accent_color
+    if data.font_family is not None:
+        update_data["branding.font_family"] = data.font_family
+    
+    result = await db.schools.update_one(
+        {"school_id": school_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="School not found")
+    
+    school = await db.schools.find_one({"school_id": school_id}, {"_id": 0})
+    return {"message": "School updated successfully", "school": school}
+
+@api_router.delete("/super-admin/schools/{school_id}")
+async def delete_school(school_id: str, request: Request):
+    """Delete a school and optionally its data"""
+    await require_super_admin(request)
+    
+    # Check if school has users
+    user_count = await db.users.count_documents({"school_id": school_id})
+    if user_count > 0:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot delete school with {user_count} users. Reassign or delete users first."
+        )
+    
+    result = await db.schools.delete_one({"school_id": school_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="School not found")
+    
+    return {"message": "School deleted successfully"}
+
+# --- User Management ---
+@api_router.get("/super-admin/users")
+async def get_all_users_super(request: Request):
+    """Get all users across all schools"""
+    await require_super_admin(request)
+    
+    users = await db.users.find(
+        {},
+        {"_id": 0, "password_hash": 0}
+    ).to_list(length=500)
+    
+    # Add school names
+    schools = {s['school_id']: s['name'] for s in await db.schools.find({}, {"_id": 0, "school_id": 1, "name": 1}).to_list(length=100)}
+    
+    for user in users:
+        user['school_name'] = schools.get(user.get('school_id'), 'No School')
+    
+    return {"users": users}
+
+@api_router.post("/super-admin/users")
+async def create_user(data: UserCreate, request: Request):
+    """Create a new user"""
+    await require_super_admin(request)
+    
+    # Check if email exists
+    existing = await db.users.find_one({"email": data.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Verify school exists
+    school = await db.schools.find_one({"school_id": data.school_id})
+    if not school:
+        raise HTTPException(status_code=404, detail="School not found")
+    
+    user_id = f"user_{uuid.uuid4().hex[:12]}"
+    password_hash = pwd_context.hash(data.password)
+    
+    user_doc = {
+        "user_id": user_id,
+        "email": data.email,
+        "name": data.name,
+        "password_hash": password_hash,
+        "school_id": data.school_id,
+        "role": data.role,
+        "language": "es",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.users.insert_one(user_doc)
+    
+    # Return without sensitive data
+    user_doc.pop('_id', None)
+    user_doc.pop('password_hash', None)
+    user_doc['school_name'] = school['name']
+    
+    return {"message": "User created successfully", "user": user_doc}
+
+@api_router.put("/super-admin/users/{user_id}")
+async def update_user_super(user_id: str, data: UserUpdate, request: Request):
+    """Update a user"""
+    current_user = await require_super_admin(request)
+    
+    # Prevent changing own role
+    if user_id == current_user['user_id'] and data.role and data.role != 'super_admin':
+        raise HTTPException(status_code=400, detail="Cannot change your own role")
+    
+    update_data = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    
+    if data.name is not None:
+        update_data["name"] = data.name
+    if data.email is not None:
+        # Check email uniqueness
+        existing = await db.users.find_one({"email": data.email, "user_id": {"$ne": user_id}})
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already in use")
+        update_data["email"] = data.email
+    if data.school_id is not None:
+        # Verify school exists
+        school = await db.schools.find_one({"school_id": data.school_id})
+        if not school:
+            raise HTTPException(status_code=404, detail="School not found")
+        update_data["school_id"] = data.school_id
+    if data.role is not None:
+        if data.role not in ['teacher', 'admin', 'super_admin']:
+            raise HTTPException(status_code=400, detail="Invalid role")
+        update_data["role"] = data.role
+    
+    result = await db.users.update_one(
+        {"user_id": user_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0})
+    return {"message": "User updated successfully", "user": user}
+
+@api_router.delete("/super-admin/users/{user_id}")
+async def delete_user(user_id: str, request: Request):
+    """Delete a user"""
+    current_user = await require_super_admin(request)
+    
+    if user_id == current_user['user_id']:
+        raise HTTPException(status_code=400, detail="Cannot delete yourself")
+    
+    result = await db.users.delete_one({"user_id": user_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": "User deleted successfully"}
+
+@api_router.post("/super-admin/users/{user_id}/reset-password")
+async def reset_user_password(user_id: str, request: Request):
+    """Reset a user's password to a temporary one"""
+    await require_super_admin(request)
+    
+    # Generate temporary password
+    temp_password = f"Temp{uuid.uuid4().hex[:8]}!"
+    password_hash = pwd_context.hash(temp_password)
+    
+    result = await db.users.update_one(
+        {"user_id": user_id},
+        {"$set": {"password_hash": password_hash, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "email": 1, "name": 1})
+    
+    return {
+        "message": "Password reset successfully",
+        "user": user,
+        "temporary_password": temp_password,
+        "note": "Please share this password securely with the user"
+    }
+
+# --- Bulk Operations ---
+class BulkUserCreate(BaseModel):
+    school_id: str
+    users: list  # List of {email, name, password?, role?}
+
+@api_router.post("/super-admin/users/bulk")
+async def bulk_create_users(data: BulkUserCreate, request: Request):
+    """Create multiple users at once"""
+    await require_super_admin(request)
+    
+    # Verify school exists
+    school = await db.schools.find_one({"school_id": data.school_id})
+    if not school:
+        raise HTTPException(status_code=404, detail="School not found")
+    
+    created = []
+    errors = []
+    
+    for user_data in data.users:
+        try:
+            email = user_data.get('email')
+            name = user_data.get('name', email.split('@')[0])
+            password = user_data.get('password', f"Welcome{uuid.uuid4().hex[:6]}!")
+            role = user_data.get('role', 'teacher')
+            
+            # Check if email exists
+            existing = await db.users.find_one({"email": email})
+            if existing:
+                errors.append({"email": email, "error": "Email already exists"})
+                continue
+            
+            user_id = f"user_{uuid.uuid4().hex[:12]}"
+            password_hash = pwd_context.hash(password)
+            
+            user_doc = {
+                "user_id": user_id,
+                "email": email,
+                "name": name,
+                "password_hash": password_hash,
+                "school_id": data.school_id,
+                "role": role,
+                "language": "es",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            await db.users.insert_one(user_doc)
+            created.append({"email": email, "name": name, "temp_password": password})
+            
+        except Exception as e:
+            errors.append({"email": user_data.get('email', 'unknown'), "error": str(e)})
+    
+    return {
+        "message": f"Created {len(created)} users",
+        "created": created,
+        "errors": errors
+    }
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/health")
