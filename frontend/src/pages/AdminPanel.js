@@ -500,14 +500,14 @@ const AdminPanel = () => {
                           </td>
                           <td className="p-4">
                             <div className="flex justify-end gap-2">
-                              <Button variant="ghost" size="sm" onClick={() => resetPassword(u.user_id)} title="Reset Password">
+                              <Button variant="ghost" size="sm" onClick={() => resetPassword(u.user_id)} title="Reset Password" data-testid={`reset-password-${u.user_id}`}>
                                 <Key className="h-4 w-4" />
                               </Button>
-                              <Button variant="ghost" size="sm" onClick={() => openUserDialog(u)}>
+                              <Button variant="ghost" size="sm" onClick={() => openUserDialog(u)} data-testid={`edit-user-${u.user_id}`}>
                                 <Edit className="h-4 w-4" />
                               </Button>
                               {u.role !== 'super_admin' && (
-                                <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50" onClick={() => deleteUser(u.user_id)}>
+                                <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50" onClick={() => deleteUser(u.user_id)} data-testid={`delete-user-${u.user_id}`}>
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                               )}
