@@ -18,7 +18,8 @@ import {
   FileText,
   BarChart3,
   Briefcase,
-  CreditCard
+  CreditCard,
+  Shield
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -40,6 +41,10 @@ const Layout = ({ children }) => {
     { path: '/substitute-packet', icon: Briefcase, label: language === 'es' ? 'Paquete Sustituto' : 'Sub Packet' },
     { path: '/pricing', icon: CreditCard, label: language === 'es' ? 'Suscripción' : 'Pricing' },
     { path: '/settings', icon: Settings, label: t('settings') },
+    // Super Admin only
+    ...(user?.role === 'super_admin' ? [
+      { path: '/admin', icon: Shield, label: 'Admin Panel', superAdmin: true }
+    ] : [])
   ];
 
   const handleLogout = async () => {
