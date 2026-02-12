@@ -944,6 +944,115 @@ const AdminPanel = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Semester Dialog */}
+        <Dialog open={semesterDialog} onOpenChange={setSemesterDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <CalendarDays className="h-5 w-5 text-green-600" />
+                {editingSemester 
+                  ? (language === 'es' ? 'Editar Semestre' : 'Edit Semester')
+                  : (language === 'es' ? 'Nuevo Semestre' : 'New Semester')
+                }
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Nombre (Inglés)' : 'Name (English)'}</Label>
+                  <Input 
+                    value={semesterForm.name}
+                    onChange={(e) => setSemesterForm({...semesterForm, name: e.target.value})}
+                    placeholder="Semester 1"
+                    data-testid="semester-name-input"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Nombre (Español)' : 'Name (Spanish)'}</Label>
+                  <Input 
+                    value={semesterForm.name_es}
+                    onChange={(e) => setSemesterForm({...semesterForm, name_es: e.target.value})}
+                    placeholder="Semestre 1"
+                    data-testid="semester-name-es-input"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Fecha de Inicio' : 'Start Date'}</Label>
+                  <Input 
+                    type="date"
+                    value={semesterForm.start_date}
+                    onChange={(e) => setSemesterForm({...semesterForm, start_date: e.target.value})}
+                    data-testid="semester-start-date"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Fecha de Fin' : 'End Date'}</Label>
+                  <Input 
+                    type="date"
+                    value={semesterForm.end_date}
+                    onChange={(e) => setSemesterForm({...semesterForm, end_date: e.target.value})}
+                    data-testid="semester-end-date"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>{language === 'es' ? 'Año Escolar' : 'School Year'}</Label>
+                <Select 
+                  value={semesterForm.year_term} 
+                  onValueChange={(v) => setSemesterForm({...semesterForm, year_term: v})}
+                >
+                  <SelectTrigger data-testid="semester-year-term">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2023-2024">2023-2024</SelectItem>
+                    <SelectItem value="2024-2025">2024-2025</SelectItem>
+                    <SelectItem value="2025-2026">2025-2026</SelectItem>
+                    <SelectItem value="2026-2027">2026-2027</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                <Switch 
+                  id="is-active"
+                  checked={semesterForm.is_active}
+                  onCheckedChange={(checked) => setSemesterForm({...semesterForm, is_active: checked})}
+                />
+                <div>
+                  <Label htmlFor="is-active" className="cursor-pointer">
+                    {language === 'es' ? 'Semestre Activo' : 'Active Semester'}
+                  </Label>
+                  <p className="text-xs text-slate-500">
+                    {language === 'es' 
+                      ? 'Los maestros verán este semestre por defecto'
+                      : 'Teachers will see this semester by default'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setSemesterDialog(false)}>
+                {language === 'es' ? 'Cancelar' : 'Cancel'}
+              </Button>
+              <Button 
+                onClick={saveSemester} 
+                disabled={saving || !semesterForm.name || !semesterForm.start_date || !semesterForm.end_date}
+                data-testid="semester-dialog-save"
+              >
+                {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {language === 'es' ? 'Guardar' : 'Save'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
