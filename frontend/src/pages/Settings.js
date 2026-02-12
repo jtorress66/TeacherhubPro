@@ -11,8 +11,9 @@ import { Label } from '../components/ui/label';
 import { Switch } from '../components/ui/switch';
 import { Separator } from '../components/ui/separator';
 import { Badge } from '../components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { toast } from 'sonner';
-import { User, Globe, Shield, Save, Building2, Image, CreditCard, Crown } from 'lucide-react';
+import { User, Globe, Shield, Save, Building2, Image, CreditCard, Crown, Users, UserCog, Loader2 } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -30,6 +31,11 @@ const Settings = () => {
   const [schoolEmail, setSchoolEmail] = useState('');
   const [schoolLogo, setSchoolLogo] = useState('');
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+  
+  // Admin management state
+  const [allUsers, setAllUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [updatingRole, setUpdatingRole] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,9 +61,47 @@ const Settings = () => {
       } catch (error) {
         console.error('Error fetching subscription:', error);
       }
+      
+      // Fetch all users if admin
+      if (user?.role === 'admin') {
+        fetchAllUsers();
+      }
     };
     fetchData();
-  }, [user?.school_id]);
+  }, [user?.school_id, user?.role]);
+
+  const fetchAllUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      const res = await axios.get(`${API}/admin/users`, { withCredentials: true });
+      setAllUsers(res.data.users || []);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const handleUpdateUserRole = async (userId, newRole) => {
+    setUpdatingRole(userId);
+    try {
+      await axios.put(`${API}/admin/users/role`, {
+        user_id: userId,
+        role: newRole
+      }, { withCredentials: true });
+      
+      // Update local state
+      setAllUsers(prev => prev.map(u => 
+        u.user_id === userId ? { ...u, role: newRole } : u
+      ));
+      
+      toast.success(language === 'es' ? 'Rol actualizado' : 'Role updated');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || (language === 'es' ? 'Error al actualizar rol' : 'Error updating role'));
+    } finally {
+      setUpdatingRole(null);
+    }
+  };
 
   const handleSaveProfile = async () => {
     setSaving(true);
