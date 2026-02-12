@@ -187,6 +187,28 @@ const GradebookReports = () => {
         <Card className="print:hidden">
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row gap-4 items-end">
+              {/* Semester Selector */}
+              {semesters.length > 0 && (
+                <div className="flex-1 space-y-2">
+                  <Label>{language === 'es' ? 'Semestre' : 'Semester'}</Label>
+                  <Select value={selectedSemester || "all"} onValueChange={(v) => setSelectedSemester(v === "all" ? "" : v)}>
+                    <SelectTrigger data-testid="report-semester-select">
+                      <SelectValue placeholder={language === 'es' ? 'Todos' : 'All'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{language === 'es' ? 'Todos los semestres' : 'All semesters'}</SelectItem>
+                      {semesters.map(sem => (
+                        <SelectItem key={sem.semester_id} value={sem.semester_id}>
+                          {language === 'es' ? sem.name_es || sem.name : sem.name}
+                          {sem.is_active && ' (Activo)'}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              
+              {/* Class Selector */}
               <div className="flex-1 space-y-2">
                 <Label>{language === 'es' ? 'Clase' : 'Class'}</Label>
                 <Select value={selectedClass} onValueChange={setSelectedClass}>
