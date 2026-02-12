@@ -146,6 +146,7 @@ class ClassCreate(BaseModel):
     section: str
     subject: Optional[str] = None
     year_term: str = "2024-2025"
+    semester_id: Optional[str] = None
 
 class ClassResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -157,6 +158,7 @@ class ClassResponse(BaseModel):
     section: str
     subject: Optional[str] = None
     year_term: str
+    semester_id: Optional[str] = None
     created_at: str
 
 # Student Models
