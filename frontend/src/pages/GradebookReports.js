@@ -46,25 +46,44 @@ const GradebookReports = () => {
   const [loading, setLoading] = useState(true);
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
+  const [semesters, setSemesters] = useState([]);
+  const [selectedSemester, setSelectedSemester] = useState('');
   const [reportData, setReportData] = useState(null);
   const [loadingReport, setLoadingReport] = useState(false);
 
   useEffect(() => {
-    const fetchClasses = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get(`${API}/classes`, { withCredentials: true });
-        setClasses(res.data);
-        if (res.data.length > 0) {
-          setSelectedClass(res.data[0].class_id);
+        const [classesRes, semestersRes] = await Promise.all([
+          axios.get(`${API}/classes`, { withCredentials: true }),
+          axios.get(`${API}/semesters`, { withCredentials: true })
+        ]);
+        
+        setClasses(classesRes.data);
+        setSemesters(semestersRes.data);
+        
+        // Set active semester
+        const activeSem = semestersRes.data.find(s => s.is_active);
+        if (activeSem) {
+          setSelectedSemester(activeSem.semester_id);
+        }
+        
+        if (classesRes.data.length > 0) {
+          setSelectedClass(classesRes.data[0].class_id);
         }
       } catch (error) {
-        console.error('Error fetching classes:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchClasses();
+    fetchData();
   }, []);
+
+  // Filter classes by semester
+  const filteredClasses = selectedSemester 
+    ? classes.filter(c => c.semester_id === selectedSemester || !c.semester_id)
+    : classes;
 
   useEffect(() => {
     if (selectedClass) {
