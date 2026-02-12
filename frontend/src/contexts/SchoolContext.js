@@ -8,8 +8,25 @@ const SchoolContext = createContext();
 
 export const useSchool = () => {
   const context = useContext(SchoolContext);
+  // Return default values if used outside provider (e.g., in print windows)
   if (!context) {
-    throw new Error('useSchool must be used within a SchoolProvider');
+    return {
+      school: null,
+      loading: false,
+      branding: {
+        primary_color: '#65A30D',
+        secondary_color: '#334155',
+        accent_color: '#F59E0B',
+        font_family: 'Manrope'
+      },
+      refreshSchool: () => {},
+      defaultBranding: {
+        primary_color: '#65A30D',
+        secondary_color: '#334155',
+        accent_color: '#F59E0B',
+        font_family: 'Manrope'
+      }
+    };
   }
   return context;
 };
