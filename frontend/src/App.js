@@ -148,6 +148,9 @@ const AppRouter = () => {
       <Route path="/gradebook" element={
         <ProtectedRoute><Gradebook /></ProtectedRoute>
       } />
+      <Route path="/gradebook/reports" element={
+        <ProtectedRoute><GradebookReports /></ProtectedRoute>
+      } />
       <Route path="/classes" element={
         <ProtectedRoute><Classes /></ProtectedRoute>
       } />
@@ -167,6 +170,8 @@ const AppRouter = () => {
       <Route path="/admin" element={
         <ProtectedRoute requireSubscription={false}><AdminPanel /></ProtectedRoute>
       } />
+      {/* Parent Portal (Public - no auth required) */}
+      <Route path="/portal/:token" element={<ParentPortal />} />
       {/* Fallback redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
