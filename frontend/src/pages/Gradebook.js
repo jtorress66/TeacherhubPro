@@ -400,12 +400,12 @@ const Gradebook = () => {
                   <Label className="text-sm text-slate-500 mb-1.5 block">
                     {language === 'es' ? 'Semestre' : 'Semester'}
                   </Label>
-                  <Select value={selectedSemester} onValueChange={setSelectedSemester}>
+                  <Select value={selectedSemester || "all"} onValueChange={(v) => setSelectedSemester(v === "all" ? "" : v)}>
                     <SelectTrigger className="w-full" data-testid="gradebook-semester-select">
                       <SelectValue placeholder={language === 'es' ? 'Todos los semestres' : 'All semesters'} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">{language === 'es' ? 'Todos los semestres' : 'All semesters'}</SelectItem>
+                      <SelectItem value="all">{language === 'es' ? 'Todos los semestres' : 'All semesters'}</SelectItem>
                       {semesters.map(sem => (
                         <SelectItem key={sem.semester_id} value={sem.semester_id}>
                           {language === 'es' ? sem.name_es || sem.name : sem.name}
