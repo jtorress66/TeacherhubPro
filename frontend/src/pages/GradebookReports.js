@@ -216,7 +216,7 @@ const GradebookReports = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {classes.map(cls => (
+                    {filteredClasses.map(cls => (
                       <SelectItem key={cls.class_id} value={cls.class_id}>
                         {cls.name} ({cls.grade}-{cls.section})
                       </SelectItem>
@@ -235,6 +235,9 @@ const GradebookReports = () => {
         <div className="hidden print:block text-center mb-6">
           <h1 className="text-2xl font-bold">{language === 'es' ? 'Reporte de Calificaciones' : 'Gradebook Report'}</h1>
           <p className="text-lg">{selectedClassData?.name} ({selectedClassData?.grade}-{selectedClassData?.section})</p>
+          {selectedSemester && semesters.find(s => s.semester_id === selectedSemester) && (
+            <p className="text-md">{semesters.find(s => s.semester_id === selectedSemester)?.name}</p>
+          )}
           <p className="text-sm text-slate-500">{new Date().toLocaleDateString()}</p>
         </div>
 
