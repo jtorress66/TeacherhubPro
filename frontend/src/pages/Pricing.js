@@ -338,7 +338,6 @@ const Pricing = () => {
                   onClick={() => handleSubscribe(plan.id)}
                   disabled={
                     loadingCheckout || 
-                    (subscriptionStatus?.status === 'admin') ||
                     (subscriptionStatus?.status === 'active' && subscriptionStatus?.plan === plan.id) ||
                     (['school', 'district'].includes(plan.id) && teacherCount < plan.minTeachers)
                   }
@@ -349,7 +348,7 @@ const Pricing = () => {
                   ) : !user ? (
                     language === 'es' ? 'Registrarse Gratis' : 'Sign Up Free'
                   ) : subscriptionStatus?.status === 'admin' ? (
-                    language === 'es' ? 'Acceso de Admin' : 'Admin Access'
+                    language === 'es' ? 'Probar Checkout' : 'Test Checkout'
                   ) : subscriptionStatus?.status === 'active' && subscriptionStatus?.plan === plan.id ? (
                     language === 'es' ? 'Plan Actual' : 'Current Plan'
                   ) : (
