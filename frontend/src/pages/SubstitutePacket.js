@@ -56,10 +56,11 @@ const SubstitutePacket = () => {
     
     setGenerating(true);
     try {
-      const [classRes, studentsRes, plansRes] = await Promise.all([
+      const [classRes, studentsRes, plansRes, savedDataRes] = await Promise.all([
         axios.get(`${API}/classes/${selectedClass}`, { withCredentials: true }),
         axios.get(`${API}/classes/${selectedClass}/students`, { withCredentials: true }),
-        axios.get(`${API}/plans?class_id=${selectedClass}`, { withCredentials: true })
+        axios.get(`${API}/plans?class_id=${selectedClass}`, { withCredentials: true }),
+        axios.get(`${API}/classes/${selectedClass}/sub-packet`, { withCredentials: true }).catch(() => ({ data: null }))
       ]);
 
       const today = new Date();
@@ -77,19 +78,61 @@ const SubstitutePacket = () => {
         generatedAt: new Date().toISOString()
       });
       
-      // Reset editable fields
-      setEditableData({
-        mainOfficeExt: 'Ext. 100',
-        nurseExt: 'Ext. 105',
-        dailyRoutines: '',
-        emergencyProcedures: '',
-        additionalNotes: ''
-      });
+      // Load saved data if available, otherwise use defaults
+      if (savedDataRes.data) {
+        setEditableData({
+          mainOfficeExt: savedDataRes.data.main_office_ext || 'Ext. 100',
+          nurseExt: savedDataRes.data.nurse_ext || 'Ext. 105',
+          dailyRoutines: savedDataRes.data.daily_routines || '',
+          emergencyProcedures: savedDataRes.data.emergency_procedures || '',
+          additionalNotes: savedDataRes.data.additional_notes || ''
+        });
+      } else {
+        setEditableData({
+          mainOfficeExt: 'Ext. 100',
+          nurseExt: 'Ext. 105',
+          dailyRoutines: '',
+          emergencyProcedures: '',
+          additionalNotes: ''
+        });
+      }
     } catch (error) {
       console.error('Error generating packet:', error);
       toast.error(t('error'));
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const savePacketData = async () => {
+    if (!selectedClass) return;
+    
+    setSaving(true);
+    try {
+      await axios.put(`${API}/classes/${selectedClass}/sub-packet`, {
+        main_office_ext: editableData.mainOfficeExt,
+        nurse_ext: editableData.nurseExt,
+        daily_routines: editableData.dailyRoutines,
+        emergency_procedures: editableData.emergencyProcedures,
+        additional_notes: editableData.additionalNotes
+      }, { withCredentials: true });
+      
+      toast.success(language === 'es' ? 'Paquete guardado' : 'Packet saved');
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error saving packet:', error);
+      toast.error(language === 'es' ? 'Error al guardar' : 'Error saving');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleToggleEdit = () => {
+    if (isEditing) {
+      // Save when exiting edit mode
+      savePacketData();
+    } else {
+      setIsEditing(true);
     }
   };
 
