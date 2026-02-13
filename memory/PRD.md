@@ -598,6 +598,69 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
 ### Data Model Updates
 - `CategoryCreate` and `CategoryResponse` now include `name_es` field for bilingual support
 
+---
+## Update 2026-02-13 - P0 Fixes
+
+### Issues Fixed
+
+#### 1. Backend .env Configuration
+- Fixed malformed .env file where STRIPE_API_KEY and STRIPE_WEBHOOK_SECRET were concatenated on same line
+- Added proper quotes around SENDER_EMAIL for correct "Name <email>" format
+- Added FRONTEND_URL environment variable for production portal email links
+
+#### 2. Pricing Page - Admin Can Test Checkout
+- **Issue:** Admin users had "Admin Access" button that was disabled, preventing testing
+- **Fix:** Changed to "Probar Checkout" / "Test Checkout" button that IS enabled
+- **File:** `/app/frontend/src/pages/Pricing.js` - Lines 337-358
+
+#### 3. Substitute Packet - Editable & Saveable Content
+- **Issue:** After generating a sub packet, editable fields were not persisted
+- **Fix:** Added new backend endpoints and frontend save functionality
+- **New Endpoints:** 
+  - `GET /api/classes/{class_id}/sub-packet` - Fetch saved packet data
+  - `PUT /api/classes/{class_id}/sub-packet` - Save/update packet data
+- **New Database Collection:** `sub_packets`
+- **Files:** 
+  - `/app/backend/server.py` - Lines 822-869 (SubPacketData model and endpoints)
+  - `/app/frontend/src/pages/SubstitutePacket.js` - Save functionality
+
+#### 4. Portal Email URL Fix
+- **Issue:** Portal email links were hardcoded to preview URL
+- **Fix:** Now uses FRONTEND_URL environment variable (defaults to teachershubpro.com)
+- **File:** `/app/backend/server.py` - Line 1682
+
+#### 5. Semester Management for Teachers - VERIFIED WORKING
+- Teachers can create, edit, delete, and set active semesters
+- Located in Settings page under "Semestres" section
+- **File:** `/app/frontend/src/pages/Settings.js`
+
+### Production Setup Instructions
+The following issues require user action in production:
+
+1. **SENDER_EMAIL Issue:** Set `SENDER_EMAIL` in production dashboard as: `"TeacherHubPro <no-reply@teachershubpro.com>"`
+2. **Setup Admin 404:** Page exists - needs REDEPLOY to push code to production
+3. **Setup Key:** `TeacherHubPro2026SecureSetup`
+
+### Test Results
+- Backend: 100% (11/11 tests passed)
+- Frontend: 100% (all 5 P0 features verified)
+- Test report: `/app/test_reports/iteration_8.json`
+- Test file: `/app/backend/tests/test_p0_fixes.py`
+
+---
+## Future Tasks
+
+### P1 (High Priority - Next)
+- Drag-and-Drop Seating Chart Editor
+- Quick Week Copy (duplicate + shift dates by 7 days)
+- Super Admin Bulk Tools (CSV import for teachers)
+
+### P2 (Medium Priority)
+- Audit Log for grades/attendance changes
 - Google Classroom Integration
 - Report card generation
+
+### Technical Debt
+- **Refactor `/app/backend/server.py`**: File is monolithic and needs to be split into logical modules using FastAPI's `APIRouter` (e.g., `routes/auth.py`, `routes/admin.py`, `routes/gradebook.py`)
+
 
