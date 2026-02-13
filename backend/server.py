@@ -2343,8 +2343,8 @@ class AdminSetupRequest(BaseModel):
 @api_router.post("/setup/first-admin")
 async def setup_first_admin(data: AdminSetupRequest):
     """
-    One-time endpoint to create the first admin user.
-    Only works if no admin exists yet.
+    One-time endpoint to create the first super admin user.
+    Only works if no super_admin exists yet.
     Requires the correct setup key for security.
     """
     # Security key - change this to something unique
@@ -2354,29 +2354,29 @@ async def setup_first_admin(data: AdminSetupRequest):
     if data.setup_key != SETUP_KEY:
         raise HTTPException(status_code=403, detail="Invalid setup key")
     
-    # Check if any admin already exists
-    existing_admin = await db.users.find_one({"role": "admin"})
+    # Check if any super_admin already exists
+    existing_admin = await db.users.find_one({"role": "super_admin"})
     if existing_admin:
         raise HTTPException(
             status_code=400, 
-            detail="Admin already exists. This endpoint is disabled. Use the Settings page to manage admins."
+            detail="Super Admin already exists. This endpoint is disabled."
         )
     
     # Find the user by email
     user = await db.users.find_one({"email": data.email})
     if not user:
-        raise HTTPException(status_code=404, detail=f"User with email {data.email} not found. Please register first.")
+        raise HTTPException(status_code=404, detail=f"User with email {data.email} not found. Please register/login first.")
     
-    # Upgrade to admin
+    # Upgrade to super_admin
     await db.users.update_one(
         {"email": data.email},
-        {"$set": {"role": "admin", "updated_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {"role": "super_admin", "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
     
     return {
         "success": True,
-        "message": f"User {data.email} has been upgraded to admin!",
-        "note": "This endpoint is now disabled. Use Settings > User Management to add more admins."
+        "message": f"User {data.email} has been upgraded to Super Admin!",
+        "note": "You now have full access to the Admin Panel."
     }
 
 # ==================== SUPER ADMIN ENDPOINTS ====================
