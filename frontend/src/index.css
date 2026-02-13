@@ -4,15 +4,22 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Hide Emergent Badge */
+/* Hide Platform Badge - Multiple selectors for thorough removal */
+#emergent-badge,
 .Emergent-Badge,
 [class*="Emergent-Badge"],
 [class*="emergent-badge"],
-a[href*="emergentagent.com"]:has(img),
-div[style*="position: fixed"][style*="bottom"]:has(a[href*="emergent"]) {
+[id*="emergent-badge"],
+a[href*="emergentagent.com"],
+div[style*="position: fixed"][style*="z-index: 9999"],
+div[style*="position: fixed"][style*="bottom: 16px"][style*="right: 16px"] {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
 }
 
 /* School Branding CSS Variables */
