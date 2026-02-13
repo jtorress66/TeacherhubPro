@@ -207,6 +207,8 @@ const AppRouter = () => {
       } />
       {/* Parent Portal (Public - no auth required) */}
       <Route path="/portal/:token" element={<ParentPortal />} />
+      {/* Setup Admin (Public - one-time use) */}
+      <Route path="/setup-admin" element={<SetupAdmin />} />
       {/* Fallback redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
