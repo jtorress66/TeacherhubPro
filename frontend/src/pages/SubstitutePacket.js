@@ -23,6 +23,7 @@ const SubstitutePacket = () => {
   const [selectedClass, setSelectedClass] = useState('');
   const [packetData, setPacketData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   
   // Editable fields
   const [editableData, setEditableData] = useState({
