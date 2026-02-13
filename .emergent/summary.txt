@@ -1,0 +1,163 @@
+<analysis>**original_problem_statement:**
+The user wants to build a comprehensive, teacher-focused web application TeacherHubPro. This app aims to replace paper-based planners and consolidate various teacher workflows into a single digital platform. The user will operate as a Super Admin to manage multiple schools, each with its own teachers, students, and custom branding.
+
+**PRODUCT REQUIREMENTS:**
+1.  **Core Teacher Modules:** A digital lesson planner, attendance tracker, and gradebook. The gradebook must support custom GPA scales, weighted categories, and semester-based grading.
+2.  **PDF & Printing:** A critical (P0) requirement is to export lesson plans to PDF. Reports for grades and attendance should also be printable.
+3.  **User & School Management:**
+    *   **Roles:**  and a .
+    *   **Super Admin Panel:** A centralized dashboard for the user to manage all schools, users, and platform settings. This includes creating/editing schools with custom branding (logo, colors), managing users (passwords, roles), and troubleshooting.
+    *   **Teacher Semester Management:** Teachers must be able to create, manage, and set active semesters for their classes.
+4.  **Student/Parent Portal:** A read-only portal for parents/students to view grades, attendance, and assignments. Access should be via secure, unique links that can be emailed and have an expiration date.
+5.  **Monetization:** A Stripe-based subscription model with a 7-day free trial.
+6.  **Authentication:** JWT-based custom auth and Emergent-managed Google Auth.
+7.  **UX/UI:** A professional, modern, bilingual (English/Spanish) interface, fully white-labeled on the user's custom domain ().
+
+**User's preferred language**: The user communicates in English. The application UI must be bilingual (English/Spanish). The next agent must respond in **English**.
+
+**what currently exists?**
+A full-stack application (FastAPI + React) with JWT & Google Auth, a Stripe subscription system, and a Super Admin panel. The core features are largely implemented, including a lesson planner, attendance tracker, and an advanced gradebook with GPA/category/semester support. A read-only parent portal and corresponding gradebook reports are also complete. The system for emailing portal links via Resend is integrated, and a fix for removing the Made with Emergent badge has been applied in the preview environment. The primary challenge is that the user's production environment is out of sync with the preview environment, leading to confusion about missing features and data. A special setup page () has been created to help the user configure their production account.
+
+**Last working item**:
+-   **Last item agent was working:** Reassuring the user that the Super Admin functionality for school customization (branding) still exists. The user was concerned after losing  access in their production environment, not realizing it has a separate database from the preview environment. The agent took a screenshot of the Edit School dialog in the preview environment's Admin Panel to demonstrate the feature is intact.
+-   **Status:** USER VERIFICATION PENDING
+-   **Agent Testing Done:** Y
+-   **Which testing method agent to use?** N/A. The agent is in a conversational/guidance phase with the user.
+-   **User Testing Done:** N
+
+**All Pending/In progress Issue list**:
+-   **Issue 1: User data and roles are missing in Production (P0)**
+    -   **Description:** The user has lost  access and cannot see semesters in their live production app because the production database is separate from the preview database where these were created.
+    -   **Attempted fixes:** The agent created a secure, one-time setup page () and a backend endpoint () to allow the user to easily promote their account to  in production after they redeploy. The agent has repeatedly explained the difference between preview and production environments.
+    -   **Next debug checklist:** Guide the user to complete the following steps on their live application:
+        1.  In their Emergent Dashboard, set the  environment variable for production.
+        2.  Redeploy the application to push all recent code changes live.
+        3.  Log in to their production site ().
+        4.  Navigate to  and use the form to claim  status.
+        5.  Once admin, use the Settings page to create the required semesters.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a critical blocker for the user. Resolving it will give them control over their production application and align the live environment with the implemented features.
+    -   **Status:** IN PROGRESS (Blocked on user action)
+    -   **Is recurring issue?** Y (User misunderstanding of environments).
+    -   **Should Test frontend/backend/both after fix?** N/A (User must perform actions).
+
+-   **Issue 2: Made with Emergent badge removal needs production verification (P2)**
+    -   **Attempted fixes:** The agent implemented a  in  and fallback CSS in  to remove the badge. This works in preview.
+    -   **Next debug checklist:** The user needs to redeploy to production and confirm the badge is gone from .
+    -   **Status:** USER VERIFICATION PENDING
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Frontend (visual confirmation).
+
+**In progress Task List**:
+-   None. All development tasks are complete pending user verification of the production deployment.
+
+**Upcoming and Future Tasks**
+-   **Upcoming Tasks (P1):**
+    -   **Drag-and-Drop Seating Chart Editor:** A visual tool for creating seating charts.
+    -   **Quick Week Copy:** A button in the Lesson Planner to duplicate the current week's plan to the next week.
+    -   **Super Admin Bulk Tools:** CSV import for teachers.
+-   **Future Tasks (P2):**
+    -   **Audit Log:** Implement logging for critical actions (e.g., grade changes).
+
+**Completed work in this session**
+-   **Production Setup Flow:** Created a secure UI and endpoint () for the user to become Super Admin in their production environment.
+-   **Semester System:** Implemented full CRUD for semesters, accessible to all teachers via the Settings page, and integrated semester filtering into the Gradebook and Reports.
+-   **Parent Portal Enhancements:** Integrated  to allow teachers to email secure, expiring portal access links directly to parents.
+-   **Gradebook Overhaul:** Implemented GPA calculation, letter grades, and weighted category management.
+-   **Parent Portal & Gradebook Reports:** Created dedicated pages for a read-only parent view and a comprehensive gradebook report.
+-   **Made with Emergent Badge Removal:** Implemented a robust client-side script to remove the badge at runtime.
+-   **Permissions Adjustment:** Moved semester management from an admin-only feature to one accessible by all teachers, as requested.
+-   **Extensive Testing:** Used the testing agent to validate the Super Admin panel, gradebook features, parent portal, and semester system, generating multiple test reports.
+
+**Earlier issues found/mentioned but not fixed**
+-   **Issue 1: Monolithic Backend in **
+    -   **Debug checklist:** Propose a refactoring plan to the user. Use FastAPI's  to split  into logical modules (e.g., , , ).
+    -   **Why to solve this issue and what will be achieved with this?** The  file is extremely large and difficult to maintain. Refactoring is crucial for long-term scalability and reducing the risk of introducing bugs.
+    -   **Should Test frontend/backend/both after fix:** Backend
+    -   **Is recurring issue?** Y
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+-   **Backend:** FastAPI,  for async MongoDB, Stripe, Resend SDK.
+-   **Frontend:** React, Context API, Axios, Tailwind CSS, , .
+-   **Roles & Permissions:**  and  roles controlling access.
+-   **Environments:** Separate Preview and Production environments with distinct databases, a key point of user confusion.
+
+**key DB schema**
+-   **users:** 
+-   **schools:** 
+-   **semesters:** 
+-   **classes:** 
+-   **portal_tokens:** 
+
+**All files of reference**
+-   **/app/frontend/src/pages/SetupAdmin.js**: New page for the user to become Super Admin in production.
+-   **/app/frontend/src/pages/Settings.js**: Modified to include semester management for teachers.
+-   **/app/frontend/src/pages/Gradebook.js**: Heavily modified with GPA, categories, and semester logic.
+-   **/app/frontend/src/pages/ParentPortal.js**: New read-only portal page.
+-   **/app/frontend/src/pages/GradebookReports.js**: New reports page for grades.
+-   **/app/frontend/src/pages/Classes.js**: Modified to add the Generate Portal Link feature.
+-   **/app/backend/server.py**: Heavily modified with new endpoints for semesters, reports, portal tokens, and email sending. **Still needs refactoring.**
+-   **/app/frontend/src/App.js**: Modified to add new routes and the script to remove the Emergent badge.
+
+**Areas that need refactoring**:
+-   **/app/backend/server.py**: This is a critical piece of technical debt. It must be broken down into smaller modules using  to ensure the project remains maintainable.
+
+**key api endpoints**
+-   : Secure, one-time endpoint for the user to claim super_admin role in production.
+-   : Get all semesters for the user's school.
+-   : Full CRUD for managing semesters.
+-   : Generate a secure, expiring portal access token and optionally email it.
+-   : Get the data for the read-only parent portal.
+-   : Get data for the gradebook reports page.
+
+**Critical Info for New Agent**
+-   **User Environment Confusion:** The user does not fully grasp the separation between the preview and production environments/databases. Your primary task is to guide them through the necessary steps (setting env vars, redeploying, using the setup page) to get their production app running with all features and correct data. Be patient and provide clear, step-by-step instructions.
+-   **Refactor :** This task has been ignored for too long. After resolving the user's immediate production setup issues, you **must** prioritize proposing and executing the refactor of .
+-   **Production State:** The user's live site is out of date. Do not start new feature development until the user confirms their production environment is working as expected.
+
+**documents and test reports created in this job**
+-   /app/test_reports/iteration_4.json
+-   /app/test_reports/iteration_5.json
+-   /app/test_reports/iteration_6.json
+-   /app/test_reports/iteration_7.json
+-   /app/memory/PRD.md (updated)
+
+**Last 10 User Messages and any pending HUMAN messages**
+1.  **User:** Asks to set the From email to . 
+2.  **User:** Confirms the domain is verified with Resend. 
+3.  **Agent:** Informs the user they must update the  environment variable in their production dashboard and redeploy for the change to take effect. 
+4.  **User:** Reports the email sender is still wrong in production. 
+5.  **User:** Reports they lost Super Admin access and semester features. 
+6.  **User:** Agrees to the fix (Option A) but expresses concern about losing data on every redeploy. 
+7.  **User:** Asks for clarification on who runs the setup command and where. 
+8.  **User:** States that teachers, not just admins, should create semesters. 
+9.  **User:** Expresses confusion again about losing Super Admin features for school customization. 
+10. **Agent:** Is currently showing a screenshot of the Admin Panel to prove the school customization features still exist. 
+
+**Project Health Check:**
+-   **Working:** The application is fully functional and feature-complete in the preview environment.
+-   **User Action Required:** The production environment is out of sync. The user must set environment variables, redeploy, and use the  page to align production with the preview build.
+
+**3rd Party Integrations**
+-   **Emergent-managed Google Auth:** For Sign in with Google functionality.
+-   **Stripe:** For subscriptions (configured with user's live keys).
+-   **Resend:** For sending transactional emails (e.g., parent portal links). Requires a User API Key and verified domain.
+
+**Testing status**
+-   **Testing agent used after significant changes:** YES
+-   **Test files created:**
+    -   /app/backend/tests/test_super_admin.py
+    -   /app/backend/tests/test_gradebook_features.py
+    -   /app/backend/tests/test_portal_and_reports.py
+    -   /app/backend/tests/test_semesters_and_email.py
+-   **Known regressions:** None in the preview environment. Production is out of date.
+
+**Credentials to test flow:**
+-   **Email:** 
+-   **Password:** 
+-   **(This user is  in the preview environment)**
+
+**What agent forgot to execute**
+-   The agent did not address the critical technical debt of refactoring the monolithic  file, despite it being highlighted in the initial handoff. This should be a top priority once the user's production issues are resolved.</analysis>

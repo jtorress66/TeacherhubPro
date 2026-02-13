@@ -1679,7 +1679,7 @@ async def send_portal_email(data: PortalEmailRequest, user: dict = Depends(get_c
     school_name = school.get("name", "TeacherHubPro") if school else "TeacherHubPro"
     
     # Build email HTML
-    portal_url = f"https://teacherdash-2.preview.emergentagent.com/portal/{token_result['token']}"
+    portal_url = f"https://teacherhub-15.preview.emergentagent.com/portal/{token_result['token']}"
     expires_date = datetime.fromisoformat(token_result['expires_at'].replace("Z", "+00:00")).strftime("%B %d, %Y")
     
     html_content = f"""
