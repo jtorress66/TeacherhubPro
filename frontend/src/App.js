@@ -29,6 +29,40 @@ import ParentPortal from "./pages/ParentPortal";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Remove platform badge
+const removePlatformBadge = () => {
+  const badge = document.getElementById('emergent-badge');
+  if (badge) {
+    badge.remove();
+  }
+};
+
+// Set up observer to catch dynamically injected badge
+if (typeof window !== 'undefined') {
+  // Remove immediately if exists
+  removePlatformBadge();
+  
+  // Watch for badge being added
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach(() => {
+      removePlatformBadge();
+    });
+  });
+  
+  // Start observing when DOM is ready
+  if (document.body) {
+    observer.observe(document.body, { childList: true, subtree: true });
+  } else {
+    document.addEventListener('DOMContentLoaded', () => {
+      observer.observe(document.body, { childList: true, subtree: true });
+      removePlatformBadge();
+    });
+  }
+  
+  // Also remove on load
+  window.addEventListener('load', removePlatformBadge);
+}
+
 // Protected Route component with subscription check
 const ProtectedRoute = ({ children, requireSubscription = true }) => {
   const { user, loading, checkAuth } = useAuth();
