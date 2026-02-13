@@ -820,6 +820,59 @@ async def delete_class(class_id: str, user: dict = Depends(get_current_user)):
     await db.classes.delete_one({"class_id": class_id})
     return {"message": "Class deleted"}
 
+
+# ==================== SUBSTITUTE PACKET DATA ====================
+
+class SubPacketData(BaseModel):
+    main_office_ext: str = "Ext. 100"
+    nurse_ext: str = "Ext. 105"
+    daily_routines: str = ""
+    emergency_procedures: str = ""
+    additional_notes: str = ""
+
+@api_router.get("/classes/{class_id}/sub-packet")
+async def get_sub_packet(class_id: str, user: dict = Depends(get_current_user)):
+    """Get saved substitute packet data for a class"""
+    class_doc = await db.classes.find_one({"class_id": class_id}, {"_id": 0})
+    if not class_doc:
+        raise HTTPException(status_code=404, detail="Class not found")
+    
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    packet = await db.sub_packets.find_one({"class_id": class_id}, {"_id": 0})
+    return packet
+
+@api_router.put("/classes/{class_id}/sub-packet")
+async def save_sub_packet(class_id: str, data: SubPacketData, user: dict = Depends(get_current_user)):
+    """Save substitute packet data for a class"""
+    class_doc = await db.classes.find_one({"class_id": class_id}, {"_id": 0})
+    if not class_doc:
+        raise HTTPException(status_code=404, detail="Class not found")
+    
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    await db.sub_packets.update_one(
+        {"class_id": class_id},
+        {"$set": {
+            "class_id": class_id,
+            "teacher_id": user["user_id"],
+            "main_office_ext": data.main_office_ext,
+            "nurse_ext": data.nurse_ext,
+            "daily_routines": data.daily_routines,
+            "emergency_procedures": data.emergency_procedures,
+            "additional_notes": data.additional_notes,
+            "updated_at": now
+        }},
+        upsert=True
+    )
+    
+    return {"message": "Packet data saved"}
+
+
 # ==================== SEMESTER ENDPOINTS ====================
 
 @api_router.get("/semesters")
