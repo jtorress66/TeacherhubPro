@@ -268,15 +268,19 @@ const SubstitutePacket = () => {
             {packetData && (
               <div className="flex gap-3 mt-4 pt-4 border-t">
                 <Button 
-                  onClick={() => setIsEditing(!isEditing)} 
+                  onClick={handleToggleEdit} 
                   variant={isEditing ? "default" : "outline"} 
                   className="gap-2"
+                  disabled={saving}
                   data-testid="edit-packet-btn"
                 >
-                  {isEditing ? <Save className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
-                  {isEditing 
-                    ? (language === 'es' ? 'Listo' : 'Done')
-                    : (language === 'es' ? 'Editar Paquete' : 'Edit Packet')}
+                  {saving ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> {language === 'es' ? 'Guardando...' : 'Saving...'}</>
+                  ) : isEditing ? (
+                    <><Save className="h-4 w-4" /> {language === 'es' ? 'Guardar' : 'Save'}</>
+                  ) : (
+                    <><Edit2 className="h-4 w-4" /> {language === 'es' ? 'Editar Paquete' : 'Edit Packet'}</>
+                  )}
                 </Button>
                 <Button onClick={handlePrint} variant="outline" className="gap-2" data-testid="print-packet-btn">
                   <Printer className="h-4 w-4" />
