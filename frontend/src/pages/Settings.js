@@ -12,8 +12,9 @@ import { Switch } from '../components/ui/switch';
 import { Separator } from '../components/ui/separator';
 import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
 import { toast } from 'sonner';
-import { User, Globe, Shield, Save, Building2, Image, CreditCard, Crown, Users, UserCog, Loader2 } from 'lucide-react';
+import { User, Globe, Shield, Save, Building2, Image, CreditCard, Crown, Users, UserCog, Loader2, CalendarDays, Plus, Edit, Trash2 } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -36,6 +37,16 @@ const Settings = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [updatingRole, setUpdatingRole] = useState(null);
+  
+  // Semester management state
+  const [semesters, setSemesters] = useState([]);
+  const [loadingSemesters, setLoadingSemesters] = useState(false);
+  const [semesterDialog, setSemesterDialog] = useState(false);
+  const [editingSemester, setEditingSemester] = useState(null);
+  const [savingSemester, setSavingSemester] = useState(false);
+  const [semesterForm, setSemesterForm] = useState({
+    name: '', name_es: '', start_date: '', end_date: '', year_term: '2024-2025', is_active: false
+  });
 
   useEffect(() => {
     const fetchData = async () => {
