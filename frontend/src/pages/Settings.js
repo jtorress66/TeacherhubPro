@@ -650,6 +650,210 @@ const Settings = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Semester Management - Available to all users */}
+        <Card className="bg-white border-slate-100">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-green-100">
+                  <CalendarDays className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">{language === 'es' ? 'Semestres' : 'Semesters'}</CardTitle>
+                  <CardDescription>
+                    {language === 'es' ? 'Administra los períodos académicos' : 'Manage academic periods'}
+                  </CardDescription>
+                </div>
+              </div>
+              <Button onClick={() => openSemesterDialog()} data-testid="new-semester-btn">
+                <Plus className="h-4 w-4 mr-2" />
+                {language === 'es' ? 'Nuevo' : 'New'}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {loadingSemesters ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-green-600" />
+              </div>
+            ) : semesters.length > 0 ? (
+              <div className="space-y-3">
+                {semesters.map(semester => (
+                  <div key={semester.semester_id} className="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100">
+                    <div className="flex items-center gap-4">
+                      <div className={`p-2 rounded-lg ${semester.is_active ? 'bg-green-100' : 'bg-slate-200'}`}>
+                        <CalendarDays className={`h-5 w-5 ${semester.is_active ? 'text-green-600' : 'text-slate-500'}`} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-slate-800">
+                            {language === 'es' ? semester.name_es || semester.name : semester.name}
+                          </p>
+                          {semester.is_active && (
+                            <Badge className="bg-green-100 text-green-800 text-xs">
+                              {language === 'es' ? 'Activo' : 'Active'}
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-slate-500">
+                          {new Date(semester.start_date).toLocaleDateString()} - {new Date(semester.end_date).toLocaleDateString()}
+                        </p>
+                        <p className="text-xs text-slate-400">{semester.year_term}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-500">
+                          {language === 'es' ? 'Activo' : 'Active'}
+                        </span>
+                        <Switch 
+                          checked={semester.is_active}
+                          onCheckedChange={() => toggleSemesterActive(semester)}
+                        />
+                      </div>
+                      <Button variant="outline" size="sm" onClick={() => openSemesterDialog(semester)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-red-600 hover:bg-red-50"
+                        onClick={() => deleteSemester(semester.semester_id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <CalendarDays className="h-12 w-12 mx-auto mb-4 text-slate-300" />
+                <p className="text-slate-500 mb-4">
+                  {language === 'es' ? 'No hay semestres. Crea uno para organizar tus clases y calificaciones.' : 'No semesters. Create one to organize your classes and grades.'}
+                </p>
+                <Button onClick={() => openSemesterDialog()}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  {language === 'es' ? 'Crear Primer Semestre' : 'Create First Semester'}
+                </Button>
+              </div>
+            )}
+
+            <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+              <p className="text-sm text-blue-800">
+                <strong>{language === 'es' ? 'Consejo:' : 'Tip:'}</strong>{' '}
+                {language === 'es' 
+                  ? 'El semestre activo se mostrará por defecto en el libro de calificaciones y reportes.'
+                  : 'The active semester will be shown by default in the gradebook and reports.'}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Semester Dialog */}
+        <Dialog open={semesterDialog} onOpenChange={setSemesterDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <CalendarDays className="h-5 w-5 text-green-600" />
+                {editingSemester 
+                  ? (language === 'es' ? 'Editar Semestre' : 'Edit Semester')
+                  : (language === 'es' ? 'Nuevo Semestre' : 'New Semester')
+                }
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Nombre (Inglés)' : 'Name (English)'}</Label>
+                  <Input 
+                    value={semesterForm.name}
+                    onChange={(e) => setSemesterForm({...semesterForm, name: e.target.value})}
+                    placeholder="Semester 1"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Nombre (Español)' : 'Name (Spanish)'}</Label>
+                  <Input 
+                    value={semesterForm.name_es}
+                    onChange={(e) => setSemesterForm({...semesterForm, name_es: e.target.value})}
+                    placeholder="Semestre 1"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Fecha de Inicio' : 'Start Date'}</Label>
+                  <Input 
+                    type="date"
+                    value={semesterForm.start_date}
+                    onChange={(e) => setSemesterForm({...semesterForm, start_date: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Fecha de Fin' : 'End Date'}</Label>
+                  <Input 
+                    type="date"
+                    value={semesterForm.end_date}
+                    onChange={(e) => setSemesterForm({...semesterForm, end_date: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>{language === 'es' ? 'Año Escolar' : 'School Year'}</Label>
+                <Select 
+                  value={semesterForm.year_term} 
+                  onValueChange={(v) => setSemesterForm({...semesterForm, year_term: v})}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2023-2024">2023-2024</SelectItem>
+                    <SelectItem value="2024-2025">2024-2025</SelectItem>
+                    <SelectItem value="2025-2026">2025-2026</SelectItem>
+                    <SelectItem value="2026-2027">2026-2027</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                <Switch 
+                  id="is-active"
+                  checked={semesterForm.is_active}
+                  onCheckedChange={(checked) => setSemesterForm({...semesterForm, is_active: checked})}
+                />
+                <div>
+                  <Label htmlFor="is-active" className="cursor-pointer">
+                    {language === 'es' ? 'Semestre Activo' : 'Active Semester'}
+                  </Label>
+                  <p className="text-xs text-slate-500">
+                    {language === 'es' 
+                      ? 'Se mostrará por defecto en calificaciones y reportes'
+                      : 'Will be shown by default in gradebook and reports'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setSemesterDialog(false)}>
+                {language === 'es' ? 'Cancelar' : 'Cancel'}
+              </Button>
+              <Button 
+                onClick={saveSemester} 
+                disabled={savingSemester || !semesterForm.name || !semesterForm.start_date || !semesterForm.end_date}
+              >
+                {savingSemester && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {language === 'es' ? 'Guardar' : 'Save'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
