@@ -77,9 +77,86 @@ const Settings = () => {
       if (user?.role === 'admin') {
         fetchAllUsers();
       }
+      
+      // Fetch semesters for all users
+      fetchSemesters();
     };
     fetchData();
   }, [user?.school_id, user?.role]);
+
+  const fetchSemesters = async () => {
+    setLoadingSemesters(true);
+    try {
+      const res = await axios.get(`${API}/semesters`, { withCredentials: true });
+      setSemesters(res.data || []);
+    } catch (error) {
+      console.error('Error fetching semesters:', error);
+    } finally {
+      setLoadingSemesters(false);
+    }
+  };
+
+  const openSemesterDialog = (semester = null) => {
+    if (semester) {
+      setEditingSemester(semester);
+      setSemesterForm({
+        name: semester.name,
+        name_es: semester.name_es || '',
+        start_date: semester.start_date,
+        end_date: semester.end_date,
+        year_term: semester.year_term,
+        is_active: semester.is_active
+      });
+    } else {
+      setEditingSemester(null);
+      setSemesterForm({
+        name: '', name_es: '', start_date: '', end_date: '', year_term: '2024-2025', is_active: false
+      });
+    }
+    setSemesterDialog(true);
+  };
+
+  const saveSemester = async () => {
+    setSavingSemester(true);
+    try {
+      if (editingSemester) {
+        await axios.put(`${API}/semesters/${editingSemester.semester_id}`, semesterForm, { withCredentials: true });
+        toast.success(language === 'es' ? 'Semestre actualizado' : 'Semester updated');
+      } else {
+        await axios.post(`${API}/semesters`, semesterForm, { withCredentials: true });
+        toast.success(language === 'es' ? 'Semestre creado' : 'Semester created');
+      }
+      setSemesterDialog(false);
+      fetchSemesters();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error');
+    } finally {
+      setSavingSemester(false);
+    }
+  };
+
+  const deleteSemester = async (semesterId) => {
+    if (!window.confirm(language === 'es' ? '¿Eliminar este semestre?' : 'Delete this semester?')) return;
+    try {
+      await axios.delete(`${API}/semesters/${semesterId}`, { withCredentials: true });
+      toast.success(language === 'es' ? 'Semestre eliminado' : 'Semester deleted');
+      fetchSemesters();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error');
+    }
+  };
+
+  const toggleSemesterActive = async (semester) => {
+    try {
+      await axios.put(`${API}/semesters/${semester.semester_id}`, {
+        is_active: !semester.is_active
+      }, { withCredentials: true });
+      fetchSemesters();
+      toast.success(language === 'es' ? 'Estado actualizado' : 'Status updated');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error');
+    }
+  };
 
   const fetchAllUsers = async () => {
     setLoadingUsers(true);
