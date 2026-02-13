@@ -841,10 +841,7 @@ async def get_active_semester(user: dict = Depends(get_current_user)):
 
 @api_router.post("/semesters", response_model=SemesterResponse)
 async def create_semester(data: SemesterCreate, user: dict = Depends(get_current_user)):
-    """Create a new semester (Admin/Super Admin only)"""
-    if user.get("role") not in ["admin", "super_admin"]:
-        raise HTTPException(status_code=403, detail="Only admins can create semesters")
-    
+    """Create a new semester (Teachers, Admins, and Super Admins can create)"""
     school_id = user.get("school_id", "school_default")
     semester_id = f"sem_{uuid.uuid4().hex[:8]}"
     now = datetime.now(timezone.utc).isoformat()
@@ -865,6 +862,7 @@ async def create_semester(data: SemesterCreate, user: dict = Depends(get_current
         "end_date": data.end_date,
         "year_term": data.year_term,
         "is_active": data.is_active,
+        "created_by": user["user_id"],
         "created_at": now
     }
     
@@ -873,10 +871,7 @@ async def create_semester(data: SemesterCreate, user: dict = Depends(get_current
 
 @api_router.put("/semesters/{semester_id}")
 async def update_semester(semester_id: str, data: dict, user: dict = Depends(get_current_user)):
-    """Update a semester"""
-    if user.get("role") not in ["admin", "super_admin"]:
-        raise HTTPException(status_code=403, detail="Only admins can update semesters")
-    
+    """Update a semester (Teachers, Admins, and Super Admins can update)"""
     semester = await db.semesters.find_one({"semester_id": semester_id}, {"_id": 0})
     if not semester:
         raise HTTPException(status_code=404, detail="Semester not found")
@@ -902,10 +897,7 @@ async def update_semester(semester_id: str, data: dict, user: dict = Depends(get
 
 @api_router.delete("/semesters/{semester_id}")
 async def delete_semester(semester_id: str, user: dict = Depends(get_current_user)):
-    """Delete a semester"""
-    if user.get("role") not in ["admin", "super_admin"]:
-        raise HTTPException(status_code=403, detail="Only admins can delete semesters")
-    
+    """Delete a semester (Teachers, Admins, and Super Admins can delete)"""
     # Check if semester has classes
     class_count = await db.classes.count_documents({"semester_id": semester_id})
     if class_count > 0:
