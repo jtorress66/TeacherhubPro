@@ -26,6 +26,7 @@ import Pricing from "./pages/Pricing";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import AdminPanel from "./pages/AdminPanel";
 import ParentPortal from "./pages/ParentPortal";
+import SetupAdmin from "./pages/SetupAdmin";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
