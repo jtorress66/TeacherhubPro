@@ -527,81 +527,61 @@ const LessonPlanner = () => {
                       {language === 'es' ? 'Iniciar Sesión' : 'Login'}
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                       <DialogTitle className="flex items-center gap-2">
-                        <div className="p-1 bg-amber-100 rounded">
-                          <img 
-                            src="https://loginsma.smaprendizaje.com/favicon.ico" 
-                            alt="SM" 
-                            className="h-6 w-6"
-                            onError={(e) => { e.target.onerror = null; e.target.src = ''; }}
-                          />
+                        <div className="p-2 bg-amber-100 rounded-lg">
+                          <BookOpen className="h-5 w-5 text-amber-600" />
                         </div>
                         SM Aprendizaje
                       </DialogTitle>
                     </DialogHeader>
-                    <form 
-                      action="https://loginsma.smaprendizaje.com/Account/Login"
-                      method="POST"
-                      target="_blank"
-                      className="space-y-4 pt-4"
-                    >
+                    <div className="space-y-4 pt-4">
                       <p className="text-sm text-slate-600">
                         {language === 'es' 
                           ? 'Ingresa tus credenciales de SM Aprendizaje para acceder a recursos educativos.' 
                           : 'Enter your SM Aprendizaje credentials to access educational resources.'}
                       </p>
                       <div className="space-y-2">
-                        <Label htmlFor="sm-username">{language === 'es' ? 'Usuario' : 'Username'}</Label>
+                        <Label htmlFor="sm-user">{language === 'es' ? 'Usuario' : 'Username'}</Label>
                         <Input 
-                          id="sm-username"
-                          name="UserName"
+                          id="sm-user"
                           value={smCredentials.username}
                           onChange={(e) => setSMCredentials(prev => ({ ...prev, username: e.target.value }))}
                           placeholder={language === 'es' ? 'Tu usuario' : 'Your username'}
                           data-testid="sm-username-input"
-                          required
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="sm-password">{language === 'es' ? 'Contraseña' : 'Password'}</Label>
+                        <Label htmlFor="sm-pass">{language === 'es' ? 'Contraseña' : 'Password'}</Label>
                         <Input 
-                          id="sm-password"
-                          name="Password"
+                          id="sm-pass"
                           type="password"
                           value={smCredentials.password}
                           onChange={(e) => setSMCredentials(prev => ({ ...prev, password: e.target.value }))}
                           placeholder={language === 'es' ? 'Tu contraseña' : 'Your password'}
                           data-testid="sm-password-input"
-                          required
                         />
                       </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          type="submit"
-                          className="flex-1 bg-blue-600 hover:bg-blue-700"
-                          data-testid="sm-login-submit"
-                        >
-                          {language === 'es' ? 'Iniciar Sesión' : 'Login'}
-                        </Button>
-                        <Button 
-                          type="button"
-                          variant="outline"
-                          onClick={() => {
-                            window.open('https://loginsma.smaprendizaje.com', '_blank');
-                            setShowSMLogin(false);
-                          }}
-                        >
-                          {language === 'es' ? 'Abrir Sitio' : 'Open Site'}
-                        </Button>
-                      </div>
+                      <Button 
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                        onClick={() => {
+                          window.open('https://loginsma.smaprendizaje.com', '_blank', 'width=1200,height=800');
+                          setShowSMLogin(false);
+                          toast.success(language === 'es' 
+                            ? 'SM Aprendizaje abierto en nueva ventana' 
+                            : 'SM Aprendizaje opened in new window');
+                        }}
+                        data-testid="sm-login-submit"
+                      >
+                        {language === 'es' ? 'Abrir SM Aprendizaje' : 'Open SM Aprendizaje'}
+                      </Button>
                       <p className="text-xs text-slate-500 text-center">
                         {language === 'es' 
-                          ? 'Se abrirá SM Aprendizaje en una nueva pestaña.' 
-                          : 'SM Aprendizaje will open in a new tab.'}
+                          ? 'Se abrirá en una nueva ventana donde podrás iniciar sesión.' 
+                          : 'Will open in a new window where you can log in.'}
                       </p>
-                    </form>
+                    </div>
                   </DialogContent>
                 </Dialog>
               </div>
