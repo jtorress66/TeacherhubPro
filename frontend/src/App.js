@@ -215,6 +215,13 @@ const AppRouter = () => {
       <Route path="/portal/:token" element={<ParentPortal />} />
       {/* Setup Admin (Public - one-time use) */}
       <Route path="/setup-admin" element={<SetupAdmin />} />
+      {/* Footer/Legal Pages (Public) */}
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/help" element={<Help />} />
+      <Route path="/terms-of-use" element={<TermsOfUse />} />
+      <Route path="/cookies-policy" element={<CookiesPolicy />} />
+      <Route path="/accessibility" element={<Accessibility />} />
       {/* Fallback redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
