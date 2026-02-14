@@ -115,9 +115,7 @@ const Dashboard = () => {
           <div className="flex gap-3">
             <Button
               onClick={() => setRunTour(true)}
-              variant="outline"
-              className="gap-2 border-2 hover:bg-amber-50 transition-all"
-              style={{ borderColor: '#F59E0B', color: '#F59E0B' }}
+              className="gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white border-0"
               data-testid="start-tour-btn"
             >
               <HelpCircle className="h-4 w-4" />
