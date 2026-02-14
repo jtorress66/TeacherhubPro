@@ -878,16 +878,31 @@ const LessonPlanner = () => {
                         {(currentDay.materials || []).map((material, mi) => (
                           <div 
                             key={material.material_type}
-                            className={`flex items-center gap-3 p-2 rounded border cursor-pointer ${
+                            className={`flex flex-col gap-2 p-2 rounded border ${
                               material.checked ? 'bg-lime-50 border-lime-200' : 'bg-white border-slate-200'
                             }`}
-                            onClick={() => toggleMaterial(dayIndex, mi)}
                           >
-                            <Checkbox 
-                              checked={material.checked}
-                              data-testid={`material-${dayIndex}-${mi}`}
-                            />
-                            <span className="text-sm">{t(material.material_type)}</span>
+                            <div 
+                              className="flex items-center gap-3 cursor-pointer"
+                              onClick={() => toggleMaterial(dayIndex, mi)}
+                            >
+                              <Checkbox 
+                                checked={material.checked}
+                                data-testid={`material-${dayIndex}-${mi}`}
+                              />
+                              <span className="text-sm">{t(material.material_type)}</span>
+                            </div>
+                            {/* Show text input for "Other" when checked */}
+                            {material.material_type === 'other' && material.checked && (
+                              <Input
+                                value={material.notes || ''}
+                                onChange={(e) => handleMaterialNoteChange(dayIndex, mi, e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                                placeholder={language === 'es' ? 'Especificar otro material...' : 'Specify other material...'}
+                                className="ml-6 text-sm"
+                                data-testid={`material-other-notes-${dayIndex}`}
+                              />
+                            )}
                           </div>
                         ))}
                       </div>
