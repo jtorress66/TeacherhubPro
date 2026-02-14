@@ -218,10 +218,12 @@ const LessonPlanner = () => {
       const payload = {
         ...formData,
         skills: formData.skills.filter(s => s.trim() !== ''),
+        skills_week2: (formData.skills_week2 || []).filter(s => s.trim() !== ''),
+        objective_week2: formData.objective_week2 || '',
         days: formData.days.map(day => ({
           ...day,
-          activities: day.activities.filter(a => a.checked),
-          materials: day.materials.filter(m => m.checked)
+          activities: (day.activities || []).filter(a => a.checked),
+          materials: (day.materials || []).filter(m => m.checked)
         })),
         standards: formData.standards.filter(s => s.codes.length > 0)
       };
