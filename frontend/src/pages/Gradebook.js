@@ -437,6 +437,132 @@ const Gradebook = () => {
           </div>
         </div>
 
+        {/* Assignment List Dialog */}
+        <Dialog open={showAssignmentList} onOpenChange={setShowAssignmentList}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{language === 'es' ? 'Lista de Tareas' : 'Assignment List'}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3 pt-4">
+              {assignments.length === 0 ? (
+                <p className="text-center text-slate-500 py-8">
+                  {language === 'es' ? 'No hay tareas creadas' : 'No assignments created'}
+                </p>
+              ) : (
+                assignments.map(assignment => {
+                  const category = categories.find(c => c.category_id === assignment.category_id);
+                  return (
+                    <div 
+                      key={assignment.assignment_id} 
+                      className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors"
+                    >
+                      <div className="flex-1">
+                        <div className="font-medium text-slate-800">{assignment.title}</div>
+                        <div className="flex items-center gap-3 mt-1">
+                          <Badge variant="outline" className="text-xs">
+                            {language === 'es' ? category?.name_es : category?.name}
+                          </Badge>
+                          <span className="text-sm text-slate-500">
+                            {assignment.points} {language === 'es' ? 'pts' : 'points'}
+                          </span>
+                          {assignment.due_date && (
+                            <span className="text-sm text-slate-500">
+                              {new Date(assignment.due_date).toLocaleDateString()}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setEditingAssignment({...assignment})}
+                          data-testid={`edit-assignment-${assignment.assignment_id}`}
+                        >
+                          <Pencil className="h-4 w-4 text-blue-600" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteAssignment(assignment.assignment_id)}
+                          data-testid={`delete-assignment-${assignment.assignment_id}`}
+                        >
+                          <Trash2 className="h-4 w-4 text-red-600" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Assignment Dialog */}
+        <Dialog open={!!editingAssignment} onOpenChange={(open) => !open && setEditingAssignment(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{language === 'es' ? 'Editar Tarea' : 'Edit Assignment'}</DialogTitle>
+            </DialogHeader>
+            {editingAssignment && (
+              <div className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <Label>{t('title')}</Label>
+                  <Input 
+                    value={editingAssignment.title}
+                    onChange={(e) => setEditingAssignment(prev => ({ ...prev, title: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('category')}</Label>
+                  <Select 
+                    value={editingAssignment.category_id}
+                    onValueChange={(v) => setEditingAssignment(prev => ({ ...prev, category_id: v }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map(cat => (
+                        <SelectItem key={cat.category_id} value={cat.category_id}>
+                          {language === 'es' ? cat.name_es : cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>{t('points')}</Label>
+                    <Input 
+                      type="number"
+                      value={editingAssignment.points}
+                      onChange={(e) => setEditingAssignment(prev => ({ ...prev, points: parseFloat(e.target.value) }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t('dueDate')}</Label>
+                    <Input 
+                      type="date"
+                      value={editingAssignment.due_date || ''}
+                      onChange={(e) => setEditingAssignment(prev => ({ ...prev, due_date: e.target.value }))}
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button onClick={handleEditAssignment} className="flex-1">
+                    <Save className="h-4 w-4 mr-2" />
+                    {t('save')}
+                  </Button>
+                  <Button variant="outline" onClick={() => setEditingAssignment(null)}>
+                    {language === 'es' ? 'Cancelar' : 'Cancel'}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
         {/* Semester and Class Selector */}
         <Card className="bg-white border-slate-100">
           <CardContent className="p-4">
