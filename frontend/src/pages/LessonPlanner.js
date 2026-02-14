@@ -768,7 +768,7 @@ const LessonPlanner = () => {
                     <div className="space-y-2">
                       <Label>{t('activities')}</Label>
                       <div className="space-y-2 max-h-64 overflow-y-auto">
-                        {formData.days[dayIndex].activities.map((activity, ai) => (
+                        {(currentDay.activities || []).map((activity, ai) => (
                           <div 
                             key={activity.activity_type}
                             className={`flex flex-col gap-2 p-2 rounded border ${
