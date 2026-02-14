@@ -46,6 +46,7 @@ const LessonPlanner = () => {
   const [activeDay, setActiveDay] = useState(0);
   const [showPrintView, setShowPrintView] = useState(false);
   const [school, setSchool] = useState(null);
+  const [activeWeek, setActiveWeek] = useState(1); // Toggle between Week 1 and Week 2
   
   // Form state
   const [formData, setFormData] = useState({
@@ -58,17 +59,30 @@ const LessonPlanner = () => {
     story: '',
     teacher_name: '',  // Teacher name field
     objective: '',
+    objective_week2: '',
     skills: ['', '', '', ''],
+    skills_week2: ['', '', '', ''],
     days: DAYS.map((day, i) => ({
       date: '',
       day_name: day,
+      week_index: 1, // Week 1 days
       theme: '',
       dok_levels: [],
       eca: { E: false, C: false, A: false },  // Enrichment, Core, Assessment
       activities: ACTIVITY_TYPES.map(type => ({ activity_type: type, checked: false, notes: '' })),
       materials: MATERIAL_TYPES.map(type => ({ material_type: type, checked: false })),
       notes: ''
-    })),
+    })).concat(DAYS.map((day, i) => ({
+      date: '',
+      day_name: day,
+      week_index: 2, // Week 2 days
+      theme: '',
+      dok_levels: [],
+      eca: { E: false, C: false, A: false },
+      activities: ACTIVITY_TYPES.map(type => ({ activity_type: type, checked: false, notes: '' })),
+      materials: MATERIAL_TYPES.map(type => ({ material_type: type, checked: false })),
+      notes: ''
+    }))),
     standards: [
       { week_index: 1, domain: 'listeningAndSpeaking', codes: [] },
       { week_index: 1, domain: 'foundationalSkills', codes: [] },
