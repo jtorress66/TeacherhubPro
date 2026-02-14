@@ -75,14 +75,18 @@ const Landing = () => {
     <div className="min-h-screen hero-gradient">
       {/* Header */}
       <header className="border-b border-slate-200/50 glass sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-green-600 to-green-700 shadow-lg">
-              <BookOpen className="h-6 w-6 text-white" />
-            </div>
-            <span className="text-2xl font-heading font-bold text-slate-800">TeacherHubPro</span>
-          </div>
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-center items-center relative">
+          {/* Centered Logo and Name */}
           <div className="flex items-center gap-4">
+            <img 
+              src="https://static.prod-images.emergentagent.com/jobs/3f72aedc-992b-4d25-83bd-5bb47e46011f/images/0f969775d262b8ea24538b15f4cc9cbeaf4a878afa90805ec86f8619b9caac6c.png"
+              alt="TeacherHubPro Logo"
+              className="h-12 w-12 object-contain"
+            />
+            <span className="text-3xl font-heading font-bold text-slate-800">TeacherHubPro</span>
+          </div>
+          {/* Right side buttons */}
+          <div className="absolute right-6 flex items-center gap-4">
             <Link to="/pricing">
               <Button
                 variant="ghost"
@@ -120,14 +124,14 @@ const Landing = () => {
               {language === 'es' ? '7 días de prueba gratis' : '7-day free trial'}
             </div>
             
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-slate-800 tracking-tight leading-[1.1]">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-heading font-bold text-slate-800 tracking-tight leading-[1.1]">
               {language === 'es' 
                 ? 'Tu planificador digital ' 
                 : 'Your trusted '}
               <span className="gradient-text">{language === 'es' ? 'de confianza' : 'digital planner'}</span>
             </h1>
             
-            <p className="text-lg text-slate-600 leading-relaxed max-w-lg">
+            <p className="text-xl text-slate-600 leading-relaxed max-w-lg">
               {language === 'es'
                 ? 'Reemplaza tu planificador de papel con una solución digital que se siente familiar. Planifica lecciones, toma asistencia y administra notas en un solo lugar.'
                 : 'Replace your paper planner with a digital solution that feels familiar. Plan lessons, take attendance, and manage grades in one place.'}
