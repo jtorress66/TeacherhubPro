@@ -186,6 +186,40 @@ const Gradebook = () => {
     }
   };
 
+  // Handle editing an assignment
+  const handleEditAssignment = async () => {
+    if (!editingAssignment) return;
+    try {
+      await axios.put(`${API}/assignments/${editingAssignment.assignment_id}`, {
+        title: editingAssignment.title,
+        category_id: editingAssignment.category_id,
+        points: editingAssignment.points,
+        due_date: editingAssignment.due_date,
+        description: editingAssignment.description
+      }, { withCredentials: true });
+      
+      setAssignments(prev => prev.map(a => 
+        a.assignment_id === editingAssignment.assignment_id ? editingAssignment : a
+      ));
+      setEditingAssignment(null);
+      toast.success(language === 'es' ? 'Tarea actualizada' : 'Assignment updated');
+    } catch (error) {
+      toast.error(t('error'));
+    }
+  };
+
+  // Handle deleting an assignment
+  const handleDeleteAssignment = async (assignmentId) => {
+    if (!window.confirm(language === 'es' ? '¿Eliminar esta tarea?' : 'Delete this assignment?')) return;
+    try {
+      await axios.delete(`${API}/assignments/${assignmentId}`, { withCredentials: true });
+      setAssignments(prev => prev.filter(a => a.assignment_id !== assignmentId));
+      toast.success(language === 'es' ? 'Tarea eliminada' : 'Assignment deleted');
+    } catch (error) {
+      toast.error(t('error'));
+    }
+  };
+
   const handleGradeChange = async (studentId, assignmentId, value) => {
     const score = value === '' ? null : parseFloat(value);
     const key = `${studentId}_${assignmentId}`;
