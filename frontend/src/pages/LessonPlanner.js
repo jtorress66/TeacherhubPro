@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Skeleton } from '../components/ui/skeleton';
 import { toast } from 'sonner';
-import { Calendar, Plus, Copy, FileDown, Save, Trash2, ChevronLeft, ChevronRight, Printer } from 'lucide-react';
+import { Calendar, Plus, Copy, FileDown, Save, Trash2, ChevronLeft, ChevronRight, Printer, BookOpen } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
