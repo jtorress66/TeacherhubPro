@@ -253,18 +253,41 @@ const LessonPlanner = () => {
     }
   };
 
-  const updateSkill = (index, value) => {
-    setFormData(prev => ({
-      ...prev,
-      skills: prev.skills.map((s, i) => i === index ? value : s)
-    }));
+  const updateSkill = (index, value, week = 1) => {
+    if (week === 1) {
+      setFormData(prev => ({
+        ...prev,
+        skills: prev.skills.map((s, i) => i === index ? value : s)
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        skills_week2: prev.skills_week2.map((s, i) => i === index ? value : s)
+      }));
+    }
+  };
+
+  // Get days filtered by current active week
+  const getWeekDays = (week) => {
+    return formData.days.filter(d => d.week_index === week);
+  };
+
+  // Get day index in the full days array
+  const getDayIndexInFullArray = (weekDayIndex) => {
+    const weekDays = getWeekDays(activeWeek);
+    const targetDay = weekDays[weekDayIndex];
+    return formData.days.findIndex(d => 
+      d.day_name === targetDay.day_name && d.week_index === activeWeek
+    );
   };
 
   const updateDay = (dayIndex, field, value) => {
+    // dayIndex is relative to the current week's days
+    const fullIndex = getDayIndexInFullArray(dayIndex);
     setFormData(prev => ({
       ...prev,
       days: prev.days.map((day, i) => 
-        i === dayIndex ? { ...day, [field]: value } : day
+        i === fullIndex ? { ...day, [field]: value } : day
       )
     }));
   };
