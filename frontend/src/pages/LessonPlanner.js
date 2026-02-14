@@ -332,13 +332,15 @@ const LessonPlanner = () => {
 
   const toggleDokLevel = (dayIndex, level) => {
     const fullIndex = getDayIndexInFullArray(dayIndex);
+    if (fullIndex === -1) return;
+    
     setFormData(prev => ({
       ...prev,
       days: prev.days.map((day, i) => {
         if (i !== fullIndex) return day;
-        const levels = day.dok_levels.includes(level)
+        const levels = (day.dok_levels || []).includes(level)
           ? day.dok_levels.filter(l => l !== level)
-          : [...day.dok_levels, level];
+          : [...(day.dok_levels || []), level];
         return { ...day, dok_levels: levels };
       })
     }));
@@ -346,13 +348,15 @@ const LessonPlanner = () => {
 
   const toggleActivity = (dayIndex, activityIndex) => {
     const fullIndex = getDayIndexInFullArray(dayIndex);
+    if (fullIndex === -1) return;
+    
     setFormData(prev => ({
       ...prev,
       days: prev.days.map((day, i) => {
         if (i !== fullIndex) return day;
         return {
           ...day,
-          activities: day.activities.map((a, ai) => 
+          activities: (day.activities || []).map((a, ai) => 
             ai === activityIndex ? { ...a, checked: !a.checked } : a
           )
         };
@@ -362,13 +366,15 @@ const LessonPlanner = () => {
 
   const handleActivityNoteChange = (dayIndex, activityIndex, value) => {
     const fullIndex = getDayIndexInFullArray(dayIndex);
+    if (fullIndex === -1) return;
+    
     setFormData(prev => ({
       ...prev,
       days: prev.days.map((day, i) => {
         if (i !== fullIndex) return day;
         return {
           ...day,
-          activities: day.activities.map((a, ai) => 
+          activities: (day.activities || []).map((a, ai) => 
             ai === activityIndex ? { ...a, notes: value } : a
           )
         };
@@ -378,13 +384,15 @@ const LessonPlanner = () => {
 
   const toggleMaterial = (dayIndex, materialIndex) => {
     const fullIndex = getDayIndexInFullArray(dayIndex);
+    if (fullIndex === -1) return;
+    
     setFormData(prev => ({
       ...prev,
       days: prev.days.map((day, i) => {
         if (i !== fullIndex) return day;
         return {
           ...day,
-          materials: day.materials.map((m, mi) => 
+          materials: (day.materials || []).map((m, mi) => 
             mi === materialIndex ? { ...m, checked: !m.checked } : m
           )
         };
@@ -394,13 +402,15 @@ const LessonPlanner = () => {
 
   const toggleECA = (dayIndex, ecaType) => {
     const fullIndex = getDayIndexInFullArray(dayIndex);
+    if (fullIndex === -1) return;
+    
     setFormData(prev => ({
       ...prev,
       days: prev.days.map((day, i) => {
         if (i !== fullIndex) return day;
         return {
           ...day,
-          eca: { ...day.eca, [ecaType]: !day.eca[ecaType] }
+          eca: { ...(day.eca || {}), [ecaType]: !(day.eca || {})[ecaType] }
         };
       })
     }));
