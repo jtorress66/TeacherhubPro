@@ -150,8 +150,6 @@ const LessonPlanner = () => {
       class_id: plan.class_id || '',
       week_start: plan.week_start || '',
       week_end: plan.week_end || '',
-      week2_start: plan.week2_start || '',
-      week2_end: plan.week2_end || '',
       unit: plan.unit || '',
       story: plan.story || '',
       teacher_name: plan.teacher_name || '',
