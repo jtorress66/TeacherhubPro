@@ -415,6 +415,24 @@ const LessonPlanner = () => {
     }));
   };
 
+  const handleMaterialNoteChange = (dayIndex, materialIndex, value) => {
+    const fullIndex = getDayIndexInFullArray(dayIndex);
+    if (fullIndex === -1) return;
+    
+    setFormData(prev => ({
+      ...prev,
+      days: prev.days.map((day, i) => {
+        if (i !== fullIndex) return day;
+        return {
+          ...day,
+          materials: (day.materials || []).map((m, mi) => 
+            mi === materialIndex ? { ...m, notes: value } : m
+          )
+        };
+      })
+    }));
+  };
+
   const toggleECA = (dayIndex, ecaType) => {
     const fullIndex = getDayIndexInFullArray(dayIndex);
     if (fullIndex === -1) return;
