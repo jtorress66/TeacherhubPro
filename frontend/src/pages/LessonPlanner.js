@@ -647,7 +647,18 @@ const LessonPlanner = () => {
         <Card className="bg-white border-slate-100">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="font-heading text-lg">{t('weeklyPlan')}</CardTitle>
+              <div className="flex items-center gap-4">
+                <CardTitle className="font-heading text-lg">{t('weeklyPlan')}</CardTitle>
+                {/* Week indicator badge */}
+                <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                  activeWeek === 1 ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                }`}>
+                  {activeWeek === 1 
+                    ? (language === 'es' ? '📘 Semana 1' : '📘 Week 1')
+                    : (language === 'es' ? '📗 Semana 2' : '📗 Week 2')
+                  }
+                </div>
+              </div>
               <div className="flex gap-1">
                 <Button 
                   variant="ghost" 
@@ -683,13 +694,18 @@ const LessonPlanner = () => {
                 ))}
               </TabsList>
               
-              {DAYS.map((day, dayIndex) => (
+              {DAYS.map((day, dayIndex) => {
+                // Get the current week's days
+                const weekDays = getWeekDays(activeWeek);
+                const currentDay = weekDays[dayIndex] || {};
+                
+                return (
                 <TabsContent key={day} value={String(dayIndex)} className="space-y-4">
                   {/* Day Theme */}
                   <div className="space-y-2">
                     <Label>{t('dayTheme')}</Label>
                     <Input 
-                      value={formData.days[dayIndex].theme}
+                      value={currentDay.theme || ''}
                       onChange={(e) => updateDay(dayIndex, 'theme', e.target.value)}
                       placeholder={language === 'es' ? 'Tema del día...' : 'Day theme...'}
                       data-testid={`day-theme-${dayIndex}`}
@@ -708,14 +724,14 @@ const LessonPlanner = () => {
                         <div 
                           key={key}
                           className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${
-                            formData.days[dayIndex].eca?.[key]
+                            currentDay.eca?.[key]
                               ? 'bg-lime-50 border-lime-300 text-lime-800'
                               : 'bg-white border-slate-200 hover:bg-stone-50'
                           }`}
                           onClick={() => toggleECA(dayIndex, key)}
                           data-testid={`eca-${dayIndex}-${key}`}
                         >
-                          <Checkbox checked={formData.days[dayIndex].eca?.[key] || false} />
+                          <Checkbox checked={currentDay.eca?.[key] || false} />
                           <span className="font-medium">{key}</span>
                           <span className="text-xs text-slate-500 hidden sm:inline">({label})</span>
                         </div>
@@ -731,14 +747,14 @@ const LessonPlanner = () => {
                         <div 
                           key={level.value}
                           className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                            formData.days[dayIndex].dok_levels.includes(level.value)
+                            (currentDay.dok_levels || []).includes(level.value)
                               ? 'bg-lime-50 border-lime-200'
                               : 'bg-white border-slate-200 hover:bg-stone-50'
                           }`}
                           onClick={() => toggleDokLevel(dayIndex, level.value)}
                         >
                           <Checkbox 
-                            checked={formData.days[dayIndex].dok_levels.includes(level.value)}
+                            checked={(currentDay.dok_levels || []).includes(level.value)}
                             data-testid={`dok-${dayIndex}-${level.value}`}
                           />
                           <span className="text-sm">{t(level.key)}</span>
