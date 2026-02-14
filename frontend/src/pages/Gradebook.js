@@ -13,7 +13,7 @@ import { Skeleton } from '../components/ui/skeleton';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { toast } from 'sonner';
-import { Plus, BookOpen, Save, Trash2, FileDown, Settings, FolderPlus } from 'lucide-react';
+import { Plus, BookOpen, Save, Trash2, FileDown, Settings, FolderPlus, List, Pencil } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
