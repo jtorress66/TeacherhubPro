@@ -615,21 +615,15 @@ const LessonPlanner = () => {
                           type="submit"
                           className="w-full bg-blue-600 hover:bg-blue-700"
                           disabled={!smCredentials.username || !smCredentials.password}
-                          onClick={() => {
-                            setShowSMLogin(false);
-                            toast.success(language === 'es' 
-                              ? 'Iniciando sesión en SM Aprendizaje...' 
-                              : 'Logging into SM Aprendizaje...');
-                          }}
                           data-testid="sm-login-submit"
                         >
-                          {language === 'es' ? 'Iniciar Sesión en SM Aprendizaje' : 'Login to SM Aprendizaje'}
+                          {language === 'es' ? 'Abrir SM Aprendizaje' : 'Open SM Aprendizaje'}
                         </Button>
                       </form>
                       <p className="text-xs text-slate-500 text-center">
                         {language === 'es' 
-                          ? 'Tus credenciales se enviarán directamente a SM Aprendizaje.' 
-                          : 'Your credentials will be sent directly to SM Aprendizaje.'}
+                          ? 'Se abrirá en una nueva ventana. Copia tus credenciales guardadas arriba para iniciar sesión.' 
+                          : 'Opens in a new window. Copy your saved credentials above to log in.'}
                       </p>
                     </div>
                   </DialogContent>
