@@ -119,7 +119,7 @@ const Dashboard = () => {
               data-testid="start-tour-btn"
             >
               <HelpCircle className="h-4 w-4" />
-              {language === 'es' ? 'Recorrido' : 'Tour'}
+              {language === 'es' ? 'Explorar el App' : 'Quick Tour'}
             </Button>
             <Button 
               onClick={() => navigate('/planner/new')} 
