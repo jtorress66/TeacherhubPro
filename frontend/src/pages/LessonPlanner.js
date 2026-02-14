@@ -564,24 +564,30 @@ const LessonPlanner = () => {
                     <div className="space-y-4 pt-4">
                       <p className="text-sm text-slate-600">
                         {language === 'es' 
-                          ? 'Ingresa tus credenciales de SM Aprendizaje. Al hacer clic en "Iniciar Sesión", se abrirá SM Aprendizaje con tu sesión iniciada automáticamente.' 
-                          : 'Enter your SM Aprendizaje credentials. Clicking "Login" will open SM Aprendizaje and log you in automatically.'}
+                          ? 'Ingresa tus credenciales de SM Aprendizaje. Tus credenciales se guardarán para la próxima vez.' 
+                          : 'Enter your SM Aprendizaje credentials. Your credentials will be saved for next time.'}
                       </p>
-                      {/* Hidden form that submits to SM Aprendizaje */}
+                      {/* Form that opens SM Aprendizaje */}
                       <form 
                         id="sm-login-form"
-                        action="https://loginsma.smaprendizaje.com/login" 
-                        method="POST" 
-                        target="_blank"
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          window.open('https://loginsma.smaprendizaje.com', '_blank', 'width=1200,height=800');
+                          setShowSMLogin(false);
+                          toast.success(language === 'es' 
+                            ? 'SM Aprendizaje abierto. Tus credenciales están guardadas.' 
+                            : 'SM Aprendizaje opened. Your credentials are saved.');
+                        }}
                         style={{ display: 'contents' }}
                       >
                         <div className="space-y-2">
-                          <Label htmlFor="sm-user">{language === 'es' ? 'Usuario' : 'Username'}</Label>
+                          <Label htmlFor="sm-user">{language === 'es' ? 'Usuario (Correo)' : 'Username (Email)'}</Label>
                           <Input 
                             id="sm-user"
                             name="username"
+                            type="email"
                             value={smCredentials.username}
-                            onChange={(e) => setSMCredentials(prev => ({ ...prev, username: e.target.value }))}
+                            onChange={(e) => updateSMCredentials(prev => ({ ...prev, username: e.target.value }))}
                             placeholder={language === 'es' ? 'Tu correo electrónico' : 'Your email'}
                             data-testid="sm-username-input"
                           />
@@ -593,11 +599,18 @@ const LessonPlanner = () => {
                             name="password"
                             type="password"
                             value={smCredentials.password}
-                            onChange={(e) => setSMCredentials(prev => ({ ...prev, password: e.target.value }))}
+                            onChange={(e) => updateSMCredentials(prev => ({ ...prev, password: e.target.value }))}
                             placeholder={language === 'es' ? 'Tu contraseña' : 'Your password'}
                             data-testid="sm-password-input"
                           />
                         </div>
+                        {smCredentials.username && smCredentials.password && (
+                          <div className="p-2 bg-green-50 border border-green-200 rounded-md">
+                            <p className="text-xs text-green-700 text-center">
+                              ✓ {language === 'es' ? 'Credenciales guardadas' : 'Credentials saved'}
+                            </p>
+                          </div>
+                        )}
                         <Button 
                           type="submit"
                           className="w-full bg-blue-600 hover:bg-blue-700"
