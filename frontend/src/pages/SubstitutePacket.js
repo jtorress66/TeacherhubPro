@@ -383,12 +383,12 @@ const SubstitutePacket = () => {
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div className="info-box p-3 border rounded">
-                          <label className="font-bold">{language === 'es' ? 'Unidad' : 'Unit'}</label>
-                          <span>{packetData.currentPlan.unit || 'N/A'}</span>
+                          <label className="font-bold">{language === 'es' ? 'Unidad' : 'Unit'}:</label>
+                          <span className="ml-2">{packetData.currentPlan.unit || 'N/A'}</span>
                         </div>
                         <div className="info-box p-3 border rounded">
-                          <label className="font-bold">{language === 'es' ? 'Historia' : 'Story'}</label>
-                          <span>{packetData.currentPlan.story || 'N/A'}</span>
+                          <label className="font-bold">{language === 'es' ? 'Historia' : 'Story'}:</label>
+                          <span className="ml-2">{packetData.currentPlan.story || 'N/A'}</span>
                         </div>
                       </div>
 
