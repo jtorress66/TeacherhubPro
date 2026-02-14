@@ -54,8 +54,6 @@ const LessonPlanner = () => {
     class_id: '',
     week_start: '',
     week_end: '',
-    week2_start: '',
-    week2_end: '',
     unit: '',
     story: '',
     teacher_name: '',  // Teacher name field
