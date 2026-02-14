@@ -262,28 +262,66 @@ const LessonPlanner = () => {
     } else {
       setFormData(prev => ({
         ...prev,
-        skills_week2: prev.skills_week2.map((s, i) => i === index ? value : s)
+        skills_week2: (prev.skills_week2 || ['', '', '', '']).map((s, i) => i === index ? value : s)
       }));
     }
   };
 
   // Get days filtered by current active week
+  // Handles legacy plans that don't have week_index on days
   const getWeekDays = (week) => {
-    return formData.days.filter(d => d.week_index === week);
+    // Check if days have week_index property
+    const hasWeekIndex = formData.days.some(d => d.week_index !== undefined);
+    
+    if (hasWeekIndex) {
+      // New format - filter by week_index
+      return formData.days.filter(d => d.week_index === week);
+    } else {
+      // Legacy format - first 5 days are week 1, next 5 are week 2
+      if (week === 1) {
+        return formData.days.slice(0, 5);
+      } else {
+        // For legacy plans, week 2 returns empty or create empty days
+        return formData.days.slice(5, 10).length > 0 
+          ? formData.days.slice(5, 10) 
+          : ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map(day => ({
+              date: '',
+              day_name: day,
+              week_index: 2,
+              theme: '',
+              dok_levels: [],
+              eca: { E: false, C: false, A: false },
+              activities: [],
+              materials: [],
+              notes: ''
+            }));
+      }
+    }
   };
 
   // Get day index in the full days array
   const getDayIndexInFullArray = (weekDayIndex) => {
     const weekDays = getWeekDays(activeWeek);
+    if (!weekDays[weekDayIndex]) return -1;
+    
     const targetDay = weekDays[weekDayIndex];
-    return formData.days.findIndex(d => 
-      d.day_name === targetDay.day_name && d.week_index === activeWeek
-    );
+    const hasWeekIndex = formData.days.some(d => d.week_index !== undefined);
+    
+    if (hasWeekIndex) {
+      return formData.days.findIndex(d => 
+        d.day_name === targetDay.day_name && d.week_index === activeWeek
+      );
+    } else {
+      // Legacy format
+      return activeWeek === 1 ? weekDayIndex : weekDayIndex + 5;
+    }
   };
 
   const updateDay = (dayIndex, field, value) => {
     // dayIndex is relative to the current week's days
     const fullIndex = getDayIndexInFullArray(dayIndex);
+    if (fullIndex === -1) return;
+    
     setFormData(prev => ({
       ...prev,
       days: prev.days.map((day, i) => 
