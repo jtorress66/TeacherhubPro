@@ -278,35 +278,65 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Hero Image Section */}
-      <section className="max-w-7xl mx-auto px-6 pb-24">
-        <div className="relative rounded-3xl overflow-hidden shadow-2xl animate-fade-in-up" style={{ animationDelay: '300ms' }}>
-          <img 
-            src="https://images.unsplash.com/photo-1681487097558-8856c9212cb0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxNzV8MHwxfHNlYXJjaHwyfHx0dXRvciUyMHRlYWNoaW5nJTIwc21hbGwlMjBncm91cCUyMGNoaWxkcmVuJTIwYm9va3N8ZW58MHx8fHwxNzcwODY2Njk4fDA&ixlib=rb-4.1.0&q=85"
-            alt="Classroom"
-            className="w-full h-72 md:h-[28rem] object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
-          <div className="absolute bottom-8 left-8 right-8 text-white">
-            <p className="text-2xl md:text-3xl font-heading font-semibold mb-4">
-              {language === 'es' 
-                ? 'Diseñado por maestros, para maestros'
-                : 'Designed by teachers, for teachers'}
-            </p>
-            <div className="flex flex-wrap items-center gap-6">
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-                <CheckCircle className="h-5 w-5 text-green-400" />
-                <span className="text-sm font-medium">{language === 'es' ? 'Fácil de usar' : 'Easy to use'}</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-                <CheckCircle className="h-5 w-5 text-green-400" />
-                <span className="text-sm font-medium">{language === 'es' ? 'Bilingüe' : 'Bilingual'}</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-                <CheckCircle className="h-5 w-5 text-green-400" />
-                <span className="text-sm font-medium">{language === 'es' ? 'Exportar PDF' : 'PDF Export'}</span>
+      {/* Image Section with Two Images */}
+      <section className="py-12 max-w-7xl mx-auto px-6">
+        <div className="grid md:grid-cols-2 gap-6 rounded-2xl overflow-hidden shadow-2xl">
+          {/* First Image - Students learning */}
+          <div className="relative group">
+            <img 
+              src="https://images.unsplash.com/photo-1681487097558-8856c9212cb0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxNzV8MHwxfHNlYXJjaHwyfHx0dXRvciUyMHRlYWNoaW5nJTIwc21hbGwlMjBncm91cCUyMGNoaWxkcmVuJTIwYm9va3N8ZW58MHx8fHwxNzcwODY2Njk4fDA&ixlib=rb-4.1.0&q=85"
+              alt="Students learning"
+              className="w-full h-72 md:h-80 object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
+            <div className="absolute bottom-6 left-6 right-6 text-white">
+              <p className="text-xl md:text-2xl font-heading font-semibold">
+                {language === 'es' 
+                  ? 'Aprendizaje efectivo'
+                  : 'Effective learning'}
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <CheckCircle className="h-4 w-4 text-green-400" />
+                <span className="text-sm">{language === 'es' ? 'Fácil de usar' : 'Easy to use'}</span>
               </div>
             </div>
+          </div>
+          
+          {/* Second Image - Teacher in classroom */}
+          <div className="relative group">
+            <img 
+              src="https://static.prod-images.emergentagent.com/jobs/3f72aedc-992b-4d25-83bd-5bb47e46011f/images/76820941c89ae8cb85c96adec53aa25a00f80d4ac778cce72182a17404b8dc91.png"
+              alt="Teacher in classroom"
+              className="w-full h-72 md:h-80 object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
+            <div className="absolute bottom-6 left-6 right-6 text-white">
+              <p className="text-xl md:text-2xl font-heading font-semibold">
+                {language === 'es' 
+                  ? 'Diseñado para maestros'
+                  : 'Designed for teachers'}
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <CheckCircle className="h-4 w-4 text-green-400" />
+                <span className="text-sm">{language === 'es' ? 'Bilingüe' : 'Bilingual'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Feature badges below images */}
+        <div className="flex flex-wrap justify-center gap-4 mt-8">
+          <div className="flex items-center gap-2 bg-white shadow-md rounded-full px-5 py-3">
+            <CheckCircle className="h-5 w-5 text-green-500" />
+            <span className="text-sm font-medium text-slate-700">{language === 'es' ? 'Exportar PDF' : 'PDF Export'}</span>
+          </div>
+          <div className="flex items-center gap-2 bg-white shadow-md rounded-full px-5 py-3">
+            <CheckCircle className="h-5 w-5 text-green-500" />
+            <span className="text-sm font-medium text-slate-700">{language === 'es' ? 'Portal para Padres' : 'Parent Portal'}</span>
+          </div>
+          <div className="flex items-center gap-2 bg-white shadow-md rounded-full px-5 py-3">
+            <CheckCircle className="h-5 w-5 text-green-500" />
+            <span className="text-sm font-medium text-slate-700">{language === 'es' ? 'Reportes' : 'Reports'}</span>
           </div>
         </div>
       </section>
