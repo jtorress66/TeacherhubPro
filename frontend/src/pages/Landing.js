@@ -81,7 +81,7 @@ const Landing = () => {
             <img 
               src="https://static.prod-images.emergentagent.com/jobs/3f72aedc-992b-4d25-83bd-5bb47e46011f/images/0f969775d262b8ea24538b15f4cc9cbeaf4a878afa90805ec86f8619b9caac6c.png"
               alt="TeacherHubPro Logo"
-              className="h-12 w-12 object-contain"
+              className="h-16 w-16 object-contain"
             />
             <span className="text-3xl font-heading font-bold text-slate-800">TeacherHubPro</span>
           </div>
