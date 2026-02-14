@@ -16,8 +16,7 @@ import httpx
 import jwt
 from passlib.context import CryptContext
 import resend
-from elevenlabs import ElevenLabs
-from elevenlabs.core import RequestOptions
+from emergentintegrations.llm.openai import OpenAITextToSpeech
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
