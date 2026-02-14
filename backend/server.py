@@ -225,6 +225,8 @@ class LessonPlanCreate(BaseModel):
     class_id: str
     week_start: str
     week_end: str
+    week2_start: Optional[str] = None
+    week2_end: Optional[str] = None
     unit: Optional[str] = None
     story: Optional[str] = None
     teacher_name: Optional[str] = None
