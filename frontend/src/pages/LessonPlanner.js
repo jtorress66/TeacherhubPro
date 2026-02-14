@@ -531,7 +531,7 @@ const LessonPlanner = () => {
               </div>
             </div>
 
-            {/* SM Aprendizaje Integration */}
+            {/* SM Aprendizaje Integration - Simple Direct Link */}
             <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
               <div className="flex items-center justify-between">
                 <div>
@@ -542,92 +542,15 @@ const LessonPlanner = () => {
                       : 'Access resources to help plan your lessons'}
                   </p>
                 </div>
-                <Dialog open={showSMLogin} onOpenChange={setShowSMLogin}>
-                  <DialogTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className="border-blue-300 text-blue-700 hover:bg-blue-100"
-                      data-testid="sm-aprendizaje-btn"
-                    >
-                      {language === 'es' ? 'Iniciar Sesión' : 'Login'}
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2">
-                        <div className="p-2 bg-amber-100 rounded-lg">
-                          <BookOpen className="h-5 w-5 text-amber-600" />
-                        </div>
-                        SM Aprendizaje
-                      </DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4 pt-4">
-                      <p className="text-sm text-slate-600">
-                        {language === 'es' 
-                          ? 'Ingresa tus credenciales de SM Aprendizaje. Tus credenciales se guardarán para la próxima vez.' 
-                          : 'Enter your SM Aprendizaje credentials. Your credentials will be saved for next time.'}
-                      </p>
-                      {/* Form that opens SM Aprendizaje */}
-                      <form 
-                        id="sm-login-form"
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          window.open('https://loginsma.smaprendizaje.com', '_blank', 'width=1200,height=800');
-                          setShowSMLogin(false);
-                          toast.success(language === 'es' 
-                            ? 'SM Aprendizaje abierto. Tus credenciales están guardadas.' 
-                            : 'SM Aprendizaje opened. Your credentials are saved.');
-                        }}
-                        style={{ display: 'contents' }}
-                      >
-                        <div className="space-y-2">
-                          <Label htmlFor="sm-user">{language === 'es' ? 'Usuario (Correo)' : 'Username (Email)'}</Label>
-                          <Input 
-                            id="sm-user"
-                            name="username"
-                            type="email"
-                            value={smCredentials.username}
-                            onChange={(e) => updateSMCredentials(prev => ({ ...prev, username: e.target.value }))}
-                            placeholder={language === 'es' ? 'Tu correo electrónico' : 'Your email'}
-                            data-testid="sm-username-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="sm-pass">{language === 'es' ? 'Contraseña' : 'Password'}</Label>
-                          <Input 
-                            id="sm-pass"
-                            name="password"
-                            type="password"
-                            value={smCredentials.password}
-                            onChange={(e) => updateSMCredentials(prev => ({ ...prev, password: e.target.value }))}
-                            placeholder={language === 'es' ? 'Tu contraseña' : 'Your password'}
-                            data-testid="sm-password-input"
-                          />
-                        </div>
-                        {smCredentials.username && smCredentials.password && (
-                          <div className="p-2 bg-green-50 border border-green-200 rounded-md">
-                            <p className="text-xs text-green-700 text-center">
-                              ✓ {language === 'es' ? 'Credenciales guardadas' : 'Credentials saved'}
-                            </p>
-                          </div>
-                        )}
-                        <Button 
-                          type="submit"
-                          className="w-full bg-blue-600 hover:bg-blue-700"
-                          disabled={!smCredentials.username || !smCredentials.password}
-                          data-testid="sm-login-submit"
-                        >
-                          {language === 'es' ? 'Abrir SM Aprendizaje' : 'Open SM Aprendizaje'}
-                        </Button>
-                      </form>
-                      <p className="text-xs text-slate-500 text-center">
-                        {language === 'es' 
-                          ? 'Se abrirá en una nueva ventana. Copia tus credenciales guardadas arriba para iniciar sesión.' 
-                          : 'Opens in a new window. Copy your saved credentials above to log in.'}
-                      </p>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                <Button 
+                  variant="outline" 
+                  className="border-blue-300 text-blue-700 hover:bg-blue-100"
+                  onClick={() => window.open('https://loginsma.smaprendizaje.com', '_blank')}
+                  data-testid="sm-aprendizaje-btn"
+                >
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  {language === 'es' ? 'Ir a SM Aprendizaje' : 'Go to SM Aprendizaje'}
+                </Button>
               </div>
             </div>
           </CardContent>
