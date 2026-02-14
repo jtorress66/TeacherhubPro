@@ -1160,6 +1160,8 @@ async def update_plan(plan_id: str, plan_data: LessonPlanCreate, user: dict = De
         "class_id": plan_data.class_id,
         "week_start": plan_data.week_start,
         "week_end": plan_data.week_end,
+        "week2_start": plan_data.week2_start,
+        "week2_end": plan_data.week2_end,
         "unit": plan_data.unit,
         "story": plan_data.story,
         "teacher_name": plan_data.teacher_name,
