@@ -47,7 +47,32 @@ const LessonPlanner = () => {
   const [showPrintView, setShowPrintView] = useState(false);
   const [school, setSchool] = useState(null);
   const [showSMLogin, setShowSMLogin] = useState(false);
-  const [smCredentials, setSMCredentials] = useState({ username: '', password: '' });
+  
+  // Load SM credentials from localStorage on mount
+  const [smCredentials, setSMCredentials] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sm_aprendizaje_credentials');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.error('Error loading SM credentials:', e);
+    }
+    return { username: '', password: '' };
+  });
+  
+  // Save SM credentials to localStorage when they change
+  const updateSMCredentials = (updater) => {
+    setSMCredentials(prev => {
+      const newCreds = typeof updater === 'function' ? updater(prev) : updater;
+      try {
+        localStorage.setItem('sm_aprendizaje_credentials', JSON.stringify(newCreds));
+      } catch (e) {
+        console.error('Error saving SM credentials:', e);
+      }
+      return newCreds;
+    });
+  };
   
   // Form state
   const [formData, setFormData] = useState({
