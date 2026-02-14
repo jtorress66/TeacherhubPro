@@ -137,9 +137,6 @@ const Layout = ({ children }) => {
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             {navItems.map((item) => {
               const isActive = location.pathname.startsWith(item.path);
-              const activeStyle = item.superAdmin 
-                ? { backgroundColor: '#f3e8ff', color: '#7c3aed' }
-                : { backgroundColor: `${branding.primary_color}15`, color: branding.primary_color };
               
               return (
                 <Link
@@ -147,27 +144,23 @@ const Layout = ({ children }) => {
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
-                    item.superAdmin 
-                      ? isActive 
-                        ? "font-medium shadow-sm"
-                        : "text-purple-600 hover:bg-purple-50 hover:text-purple-700 border border-purple-200"
-                      : isActive 
-                        ? "font-medium shadow-sm" 
-                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+                    "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200",
+                    isActive 
+                      ? "bg-white shadow-md font-medium" 
+                      : "text-slate-600 hover:bg-white/60 hover:shadow-sm"
                   )}
-                  style={isActive ? activeStyle : {}}
                   data-testid={`nav-${item.path.slice(1)}`}
                 >
-                  <item.icon 
-                    className="h-5 w-5" 
-                    style={isActive && !item.superAdmin ? { color: branding.primary_color } : item.superAdmin ? { color: '#7c3aed' } : {}}
-                  />
-                  <span>{item.label}</span>
+                  <div className={cn(
+                    "p-2 rounded-lg bg-gradient-to-br shadow-sm",
+                    item.gradient
+                  )}>
+                    <item.icon className="h-4 w-4 text-white" />
+                  </div>
+                  <span className={isActive ? "text-slate-800" : ""}>{item.label}</span>
                   {isActive && (
                     <ChevronRight 
-                      className="h-4 w-4 ml-auto" 
-                      style={{ color: item.superAdmin ? '#7c3aed' : branding.primary_color }}
+                      className="h-4 w-4 ml-auto text-slate-400"
                     />
                   )}
                 </Link>
