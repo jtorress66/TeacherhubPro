@@ -231,7 +231,9 @@ class LessonPlanCreate(BaseModel):
     story: Optional[str] = None
     teacher_name: Optional[str] = None
     objective: Optional[str] = None
+    objective_week2: Optional[str] = None
     skills: List[str] = []
+    skills_week2: List[str] = []
     days: List[PlanDay] = []
     standards: List[PlanStandard] = []
     expectations: List[PlanExpectation] = []
