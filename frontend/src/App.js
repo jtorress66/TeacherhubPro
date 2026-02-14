@@ -27,6 +27,12 @@ import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import AdminPanel from "./pages/AdminPanel";
 import ParentPortal from "./pages/ParentPortal";
 import SetupAdmin from "./pages/SetupAdmin";
+import Contact from "./pages/Contact";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Help from "./pages/Help";
+import TermsOfUse from "./pages/TermsOfUse";
+import CookiesPolicy from "./pages/CookiesPolicy";
+import Accessibility from "./pages/Accessibility";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
