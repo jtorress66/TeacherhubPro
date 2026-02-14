@@ -521,7 +521,7 @@ const LessonPlanner = () => {
                       {language === 'es' ? 'Iniciar Sesión' : 'Login'}
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="max-w-4xl h-[85vh]">
                     <DialogHeader>
                       <DialogTitle className="flex items-center gap-2">
                         <img 
@@ -533,51 +533,14 @@ const LessonPlanner = () => {
                         SM Aprendizaje
                       </DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-4 pt-4">
-                      <p className="text-sm text-slate-600">
-                        {language === 'es' 
-                          ? 'Ingresa tus credenciales de SM Aprendizaje para acceder a recursos educativos.' 
-                          : 'Enter your SM Aprendizaje credentials to access educational resources.'}
-                      </p>
-                      <div className="space-y-2">
-                        <Label>{language === 'es' ? 'Usuario' : 'Username'}</Label>
-                        <Input 
-                          value={smCredentials.username}
-                          onChange={(e) => setSMCredentials(prev => ({ ...prev, username: e.target.value }))}
-                          placeholder={language === 'es' ? 'Tu usuario' : 'Your username'}
-                          data-testid="sm-username-input"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>{language === 'es' ? 'Contraseña' : 'Password'}</Label>
-                        <Input 
-                          type="password"
-                          value={smCredentials.password}
-                          onChange={(e) => setSMCredentials(prev => ({ ...prev, password: e.target.value }))}
-                          placeholder={language === 'es' ? 'Tu contraseña' : 'Your password'}
-                          data-testid="sm-password-input"
-                        />
-                      </div>
-                      <Button 
-                        className="w-full bg-blue-600 hover:bg-blue-700"
-                        onClick={() => {
-                          // Open SM Aprendizaje in new window with credentials
-                          const url = 'https://loginsma.smaprendizaje.com';
-                          window.open(url, '_blank', 'width=1200,height=800');
-                          setShowSMLogin(false);
-                          toast.success(language === 'es' 
-                            ? 'SM Aprendizaje abierto en nueva ventana' 
-                            : 'SM Aprendizaje opened in new window');
-                        }}
-                        data-testid="sm-login-submit"
-                      >
-                        {language === 'es' ? 'Abrir SM Aprendizaje' : 'Open SM Aprendizaje'}
-                      </Button>
-                      <p className="text-xs text-slate-500 text-center">
-                        {language === 'es' 
-                          ? 'Se abrirá en una nueva ventana donde podrás iniciar sesión.' 
-                          : 'Will open in a new window where you can log in.'}
-                      </p>
+                    <div className="flex-1 h-full mt-4">
+                      <iframe
+                        src="https://loginsma.smaprendizaje.com"
+                        className="w-full h-[calc(85vh-100px)] rounded-lg border border-slate-200"
+                        title="SM Aprendizaje"
+                        allow="clipboard-write"
+                        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                      />
                     </div>
                   </DialogContent>
                 </Dialog>
