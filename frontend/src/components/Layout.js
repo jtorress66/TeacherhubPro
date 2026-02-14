@@ -33,20 +33,20 @@ const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navItems = [
-    { path: '/dashboard', icon: LayoutDashboard, label: t('dashboard') },
-    { path: '/planner', icon: Calendar, label: t('planner') },
-    { path: '/templates', icon: FileText, label: language === 'es' ? 'Plantillas' : 'Templates' },
-    { path: '/attendance', icon: ClipboardCheck, label: t('attendance') },
-    { path: '/attendance/reports', icon: BarChart3, label: language === 'es' ? 'Rep. Asistencia' : 'Attendance Rpt' },
-    { path: '/gradebook', icon: BookOpen, label: t('gradebook') },
-    { path: '/gradebook/reports', icon: BarChart3, label: language === 'es' ? 'Rep. Notas' : 'Grade Report' },
-    { path: '/classes', icon: Users, label: t('classes') },
-    { path: '/substitute-packet', icon: Briefcase, label: language === 'es' ? 'Paquete Sustituto' : 'Sub Packet' },
-    { path: '/pricing', icon: CreditCard, label: language === 'es' ? 'Suscripción' : 'Pricing' },
-    { path: '/settings', icon: Settings, label: t('settings') },
+    { path: '/dashboard', icon: LayoutDashboard, label: t('dashboard'), gradient: 'from-blue-400 to-blue-600' },
+    { path: '/planner', icon: Calendar, label: t('planner'), gradient: 'from-purple-400 to-purple-600' },
+    { path: '/templates', icon: FileText, label: language === 'es' ? 'Plantillas' : 'Templates', gradient: 'from-indigo-400 to-indigo-600' },
+    { path: '/attendance', icon: ClipboardCheck, label: t('attendance'), gradient: 'from-teal-400 to-teal-600' },
+    { path: '/attendance/reports', icon: BarChart3, label: language === 'es' ? 'Rep. Asistencia' : 'Attendance Rpt', gradient: 'from-cyan-400 to-cyan-600' },
+    { path: '/gradebook', icon: BookOpen, label: t('gradebook'), gradient: 'from-rose-400 to-rose-600' },
+    { path: '/gradebook/reports', icon: BarChart3, label: language === 'es' ? 'Rep. Notas' : 'Grade Report', gradient: 'from-pink-400 to-pink-600' },
+    { path: '/classes', icon: Users, label: t('classes'), gradient: 'from-green-400 to-emerald-600' },
+    { path: '/substitute-packet', icon: Briefcase, label: language === 'es' ? 'Paquete Sustituto' : 'Sub Packet', gradient: 'from-orange-400 to-orange-600' },
+    { path: '/pricing', icon: CreditCard, label: language === 'es' ? 'Suscripción' : 'Pricing', gradient: 'from-amber-400 to-amber-600' },
+    { path: '/settings', icon: Settings, label: t('settings'), gradient: 'from-slate-400 to-slate-600' },
     // Super Admin only
     ...(user?.role === 'super_admin' ? [
-      { path: '/admin', icon: Shield, label: 'Admin Panel', superAdmin: true }
+      { path: '/admin', icon: Shield, label: 'Admin Panel', superAdmin: true, gradient: 'from-violet-400 to-violet-600' }
     ] : [])
   ];
 
