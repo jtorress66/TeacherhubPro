@@ -139,26 +139,37 @@ const LessonPlanner = () => {
   }, [planId, searchParams, t]);
 
   const loadPlanToForm = (plan) => {
-    // Ensure we always have 5 days
-    const loadedDays = DAYS.map((dayName, i) => {
-      const existingDay = plan.days?.[i];
-      return {
-        date: existingDay?.date || '',
-        day_name: existingDay?.day_name || dayName,
-        theme: existingDay?.theme || '',
-        dok_levels: existingDay?.dok_levels || [],
-        eca: existingDay?.eca || { E: false, C: false, A: false },
-        activities: ACTIVITY_TYPES.map(type => {
-          const existing = existingDay?.activities?.find(a => a.activity_type === type);
-          return existing || { activity_type: type, checked: false, notes: '' };
-        }),
-        materials: MATERIAL_TYPES.map(type => {
-          const existing = existingDay?.materials?.find(m => m.material_type === type);
-          return existing || { material_type: type, checked: false };
-        }),
-        notes: existingDay?.notes || ''
-      };
-    });
+    // Create days for both weeks - Week 1 (indices 0-4) and Week 2 (indices 5-9)
+    const loadWeekDays = (weekIndex) => {
+      return DAYS.map((dayName, i) => {
+        // For legacy plans, use indices 0-4. For new plans, filter by week_index
+        const dayIndexInPlan = weekIndex === 1 ? i : i + 5;
+        const existingDay = plan.days?.find(d => d.week_index === weekIndex && d.day_name?.toLowerCase() === dayName) 
+          || plan.days?.[dayIndexInPlan];
+        
+        return {
+          date: existingDay?.date || '',
+          day_name: existingDay?.day_name || dayName,
+          week_index: weekIndex,
+          theme: existingDay?.theme || '',
+          dok_levels: existingDay?.dok_levels || [],
+          eca: existingDay?.eca || { E: false, C: false, A: false },
+          activities: ACTIVITY_TYPES.map(type => {
+            const existing = existingDay?.activities?.find(a => a.activity_type === type);
+            return existing || { activity_type: type, checked: false, notes: '' };
+          }),
+          materials: MATERIAL_TYPES.map(type => {
+            const existing = existingDay?.materials?.find(m => m.material_type === type);
+            return existing || { material_type: type, checked: false };
+          }),
+          notes: existingDay?.notes || ''
+        };
+      });
+    };
+
+    const week1Days = loadWeekDays(1);
+    const week2Days = loadWeekDays(2);
+    const allDays = [...week1Days, ...week2Days];
 
     setFormData({
       class_id: plan.class_id || '',
@@ -170,8 +181,10 @@ const LessonPlanner = () => {
       story: plan.story || '',
       teacher_name: plan.teacher_name || '',
       objective: plan.objective || '',
+      objective_week2: plan.objective_week2 || '',
       skills: plan.skills?.length > 0 ? [...plan.skills, '', '', '', ''].slice(0, 4) : ['', '', '', ''],
-      days: loadedDays,
+      skills_week2: plan.skills_week2?.length > 0 ? [...plan.skills_week2, '', '', '', ''].slice(0, 4) : ['', '', '', ''],
+      days: allDays,
       standards: plan.standards?.length > 0 ? plan.standards : [
         { week_index: 1, domain: 'listeningAndSpeaking', codes: [] },
         { week_index: 1, domain: 'foundationalSkills', codes: [] },
