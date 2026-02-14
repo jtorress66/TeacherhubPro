@@ -31,6 +31,7 @@ const Dashboard = () => {
   const { school, branding } = useSchool();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [runTour, setRunTour] = useState(false);
 
   useEffect(() => {
     const fetchDashboard = async () => {
