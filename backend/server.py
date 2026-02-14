@@ -2835,34 +2835,23 @@ class TTSRequest(BaseModel):
 
 @api_router.post("/tts/generate")
 async def generate_tts(request: TTSRequest):
-    """Generate text-to-speech audio using ElevenLabs"""
-    if not eleven_client:
-        raise HTTPException(status_code=500, detail="ElevenLabs not configured")
+    """Generate text-to-speech audio using OpenAI TTS"""
+    if not tts_client:
+        raise HTTPException(status_code=500, detail="TTS not configured")
     
     try:
-        # Select voice based on language
-        # Rachel (English) - friendly female voice
-        # Charlotte (Spanish/Multilingual) - friendly female voice
-        voice_id = "XrExE9yKIg1WjnnlVkGX" if request.language == "es" else "21m00Tcm4TlvDq8ikWAM"
-        
-        # Generate audio using ElevenLabs
-        audio_generator = eleven_client.text_to_speech.convert(
+        # Use 'nova' voice - energetic and upbeat, good for tutorials
+        # OpenAI TTS supports multiple languages automatically
+        audio_base64 = await tts_client.generate_speech_base64(
             text=request.text,
-            voice_id=voice_id,
-            model_id="eleven_multilingual_v2",
-            output_format="mp3_44100_128"
+            model="tts-1",
+            voice="nova",  # Friendly, energetic voice
+            speed=1.0,
+            response_format="mp3"
         )
         
-        # Collect audio data
-        audio_data = b""
-        for chunk in audio_generator:
-            audio_data += chunk
-        
-        # Convert to base64 for transfer
-        audio_b64 = base64.b64encode(audio_data).decode()
-        
         return {
-            "audio_url": f"data:audio/mpeg;base64,{audio_b64}",
+            "audio_url": f"data:audio/mpeg;base64,{audio_base64}",
             "text": request.text,
             "language": request.language
         }
