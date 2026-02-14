@@ -457,7 +457,7 @@ const LessonPlanner = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div className="space-y-2">
-                <Label>{t('from')}</Label>
+                <Label>{language === 'es' ? 'Semana 1 - Desde' : 'Week 1 - From'}</Label>
                 <Input 
                   type="date"
                   value={formData.week_start}
@@ -466,13 +466,119 @@ const LessonPlanner = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>{t('to')}</Label>
+                <Label>{language === 'es' ? 'Semana 1 - Hasta' : 'Week 1 - To'}</Label>
                 <Input 
                   type="date"
                   value={formData.week_end}
                   onChange={(e) => setFormData(prev => ({ ...prev, week_end: e.target.value }))}
                   data-testid="week-end-input"
                 />
+              </div>
+            </div>
+            
+            {/* Week 2 Date Range */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="space-y-2">
+                <Label>{language === 'es' ? 'Semana 2 - Desde' : 'Week 2 - From'}</Label>
+                <Input 
+                  type="date"
+                  value={formData.week2_start}
+                  onChange={(e) => setFormData(prev => ({ ...prev, week2_start: e.target.value }))}
+                  data-testid="week2-start-input"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>{language === 'es' ? 'Semana 2 - Hasta' : 'Week 2 - To'}</Label>
+                <Input 
+                  type="date"
+                  value={formData.week2_end}
+                  onChange={(e) => setFormData(prev => ({ ...prev, week2_end: e.target.value }))}
+                  data-testid="week2-end-input"
+                />
+              </div>
+            </div>
+
+            {/* SM Aprendizaje Integration */}
+            <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-semibold text-blue-800">SM Aprendizaje</h4>
+                  <p className="text-sm text-blue-600">
+                    {language === 'es' 
+                      ? 'Accede a recursos para planificar tus lecciones' 
+                      : 'Access resources to help plan your lessons'}
+                  </p>
+                </div>
+                <Dialog open={showSMLogin} onOpenChange={setShowSMLogin}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className="border-blue-300 text-blue-700 hover:bg-blue-100"
+                      data-testid="sm-aprendizaje-btn"
+                    >
+                      {language === 'es' ? 'Iniciar Sesión' : 'Login'}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-2">
+                        <img 
+                          src="https://loginsma.smaprendizaje.com/favicon.ico" 
+                          alt="SM" 
+                          className="h-6 w-6"
+                          onError={(e) => e.target.style.display = 'none'}
+                        />
+                        SM Aprendizaje
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 pt-4">
+                      <p className="text-sm text-slate-600">
+                        {language === 'es' 
+                          ? 'Ingresa tus credenciales de SM Aprendizaje para acceder a recursos educativos.' 
+                          : 'Enter your SM Aprendizaje credentials to access educational resources.'}
+                      </p>
+                      <div className="space-y-2">
+                        <Label>{language === 'es' ? 'Usuario' : 'Username'}</Label>
+                        <Input 
+                          value={smCredentials.username}
+                          onChange={(e) => setSMCredentials(prev => ({ ...prev, username: e.target.value }))}
+                          placeholder={language === 'es' ? 'Tu usuario' : 'Your username'}
+                          data-testid="sm-username-input"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{language === 'es' ? 'Contraseña' : 'Password'}</Label>
+                        <Input 
+                          type="password"
+                          value={smCredentials.password}
+                          onChange={(e) => setSMCredentials(prev => ({ ...prev, password: e.target.value }))}
+                          placeholder={language === 'es' ? 'Tu contraseña' : 'Your password'}
+                          data-testid="sm-password-input"
+                        />
+                      </div>
+                      <Button 
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                        onClick={() => {
+                          // Open SM Aprendizaje in new window with credentials
+                          const url = 'https://loginsma.smaprendizaje.com';
+                          window.open(url, '_blank', 'width=1200,height=800');
+                          setShowSMLogin(false);
+                          toast.success(language === 'es' 
+                            ? 'SM Aprendizaje abierto en nueva ventana' 
+                            : 'SM Aprendizaje opened in new window');
+                        }}
+                        data-testid="sm-login-submit"
+                      >
+                        {language === 'es' ? 'Abrir SM Aprendizaje' : 'Open SM Aprendizaje'}
+                      </Button>
+                      <p className="text-xs text-slate-500 text-center">
+                        {language === 'es' 
+                          ? 'Se abrirá en una nueva ventana donde podrás iniciar sesión.' 
+                          : 'Will open in a new window where you can log in.'}
+                      </p>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </CardContent>
