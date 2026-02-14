@@ -39,11 +39,11 @@ SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
 STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', '')
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
 
-# ElevenLabs Configuration
-ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY', '')
-eleven_client = None
-if ELEVENLABS_API_KEY:
-    eleven_client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
+# OpenAI TTS Configuration (using Emergent Key)
+EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
+tts_client = None
+if EMERGENT_LLM_KEY:
+    tts_client = OpenAITextToSpeech(api_key=EMERGENT_LLM_KEY)
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
