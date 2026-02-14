@@ -124,6 +124,14 @@ const Dashboard = () => {
               <HelpCircle className="h-4 w-4" />
               {language === 'es' ? 'Explorar el App' : 'Quick Tour'}
             </Button>
+            <Button
+              onClick={() => setRunVideoGuide(true)}
+              className="gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white border-0"
+              data-testid="start-guide-btn"
+            >
+              <PlayCircle className="h-4 w-4" />
+              {language === 'es' ? 'Guía con Audio' : 'Audio Guide'}
+            </Button>
             <Button 
               onClick={() => navigate('/planner/new')} 
               className="gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5" 
@@ -141,6 +149,13 @@ const Dashboard = () => {
           language={language} 
           run={runTour} 
           onClose={() => setRunTour(false)} 
+        />
+
+        {/* Video Style Guide with Audio */}
+        <VideoStyleGuide 
+          language={language} 
+          run={runVideoGuide} 
+          onClose={() => setRunVideoGuide(false)} 
         />
 
         {/* Stats Cards */}
