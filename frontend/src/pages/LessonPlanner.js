@@ -470,14 +470,8 @@ const LessonPlanner = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-heading font-bold text-slate-800">{t('weeklyPlan')}</h1>
-            {planId === 'new' ? (
+            {planId === 'new' && (
               <p className="text-slate-500">{t('createPlan')}</p>
-            ) : (
-              <div className="flex items-center gap-2 mt-1">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-800">
-                  ✏️ {language === 'es' ? 'Modo Edición - Cambia los campos y guarda' : 'Edit Mode - Change fields and save'}
-                </span>
-              </div>
             )}
           </div>
           <div className="flex gap-2 flex-wrap">
