@@ -539,47 +539,59 @@ const LessonPlanner = () => {
                     <div className="space-y-4 pt-4">
                       <p className="text-sm text-slate-600">
                         {language === 'es' 
-                          ? 'Ingresa tus credenciales de SM Aprendizaje para acceder a recursos educativos.' 
-                          : 'Enter your SM Aprendizaje credentials to access educational resources.'}
+                          ? 'Ingresa tus credenciales de SM Aprendizaje. Al hacer clic en "Iniciar Sesión", se abrirá SM Aprendizaje con tu sesión iniciada automáticamente.' 
+                          : 'Enter your SM Aprendizaje credentials. Clicking "Login" will open SM Aprendizaje and log you in automatically.'}
                       </p>
-                      <div className="space-y-2">
-                        <Label htmlFor="sm-user">{language === 'es' ? 'Usuario' : 'Username'}</Label>
-                        <Input 
-                          id="sm-user"
-                          value={smCredentials.username}
-                          onChange={(e) => setSMCredentials(prev => ({ ...prev, username: e.target.value }))}
-                          placeholder={language === 'es' ? 'Tu usuario' : 'Your username'}
-                          data-testid="sm-username-input"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="sm-pass">{language === 'es' ? 'Contraseña' : 'Password'}</Label>
-                        <Input 
-                          id="sm-pass"
-                          type="password"
-                          value={smCredentials.password}
-                          onChange={(e) => setSMCredentials(prev => ({ ...prev, password: e.target.value }))}
-                          placeholder={language === 'es' ? 'Tu contraseña' : 'Your password'}
-                          data-testid="sm-password-input"
-                        />
-                      </div>
-                      <Button 
-                        className="w-full bg-blue-600 hover:bg-blue-700"
-                        onClick={() => {
-                          window.open('https://loginsma.smaprendizaje.com', '_blank', 'width=1200,height=800');
-                          setShowSMLogin(false);
-                          toast.success(language === 'es' 
-                            ? 'SM Aprendizaje abierto en nueva ventana' 
-                            : 'SM Aprendizaje opened in new window');
-                        }}
-                        data-testid="sm-login-submit"
+                      {/* Hidden form that submits to SM Aprendizaje */}
+                      <form 
+                        id="sm-login-form"
+                        action="https://loginsma.smaprendizaje.com/login" 
+                        method="POST" 
+                        target="_blank"
+                        style={{ display: 'contents' }}
                       >
-                        {language === 'es' ? 'Abrir SM Aprendizaje' : 'Open SM Aprendizaje'}
-                      </Button>
+                        <div className="space-y-2">
+                          <Label htmlFor="sm-user">{language === 'es' ? 'Usuario' : 'Username'}</Label>
+                          <Input 
+                            id="sm-user"
+                            name="username"
+                            value={smCredentials.username}
+                            onChange={(e) => setSMCredentials(prev => ({ ...prev, username: e.target.value }))}
+                            placeholder={language === 'es' ? 'Tu correo electrónico' : 'Your email'}
+                            data-testid="sm-username-input"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="sm-pass">{language === 'es' ? 'Contraseña' : 'Password'}</Label>
+                          <Input 
+                            id="sm-pass"
+                            name="password"
+                            type="password"
+                            value={smCredentials.password}
+                            onChange={(e) => setSMCredentials(prev => ({ ...prev, password: e.target.value }))}
+                            placeholder={language === 'es' ? 'Tu contraseña' : 'Your password'}
+                            data-testid="sm-password-input"
+                          />
+                        </div>
+                        <Button 
+                          type="submit"
+                          className="w-full bg-blue-600 hover:bg-blue-700"
+                          disabled={!smCredentials.username || !smCredentials.password}
+                          onClick={() => {
+                            setShowSMLogin(false);
+                            toast.success(language === 'es' 
+                              ? 'Iniciando sesión en SM Aprendizaje...' 
+                              : 'Logging into SM Aprendizaje...');
+                          }}
+                          data-testid="sm-login-submit"
+                        >
+                          {language === 'es' ? 'Iniciar Sesión en SM Aprendizaje' : 'Login to SM Aprendizaje'}
+                        </Button>
+                      </form>
                       <p className="text-xs text-slate-500 text-center">
                         {language === 'es' 
-                          ? 'Se abrirá en una nueva ventana donde podrás iniciar sesión.' 
-                          : 'Will open in a new window where you can log in.'}
+                          ? 'Tus credenciales se enviarán directamente a SM Aprendizaje.' 
+                          : 'Your credentials will be sent directly to SM Aprendizaje.'}
                       </p>
                     </div>
                   </DialogContent>
