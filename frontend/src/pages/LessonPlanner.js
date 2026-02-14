@@ -457,24 +457,52 @@ const LessonPlanner = () => {
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div className="space-y-2">
-                <Label>{language === 'es' ? 'Desde' : 'From'}</Label>
-                <Input 
-                  type="date"
-                  value={formData.week_start}
-                  onChange={(e) => setFormData(prev => ({ ...prev, week_start: e.target.value }))}
-                  data-testid="week-start-input"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>{language === 'es' ? 'Hasta' : 'To'}</Label>
-                <Input 
-                  type="date"
-                  value={formData.week_end}
-                  onChange={(e) => setFormData(prev => ({ ...prev, week_end: e.target.value }))}
-                  data-testid="week-end-input"
-                />
+            {/* Two-Week Date Range - All in one compact section */}
+            <div className="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+              <Label className="text-sm font-medium text-slate-700 mb-3 block">
+                {language === 'es' ? 'Rango de Fechas (2 Semanas)' : 'Date Range (2 Weeks)'}
+              </Label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs text-slate-500">{language === 'es' ? 'Sem 1 - Desde' : 'Week 1 - From'}</Label>
+                  <Input 
+                    type="date"
+                    value={formData.week_start}
+                    onChange={(e) => setFormData(prev => ({ ...prev, week_start: e.target.value }))}
+                    className="text-sm"
+                    data-testid="week-start-input"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-slate-500">{language === 'es' ? 'Sem 1 - Hasta' : 'Week 1 - To'}</Label>
+                  <Input 
+                    type="date"
+                    value={formData.week_end}
+                    onChange={(e) => setFormData(prev => ({ ...prev, week_end: e.target.value }))}
+                    className="text-sm"
+                    data-testid="week-end-input"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-slate-500">{language === 'es' ? 'Sem 2 - Desde' : 'Week 2 - From'}</Label>
+                  <Input 
+                    type="date"
+                    value={formData.week2_start}
+                    onChange={(e) => setFormData(prev => ({ ...prev, week2_start: e.target.value }))}
+                    className="text-sm"
+                    data-testid="week2-start-input"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-slate-500">{language === 'es' ? 'Sem 2 - Hasta' : 'Week 2 - To'}</Label>
+                  <Input 
+                    type="date"
+                    value={formData.week2_end}
+                    onChange={(e) => setFormData(prev => ({ ...prev, week2_end: e.target.value }))}
+                    className="text-sm"
+                    data-testid="week2-end-input"
+                  />
+                </div>
               </div>
             </div>
 
