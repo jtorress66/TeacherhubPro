@@ -16,9 +16,11 @@ import {
   Plus,
   AlertCircle,
   ChevronRight,
-  Clock
+  Clock,
+  HelpCircle
 } from 'lucide-react';
 import Layout from '../components/Layout';
+import WelcomeTour from '../components/WelcomeTour';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
