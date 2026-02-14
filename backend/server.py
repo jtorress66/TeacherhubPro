@@ -1732,7 +1732,7 @@ async def send_portal_email(data: PortalEmailRequest, user: dict = Depends(get_c
     school_name = school.get("name", "TeacherHubPro") if school else "TeacherHubPro"
     
     # Build email HTML - use production URL 
-    base_url = os.environ.get('FRONTEND_URL', 'https://teachershubpro.com')
+    base_url = os.environ.get('FRONTEND_URL', 'https://teacherhubpro.com')
     portal_url = f"{base_url}/portal/{token_result['token']}"
     expires_date = datetime.fromisoformat(token_result['expires_at'].replace("Z", "+00:00")).strftime("%B %d, %Y")
     
