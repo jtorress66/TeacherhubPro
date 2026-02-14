@@ -1,284 +1,260 @@
-import React, { useState, useEffect } from 'react';
-import Joyride, { STATUS } from 'react-joyride';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState } from 'react';
+import { Button } from './ui/button';
+import { 
+  X, 
+  ChevronLeft, 
+  ChevronRight,
+  LayoutDashboard,
+  Users,
+  Calendar,
+  ClipboardCheck,
+  BookOpen,
+  Mail,
+  Briefcase,
+  Sparkles
+} from 'lucide-react';
 
 const WelcomeTour = ({ language, run, onClose }) => {
-  const { user } = useAuth();
-  const [stepIndex, setStepIndex] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
 
-  // Bilingual tour content
-  const tourContent = {
-    en: {
-      welcome: {
-        title: "👋 Welcome to TeacherHubPro!",
-        content: "Let's take a quick tour to help you get started. We'll show you the key features that will make your teaching life easier!"
-      },
-      dashboard: {
-        title: "📊 Your Dashboard",
-        content: "This is your command center! See your classes at a glance, quick stats, and easy navigation to all features."
-      },
-      classes: {
-        title: "📚 Manage Your Classes",
-        content: "Create and organize your classes here. Add students, set grade levels, and keep everything organized by semester."
-      },
-      lessonPlanner: {
-        title: "📝 Lesson Planner",
-        content: "Plan your week with ease! Create detailed lesson plans with objectives, activities, and notes for each day."
-      },
-      attendance: {
-        title: "✅ Quick Attendance",
-        content: "Take attendance in seconds! Mark students present, absent, or tardy with just one click."
-      },
-      gradebook: {
-        title: "📈 Gradebook & Reports",
-        content: "Track student progress with our powerful gradebook. Add assignments, record grades, and generate beautiful reports."
-      },
-      parentEmail: {
-        title: "📧 Parent Communication",
-        content: "Send secure portal links to parents so they can view their child's grades and attendance anytime!"
-      },
-      subPacket: {
-        title: "📋 Substitute Packets",
-        content: "Going to be absent? Generate comprehensive substitute teacher packets with all the info they need."
-      },
-      finish: {
-        title: "🎉 You're All Set!",
-        content: "That's it! You're ready to start using TeacherHubPro. Remember, you can restart this tour anytime from the menu. Happy teaching!"
-      }
-    },
-    es: {
-      welcome: {
-        title: "👋 ¡Bienvenido a TeacherHubPro!",
-        content: "Hagamos un recorrido rápido para ayudarte a comenzar. ¡Te mostraremos las funciones clave que harán tu vida docente más fácil!"
-      },
-      dashboard: {
-        title: "📊 Tu Panel de Control",
-        content: "¡Este es tu centro de comando! Ve tus clases de un vistazo, estadísticas rápidas y navegación fácil a todas las funciones."
-      },
-      classes: {
-        title: "📚 Administra tus Clases",
-        content: "Crea y organiza tus clases aquí. Agrega estudiantes, establece niveles de grado y mantén todo organizado por semestre."
-      },
-      lessonPlanner: {
-        title: "📝 Planificador de Lecciones",
-        content: "¡Planifica tu semana con facilidad! Crea planes de lecciones detallados con objetivos, actividades y notas para cada día."
-      },
-      attendance: {
-        title: "✅ Asistencia Rápida",
-        content: "¡Toma asistencia en segundos! Marca a los estudiantes como presentes, ausentes o tardíos con un solo clic."
-      },
-      gradebook: {
-        title: "📈 Libro de Calificaciones e Informes",
-        content: "Sigue el progreso de los estudiantes con nuestro poderoso libro de calificaciones. Agrega tareas, registra calificaciones y genera hermosos informes."
-      },
-      parentEmail: {
-        title: "📧 Comunicación con Padres",
-        content: "¡Envía enlaces seguros del portal a los padres para que puedan ver las calificaciones y asistencia de sus hijos en cualquier momento!"
-      },
-      subPacket: {
-        title: "📋 Paquetes para Sustitutos",
-        content: "¿Vas a estar ausente? Genera paquetes completos para maestros sustitutos con toda la información que necesitan."
-      },
-      finish: {
-        title: "🎉 ¡Todo Listo!",
-        content: "¡Eso es todo! Estás listo para comenzar a usar TeacherHubPro. Recuerda, puedes reiniciar este recorrido en cualquier momento desde el menú. ¡Feliz enseñanza!"
-      }
-    }
-  };
-
-  const content = tourContent[language] || tourContent.en;
-
+  // Bilingual tour content with icons
   const steps = [
     {
-      target: 'body',
-      content: (
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-lime-600 mb-3">{content.welcome.title}</h2>
-          <p className="text-gray-600 text-lg">{content.welcome.content}</p>
-        </div>
-      ),
-      placement: 'center',
-      disableBeacon: true,
+      icon: Sparkles,
+      iconBg: 'bg-gradient-to-br from-amber-400 to-orange-500',
+      title: {
+        en: "Welcome to TeacherHubPro!",
+        es: "¡Bienvenido a TeacherHubPro!"
+      },
+      content: {
+        en: "Let's take a quick tour to help you get started. We'll show you the key features that will make your teaching life easier!",
+        es: "¡Hagamos un recorrido rápido para ayudarte a comenzar! Te mostraremos las funciones clave que harán tu vida docente más fácil."
+      }
     },
     {
-      target: '[data-testid="dashboard-link"], [data-testid="nav-dashboard"]',
-      content: (
-        <div>
-          <h3 className="text-xl font-bold text-lime-600 mb-2">{content.dashboard.title}</h3>
-          <p className="text-gray-600">{content.dashboard.content}</p>
-        </div>
-      ),
-      placement: 'bottom',
-      disableBeacon: true,
+      icon: LayoutDashboard,
+      iconBg: 'bg-gradient-to-br from-blue-400 to-blue-600',
+      title: {
+        en: "Your Dashboard",
+        es: "Tu Panel de Control"
+      },
+      content: {
+        en: "This is your command center! See your classes at a glance, quick stats, and easy navigation to all features. Everything you need is just one click away.",
+        es: "¡Este es tu centro de comando! Ve tus clases de un vistazo, estadísticas rápidas y navegación fácil. Todo lo que necesitas está a un clic de distancia."
+      }
     },
     {
-      target: '[data-testid="classes-link"], [data-testid="nav-classes"]',
-      content: (
-        <div>
-          <h3 className="text-xl font-bold text-lime-600 mb-2">{content.classes.title}</h3>
-          <p className="text-gray-600">{content.classes.content}</p>
-        </div>
-      ),
-      placement: 'bottom',
-      disableBeacon: true,
+      icon: Users,
+      iconBg: 'bg-gradient-to-br from-green-400 to-emerald-600',
+      title: {
+        en: "Manage Your Classes",
+        es: "Administra tus Clases"
+      },
+      content: {
+        en: "Create and organize your classes here. Add students, set grade levels, and keep everything organized by semester. You can even send portal links to parents!",
+        es: "Crea y organiza tus clases aquí. Agrega estudiantes, establece niveles de grado y mantén todo organizado. ¡Puedes enviar enlaces del portal a los padres!"
+      }
     },
     {
-      target: '[data-testid="planner-link"], [data-testid="nav-planner"]',
-      content: (
-        <div>
-          <h3 className="text-xl font-bold text-lime-600 mb-2">{content.lessonPlanner.title}</h3>
-          <p className="text-gray-600">{content.lessonPlanner.content}</p>
-        </div>
-      ),
-      placement: 'bottom',
-      disableBeacon: true,
+      icon: Calendar,
+      iconBg: 'bg-gradient-to-br from-purple-400 to-purple-600',
+      title: {
+        en: "Lesson Planner",
+        es: "Planificador de Lecciones"
+      },
+      content: {
+        en: "Plan your week with ease! Create detailed lesson plans with objectives, daily activities, and notes. Save templates to reuse your best plans.",
+        es: "¡Planifica tu semana con facilidad! Crea planes detallados con objetivos, actividades diarias y notas. Guarda plantillas para reutilizar tus mejores planes."
+      }
     },
     {
-      target: '[data-testid="attendance-link"], [data-testid="nav-attendance"]',
-      content: (
-        <div>
-          <h3 className="text-xl font-bold text-lime-600 mb-2">{content.attendance.title}</h3>
-          <p className="text-gray-600">{content.attendance.content}</p>
-        </div>
-      ),
-      placement: 'bottom',
-      disableBeacon: true,
+      icon: ClipboardCheck,
+      iconBg: 'bg-gradient-to-br from-teal-400 to-teal-600',
+      title: {
+        en: "Quick Attendance",
+        es: "Asistencia Rápida"
+      },
+      content: {
+        en: "Take attendance in seconds! Mark students present, absent, or tardy with just one click. Generate attendance reports anytime you need them.",
+        es: "¡Toma asistencia en segundos! Marca a los estudiantes como presentes, ausentes o tardíos con un solo clic. Genera reportes cuando los necesites."
+      }
     },
     {
-      target: '[data-testid="gradebook-link"], [data-testid="nav-gradebook"]',
-      content: (
-        <div>
-          <h3 className="text-xl font-bold text-lime-600 mb-2">{content.gradebook.title}</h3>
-          <p className="text-gray-600">{content.gradebook.content}</p>
-        </div>
-      ),
-      placement: 'bottom',
-      disableBeacon: true,
+      icon: BookOpen,
+      iconBg: 'bg-gradient-to-br from-rose-400 to-rose-600',
+      title: {
+        en: "Gradebook & Reports",
+        es: "Libro de Calificaciones"
+      },
+      content: {
+        en: "Track student progress with our powerful gradebook. Add assignments by category, record grades, calculate GPAs, and generate beautiful reports.",
+        es: "Sigue el progreso con nuestro libro de calificaciones. Agrega tareas por categoría, registra notas, calcula promedios y genera reportes."
+      }
     },
     {
-      target: '[data-testid="send-portal-link-btn"], [data-testid="classes-link"]',
-      content: (
-        <div>
-          <h3 className="text-xl font-bold text-lime-600 mb-2">{content.parentEmail.title}</h3>
-          <p className="text-gray-600">{content.parentEmail.content}</p>
-        </div>
-      ),
-      placement: 'bottom',
-      disableBeacon: true,
+      icon: Mail,
+      iconBg: 'bg-gradient-to-br from-cyan-400 to-cyan-600',
+      title: {
+        en: "Parent Communication",
+        es: "Comunicación con Padres"
+      },
+      content: {
+        en: "Send secure portal links to parents so they can view their child's grades and attendance anytime! Just click 'Send Portal Link' on any student.",
+        es: "¡Envía enlaces seguros a los padres para que vean las notas y asistencia de sus hijos! Solo haz clic en 'Enviar Enlace' en cualquier estudiante."
+      }
     },
     {
-      target: '[data-testid="sub-packet-link"], [data-testid="nav-sub-packet"]',
-      content: (
-        <div>
-          <h3 className="text-xl font-bold text-lime-600 mb-2">{content.subPacket.title}</h3>
-          <p className="text-gray-600">{content.subPacket.content}</p>
-        </div>
-      ),
-      placement: 'bottom',
-      disableBeacon: true,
+      icon: Briefcase,
+      iconBg: 'bg-gradient-to-br from-orange-400 to-orange-600',
+      title: {
+        en: "Substitute Packets",
+        es: "Paquetes para Sustitutos"
+      },
+      content: {
+        en: "Going to be absent? Generate comprehensive substitute teacher packets with class info, seating charts, lesson plans, and emergency contacts.",
+        es: "¿Vas a estar ausente? Genera paquetes completos para sustitutos con información de clase, planes de lección y contactos de emergencia."
+      }
     },
     {
-      target: 'body',
-      content: (
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-lime-600 mb-3">{content.finish.title}</h2>
-          <p className="text-gray-600 text-lg">{content.finish.content}</p>
-        </div>
-      ),
-      placement: 'center',
-      disableBeacon: true,
-    },
+      icon: Sparkles,
+      iconBg: 'bg-gradient-to-br from-lime-400 to-green-600',
+      title: {
+        en: "You're All Set!",
+        es: "¡Todo Listo!"
+      },
+      content: {
+        en: "That's it! You're ready to start using TeacherHubPro. Remember, you can restart this tour anytime by clicking the 'Tour' button. Happy teaching!",
+        es: "¡Eso es todo! Estás listo para usar TeacherHubPro. Recuerda que puedes reiniciar este recorrido haciendo clic en 'Recorrido'. ¡Feliz enseñanza!"
+      }
+    }
   ];
 
-  const handleJoyrideCallback = (data) => {
-    const { status, index, type } = data;
-    
-    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
-      // Mark tour as completed
+  const lang = language || 'en';
+  const step = steps[currentStep];
+  const isFirst = currentStep === 0;
+  const isLast = currentStep === steps.length - 1;
+
+  const handleNext = () => {
+    if (isLast) {
       localStorage.setItem('teacherhubpro_tour_completed', 'true');
       onClose();
+    } else {
+      setCurrentStep(prev => prev + 1);
     }
   };
 
-  // Custom styles for attention-grabbing look
-  const customStyles = {
-    options: {
-      primaryColor: '#65A30D', // Lime green
-      backgroundColor: '#ffffff',
-      textColor: '#374151',
-      arrowColor: '#ffffff',
-      overlayColor: 'rgba(0, 0, 0, 0.6)',
-      zIndex: 10000,
-    },
-    tooltip: {
-      borderRadius: '12px',
-      padding: '20px',
-      boxShadow: '0 10px 40px rgba(101, 163, 13, 0.3)',
-    },
-    tooltipContainer: {
-      textAlign: 'left',
-    },
-    tooltipTitle: {
-      fontSize: '18px',
-      fontWeight: 'bold',
-    },
-    tooltipContent: {
-      fontSize: '15px',
-      lineHeight: '1.6',
-    },
-    buttonNext: {
-      backgroundColor: '#65A30D',
-      borderRadius: '8px',
-      padding: '10px 20px',
-      fontSize: '14px',
-      fontWeight: '600',
-    },
-    buttonBack: {
-      color: '#65A30D',
-      marginRight: '10px',
-    },
-    buttonSkip: {
-      color: '#9CA3AF',
-    },
-    beacon: {
-      display: 'none',
-    },
-    spotlight: {
-      borderRadius: '8px',
-    },
+  const handleBack = () => {
+    if (!isFirst) {
+      setCurrentStep(prev => prev - 1);
+    }
   };
 
-  const locale = language === 'es' ? {
-    back: 'Atrás',
-    close: 'Cerrar',
-    last: '¡Empezar!',
-    next: 'Siguiente',
-    skip: 'Saltar',
-  } : {
-    back: 'Back',
-    close: 'Close',
-    last: "Let's Go!",
-    next: 'Next',
-    skip: 'Skip',
+  const handleSkip = () => {
+    localStorage.setItem('teacherhubpro_tour_completed', 'true');
+    onClose();
   };
+
+  if (!run) return null;
+
+  const IconComponent = step.icon;
 
   return (
-    <Joyride
-      steps={steps}
-      run={run}
-      continuous={true}
-      showSkipButton={true}
-      showProgress={true}
-      scrollToFirstStep={true}
-      disableOverlayClose={false}
-      disableCloseOnEsc={false}
-      callback={handleJoyrideCallback}
-      styles={customStyles}
-      locale={locale}
-      floaterProps={{
-        disableAnimation: false,
-      }}
-    />
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={handleSkip}
+      />
+      
+      {/* Modal */}
+      <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-fade-in">
+        {/* Progress bar */}
+        <div className="h-1 bg-gray-100">
+          <div 
+            className="h-full bg-gradient-to-r from-lime-500 to-green-500 transition-all duration-300"
+            style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+          />
+        </div>
+
+        {/* Close button */}
+        <button
+          onClick={handleSkip}
+          className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors z-10"
+          data-testid="tour-close-btn"
+        >
+          <X className="h-5 w-5 text-gray-400" />
+        </button>
+
+        {/* Content */}
+        <div className="p-8 pt-6">
+          {/* Icon */}
+          <div className="flex justify-center mb-6">
+            <div className={`p-4 rounded-2xl ${step.iconBg} shadow-lg`}>
+              <IconComponent className="h-10 w-10 text-white" />
+            </div>
+          </div>
+
+          {/* Title */}
+          <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
+            {step.title[lang]}
+          </h2>
+
+          {/* Description */}
+          <p className="text-gray-600 text-center leading-relaxed mb-8">
+            {step.content[lang]}
+          </p>
+
+          {/* Step indicator */}
+          <div className="flex justify-center gap-2 mb-6">
+            {steps.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentStep(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentStep 
+                    ? 'w-6 bg-lime-500' 
+                    : index < currentStep 
+                      ? 'bg-lime-300' 
+                      : 'bg-gray-200'
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Navigation buttons */}
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              onClick={handleBack}
+              disabled={isFirst}
+              className={`gap-2 ${isFirst ? 'invisible' : ''}`}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              {lang === 'es' ? 'Atrás' : 'Back'}
+            </Button>
+
+            <Button
+              variant="ghost"
+              onClick={handleSkip}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              {lang === 'es' ? 'Saltar' : 'Skip'}
+            </Button>
+
+            <Button
+              onClick={handleNext}
+              className="gap-2 bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700 text-white shadow-lg"
+            >
+              {isLast 
+                ? (lang === 'es' ? '¡Empezar!' : "Let's Go!") 
+                : (lang === 'es' ? 'Siguiente' : 'Next')
+              }
+              {!isLast && <ChevronRight className="h-4 w-4" />}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
