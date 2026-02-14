@@ -1113,6 +1113,8 @@ async def create_plan(plan_data: LessonPlanCreate, user: dict = Depends(get_curr
         "school_id": user.get("school_id", "school_default"),
         "week_start": plan_data.week_start,
         "week_end": plan_data.week_end,
+        "week2_start": plan_data.week2_start,
+        "week2_end": plan_data.week2_end,
         "unit": plan_data.unit,
         "story": plan_data.story,
         "teacher_name": plan_data.teacher_name,
