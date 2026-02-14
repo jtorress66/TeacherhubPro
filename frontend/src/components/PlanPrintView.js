@@ -74,19 +74,26 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
   // Use prop school if provided, otherwise use context school
   const school = propSchool || contextSchool;
 
-  const planDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((dayName, i) => {
-    const existingDay = plan.days?.[i];
-    return {
-      date: existingDay?.date || '',
-      day_name: existingDay?.day_name || dayName,
-      theme: existingDay?.theme || '',
-      dok_levels: existingDay?.dok_levels || [],
-      eca: existingDay?.eca || { E: false, C: false, A: false },
-      activities: existingDay?.activities || [],
-      materials: existingDay?.materials || [],
-      notes: existingDay?.notes || ''
-    };
-  });
+  // Get days filtered by week
+  const getWeekDays = (weekIndex) => {
+    const weekDays = plan.days?.filter(d => d.week_index === weekIndex) || [];
+    return ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((dayName, i) => {
+      const existingDay = weekDays[i] || plan.days?.[weekIndex === 1 ? i : i + 5];
+      return {
+        date: existingDay?.date || '',
+        day_name: existingDay?.day_name || dayName,
+        theme: existingDay?.theme || '',
+        dok_levels: existingDay?.dok_levels || [],
+        eca: existingDay?.eca || { E: false, C: false, A: false },
+        activities: existingDay?.activities || [],
+        materials: existingDay?.materials || [],
+        notes: existingDay?.notes || ''
+      };
+    });
+  };
+
+  const planDays = getWeekDays(1); // Week 1 days
+  const planDaysWeek2 = getWeekDays(2); // Week 2 days
 
   // Get school colors for PDF
   const primaryColor = school?.branding?.primary_color || branding?.primary_color || '#65A30D';
