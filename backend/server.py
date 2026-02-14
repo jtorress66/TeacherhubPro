@@ -2829,6 +2829,49 @@ async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
 
+# TTS Request Model
+class TTSRequest(BaseModel):
+    text: str
+    language: str = "en"  # "en" or "es"
+
+@api_router.post("/tts/generate")
+async def generate_tts(request: TTSRequest):
+    """Generate text-to-speech audio using ElevenLabs"""
+    if not eleven_client:
+        raise HTTPException(status_code=500, detail="ElevenLabs not configured")
+    
+    try:
+        # Select voice based on language
+        # Rachel (English) - friendly female voice
+        # Charlotte (Spanish/Multilingual) - friendly female voice
+        voice_id = "XrExE9yKIg1WjnnlVkGX" if request.language == "es" else "21m00Tcm4TlvDq8ikWAM"
+        
+        # Generate audio using ElevenLabs
+        audio_generator = eleven_client.text_to_speech.convert(
+            text=request.text,
+            voice_id=voice_id,
+            model_id="eleven_multilingual_v2",
+            output_format="mp3_44100_128"
+        )
+        
+        # Collect audio data
+        audio_data = b""
+        for chunk in audio_generator:
+            audio_data += chunk
+        
+        # Convert to base64 for transfer
+        audio_b64 = base64.b64encode(audio_data).decode()
+        
+        return {
+            "audio_url": f"data:audio/mpeg;base64,{audio_b64}",
+            "text": request.text,
+            "language": request.language
+        }
+        
+    except Exception as e:
+        logger.error(f"Error generating TTS: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating TTS: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
