@@ -46,6 +46,8 @@ const LessonPlanner = () => {
   const [activeDay, setActiveDay] = useState(0);
   const [showPrintView, setShowPrintView] = useState(false);
   const [school, setSchool] = useState(null);
+  const [showSMLogin, setShowSMLogin] = useState(false);
+  const [smCredentials, setSMCredentials] = useState({ username: '', password: '' });
   
   // Form state
   const [formData, setFormData] = useState({
