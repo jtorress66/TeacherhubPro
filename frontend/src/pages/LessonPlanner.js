@@ -450,15 +450,26 @@ const LessonPlanner = () => {
   };
 
   const updateStandard = (weekIndex, domain, value) => {
-    setFormData(prev => ({
-      ...prev,
-      standards: prev.standards.map(s => {
-        if (s.week_index === weekIndex && s.domain === domain) {
-          return { ...s, codes: value.split(',').map(c => c.trim()).filter(c => c) };
-        }
-        return s;
-      })
-    }));
+    setFormData(prev => {
+      const existingIndex = prev.standards.findIndex(s => s.week_index === weekIndex && s.domain === domain);
+      const newCodes = value.split(',').map(c => c.trim()).filter(c => c);
+      
+      if (existingIndex >= 0) {
+        // Update existing standard
+        return {
+          ...prev,
+          standards: prev.standards.map((s, i) => 
+            i === existingIndex ? { ...s, codes: newCodes } : s
+          )
+        };
+      } else {
+        // Create new standard
+        return {
+          ...prev,
+          standards: [...prev.standards, { week_index: weekIndex, domain: domain, codes: newCodes }]
+        };
+      }
+    });
   };
 
   const updateExpectation = (weekIndex, text) => {
