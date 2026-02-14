@@ -377,9 +377,11 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-green-600 to-green-700">
-                <BookOpen className="h-5 w-5 text-white" />
-              </div>
+              <img 
+                src="https://static.prod-images.emergentagent.com/jobs/3f72aedc-992b-4d25-83bd-5bb47e46011f/images/0f969775d262b8ea24538b15f4cc9cbeaf4a878afa90805ec86f8619b9caac6c.png"
+                alt="TeacherHubPro Logo"
+                className="h-10 w-10 object-contain"
+              />
               <span className="font-heading font-bold text-slate-800">TeacherHubPro</span>
             </div>
             <p className="text-slate-500 text-sm">© 2026 TeacherHubPro. {language === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p>
