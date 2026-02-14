@@ -1800,7 +1800,9 @@ async def send_portal_email(data: PortalEmailRequest, user: dict = Depends(get_c
     }
     
     try:
+        logger.info(f"Attempting to send email from {SENDER_EMAIL} to {data.parent_email}")
         email = await asyncio.to_thread(resend.Emails.send, params)
+        logger.info(f"Email sent successfully: {email}")
         return {
             "status": "success",
             "message": f"Email sent to {data.parent_email}",
@@ -1809,7 +1811,7 @@ async def send_portal_email(data: PortalEmailRequest, user: dict = Depends(get_c
             "expires_at": token_result['expires_at']
         }
     except Exception as e:
-        logging.error(f"Failed to send email: {str(e)}")
+        logger.error(f"Failed to send email from {SENDER_EMAIL} to {data.parent_email}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
 
 @api_router.get("/portal/{token}")
