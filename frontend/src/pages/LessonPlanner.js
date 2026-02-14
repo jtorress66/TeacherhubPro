@@ -293,10 +293,11 @@ const LessonPlanner = () => {
   };
 
   const toggleDokLevel = (dayIndex, level) => {
+    const fullIndex = getDayIndexInFullArray(dayIndex);
     setFormData(prev => ({
       ...prev,
       days: prev.days.map((day, i) => {
-        if (i !== dayIndex) return day;
+        if (i !== fullIndex) return day;
         const levels = day.dok_levels.includes(level)
           ? day.dok_levels.filter(l => l !== level)
           : [...day.dok_levels, level];
@@ -306,10 +307,11 @@ const LessonPlanner = () => {
   };
 
   const toggleActivity = (dayIndex, activityIndex) => {
+    const fullIndex = getDayIndexInFullArray(dayIndex);
     setFormData(prev => ({
       ...prev,
       days: prev.days.map((day, i) => {
-        if (i !== dayIndex) return day;
+        if (i !== fullIndex) return day;
         return {
           ...day,
           activities: day.activities.map((a, ai) => 
@@ -321,10 +323,11 @@ const LessonPlanner = () => {
   };
 
   const handleActivityNoteChange = (dayIndex, activityIndex, value) => {
+    const fullIndex = getDayIndexInFullArray(dayIndex);
     setFormData(prev => ({
       ...prev,
       days: prev.days.map((day, i) => {
-        if (i !== dayIndex) return day;
+        if (i !== fullIndex) return day;
         return {
           ...day,
           activities: day.activities.map((a, ai) => 
@@ -336,10 +339,11 @@ const LessonPlanner = () => {
   };
 
   const toggleMaterial = (dayIndex, materialIndex) => {
+    const fullIndex = getDayIndexInFullArray(dayIndex);
     setFormData(prev => ({
       ...prev,
       days: prev.days.map((day, i) => {
-        if (i !== dayIndex) return day;
+        if (i !== fullIndex) return day;
         return {
           ...day,
           materials: day.materials.map((m, mi) => 
@@ -351,10 +355,11 @@ const LessonPlanner = () => {
   };
 
   const toggleECA = (dayIndex, ecaType) => {
+    const fullIndex = getDayIndexInFullArray(dayIndex);
     setFormData(prev => ({
       ...prev,
       days: prev.days.map((day, i) => {
-        if (i !== dayIndex) return day;
+        if (i !== fullIndex) return day;
         return {
           ...day,
           eca: { ...day.eca, [ecaType]: !day.eca[ecaType] }
