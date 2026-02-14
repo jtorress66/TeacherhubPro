@@ -66,7 +66,9 @@ const Landing = () => {
     { icon: Calendar, title: language === 'es' ? 'Planificador Semanal' : 'Weekly Planner', desc: language === 'es' ? 'Planifica tus lecciones como en tu planificador de papel' : 'Plan lessons just like your paper planner' },
     { icon: Users, title: language === 'es' ? 'Asistencia Fácil' : 'Easy Attendance', desc: language === 'es' ? 'Toma asistencia rápidamente desde cualquier dispositivo' : 'Take attendance quickly from any device' },
     { icon: ClipboardList, title: language === 'es' ? 'Cuaderno de Notas' : 'Gradebook', desc: language === 'es' ? 'Administra tareas y notas eficientemente' : 'Manage assignments and grades efficiently' },
-    { icon: BookOpen, title: language === 'es' ? 'Exportar PDF' : 'PDF Export', desc: language === 'es' ? 'Exporta planes en el formato de tu escuela' : "Export plans in your school's format" }
+    { icon: BookOpen, title: language === 'es' ? 'Exportar PDF' : 'PDF Export', desc: language === 'es' ? 'Exporta planes en el formato de tu escuela' : "Export plans in your school's format" },
+    { icon: BarChart3, title: language === 'es' ? 'Generar Reportes' : 'Generate Reports', desc: language === 'es' ? 'Crea reportes de asistencia, calificaciones y progreso estudiantil' : 'Create attendance, grades, and student progress reports' },
+    { icon: Mail, title: language === 'es' ? 'Portal para Padres' : 'Parent Portal', desc: language === 'es' ? 'Envía enlaces seguros a los padres para ver el progreso de sus hijos' : 'Send secure links to parents to view their child\'s progress' }
   ];
 
   return (
