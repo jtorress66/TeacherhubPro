@@ -947,49 +947,51 @@ const LessonPlanner = () => {
         {/* Standards */}
         <Card className="bg-white border-slate-100">
           <CardHeader className="pb-3">
-            <CardTitle className="font-heading text-lg">{t('standards')}</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="font-heading text-lg">{t('standards')}</CardTitle>
+              {/* Week indicator badge - synced with global activeWeek */}
+              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                activeWeek === 1 ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+              }`}>
+                {activeWeek === 1 
+                  ? (language === 'es' ? '📘 Semana 1' : '📘 Week 1')
+                  : (language === 'es' ? '📗 Semana 2' : '📗 Week 2')
+                }
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="1">
-              <TabsList className="mb-4">
-                <TabsTrigger value="1">{t('firstWeek')}</TabsTrigger>
-                <TabsTrigger value="2">{t('secondWeek')}</TabsTrigger>
-              </TabsList>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {STANDARD_DOMAINS.map(domain => {
+                  const standard = formData.standards.find(s => s.week_index === activeWeek && s.domain === domain);
+                  return (
+                    <div key={domain} className="space-y-2">
+                      <Label className="text-sm">{t(domain)}</Label>
+                      <Input 
+                        value={standard?.codes?.join(', ') || ''}
+                        onChange={(e) => updateStandard(activeWeek, domain, e.target.value)}
+                        placeholder="RF 4.3, 4.4, 4.4a..."
+                        className="font-mono text-sm"
+                        data-testid={`standard-${activeWeek}-${domain}`}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
               
-              {[1, 2].map(weekIndex => (
-                <TabsContent key={weekIndex} value={String(weekIndex)} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {STANDARD_DOMAINS.map(domain => {
-                      const standard = formData.standards.find(s => s.week_index === weekIndex && s.domain === domain);
-                      return (
-                        <div key={domain} className="space-y-2">
-                          <Label className="text-sm">{t(domain)}</Label>
-                          <Input 
-                            value={standard?.codes?.join(', ') || ''}
-                            onChange={(e) => updateStandard(weekIndex, domain, e.target.value)}
-                            placeholder="RF 4.3, 4.4, 4.4a..."
-                            className="font-mono text-sm"
-                            data-testid={`standard-${weekIndex}-${domain}`}
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                  
-                  {/* Expectations */}
-                  <div className="space-y-2 mt-4">
-                    <Label>{t('expectations')}</Label>
-                    <Textarea 
-                      value={formData.expectations.find(e => e.week_index === weekIndex)?.text || ''}
-                      onChange={(e) => updateExpectation(weekIndex, e.target.value)}
-                      placeholder={language === 'es' ? 'Expectativas de la semana...' : 'Week expectations...'}
-                      className="min-h-20"
-                      data-testid={`expectation-${weekIndex}`}
-                    />
-                  </div>
-                </TabsContent>
-              ))}
-            </Tabs>
+              {/* Expectations */}
+              <div className="space-y-2 mt-4">
+                <Label>{t('expectations')}</Label>
+                <Textarea 
+                  value={formData.expectations.find(e => e.week_index === activeWeek)?.text || ''}
+                  onChange={(e) => updateExpectation(activeWeek, e.target.value)}
+                  placeholder={language === 'es' ? `Expectativas de la semana ${activeWeek}...` : `Week ${activeWeek} expectations...`}
+                  className="min-h-20"
+                  data-testid={`expectation-${activeWeek}`}
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
 
