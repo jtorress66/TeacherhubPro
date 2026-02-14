@@ -245,7 +245,7 @@ const Gradebook = () => {
       return { percentage: '-', gpa: '-', letter: '-', color: 'bg-slate-100 text-slate-600' };
     }
     const gpa = GPA_SCALE.percentageToGPA(percentage);
-    const letter = GPA_SCALE.getLetterGrade(gpa);
+    const letter = GPA_SCALE.getLetterGrade(percentage); // Use percentage directly for letter grade
     const color = GPA_SCALE.getGradeColor(letter);
     return {
       percentage: percentage.toFixed(1),
