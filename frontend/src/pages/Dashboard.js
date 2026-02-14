@@ -17,10 +17,12 @@ import {
   AlertCircle,
   ChevronRight,
   Clock,
-  HelpCircle
+  HelpCircle,
+  PlayCircle
 } from 'lucide-react';
 import Layout from '../components/Layout';
 import WelcomeTour from '../components/WelcomeTour';
+import VideoStyleGuide from '../components/VideoStyleGuide';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -32,6 +34,7 @@ const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [runTour, setRunTour] = useState(false);
+  const [runVideoGuide, setRunVideoGuide] = useState(false);
 
   useEffect(() => {
     const fetchDashboard = async () => {
