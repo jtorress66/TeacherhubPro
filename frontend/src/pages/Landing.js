@@ -375,16 +375,46 @@ const Landing = () => {
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white">
         <div className="max-w-7xl mx-auto px-6 py-10">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-3">
-              <img 
-                src="https://static.prod-images.emergentagent.com/jobs/3f72aedc-992b-4d25-83bd-5bb47e46011f/images/0f969775d262b8ea24538b15f4cc9cbeaf4a878afa90805ec86f8619b9caac6c.png"
-                alt="TeacherHubPro Logo"
-                className="h-10 w-10 object-contain"
-              />
-              <span className="font-heading font-bold text-slate-800">TeacherHubPro</span>
+          <div className="flex flex-col gap-6">
+            {/* Footer Links */}
+            <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-sm">
+              <Link to="/contact" className="text-slate-500 hover:text-slate-700 transition-colors">
+                {language === 'es' ? 'Contacto' : 'Contact'}
+              </Link>
+              <span className="text-slate-300">•</span>
+              <Link to="/privacy-policy" className="text-slate-500 hover:text-slate-700 transition-colors">
+                {language === 'es' ? 'Política de Privacidad' : 'Privacy Policy'}
+              </Link>
+              <span className="text-slate-300">•</span>
+              <Link to="/help" className="text-slate-500 hover:text-slate-700 transition-colors">
+                {language === 'es' ? 'Ayuda' : 'Help'}
+              </Link>
+              <span className="text-slate-300">•</span>
+              <Link to="/terms-of-use" className="text-slate-500 hover:text-slate-700 transition-colors">
+                {language === 'es' ? 'Términos de Uso' : 'Terms of Use'}
+              </Link>
+              <span className="text-slate-300">•</span>
+              <Link to="/cookies-policy" className="text-slate-500 hover:text-slate-700 transition-colors">
+                {language === 'es' ? 'Política de Cookies' : 'Cookies Policy'}
+              </Link>
+              <span className="text-slate-300">•</span>
+              <Link to="/accessibility" className="text-slate-500 hover:text-slate-700 transition-colors">
+                {language === 'es' ? 'Accesibilidad' : 'Accessibility'}
+              </Link>
             </div>
-            <p className="text-slate-500 text-sm">© 2026 TeacherHubPro. {language === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p>
+            
+            {/* Logo and Copyright */}
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-100">
+              <div className="flex items-center gap-3">
+                <img 
+                  src="https://static.prod-images.emergentagent.com/jobs/3f72aedc-992b-4d25-83bd-5bb47e46011f/images/0f969775d262b8ea24538b15f4cc9cbeaf4a878afa90805ec86f8619b9caac6c.png"
+                  alt="TeacherHubPro Logo"
+                  className="h-10 w-10 object-contain"
+                />
+                <span className="font-heading font-bold text-slate-800">TeacherHubPro</span>
+              </div>
+              <p className="text-slate-500 text-sm">© 2026 TeacherHubPro. {language === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p>
+            </div>
           </div>
         </div>
       </footer>
