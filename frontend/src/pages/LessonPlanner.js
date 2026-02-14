@@ -566,16 +566,60 @@ const LessonPlanner = () => {
           </CardContent>
         </Card>
 
-        {/* Objective & Skills */}
+        {/* Objective & Skills - with Week Toggle */}
         <Card className="bg-white border-slate-100">
           <CardHeader className="pb-3">
-            <CardTitle className="font-heading text-lg">{t('objectiveOfWeek')}</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="font-heading text-lg">{t('objectiveOfWeek')}</CardTitle>
+              {/* Week Toggle Buttons */}
+              <div className="flex gap-2">
+                <Button 
+                  variant={activeWeek === 1 ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setActiveWeek(1)}
+                  className={activeWeek === 1 ? "bg-blue-600 hover:bg-blue-700" : ""}
+                  data-testid="week1-objective-btn"
+                >
+                  {language === 'es' ? 'Semana 1' : 'Week 1'}
+                </Button>
+                <Button 
+                  variant={activeWeek === 2 ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setActiveWeek(2)}
+                  className={activeWeek === 2 ? "bg-green-600 hover:bg-green-700" : ""}
+                  data-testid="week2-objective-btn"
+                >
+                  {language === 'es' ? 'Semana 2' : 'Week 2'}
+                </Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Week indicator badge */}
+            <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+              activeWeek === 1 ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+            }`}>
+              {activeWeek === 1 
+                ? (language === 'es' ? '📘 Semana 1' : '📘 Week 1')
+                : (language === 'es' ? '📗 Semana 2' : '📗 Week 2')
+              }
+              {activeWeek === 1 && formData.week_start && formData.week_end && (
+                <span className="ml-2 text-xs">({formData.week_start} - {formData.week_end})</span>
+              )}
+              {activeWeek === 2 && formData.week2_start && formData.week2_end && (
+                <span className="ml-2 text-xs">({formData.week2_start} - {formData.week2_end})</span>
+              )}
+            </div>
+            
             <Textarea 
-              value={formData.objective}
-              onChange={(e) => setFormData(prev => ({ ...prev, objective: e.target.value }))}
-              placeholder={language === 'es' ? 'Escribe el objetivo de la semana...' : 'Write the objective of the week...'}
+              value={activeWeek === 1 ? formData.objective : formData.objective_week2}
+              onChange={(e) => setFormData(prev => ({ 
+                ...prev, 
+                [activeWeek === 1 ? 'objective' : 'objective_week2']: e.target.value 
+              }))}
+              placeholder={language === 'es' 
+                ? `Escribe el objetivo de la semana ${activeWeek}...` 
+                : `Write the objective for week ${activeWeek}...`}
               className="min-h-24"
               data-testid="objective-input"
             />
@@ -583,12 +627,12 @@ const LessonPlanner = () => {
             <div>
               <Label className="mb-2 block">{t('skillsOfWeek')}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {formData.skills.map((skill, i) => (
+                {(activeWeek === 1 ? formData.skills : formData.skills_week2).map((skill, i) => (
                   <div key={i} className="flex items-center gap-2">
                     <span className="text-sm text-slate-500 w-4">{i + 1}.</span>
                     <Input 
                       value={skill}
-                      onChange={(e) => updateSkill(i, e.target.value)}
+                      onChange={(e) => updateSkill(i, e.target.value, activeWeek)}
                       placeholder={language === 'es' ? 'Destreza...' : 'Skill...'}
                       data-testid={`skill-input-${i}`}
                     />
