@@ -227,12 +227,8 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
                 <div><strong>Teacher:</strong> {plan.teacher_name || '_____'} | <strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}</div>
               </div>
               <div style={{ padding: '7px 10px', fontSize: '11pt' }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
-                  <strong>Date:</strong>
-                  <span>Week 1: {plan.week_start || '_____'} - {plan.week_end || '_____'}</span>
-                  {(plan.week2_start || plan.week2_end) && (
-                    <span>| Week 2: {plan.week2_start || '_____'} - {plan.week2_end || '_____'}</span>
-                  )}
+                <div>
+                  <strong>Date:</strong> From {plan.week_start || '_____'} To {plan.week_end || '_____'}
                 </div>
               </div>
             </div>
