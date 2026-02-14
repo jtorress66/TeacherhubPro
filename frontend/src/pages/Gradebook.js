@@ -26,12 +26,15 @@ const DEFAULT_CATEGORIES = [
 
 // GPA Scale Configuration (School's custom scale)
 const GPA_SCALE = {
-  // Letter grade ranges based on GPA
-  getLetterGrade: (gpa) => {
-    if (gpa >= 3.50) return 'A';
-    if (gpa >= 2.50) return 'B';
-    if (gpa >= 1.60) return 'C';
-    if (gpa >= 0.80) return 'D';
+  // Letter grade ranges based on percentage (standard scale)
+  getLetterGrade: (percentage) => {
+    if (percentage === null || percentage === undefined) return '-';
+    const pct = parseFloat(percentage);
+    if (isNaN(pct)) return '-';
+    if (pct >= 90) return 'A';
+    if (pct >= 80) return 'B';
+    if (pct >= 70) return 'C';
+    if (pct >= 60) return 'D';
     return 'F';
   },
   // Convert percentage to GPA (4.0 scale)
@@ -39,8 +42,12 @@ const GPA_SCALE = {
     if (percentage === null || percentage === undefined || percentage === '-') return null;
     const pct = parseFloat(percentage);
     if (isNaN(pct)) return null;
-    // Linear conversion: 100% = 4.0, 0% = 0.0
-    return Math.max(0, Math.min(4.0, (pct / 100) * 4.0));
+    // Standard GPA conversion
+    if (pct >= 90) return 4.0;
+    if (pct >= 80) return 3.0;
+    if (pct >= 70) return 2.0;
+    if (pct >= 60) return 1.0;
+    return 0.0;
   },
   // Get color for letter grade
   getGradeColor: (letter) => {
