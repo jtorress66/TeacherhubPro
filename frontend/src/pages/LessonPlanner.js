@@ -473,12 +473,25 @@ const LessonPlanner = () => {
   };
 
   const updateExpectation = (weekIndex, text) => {
-    setFormData(prev => ({
-      ...prev,
-      expectations: prev.expectations.map(e => 
-        e.week_index === weekIndex ? { ...e, text } : e
-      )
-    }));
+    setFormData(prev => {
+      const existingIndex = prev.expectations.findIndex(e => e.week_index === weekIndex);
+      
+      if (existingIndex >= 0) {
+        // Update existing expectation
+        return {
+          ...prev,
+          expectations: prev.expectations.map((e, i) => 
+            i === existingIndex ? { ...e, text } : e
+          )
+        };
+      } else {
+        // Create new expectation
+        return {
+          ...prev,
+          expectations: [...prev.expectations, { week_index: weekIndex, text }]
+        };
+      }
+    });
   };
 
   if (loading) {
