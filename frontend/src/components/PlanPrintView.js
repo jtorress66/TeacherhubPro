@@ -361,8 +361,10 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
               </div>
               <div style={{ padding: '10px 12px', fontSize: '11pt' }}>
                 <div><strong>Date</strong></div>
-                <div>From: {plan.week_start || '_____'}</div>
-                <div>To: {plan.week_end || '_____'}</div>
+                <div>Week 1: {plan.week_start || '_____'} - {plan.week_end || '_____'}</div>
+                {(plan.week2_start || plan.week2_end) && (
+                  <div>Week 2: {plan.week2_start || '_____'} - {plan.week2_end || '_____'}</div>
+                )}
               </div>
             </div>
 
