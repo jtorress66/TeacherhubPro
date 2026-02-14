@@ -347,10 +347,21 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           <div className="page" style={{ pageBreakBefore: 'always', fontSize: '11pt', lineHeight: '1.4' }}>
             <Header />
             
-            {/* Unit Info - NO DATE SECTION HERE (date is only on page 1) */}
-            <div style={{ border: '1px solid black', padding: '10px 12px', marginBottom: '14px', fontSize: '11pt' }}>
-              <div><strong>Unit:</strong> {plan.unit || '_____'} | <strong>Story:</strong> {plan.story || '_____'}</div>
-              <div><strong>Teacher:</strong> {plan.teacher_name || '_____'} | <strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}</div>
+            {/* Unit Info with BOTH Date Ranges */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '14px', fontSize: '11pt' }}>
+              <div style={{ padding: '10px 12px', borderRight: '1px solid black' }}>
+                <div><strong>Unit:</strong> {plan.unit || '_____'}</div>
+                <div><strong>Story:</strong> {plan.story || '_____'}</div>
+                <div><strong>Teacher:</strong> {plan.teacher_name || '_____'}</div>
+                <div><strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}</div>
+              </div>
+              <div style={{ padding: '10px 12px' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Date</div>
+                <div>From: To: {plan.week_start || '_____'} - {plan.week_end || '_____'}</div>
+                {(plan.week2_start || plan.week2_end) && (
+                  <div>From: To: {plan.week2_start || '_____'} - {plan.week2_end || '_____'}</div>
+                )}
+              </div>
             </div>
 
             {/* Standards Grid - LARGER */}
