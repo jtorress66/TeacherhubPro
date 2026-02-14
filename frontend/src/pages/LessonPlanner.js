@@ -805,7 +805,7 @@ const LessonPlanner = () => {
                     <div className="space-y-2">
                       <Label>{t('materials')}</Label>
                       <div className="space-y-2">
-                        {formData.days[dayIndex].materials.map((material, mi) => (
+                        {(currentDay.materials || []).map((material, mi) => (
                           <div 
                             key={material.material_type}
                             className={`flex items-center gap-3 p-2 rounded border cursor-pointer ${
@@ -828,14 +828,15 @@ const LessonPlanner = () => {
                   <div className="space-y-2">
                     <Label>{t('notes')}</Label>
                     <Textarea 
-                      value={formData.days[dayIndex].notes}
+                      value={currentDay.notes || ''}
                       onChange={(e) => updateDay(dayIndex, 'notes', e.target.value)}
                       placeholder={language === 'es' ? 'Notas adicionales...' : 'Additional notes...'}
                       data-testid={`day-notes-${dayIndex}`}
                     />
                   </div>
                 </TabsContent>
-              ))}
+              );
+              })}
             </Tabs>
           </CardContent>
         </Card>
