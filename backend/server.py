@@ -6,6 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 import asyncio
+import base64
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import List, Optional, Dict, Any
@@ -15,6 +16,8 @@ import httpx
 import jwt
 from passlib.context import CryptContext
 import resend
+from elevenlabs import ElevenLabs
+from elevenlabs.core import RequestOptions
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
