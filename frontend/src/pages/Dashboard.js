@@ -113,6 +113,16 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="flex gap-3">
+            <Button
+              onClick={() => setRunTour(true)}
+              variant="outline"
+              className="gap-2 border-2 hover:bg-amber-50 transition-all"
+              style={{ borderColor: '#F59E0B', color: '#F59E0B' }}
+              data-testid="start-tour-btn"
+            >
+              <HelpCircle className="h-4 w-4" />
+              {language === 'es' ? 'Recorrido' : 'Tour'}
+            </Button>
             <Button 
               onClick={() => navigate('/planner/new')} 
               className="gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5" 
@@ -124,6 +134,13 @@ const Dashboard = () => {
             </Button>
           </div>
         </div>
+
+        {/* Welcome Tour */}
+        <WelcomeTour 
+          language={language} 
+          run={runTour} 
+          onClose={() => setRunTour(false)} 
+        />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 stagger-children">
