@@ -361,10 +361,14 @@ const Gradebook = () => {
             <h1 className="text-3xl font-heading font-bold text-slate-800">{t('gradebook')}</h1>
             <p className="text-slate-500">{t('assignments')}</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button variant="outline" onClick={() => setShowCategoryManager(true)} data-testid="manage-categories-btn">
               <FolderPlus className="h-4 w-4 mr-2" />
               {language === 'es' ? 'Categorías' : 'Categories'}
+            </Button>
+            <Button variant="outline" onClick={() => setShowAssignmentList(true)} data-testid="view-assignments-btn">
+              <List className="h-4 w-4 mr-2" />
+              {language === 'es' ? 'Ver Tareas' : 'View Assignments'}
             </Button>
             <Dialog open={showNewAssignment} onOpenChange={setShowNewAssignment}>
               <DialogTrigger asChild>
