@@ -663,4 +663,58 @@ The following issues require user action in production:
 ### Technical Debt
 - **Refactor `/app/backend/server.py`**: File is monolithic and needs to be split into logical modules using FastAPI's `APIRouter` (e.g., `routes/auth.py`, `routes/admin.py`, `routes/gradebook.py`)
 
+---
+## Update 2026-02-14 - Bug Fixes (SM Login, Print View, Backend Model)
+
+### Bugs Fixed
+
+#### 1. SM Aprendizaje Login Dialog Not Showing Fields
+- **Issue:** The dialog was not rendering due to missing `BookOpen` icon import
+- **Fix:** Added `BookOpen` to the lucide-react imports in `/app/frontend/src/pages/LessonPlanner.js`
+- **Status:** ✅ FIXED - Dialog now shows username and password fields
+
+#### 2. Two-Week Date Range Not Displaying Together in Print View
+- **Issue:** Week 1 and Week 2 dates were on separate lines, causing page breaks
+- **Fix:** Updated `/app/frontend/src/components/PlanPrintView.js` to display both weeks on the same line: "Week 1: X - Y | Week 2: A - B"
+- **Status:** ✅ FIXED - Both weeks now display in compact format
+
+#### 3. Backend Missing week2_start and week2_end Fields
+- **Issue:** Backend models didn't include the two-week date fields
+- **Fix:** Added `week2_start: Optional[str]` and `week2_end: Optional[str]` to:
+  - `LessonPlanCreate` model
+  - `LessonPlanResponse` model
+  - Create plan endpoint (plan_doc)
+  - Update plan endpoint (update_data)
+- **Status:** ✅ FIXED - Backend now saves and returns week 2 dates
+
+### Files Modified
+- `/app/frontend/src/pages/LessonPlanner.js` - Line 19: Added BookOpen import
+- `/app/frontend/src/components/PlanPrintView.js` - Lines 229-235, 362-367: Compact date display
+- `/app/backend/server.py` - Lines ~169, ~184, ~1115, ~1163: Added week2 fields
+
+### Test Results
+- Test report: `/app/test_reports/iteration_9.json`
+- Success Rate: 100% (5/5 features verified)
+- All features verified working:
+  1. SM Aprendizaje dialog opens with username/password fields
+  2. Two-week date range displays on same line in print view
+  3. Gradebook categories display correctly
+  4. View Assignments button and edit functionality working
+  5. GPA calculation uses standard percentage scale (90+=A, 80+=B, 70+=C, 60+=D, <60=F)
+
+---
+## Current Backlog (Updated 2026-02-14)
+
+### P1 (High Priority - Next)
+- Drag-and-Drop Seating Chart Editor
+- Quick Week Copy (duplicate + shift dates by 7 days)
+- Super Admin Bulk Tools (CSV import for teachers)
+
+### P2 (Medium Priority)
+- Audit Log for grades/attendance changes
+- Google Classroom Integration
+- Report card generation
+
+### Technical Debt (Recurring)
+- **Refactor `/app/backend/server.py`**: File is monolithic (2000+ lines) and continues to grow. Should be split into logical modules using FastAPI's `APIRouter`.
 
