@@ -362,12 +362,12 @@ const SubstitutePacket = () => {
                     </h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="info-box p-3 border rounded">
-                        <label className="font-bold">{language === 'es' ? 'Materia' : 'Subject'}</label>
-                        <span>{packetData.classInfo?.subject || 'N/A'}</span>
+                        <label className="font-bold">{language === 'es' ? 'Materia' : 'Subject'}:</label>
+                        <span className="ml-2">{packetData.classInfo?.subject || 'N/A'}</span>
                       </div>
                       <div className="info-box p-3 border rounded">
-                        <label className="font-bold">{language === 'es' ? 'Año Escolar' : 'School Year'}</label>
-                        <span>{packetData.classInfo?.year_term}</span>
+                        <label className="font-bold">{language === 'es' ? 'Año Escolar' : 'School Year'}:</label>
+                        <span className="ml-2">{packetData.classInfo?.year_term}</span>
                       </div>
                     </div>
                   </div>
