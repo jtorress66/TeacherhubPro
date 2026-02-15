@@ -48,21 +48,17 @@ const ECA_LABELS = {
   A: { en: 'Application', es: 'Aplicación' }
 };
 
-// Checkbox component
-const Checkbox = ({ checked, size = 10 }) => (
+// Compact checkbox - matching paper size
+const Checkbox = ({ checked }) => (
   <span style={{
     display: 'inline-block',
-    width: `${size}px`,
-    height: `${size}px`,
+    width: '8px',
+    height: '8px',
     border: '1px solid black',
     background: checked ? 'black' : 'white',
     verticalAlign: 'middle',
-    textAlign: 'center',
-    lineHeight: `${size - 2}px`,
-    fontSize: `${size - 1}px`,
-    fontWeight: 'bold',
-    color: 'white'
-  }}>{checked ? '✓' : ''}</span>
+    marginRight: '2px'
+  }}></span>
 );
 
 export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) => {
@@ -70,11 +66,8 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
   const { school: contextSchool, branding } = useSchool();
   const printRef = useRef();
   const lang = language === 'es' ? 'es' : 'en';
-  
-  // Use prop school if provided, otherwise use context school
   const school = propSchool || contextSchool;
 
-  // Get days filtered by week
   const getWeekDays = (weekIndex) => {
     const weekDays = plan.days?.filter(d => d.week_index === weekIndex) || [];
     return ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((dayName, i) => {
@@ -92,13 +85,19 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     });
   };
 
-  const planDays = getWeekDays(1); // Week 1 days
-  const planDaysWeek2 = getWeekDays(2); // Week 2 days
+  const planDays = getWeekDays(1);
+  const planDaysWeek2 = getWeekDays(2);
 
-  // Get school colors for PDF
   const primaryColor = school?.branding?.primary_color || branding?.primary_color || '#65A30D';
   const secondaryColor = school?.branding?.secondary_color || branding?.secondary_color || '#334155';
-  const accentColor = school?.branding?.accent_color || branding?.accent_color || '#F59E0B';
+
+  const getStandardsForWeek = (weekIndex) => {
+    return plan.standards?.filter(s => s.week_index === weekIndex) || [];
+  };
+
+  const getExpectationForWeek = (weekIndex) => {
+    return plan.expectations?.find(e => e.week_index === weekIndex)?.text || '';
+  };
 
   const handlePrint = () => {
     const printContent = printRef.current;
@@ -110,31 +109,25 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       <head>
         <title>Lesson Plan - ${plan.unit || 'Plan'}</title>
         <style>
-          :root {
-            --school-primary: ${primaryColor};
-            --school-secondary: ${secondaryColor};
-            --school-accent: ${accentColor};
-          }
           @page { 
             size: landscape;
-            margin: 0.25in; 
+            margin: 0.3in 0.4in; 
           }
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: Arial, sans-serif; font-size: 9pt; }
-          .page {
-            width: 10.5in;
-            min-height: 7.5in;
-            max-height: 8in;
+          body { 
+            font-family: Arial, sans-serif; 
+            font-size: 8pt;
+            line-height: 1.1;
+          }
+          .print-page {
             page-break-after: always;
             page-break-inside: avoid;
-            overflow: hidden;
           }
-          .page:last-child { page-break-after: avoid; }
+          .print-page:last-child { page-break-after: avoid; }
           table { border-collapse: collapse; width: 100%; }
-          td, th { border: 1px solid black; padding: 2px 3px; vertical-align: top; }
+          td, th { border: 1px solid black; padding: 1px 2px; vertical-align: top; font-size: 7pt; }
           @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .page { overflow: hidden; }
           }
         </style>
       </head>
@@ -152,55 +145,237 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     }, 250);
   };
 
-  const getStandardsForWeek = (weekIndex) => {
-    return plan.standards?.filter(s => s.week_index === weekIndex) || [];
-  };
-
-  const getExpectationForWeek = (weekIndex) => {
-    return plan.expectations?.find(e => e.week_index === weekIndex)?.text || '';
-  };
-
-  // Header component - LARGER with school branding
+  // Compact Header matching paper
   const Header = () => (
-    <div style={{ 
-      textAlign: 'center', 
-      borderBottom: `3px solid ${primaryColor}`, 
-      paddingBottom: '6px', 
-      marginBottom: '10px' 
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px' }}>
-        {school?.logo_url && (
-          <img 
-            src={school.logo_url} 
-            alt="Logo" 
-            style={{ height: '52px', objectFit: 'contain' }} 
-          />
-        )}
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ 
-            fontWeight: 'bold', 
-            fontSize: '15pt', 
-            color: secondaryColor 
-          }}>
-            {school?.name || 'School Name'}
-          </div>
-          {school?.address && (
-            <div style={{ fontSize: '10pt', color: '#666' }}>{school.address}</div>
-          )}
-          <div style={{ fontSize: '10pt', color: '#666' }}>
-            {school?.phone && `Tel. ${school.phone}`}
-            {school?.phone && school?.email && ' | '}
-            {school?.email}
-          </div>
+    <div style={{ textAlign: 'center', marginBottom: '4px', borderBottom: '2px solid black', paddingBottom: '4px' }}>
+      {school?.logo_url && (
+        <img src={school.logo_url} alt="Logo" style={{ height: '40px', marginBottom: '2px' }} />
+      )}
+      <div style={{ fontWeight: 'bold', fontSize: '10pt' }}>{school?.name || 'School Name'}</div>
+      {school?.address && <div style={{ fontSize: '7pt' }}>{school.address}</div>}
+      <div style={{ fontSize: '7pt' }}>
+        {school?.phone && `Tel. ${school.phone}`}
+        {school?.phone && school?.email && ' | '}
+        {school?.email}
+      </div>
+      <div style={{ fontWeight: 'bold', fontSize: '10pt', marginTop: '4px' }}>
+        {lang === 'es' ? "Planificación del Maestro" : "Teacher's Planning"}
+      </div>
+    </div>
+  );
+
+  // Render a single week's daily plan page
+  const renderWeekPage = (days, weekNum, weekStart, weekEnd, objective, skills) => (
+    <div className="print-page" style={{ fontSize: '8pt', lineHeight: '1.15' }}>
+      <Header />
+      
+      {/* Date Range */}
+      <div style={{ border: '1px solid black', padding: '2px 4px', marginBottom: '3px', fontWeight: 'bold', fontSize: '8pt' }}>
+        Date: From {weekStart || '_____'} To {weekEnd || '_____'}
+        {weekNum === 2 && <span style={{ marginLeft: '10px', color: '#16a34a' }}>(Week 2)</span>}
+      </div>
+
+      {/* Objective */}
+      <div style={{ border: '1px solid black', padding: '2px 4px', marginBottom: '3px', fontSize: '8pt' }}>
+        <strong>Objective of the week:</strong> {objective || '_____'}
+      </div>
+
+      {/* Skills */}
+      <div style={{ border: '1px solid black', padding: '2px 4px', marginBottom: '3px', fontSize: '7pt' }}>
+        <div style={{ fontWeight: 'bold', borderBottom: '1px solid black', paddingBottom: '1px', marginBottom: '2px' }}>Skills of the week:</div>
+        <ol style={{ marginLeft: '15px', marginTop: '1px' }}>
+          {(skills || []).filter(s => s).map((skill, i) => (
+            <li key={i} style={{ marginBottom: '1px' }}>{skill}</li>
+          ))}
+        </ol>
+      </div>
+
+      {/* Main Table - Very Compact */}
+      <table style={{ fontSize: '6.5pt', tableLayout: 'fixed' }}>
+        <colgroup>
+          <col style={{ width: '13%' }} />
+          <col style={{ width: '17.4%' }} />
+          <col style={{ width: '17.4%' }} />
+          <col style={{ width: '17.4%' }} />
+          <col style={{ width: '17.4%' }} />
+          <col style={{ width: '17.4%' }} />
+        </colgroup>
+        <thead>
+          <tr style={{ background: '#f0f0f0' }}>
+            <th style={{ padding: '2px', fontSize: '7pt' }}></th>
+            {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, idx) => (
+              <th key={day} style={{ textAlign: 'center', padding: '2px', fontSize: '7pt' }}>
+                <div>{DAY_LABELS[day][lang]}</div>
+                <div style={{ fontSize: '6pt', marginTop: '1px' }}>
+                  {['E', 'C', 'A'].map(eca => (
+                    <span key={eca} style={{ marginRight: '4px' }}>
+                      {eca}<Checkbox checked={days[idx]?.eca?.[eca]} />
+                    </span>
+                  ))}
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {/* Day Theme */}
+          <tr>
+            <td style={{ fontWeight: 'bold', fontSize: '6.5pt', padding: '2px' }}>Day Theme</td>
+            {days.map((day, i) => (
+              <td key={i} style={{ textAlign: 'center', padding: '2px', fontSize: '6.5pt' }}>{day.theme || ''}</td>
+            ))}
+          </tr>
+          
+          {/* DOK Levels - Compact */}
+          <tr>
+            <td style={{ fontWeight: 'bold', fontSize: '6pt', padding: '2px', lineHeight: '1.0' }}>
+              Type of Taxonomy:<br/>Webb (2005) Levels
+            </td>
+            {days.map((day, i) => (
+              <td key={i} style={{ padding: '1px 2px', fontSize: '6pt', lineHeight: '1.1' }}>
+                {[1, 2, 3, 4].map(level => (
+                  <div key={level}><Checkbox checked={day.dok_levels?.includes(level)} /> Level {level}</div>
+                ))}
+              </td>
+            ))}
+          </tr>
+
+          {/* Activities - Compact */}
+          <tr>
+            <td style={{ fontWeight: 'bold', fontSize: '6.5pt', padding: '2px' }}>Activities</td>
+            {days.map((day, i) => (
+              <td key={i} style={{ padding: '1px 2px', fontSize: '5.5pt', lineHeight: '1.05' }}>
+                {Object.keys(ACTIVITY_LABELS).map(actType => {
+                  const activity = day.activities?.find(a => a.activity_type === actType);
+                  return (
+                    <div key={actType}>
+                      <Checkbox checked={activity?.checked} /> {ACTIVITY_LABELS[actType][lang]}
+                      {actType === 'other' && activity?.checked && activity?.notes && (
+                        <span style={{ fontStyle: 'italic' }}>: {activity.notes}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </td>
+            ))}
+          </tr>
+
+          {/* Materials - Compact */}
+          <tr>
+            <td style={{ fontWeight: 'bold', fontSize: '6.5pt', padding: '2px' }}>Materials</td>
+            {days.map((day, i) => (
+              <td key={i} style={{ padding: '1px 2px', fontSize: '6pt', lineHeight: '1.1' }}>
+                {Object.keys(MATERIAL_LABELS).map(matType => {
+                  const material = day.materials?.find(m => m.material_type === matType);
+                  return (
+                    <div key={matType}><Checkbox checked={material?.checked} /> {MATERIAL_LABELS[matType][lang]}</div>
+                  );
+                })}
+              </td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+
+  // Standards Page (Page 2 in paper format)
+  const renderStandardsPage = () => (
+    <div className="print-page" style={{ fontSize: '8pt', lineHeight: '1.2' }}>
+      <Header />
+      
+      {/* Unit Info */}
+      <table style={{ marginBottom: '6px', fontSize: '8pt' }}>
+        <tbody>
+          <tr>
+            <td style={{ width: '50%', padding: '3px 5px' }}>
+              <div><strong>Unit:</strong> {plan.unit || '_____'}</div>
+              <div><strong>Story:</strong> {plan.story || '_____'}</div>
+              <div><strong>Teacher:</strong> {plan.teacher_name || '_____'}</div>
+              <div><strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}</div>
+            </td>
+            <td style={{ width: '50%', padding: '3px 5px' }}>
+              <div><strong>Date</strong></div>
+              <div>From: To: {plan.week_start || '_____'} - {plan.week_end || '_____'}</div>
+              {(plan.week2_start || plan.week2_end) && (
+                <div>From: To: {plan.week2_start || '_____'} - {plan.week2_end || '_____'}</div>
+              )}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* Standards Grid */}
+      <table style={{ marginBottom: '8px', fontSize: '8pt' }}>
+        <tbody>
+          <tr>
+            <td style={{ width: '50%', padding: '5px', verticalAlign: 'top' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '9pt', borderBottom: '1px solid black', marginBottom: '4px', paddingBottom: '2px' }}>
+                Standard: First Week
+              </div>
+              {['listeningAndSpeaking', 'foundationalSkills', 'reading', 'writing', 'language'].map(domain => {
+                const standard = getStandardsForWeek(1).find(s => s.domain === domain);
+                return (
+                  <div key={domain} style={{ marginBottom: '2px' }}>
+                    <Checkbox checked={standard?.codes?.length > 0} />
+                    <strong style={{ marginLeft: '2px' }}>{STANDARD_LABELS[domain][lang]}</strong>
+                    {standard?.codes?.length > 0 && (
+                      <span style={{ marginLeft: '5px', fontSize: '7pt' }}>{standard.codes.join(', ')}</span>
+                    )}
+                  </div>
+                );
+              })}
+              <div style={{ border: '1px solid black', padding: '4px', marginTop: '6px', minHeight: '50px' }}>
+                <strong>Expectations:</strong>
+                <div style={{ marginTop: '2px', fontSize: '7pt' }}>{getExpectationForWeek(1)}</div>
+              </div>
+            </td>
+            <td style={{ width: '50%', padding: '5px', verticalAlign: 'top' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '9pt', borderBottom: '1px solid black', marginBottom: '4px', paddingBottom: '2px' }}>
+                Standard: Second Week
+              </div>
+              {['listeningAndSpeaking', 'foundationalSkills', 'reading', 'writing', 'language'].map(domain => {
+                const standard = getStandardsForWeek(2).find(s => s.domain === domain);
+                return (
+                  <div key={domain} style={{ marginBottom: '2px' }}>
+                    <Checkbox checked={standard?.codes?.length > 0} />
+                    <strong style={{ marginLeft: '2px' }}>{STANDARD_LABELS[domain][lang]}</strong>
+                    {standard?.codes?.length > 0 && (
+                      <span style={{ marginLeft: '5px', fontSize: '7pt' }}>{standard.codes.join(', ')}</span>
+                    )}
+                  </div>
+                );
+              })}
+              <div style={{ border: '1px solid black', padding: '4px', marginTop: '6px', minHeight: '50px' }}>
+                <strong>Expectations:</strong>
+                <div style={{ marginTop: '2px', fontSize: '7pt' }}>{getExpectationForWeek(2)}</div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* Integration */}
+      <div style={{ border: '1px solid black', padding: '5px' }}>
+        <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Integration with other subjects:</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', fontSize: '8pt' }}>
+          {['mathematics', 'spanish', 'socialStudies', 'science', 'health', 'art', 'physicalEducation', 'religion'].map(subject => (
+            <span key={subject}>
+              <Checkbox checked={plan.subject_integration?.includes(subject)} />
+              <span style={{ marginLeft: '2px' }}>{subject.charAt(0).toUpperCase() + subject.slice(1).replace(/([A-Z])/g, ' $1')}</span>
+            </span>
+          ))}
         </div>
       </div>
-      <div style={{ 
-        fontWeight: 'bold', 
-        fontSize: '15pt', 
-        marginTop: '5px',
-        color: primaryColor
-      }}>
-        {lang === 'es' ? 'Planificación del Maestro' : "Teacher's Planning"}
+
+      {/* Signatures */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px', paddingTop: '10px' }}>
+        <div style={{ borderTop: '1px solid black', paddingTop: '3px', width: '40%', textAlign: 'center', fontSize: '8pt' }}>
+          Teacher's Signature / Date
+        </div>
+        <div style={{ borderTop: '1px solid black', paddingTop: '3px', width: '40%', textAlign: 'center', fontSize: '8pt' }}>
+          Principal's Signature / Date
+        </div>
       </div>
     </div>
   );
@@ -224,363 +399,31 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           </div>
         </div>
 
-        {/* Print Content */}
-        <div ref={printRef} style={{ fontFamily: 'Arial, sans-serif', padding: '8px', background: 'white' }}>
+        {/* Print Content - Preview */}
+        <div ref={printRef} style={{ fontFamily: 'Arial, sans-serif', padding: '10px', background: 'white' }}>
           
-          {/* ===== PAGE 1: Week 1 Daily Plan ===== */}
-          <div className="page" style={{ fontSize: '10pt', lineHeight: '1.3', minHeight: '600px', paddingBottom: '10px', borderBottom: '2px dashed #ccc', marginBottom: '20px' }}>
-            <Header />
-            
-            {/* Info Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '8px' }}>
-              <div style={{ padding: '8px 10px', borderRight: '1px solid black', fontSize: '11pt' }}>
-                <div><strong>Unit:</strong> {plan.unit || '_____'} | <strong>Story:</strong> {plan.story || '_____'}</div>
-                <div><strong>Teacher:</strong> {plan.teacher_name || '_____'} | <strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}</div>
-              </div>
-              <div style={{ padding: '8px 10px', fontSize: '11pt' }}>
-                <div>
-                  <strong>Date:</strong> From {plan.week_start || '_____'} To {plan.week_end || '_____'}
-                </div>
-              </div>
-            </div>
-
-            {/* Objective */}
-            <div style={{ border: '1px solid black', padding: '8px 10px', marginBottom: '8px' }}>
-              <span style={{ fontWeight: 'bold', fontSize: '11pt' }}>Objective of the week: </span>
-              <span style={{ fontSize: '10pt' }}>{plan.objective || '_____'}</span>
-            </div>
-
-            {/* Skills - Numbered list */}
-            <div style={{ border: '1px solid black', padding: '8px 10px', marginBottom: '8px' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '11pt', borderBottom: '1px solid black', marginBottom: '5px', paddingBottom: '4px' }}>
-                Skills of the week:
-              </div>
-              <ol style={{ marginLeft: '20px', fontSize: '10pt', marginTop: '4px', marginBottom: '4px' }}>
-                {(plan.skills || []).filter(s => s).map((skill, i) => (
-                  <li key={i} style={{ marginBottom: '3px' }}>{skill}</li>
-                ))}
-              </ol>
-            </div>
-
-            {/* Daily Plan Table */}
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9pt', tableLayout: 'fixed' }}>
-              <thead>
-                <tr>
-                  <th style={{ border: '1px solid black', padding: '5px', width: '12%', background: '#f0f0f0', fontSize: '9pt' }}></th>
-                  {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, dayIdx) => (
-                    <th key={day} style={{ border: '1px solid black', padding: '5px', width: '17.6%', background: '#f0f0f0', textAlign: 'center', fontSize: '10pt' }}>
-                      {DAY_LABELS[day][lang]}
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '3px', fontSize: '9pt' }}>
-                        {['E', 'C', 'A'].map(eca => (
-                          <span key={eca} style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                            <span>{eca}</span>
-                            <Checkbox checked={planDays[dayIdx]?.eca?.[eca]} size={10} />
-                          </span>
-                        ))}
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {/* Day Theme */}
-                <tr>
-                  <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', fontSize: '9pt' }}>Day Theme</td>
-                  {planDays.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '5px', textAlign: 'center', fontSize: '9pt' }}>
-                      {day.theme || ''}
-                    </td>
-                  ))}
-                </tr>
-                
-                {/* DOK Levels */}
-                <tr>
-                  <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', fontSize: '8pt' }}>
-                    Type of Taxonomy: Webb (2005) Levels
-                  </td>
-                  {planDays.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '4px', fontSize: '8pt' }}>
-                      {[1, 2, 3, 4].map(level => (
-                        <div key={level} style={{ marginBottom: '2px', lineHeight: '1.3' }}>
-                          <Checkbox checked={day.dok_levels?.includes(level)} size={9} /> Level {level}
-                        </div>
-                      ))}
-                    </td>
-                  ))}
-                </tr>
-
-                {/* Activities */}
-                <tr>
-                  <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', fontSize: '9pt' }}>Activities</td>
-                  {planDays.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '4px', fontSize: '8pt' }}>
-                      {Object.keys(ACTIVITY_LABELS).map(actType => {
-                        const activity = day.activities?.find(a => a.activity_type === actType);
-                        return (
-                          <div key={actType} style={{ marginBottom: '2px', lineHeight: '1.25' }}>
-                            <Checkbox checked={activity?.checked} size={8} /> {ACTIVITY_LABELS[actType][lang]}
-                            {actType === 'other' && activity?.checked && activity?.notes && (
-                              <span style={{ fontStyle: 'italic' }}>: {activity.notes}</span>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </td>
-                  ))}
-                </tr>
-
-                {/* Materials */}
-                <tr>
-                  <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', fontSize: '9pt' }}>Materials</td>
-                  {planDays.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '4px', fontSize: '8pt' }}>
-                      {Object.keys(MATERIAL_LABELS).map(matType => {
-                        const material = day.materials?.find(m => m.material_type === matType);
-                        return (
-                          <div key={matType} style={{ marginBottom: '2px', lineHeight: '1.25' }}>
-                            <Checkbox checked={material?.checked} size={8} /> {MATERIAL_LABELS[matType][lang]}
-                          </div>
-                        );
-                      })}
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
-
-            {/* ECA Legend */}
-            <div style={{ marginTop: '8px', fontSize: '9pt', borderTop: '1px solid #999', paddingTop: '5px' }}>
-              <strong>E/C/A:</strong> E = {ECA_LABELS.E[lang]}, C = {ECA_LABELS.C[lang]}, A = {ECA_LABELS.A[lang]}
-            </div>
-          </div>
-
-          {/* ===== PAGE 2: Week 2 Daily Plan ===== */}
-          {(plan.week2_start || plan.week2_end) && (
-          <div className="page" style={{ pageBreakBefore: 'always', fontSize: '10pt', lineHeight: '1.3', minHeight: '600px', paddingBottom: '10px', borderBottom: '2px dashed #ccc', marginBottom: '20px' }}>
-            <Header />
-            
-            {/* Info Grid - Week 2 */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '8px' }}>
-              <div style={{ padding: '8px 10px', borderRight: '1px solid black', fontSize: '11pt' }}>
-                <div><strong>Unit:</strong> {plan.unit || '_____'} | <strong>Story:</strong> {plan.story || '_____'}</div>
-                <div><strong>Teacher:</strong> {plan.teacher_name || '_____'} | <strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}</div>
-              </div>
-              <div style={{ padding: '8px 10px', fontSize: '11pt' }}>
-                <div>
-                  <strong>Date:</strong> From {plan.week2_start || '_____'} To {plan.week2_end || '_____'}
-                  <span style={{ marginLeft: '8px', fontWeight: 'bold', color: '#16a34a' }}>(Week 2)</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Objective - Week 2 */}
-            <div style={{ border: '1px solid black', padding: '8px 10px', marginBottom: '8px' }}>
-              <span style={{ fontWeight: 'bold', fontSize: '11pt' }}>Objective of the week: </span>
-              <span style={{ fontSize: '10pt' }}>{plan.objective_week2 || plan.objective || '_____'}</span>
-            </div>
-
-            {/* Skills - Week 2 */}
-            <div style={{ border: '1px solid black', padding: '8px 10px', marginBottom: '8px' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '11pt', borderBottom: '1px solid black', marginBottom: '5px', paddingBottom: '4px' }}>
-                Skills of the week:
-              </div>
-              <ol style={{ marginLeft: '20px', fontSize: '10pt', marginTop: '4px', marginBottom: '4px' }}>
-                {((plan.skills_week2 && plan.skills_week2.some(s => s)) ? plan.skills_week2 : plan.skills || []).filter(s => s).map((skill, i) => (
-                  <li key={i} style={{ marginBottom: '3px' }}>{skill}</li>
-                ))}
-              </ol>
-            </div>
-
-            {/* Daily Plan Table - Week 2 */}
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9pt', tableLayout: 'fixed' }}>
-              <thead>
-                <tr>
-                  <th style={{ border: '1px solid black', padding: '5px', width: '12%', background: '#f0f0f0', fontSize: '9pt' }}></th>
-                  {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, dayIdx) => (
-                    <th key={day} style={{ border: '1px solid black', padding: '5px', width: '17.6%', background: '#f0f0f0', textAlign: 'center', fontSize: '10pt' }}>
-                      {DAY_LABELS[day][lang]}
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '3px', fontSize: '9pt' }}>
-                        {['E', 'C', 'A'].map(eca => (
-                          <span key={eca} style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                            <span>{eca}</span>
-                            <Checkbox checked={planDaysWeek2[dayIdx]?.eca?.[eca]} size={10} />
-                          </span>
-                        ))}
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {/* Day Theme */}
-                <tr>
-                  <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', fontSize: '9pt' }}>Day Theme</td>
-                  {planDaysWeek2.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '5px', textAlign: 'center', fontSize: '9pt' }}>
-                      {day.theme || ''}
-                    </td>
-                  ))}
-                </tr>
-                
-                {/* DOK Levels */}
-                <tr>
-                  <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', fontSize: '8pt' }}>
-                    Type of Taxonomy: Webb (2005) Levels
-                  </td>
-                  {planDaysWeek2.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '4px', fontSize: '8pt' }}>
-                      {[1, 2, 3, 4].map(level => (
-                        <div key={level} style={{ marginBottom: '2px', lineHeight: '1.3' }}>
-                          <Checkbox checked={day.dok_levels?.includes(level)} size={9} /> Level {level}
-                        </div>
-                      ))}
-                    </td>
-                  ))}
-                </tr>
-
-                {/* Activities */}
-                <tr>
-                  <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', fontSize: '9pt' }}>Activities</td>
-                  {planDaysWeek2.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '4px', fontSize: '8pt' }}>
-                      {Object.keys(ACTIVITY_LABELS).map(actType => {
-                        const activity = day.activities?.find(a => a.activity_type === actType);
-                        return (
-                          <div key={actType} style={{ marginBottom: '2px', lineHeight: '1.25' }}>
-                            <Checkbox checked={activity?.checked} size={8} /> {ACTIVITY_LABELS[actType][lang]}
-                            {actType === 'other' && activity?.checked && activity?.notes && (
-                              <span style={{ fontStyle: 'italic' }}>: {activity.notes}</span>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </td>
-                  ))}
-                </tr>
-
-                {/* Materials */}
-                <tr>
-                  <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', fontSize: '9pt' }}>Materials</td>
-                  {planDaysWeek2.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '4px', fontSize: '8pt' }}>
-                      {Object.keys(MATERIAL_LABELS).map(matType => {
-                        const material = day.materials?.find(m => m.material_type === matType);
-                        return (
-                          <div key={matType} style={{ marginBottom: '2px', lineHeight: '1.25' }}>
-                            <Checkbox checked={material?.checked} size={8} /> {MATERIAL_LABELS[matType][lang]}
-                          </div>
-                        );
-                      })}
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
-
-            {/* ECA Legend */}
-            <div style={{ marginTop: '8px', fontSize: '9pt', borderTop: '1px solid #999', paddingTop: '5px' }}>
-              <strong>E/C/A:</strong> E = {ECA_LABELS.E[lang]}, C = {ECA_LABELS.C[lang]}, A = {ECA_LABELS.A[lang]}
-            </div>
-          </div>
+          {/* Page 1: Week 1 Daily Plan */}
+          {renderWeekPage(
+            planDays, 
+            1, 
+            plan.week_start, 
+            plan.week_end, 
+            plan.objective, 
+            plan.skills
           )}
 
-          {/* ===== PAGE 3: Standards ===== */}
-          <div className="page" style={{ pageBreakBefore: 'always', fontSize: '10pt', lineHeight: '1.35', minHeight: '600px' }}>
-            <Header />
-            
-            {/* Unit Info with BOTH Date Ranges */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '10px', fontSize: '10pt' }}>
-              <div style={{ padding: '8px 10px', borderRight: '1px solid black' }}>
-                <div><strong>Unit:</strong> {plan.unit || '_____'}</div>
-                <div><strong>Story:</strong> {plan.story || '_____'}</div>
-                <div><strong>Teacher:</strong> {plan.teacher_name || '_____'}</div>
-                <div><strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}</div>
-              </div>
-              <div style={{ padding: '8px 10px' }}>
-                <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Date</div>
-                <div>From: To: {plan.week_start || '_____'} - {plan.week_end || '_____'}</div>
-                {(plan.week2_start || plan.week2_end) && (
-                  <div>From: To: {plan.week2_start || '_____'} - {plan.week2_end || '_____'}</div>
-                )}
-              </div>
-            </div>
+          {/* Page 2: Week 2 Daily Plan (if exists) */}
+          {(plan.week2_start || plan.week2_end) && renderWeekPage(
+            planDaysWeek2, 
+            2, 
+            plan.week2_start, 
+            plan.week2_end, 
+            plan.objective_week2 || plan.objective, 
+            (plan.skills_week2 && plan.skills_week2.some(s => s)) ? plan.skills_week2 : plan.skills
+          )}
 
-            {/* Standards Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '10px' }}>
-              {/* First Week */}
-              <div style={{ padding: '10px', borderRight: '1px solid black' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '11pt', borderBottom: '1px solid black', marginBottom: '10px', paddingBottom: '4px' }}>
-                  Standard: First Week
-                </div>
-                {['listeningAndSpeaking', 'foundationalSkills', 'reading', 'writing', 'language'].map(domain => {
-                  const standard = getStandardsForWeek(1).find(s => s.domain === domain);
-                  return (
-                    <div key={domain} style={{ marginBottom: '6px', fontSize: '9pt' }}>
-                      <Checkbox checked={standard?.codes?.length > 0} size={9} />
-                      <strong style={{ marginLeft: '4px' }}>{STANDARD_LABELS[domain][lang]}</strong>
-                      {standard?.codes?.length > 0 && (
-                        <span style={{ marginLeft: '8px', fontFamily: 'monospace', fontSize: '8pt' }}>
-                          {standard.codes.join(', ')}
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
-                <div style={{ border: '1px solid black', padding: '8px', marginTop: '10px', minHeight: '80px' }}>
-                  <strong style={{ fontSize: '9pt' }}>Expectations:</strong>
-                  <div style={{ marginTop: '5px', fontSize: '9pt' }}>{getExpectationForWeek(1)}</div>
-                </div>
-              </div>
-
-              {/* Second Week */}
-              <div style={{ padding: '10px' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '11pt', borderBottom: '1px solid black', marginBottom: '10px', paddingBottom: '4px' }}>
-                  Standard: Second Week
-                </div>
-                {['listeningAndSpeaking', 'foundationalSkills', 'reading', 'writing', 'language'].map(domain => {
-                  const standard = getStandardsForWeek(2).find(s => s.domain === domain);
-                  return (
-                    <div key={domain} style={{ marginBottom: '6px', fontSize: '9pt' }}>
-                      <Checkbox checked={standard?.codes?.length > 0} size={9} />
-                      <strong style={{ marginLeft: '4px' }}>{STANDARD_LABELS[domain][lang]}</strong>
-                      {standard?.codes?.length > 0 && (
-                        <span style={{ marginLeft: '8px', fontFamily: 'monospace', fontSize: '8pt' }}>
-                          {standard.codes.join(', ')}
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
-                <div style={{ border: '1px solid black', padding: '8px', marginTop: '10px', minHeight: '80px' }}>
-                  <strong style={{ fontSize: '9pt' }}>Expectations:</strong>
-                  <div style={{ marginTop: '5px', fontSize: '9pt' }}>{getExpectationForWeek(2)}</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Integration Section */}
-            <div style={{ border: '1px solid black', padding: '10px' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '10pt', marginBottom: '8px' }}>Integration with other subjects:</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '9pt' }}>
-                {['mathematics', 'spanish', 'socialStudies', 'science', 'health', 'art', 'physicalEducation', 'religion'].map(subject => (
-                  <span key={subject} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                    <Checkbox checked={plan.subject_integration?.includes(subject)} size={9} />
-                    <span>{subject.charAt(0).toUpperCase() + subject.slice(1).replace(/([A-Z])/g, ' $1')}</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Signature Section */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', marginTop: '35px' }}>
-              <div style={{ borderTop: '1px solid black', paddingTop: '6px', textAlign: 'center', fontSize: '10pt' }}>
-                Teacher's Signature / Date
-              </div>
-              <div style={{ borderTop: '1px solid black', paddingTop: '6px', textAlign: 'center', fontSize: '10pt' }}>
-                Principal's Signature / Date
-              </div>
-            </div>
-          </div>
+          {/* Page 3 (or 2): Standards */}
+          {renderStandardsPage()}
         </div>
       </div>
     </div>
