@@ -2922,30 +2922,6 @@ async def generate_tts(request: TTSRequest):
 
 # Include modular routers in the api_router
 
-async def check_ai_access(user: dict) -> bool:
-    """Check if user has access to AI features (paid subscription or trial)"""
-    user_id = user.get("user_id")
-    
-    # Check subscription status
-    subscription = await db.subscriptions.find_one({"user_id": user_id, "status": "active"})
-    if subscription:
-        return True
-    
-    # Check if in trial period
-    user_doc = await db.users.find_one({"user_id": user_id})
-    if user_doc:
-        created_at = user_doc.get("created_at", "")
-        if created_at:
-            try:
-                created_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
-                trial_end = created_date + timedelta(days=FREE_TRIAL_DAYS)
-                if datetime.now(timezone.utc) < trial_end:
-                    return True
-            except:
-                pass
-    
-    return False
-
 @api_router.post("/ai/generate")
 async def ai_generate_content(request: AIGenerationRequest, current_user: dict = Depends(get_current_user)):
     """Generate educational content using AI"""
