@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime, timezone, timedelta
 import uuid
 import logging
+import re
 
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
