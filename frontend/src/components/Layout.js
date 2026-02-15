@@ -160,7 +160,12 @@ const Layout = ({ children }) => {
                     <item.icon className="h-4 w-4 text-white" />
                   </div>
                   <span className={isActive ? "text-slate-800" : ""}>{item.label}</span>
-                  {isActive && (
+                  {item.isNew && (
+                    <span className="ml-auto text-[10px] px-1.5 py-0.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-bold">
+                      NEW
+                    </span>
+                  )}
+                  {isActive && !item.isNew && (
                     <ChevronRight 
                       className="h-4 w-4 ml-auto text-slate-400"
                     />
