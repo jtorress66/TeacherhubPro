@@ -731,6 +731,36 @@ async def get_starter_templates():
     } for t in STARTER_TEMPLATES]
 
 
+@router.get("/templates/weekly")
+async def get_template_of_the_week():
+    """Get the Template of the Week - rotates weekly through starter templates"""
+    # Calculate which template to show based on the current week
+    from datetime import datetime
+    
+    # Get week number of the year (1-52)
+    week_number = datetime.now(timezone.utc).isocalendar()[1]
+    
+    # Rotate through templates
+    template_index = week_number % len(STARTER_TEMPLATES)
+    t = STARTER_TEMPLATES[template_index]
+    
+    return {
+        "template_id": t["template_id"],
+        "name": t["name"],
+        "name_es": t.get("name_es", t["name"]),
+        "description": t["description"],
+        "description_es": t.get("description_es", t["description"]),
+        "subject": t["subject"],
+        "grade_level": t["grade_level"],
+        "tags": t["tags"],
+        "customization_tips": t.get("customization_tips", []),
+        "customization_tips_es": t.get("customization_tips_es", []),
+        "days_count": len(t["days"]),
+        "is_starter": True,
+        "week_number": week_number
+    }
+
+
 @router.get("/templates/starters/{template_id}")
 async def get_starter_template(template_id: str):
     """Get a specific starter template with full content"""
