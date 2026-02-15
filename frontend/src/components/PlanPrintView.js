@@ -117,16 +117,18 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           }
           @page { 
             size: 11in 8.5in; 
-            margin: 0.2in 0.25in; 
+            margin: 0.15in 0.2in; 
           }
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { font-family: Arial, sans-serif; }
           .page {
-            width: 100%;
-            height: 8.1in;
+            width: 10.6in;
+            height: 8.2in;
             page-break-after: always;
             page-break-inside: avoid;
-            overflow: hidden;
+            overflow: visible;
+            transform: scale(0.92);
+            transform-origin: top left;
           }
           .page:last-child { page-break-after: avoid; }
           @media print {
