@@ -390,7 +390,7 @@ const Landing = () => {
           </div>
 
           {/* Feature Cards - Animated */}
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {featureShowcase.map((feature, index) => (
               <div 
                 key={index}
@@ -400,8 +400,8 @@ const Landing = () => {
                 <div className="mb-6">
                   {feature.visual}
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">{feature.title}</h3>
-                <p className="text-slate-600">{feature.desc}</p>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">{feature.title}</h3>
+                <p className="text-slate-600 text-sm">{feature.desc}</p>
               </div>
             ))}
           </div>
