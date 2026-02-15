@@ -1289,7 +1289,7 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
         {/* Daily Plan Tabs */}
         <Card className="bg-white border-slate-100">
           <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-4">
                 <CardTitle className="font-heading text-lg">{t('weeklyPlan')}</CardTitle>
                 {/* Week indicator badge */}
@@ -1302,23 +1302,74 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
                   }
                 </div>
               </div>
-              <div className="flex gap-1">
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => setActiveDay(Math.max(0, activeDay - 1))}
-                  disabled={activeDay === 0}
+              <div className="flex items-center gap-2">
+                {/* Generate Full Week Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAIFullWeek}
+                  disabled={aiFullWeekLoading}
+                  className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200 text-purple-700 hover:from-purple-100 hover:to-indigo-100"
+                  data-testid="ai-full-week-btn"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  {aiFullWeekLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      {language === 'es' ? 'Generando semana...' : 'Generating week...'}
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="h-4 w-4 mr-2" />
+                      {language === 'es' ? 'Generar semana completa' : 'Generate Full Week'}
+                    </>
+                  )}
                 </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => setActiveDay(Math.min(4, activeDay + 1))}
-                  disabled={activeDay === 4}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
+                
+                {/* Apply All Button (shown when there are suggestions) */}
+                {Object.keys(aiDaySuggestions).length > 1 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={applyAllSuggestionsToNotes}
+                    className="text-purple-600 border-purple-200 hover:bg-purple-50"
+                    data-testid="apply-all-suggestions-btn"
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    {language === 'es' ? 'Aplicar todo' : 'Apply All'}
+                  </Button>
+                )}
+                
+                {/* Clear All Suggestions */}
+                {Object.keys(aiDaySuggestions).length > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setAiDaySuggestions({})}
+                    className="text-slate-500 hover:text-slate-700"
+                    data-testid="clear-all-suggestions-btn"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+                
+                <div className="flex gap-1 ml-2">
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => setActiveDay(Math.max(0, activeDay - 1))}
+                    disabled={activeDay === 0}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => setActiveDay(Math.min(4, activeDay + 1))}
+                    disabled={activeDay === 4}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           </CardHeader>
