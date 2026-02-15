@@ -196,12 +196,12 @@ const AIAssistant = () => {
         })
       });
 
+      const data = await response.json();
+      
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Chat failed');
+        throw new Error(data.detail || 'Chat failed');
       }
 
-      const data = await response.json();
       setChatMessages(prev => [...prev, { role: 'assistant', content: data.content, created_at: data.created_at }]);
     } catch (error) {
       toast.error(error.message);
