@@ -1271,4 +1271,29 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 ### Technical Debt
 - **Refactor `/app/backend/server.py`**: Partially done (auth, ai routes extracted). Remaining: schools, classes, students, plans, attendance, gradebook, dashboard, subscription, super admin routes.
 
+---
+## Update 2026-02-15 - Markdown Rendering Fix in AI Assistant
+
+### Bug Fixed: AI Generated Content Showing Raw Markdown Symbols
+
+**Issue:** Users reported that AI-generated content displayed raw markdown symbols (`#`, `**`, `---`, etc.) instead of properly formatted text.
+
+**Root Cause:** The `@tailwindcss/typography` plugin was not installed. While `react-markdown` was properly rendering markdown, the `prose` Tailwind classes used to style the rendered HTML had no effect without the typography plugin.
+
+**Fix Applied:**
+1. Installed `@tailwindcss/typography` package: `yarn add @tailwindcss/typography`
+2. Added plugin to `/app/frontend/tailwind.config.js`: `require("@tailwindcss/typography")`
+
+**Result:** All markdown elements now render correctly:
+- Headings (h1, h2, h3) with proper sizing and weight
+- Bold and italic text
+- Bullet and numbered lists
+- Horizontal rules/dividers
+- Code blocks
+- Tables
+
+**Files Modified:**
+- `/app/frontend/package.json` - Added @tailwindcss/typography dependency
+- `/app/frontend/tailwind.config.js` - Added typography plugin
+
 
