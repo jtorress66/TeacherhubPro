@@ -808,6 +808,72 @@ The following issues require user action in production:
 - ~~**Refactor `/app/backend/server.py`**: File is monolithic (3000+ lines) and continues to grow. Should be split into logical modules using FastAPI's `APIRouter`.~~ PARTIALLY DONE - Auth and AI routes extracted.
 
 ---
+## Update 2026-02-15 - AI Templates Feature
+
+### AI Templates - Clone & Customize (NEW FEATURE)
+Added the ability to save successful AI-generated lesson plans as reusable templates.
+
+**Backend Endpoints:** `/app/backend/routes/ai.py`
+- `POST /api/ai/templates` - Save a new template
+- `GET /api/ai/templates` - List user's templates
+- `GET /api/ai/templates/{id}` - Get full template with content
+- `PUT /api/ai/templates/{id}` - Update template
+- `DELETE /api/ai/templates/{id}` - Delete template
+- `POST /api/ai/templates/{id}/customize` - AI-powered customization for new topic
+
+**Frontend UI:** `/app/frontend/src/pages/LessonPlanner.js`
+
+**Features:**
+1. **"Plantillas" Button** - Amber-colored button in planner header opens template browser
+2. **"Guardar plantilla" Button** - Green button appears when AI suggestions exist
+3. **Template Browser Modal**:
+   - Lists all saved templates with metadata (name, subject, grade, days count, use count)
+   - Click to select template and see options
+   - "Apply as-is" - Use template content directly
+   - "Customize" - Enter new topic and AI adapts the template structure
+   - Delete templates
+4. **Save Template Modal**:
+   - Name (required)
+   - Description
+   - Tags (comma-separated)
+   - Preview of what will be saved
+
+**Database Collection:** `ai_templates`
+```json
+{
+  "template_id": "tmpl_abc123",
+  "user_id": "user_xyz",
+  "name": "Fractions Plan - 4th Grade",
+  "description": "Hands-on approach to equivalent fractions",
+  "subject": "math",
+  "grade_level": "4",
+  "original_topic": "Equivalent fractions",
+  "days": { "0": "Day 1 content...", "1": "Day 2 content...", ... },
+  "tags": ["math", "fractions", "hands-on"],
+  "use_count": 5,
+  "is_public": false,
+  "created_at": "...",
+  "updated_at": "..."
+}
+```
+
+**User Flow - Save Template:**
+1. Generate full week plan with AI
+2. Review and approve suggestions
+3. Click "Guardar plantilla" button
+4. Enter name, description, and tags
+5. Save template for future use
+
+**User Flow - Use Template:**
+1. Click "Plantillas" button
+2. Browse saved templates
+3. Select template
+4. Either:
+   - "Apply as-is" to use exact content
+   - Enter new topic and "Adapt" for AI customization
+5. AI suggestions populate the planner
+
+---
 ## Update 2026-02-15 - Generate Full Week Feature
 
 ### Generate Full Week AI Plan (NEW FEATURE)
