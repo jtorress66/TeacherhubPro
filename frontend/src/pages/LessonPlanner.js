@@ -48,6 +48,46 @@ const LessonPlanner = () => {
   const [school, setSchool] = useState(null);
   const [activeWeek, setActiveWeek] = useState(1); // Toggle between Week 1 and Week 2
   
+  // AI Generation state
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [aiGenerating, setAIGenerating] = useState(false);
+  const [aiForm, setAIForm] = useState({
+    subject: '',
+    grade_level: '',
+    topic: '',
+    standards_framework: 'both',
+    difficulty_level: 'medium',
+    duration_minutes: 45
+  });
+  
+  // Subject options for AI
+  const AI_SUBJECTS = [
+    { value: 'math', label: language === 'es' ? 'Matemáticas' : 'Mathematics' },
+    { value: 'ela', label: language === 'es' ? 'Inglés/Lectura' : 'English/Reading' },
+    { value: 'spanish', label: language === 'es' ? 'Español' : 'Spanish' },
+    { value: 'science', label: language === 'es' ? 'Ciencias' : 'Science' },
+    { value: 'social_studies', label: language === 'es' ? 'Estudios Sociales' : 'Social Studies' },
+    { value: 'art', label: language === 'es' ? 'Arte' : 'Art' },
+    { value: 'music', label: language === 'es' ? 'Música' : 'Music' },
+    { value: 'physical_education', label: language === 'es' ? 'Educación Física' : 'Physical Education' }
+  ];
+  
+  const GRADE_LEVELS = [
+    { value: 'K', label: language === 'es' ? 'Kinder' : 'Kindergarten' },
+    { value: '1', label: language === 'es' ? '1er Grado' : '1st Grade' },
+    { value: '2', label: language === 'es' ? '2do Grado' : '2nd Grade' },
+    { value: '3', label: language === 'es' ? '3er Grado' : '3rd Grade' },
+    { value: '4', label: language === 'es' ? '4to Grado' : '4th Grade' },
+    { value: '5', label: language === 'es' ? '5to Grado' : '5th Grade' },
+    { value: '6', label: language === 'es' ? '6to Grado' : '6th Grade' },
+    { value: '7', label: language === 'es' ? '7mo Grado' : '7th Grade' },
+    { value: '8', label: language === 'es' ? '8vo Grado' : '8th Grade' },
+    { value: '9', label: language === 'es' ? '9no Grado' : '9th Grade' },
+    { value: '10', label: language === 'es' ? '10mo Grado' : '10th Grade' },
+    { value: '11', label: language === 'es' ? '11mo Grado' : '11th Grade' },
+    { value: '12', label: language === 'es' ? '12mo Grado' : '12th Grade' }
+  ];
+  
   // Form state
   const [formData, setFormData] = useState({
     class_id: '',
