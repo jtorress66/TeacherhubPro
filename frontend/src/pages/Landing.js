@@ -75,18 +75,40 @@ const Landing = () => {
     <div className="min-h-screen hero-gradient">
       {/* Header */}
       <header className="border-b border-slate-200/50 glass sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-center items-center relative">
-          {/* Centered Logo and Name */}
-          <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+          {/* Left - Logo and Name */}
+          <div className="flex items-center gap-3">
             <img 
               src="https://static.prod-images.emergentagent.com/jobs/3f72aedc-992b-4d25-83bd-5bb47e46011f/images/0f969775d262b8ea24538b15f4cc9cbeaf4a878afa90805ec86f8619b9caac6c.png"
               alt="TeacherHubPro Logo"
-              className="h-32 w-32 object-contain"
+              className="h-14 w-14 object-contain"
             />
-            <span className="text-xl font-heading font-bold text-slate-800">TeacherHubPro</span>
+            <div>
+              <span className="text-2xl font-heading font-bold text-slate-800">TeacherHubPro</span>
+              <div className="text-xs text-green-600 font-medium">
+                {language === 'es' ? 'Personalizado para tu escuela' : 'Customized for YOUR School'}
+              </div>
+            </div>
           </div>
+          
+          {/* Center - Key Benefits */}
+          <div className="hidden lg:flex items-center gap-6">
+            <div className="flex items-center gap-2 text-sm text-slate-600">
+              <Palette className="h-4 w-4 text-green-600" />
+              <span>{language === 'es' ? 'Tu Logo y Colores' : 'Your Logo & Colors'}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-slate-600">
+              <Shield className="h-4 w-4 text-green-600" />
+              <span>{language === 'es' ? '100% Seguro' : '100% Secure'}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-slate-600">
+              <Globe className="h-4 w-4 text-green-600" />
+              <span>{language === 'es' ? 'Bilingüe' : 'Bilingual'}</span>
+            </div>
+          </div>
+          
           {/* Right side buttons */}
-          <div className="absolute right-6 flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <Link to="/pricing">
               <Button
                 variant="ghost"
@@ -107,9 +129,31 @@ const Landing = () => {
               <Globe className="h-4 w-4" />
               {language === 'es' ? 'EN' : 'ES'}
             </Button>
+            <Button
+              size="sm"
+              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            >
+              {language === 'es' ? 'Comenzar' : 'Get Started'}
+            </Button>
           </div>
         </div>
       </header>
+
+      {/* Hero Banner - School Customization Highlight */}
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white py-2">
+        <div className="max-w-7xl mx-auto px-6 flex justify-center items-center gap-3 text-sm">
+          <Sparkles className="h-4 w-4" />
+          <span className="font-medium">
+            {language === 'es' 
+              ? '¡Personaliza TeacherHubPro con el logo, colores y formato de TU escuela!' 
+              : 'Customize TeacherHubPro with YOUR school\'s logo, colors, and format!'}
+          </span>
+          <Link to="/pricing" className="underline font-semibold hover:text-green-100">
+            {language === 'es' ? 'Ver más →' : 'Learn more →'}
+          </Link>
+        </div>
+      </div>
 
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-6 py-16 md:py-24">
