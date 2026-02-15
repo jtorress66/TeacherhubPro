@@ -562,6 +562,18 @@ STARTER_TEMPLATES = [
         "grade_level": "2-6",
         "tags": ["writing", "process", "workshop", "literacy"],
         "is_starter": True,
+        "customization_tips": [
+            "Choose a genre that aligns with your current standards (narrative, opinion, informational)",
+            "Use mentor texts from authors students love as examples",
+            "Publish digitally with tools like Book Creator or Google Slides",
+            "Invite parents or another class to the Author's Celebration"
+        ],
+        "customization_tips_es": [
+            "Elige un género que se alinee con tus estándares actuales (narrativo, opinión, informativo)",
+            "Usa textos modelo de autores que les gustan a los estudiantes como ejemplos",
+            "Publica digitalmente con herramientas como Book Creator o Google Slides",
+            "Invita a los padres u otra clase a la Celebración de Autores"
+        ],
         "days": {
             "0": """🎯 **Day 1 - Prewriting & Brainstorming**
 
