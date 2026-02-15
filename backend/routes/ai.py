@@ -483,6 +483,18 @@ STARTER_TEMPLATES = [
         "grade_level": "3-6",
         "tags": ["science", "experiments", "inquiry", "STEM"],
         "is_starter": True,
+        "customization_tips": [
+            "Replace experiments with ones that connect to your current science unit",
+            "Feature scientists from diverse backgrounds (especially Latino scientists!)",
+            "Turn Day 4 into a mini science fair with student presentations",
+            "Connect to real-world issues students care about (environment, animals)"
+        ],
+        "customization_tips_es": [
+            "Reemplaza los experimentos con unos que conecten con tu unidad de ciencias actual",
+            "Destaca científicos de diversos orígenes (¡especialmente científicos latinos!)",
+            "Convierte el Día 4 en una mini feria de ciencias con presentaciones estudiantiles",
+            "Conecta con problemas del mundo real que les importan a los estudiantes (ambiente, animales)"
+        ],
         "days": {
             "0": """🎯 **Day 1 - What is Science?**
 
@@ -492,6 +504,7 @@ STARTER_TEMPLATES = [
 3. **Scientific Method Introduction** (20 min): Introduce the steps with a simple demonstration (melting ice).
 
 📚 **Materials:** Ice cubes, timer, scientific method poster, scientist profiles
+
 
 ✅ **Success Criteria:** Students can name the steps of the scientific method""",
             
