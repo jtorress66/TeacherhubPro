@@ -42,7 +42,7 @@ const STANDARD_LABELS = {
   language: { en: 'Language', es: 'Lenguaje' }
 };
 
-// Checkbox component matching paper format
+// Checkbox component
 const Checkbox = ({ checked }) => (
   <span style={{
     display: 'inline-block',
@@ -118,6 +118,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             page-break-inside: avoid;
           }
           .print-page:last-child { page-break-after: avoid; }
+          .preview-wrapper { display: contents; }
           table { border-collapse: collapse; width: 100%; }
           td, th { border: 1px solid black; padding: 3px 4px; vertical-align: top; }
           @media print {
@@ -139,7 +140,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     }, 250);
   };
 
-  // Header matching the reference exactly
+  // Header
   const Header = () => (
     <div style={{ textAlign: 'center', marginBottom: '8px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', marginBottom: '5px' }}>
@@ -160,12 +161,12 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     </div>
   );
 
-  // Week Daily Plan Page - matching reference layout exactly
-  const renderWeekPage = (days, weekNum, weekStart, weekEnd, objective, skills) => (
-    <div className="print-page" style={{ fontSize: '9pt' }}>
+  // Week Daily Plan Content
+  const WeekPageContent = ({ days, weekNum, weekStart, weekEnd, objective, skills }) => (
+    <>
       <Header />
       
-      {/* Info Box - Two columns like reference */}
+      {/* Info Box */}
       <table style={{ marginBottom: '8px' }}>
         <tbody>
           <tr>
@@ -218,7 +219,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         </tbody>
       </table>
 
-      {/* Main Daily Table - Full width like reference */}
+      {/* Main Table */}
       <table style={{ fontSize: '8pt' }}>
         <thead>
           <tr style={{ background: '#f5f5f5' }}>
@@ -236,15 +237,12 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           </tr>
         </thead>
         <tbody>
-          {/* Day Theme */}
           <tr>
             <td style={{ fontWeight: 'bold', padding: '5px', fontSize: '9pt' }}>Day Theme</td>
             {days.map((day, i) => (
               <td key={i} style={{ textAlign: 'center', padding: '5px', fontSize: '9pt' }}>{day.theme || ''}</td>
             ))}
           </tr>
-          
-          {/* DOK Levels */}
           <tr>
             <td style={{ fontWeight: 'bold', padding: '5px', fontSize: '8pt' }}>
               Type of Taxonomy:<br/>Webb (2005) Levels
@@ -258,8 +256,6 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
               </td>
             ))}
           </tr>
-
-          {/* Activities */}
           <tr>
             <td style={{ fontWeight: 'bold', padding: '5px', fontSize: '9pt' }}>Activities</td>
             {days.map((day, i) => (
@@ -278,8 +274,6 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
               </td>
             ))}
           </tr>
-
-          {/* Materials */}
           <tr>
             <td style={{ fontWeight: 'bold', padding: '5px', fontSize: '9pt' }}>Materials</td>
             {days.map((day, i) => (
@@ -295,12 +289,12 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           </tr>
         </tbody>
       </table>
-    </div>
+    </>
   );
 
-  // Standards Page - Compact to fit on ONE page
-  const renderStandardsPage = () => (
-    <div className="print-page" style={{ fontSize: '9pt' }}>
+  // Standards Page Content
+  const StandardsPageContent = () => (
+    <>
       <Header />
       
       {/* Unit Info */}
@@ -402,7 +396,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           Principal's Signature / Date
         </div>
       </div>
-    </div>
+    </>
   );
 
   return (
@@ -424,38 +418,44 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           </div>
         </div>
 
-        {/* Print Content - Preview styled like actual pages */}
+        {/* Print Content - This is what gets printed */}
         <div ref={printRef} style={{ fontFamily: 'Arial, sans-serif', padding: '20px', background: '#e5e5e5' }}>
           
-          {/* Page 1: Week 1 Daily Plan */}
-          <div style={{ background: 'white', padding: '20px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', aspectRatio: '11/8.5' }}>
-            {renderWeekPage(
-              planDays, 
-              1, 
-              plan.week_start, 
-              plan.week_end, 
-              plan.objective, 
-              plan.skills
-            )}
+          {/* Page 1: Week 1 */}
+          <div className="preview-wrapper" style={{ background: 'white', padding: '20px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+            <div className="print-page" style={{ fontSize: '9pt' }}>
+              <WeekPageContent 
+                days={planDays}
+                weekNum={1}
+                weekStart={plan.week_start}
+                weekEnd={plan.week_end}
+                objective={plan.objective}
+                skills={plan.skills}
+              />
+            </div>
           </div>
 
-          {/* Page 2: Week 2 Daily Plan (if exists) */}
+          {/* Page 2: Week 2 (if exists) */}
           {(plan.week2_start || plan.week2_end) && (
-            <div style={{ background: 'white', padding: '20px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', aspectRatio: '11/8.5' }}>
-              {renderWeekPage(
-                planDaysWeek2, 
-                2, 
-                plan.week2_start, 
-                plan.week2_end, 
-                plan.objective_week2 || plan.objective, 
-                (plan.skills_week2 && plan.skills_week2.some(s => s)) ? plan.skills_week2 : plan.skills
-              )}
+            <div className="preview-wrapper" style={{ background: 'white', padding: '20px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+              <div className="print-page" style={{ fontSize: '9pt' }}>
+                <WeekPageContent 
+                  days={planDaysWeek2}
+                  weekNum={2}
+                  weekStart={plan.week2_start}
+                  weekEnd={plan.week2_end}
+                  objective={plan.objective_week2 || plan.objective}
+                  skills={(plan.skills_week2 && plan.skills_week2.some(s => s)) ? plan.skills_week2 : plan.skills}
+                />
+              </div>
             </div>
           )}
 
           {/* Page 3: Standards */}
-          <div style={{ background: 'white', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', aspectRatio: '11/8.5' }}>
-            {renderStandardsPage()}
+          <div className="preview-wrapper" style={{ background: 'white', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+            <div className="print-page" style={{ fontSize: '9pt' }}>
+              <StandardsPageContent />
+            </div>
           </div>
         </div>
       </div>
