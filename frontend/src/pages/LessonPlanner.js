@@ -1285,18 +1285,42 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
 
         {/* Templates Browser Modal */}
         <Dialog open={showTemplatesModal} onOpenChange={setShowTemplatesModal}>
-          <DialogContent className="sm:max-w-2xl max-h-[80vh]">
+          <DialogContent className="sm:max-w-2xl max-h-[85vh]">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Layers className="h-5 w-5 text-amber-600" />
-                {language === 'es' ? 'Mis Plantillas de IA' : 'My AI Templates'}
+                {language === 'es' ? 'Plantillas de Lecciones' : 'Lesson Templates'}
               </DialogTitle>
               <DialogDescription>
                 {language === 'es' 
-                  ? 'Reutiliza planes de lección exitosos con nuevos temas' 
-                  : 'Reuse successful lesson plans with new topics'}
+                  ? 'Usa plantillas probadas o guarda tus propios planes exitosos' 
+                  : 'Use proven templates or save your own successful plans'}
               </DialogDescription>
             </DialogHeader>
+            
+            {/* Tabs */}
+            <div className="flex gap-2 border-b border-slate-200 pb-3">
+              <Button
+                variant={templateTab === 'starters' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setTemplateTab('starters')}
+                className={templateTab === 'starters' ? 'bg-amber-600 hover:bg-amber-700' : ''}
+              >
+                <Star className="h-4 w-4 mr-2" />
+                {language === 'es' ? 'Plantillas Iniciales' : 'Starter Templates'}
+                <Badge variant="secondary" className="ml-2 text-xs">{starterTemplates.length}</Badge>
+              </Button>
+              <Button
+                variant={templateTab === 'my' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setTemplateTab('my')}
+                className={templateTab === 'my' ? 'bg-slate-800 hover:bg-slate-900' : ''}
+              >
+                <FolderOpen className="h-4 w-4 mr-2" />
+                {language === 'es' ? 'Mis Plantillas' : 'My Templates'}
+                <Badge variant="secondary" className="ml-2 text-xs">{templates.length}</Badge>
+              </Button>
+            </div>
             
             <ScrollArea className="h-[400px] pr-4">
               {templatesLoading ? (
@@ -1305,131 +1329,255 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
                   <Skeleton className="h-24 w-full" />
                   <Skeleton className="h-24 w-full" />
                 </div>
-              ) : templates.length === 0 ? (
-                <div className="text-center py-12 text-slate-500">
-                  <Layers className="h-12 w-12 mx-auto mb-4 opacity-30" />
-                  <p className="font-medium">
-                    {language === 'es' ? 'No tienes plantillas guardadas' : 'No saved templates'}
-                  </p>
-                  <p className="text-sm mt-1">
-                    {language === 'es' 
-                      ? 'Genera un plan semanal con IA y guárdalo como plantilla' 
-                      : 'Generate a weekly plan with AI and save it as a template'}
-                  </p>
-                </div>
-              ) : (
+              ) : templateTab === 'starters' ? (
+                /* Starter Templates */
                 <div className="space-y-3">
-                  {templates.map(template => (
-                    <div 
-                      key={template.template_id}
-                      className={`p-4 rounded-lg border transition-all ${
-                        selectedTemplate?.template_id === template.template_id
-                          ? 'border-amber-400 bg-amber-50'
-                          : 'border-slate-200 hover:border-slate-300 bg-white'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div 
-                          className="flex-1 cursor-pointer"
-                          onClick={() => setSelectedTemplate(
-                            selectedTemplate?.template_id === template.template_id ? null : template
-                          )}
-                        >
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-medium text-slate-800">{template.name}</h4>
-                            <Badge variant="outline" className="text-xs">
-                              {template.days_count} {language === 'es' ? 'días' : 'days'}
-                            </Badge>
-                          </div>
-                          {template.description && (
-                            <p className="text-sm text-slate-500 mt-1">{template.description}</p>
-                          )}
-                          <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
-                            {template.subject && (
+                  {starterTemplates.length === 0 ? (
+                    <div className="text-center py-12 text-slate-500">
+                      <Loader2 className="h-8 w-8 mx-auto mb-4 animate-spin" />
+                      <p>{language === 'es' ? 'Cargando plantillas...' : 'Loading templates...'}</p>
+                    </div>
+                  ) : (
+                    starterTemplates.map(template => (
+                      <div 
+                        key={template.template_id}
+                        className={`p-4 rounded-lg border transition-all ${
+                          selectedTemplate?.template_id === template.template_id
+                            ? 'border-amber-400 bg-amber-50'
+                            : 'border-slate-200 hover:border-amber-300 bg-gradient-to-r from-amber-50/50 to-white'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div 
+                            className="flex-1 cursor-pointer"
+                            onClick={() => setSelectedTemplate(
+                              selectedTemplate?.template_id === template.template_id ? null : {...template, is_starter: true}
+                            )}
+                          >
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h4 className="font-medium text-slate-800">
+                                {language === 'es' && template.name_es ? template.name_es : template.name}
+                              </h4>
+                              <Badge className="bg-amber-100 text-amber-800 text-xs">
+                                <Star className="h-3 w-3 mr-1" />
+                                {language === 'es' ? 'Inicial' : 'Starter'}
+                              </Badge>
+                              <Badge variant="outline" className="text-xs">
+                                {template.days_count} {language === 'es' ? 'días' : 'days'}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-slate-500 mt-1">
+                              {language === 'es' && template.description_es ? template.description_es : template.description}
+                            </p>
+                            <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
                               <span className="flex items-center gap-1">
                                 <BookOpen className="h-3 w-3" />
-                                {template.subject}
+                                {template.subject === 'math' ? (language === 'es' ? 'Matemáticas' : 'Math') :
+                                 template.subject === 'ela' ? (language === 'es' ? 'Lectura/Escritura' : 'ELA') :
+                                 template.subject === 'science' ? (language === 'es' ? 'Ciencias' : 'Science') :
+                                 template.subject}
                               </span>
-                            )}
-                            {template.grade_level && (
-                              <span>{language === 'es' ? 'Grado' : 'Grade'} {template.grade_level}</span>
-                            )}
-                            <span className="flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              {new Date(template.created_at).toLocaleDateString()}
-                            </span>
-                            {template.use_count > 0 && (
-                              <span>{template.use_count}x {language === 'es' ? 'usado' : 'used'}</span>
+                              <span>{language === 'es' ? 'Grados' : 'Grades'} {template.grade_level}</span>
+                            </div>
+                            {template.tags && template.tags.length > 0 && (
+                              <div className="flex gap-1 mt-2 flex-wrap">
+                                {template.tags.slice(0, 4).map(tag => (
+                                  <Badge key={tag} variant="outline" className="text-xs bg-white">
+                                    {tag}
+                                  </Badge>
+                                ))}
+                              </div>
                             )}
                           </div>
-                          {template.original_topic && (
-                            <p className="text-xs text-slate-400 mt-1 italic">
-                              {language === 'es' ? 'Tema original:' : 'Original topic:'} {template.original_topic}
-                            </p>
-                          )}
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-slate-400 hover:text-red-500"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteTemplate(template.template_id);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      
-                      {/* Customization panel when selected */}
-                      {selectedTemplate?.template_id === template.template_id && (
-                        <div className="mt-4 pt-4 border-t border-amber-200 space-y-3">
-                          <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleApplyTemplate(template)}
-                              className="flex-1"
-                            >
-                              <Copy className="h-4 w-4 mr-2" />
-                              {language === 'es' ? 'Aplicar tal cual' : 'Apply as-is'}
-                            </Button>
-                          </div>
-                          <div className="space-y-2">
-                            <Label className="text-xs">
-                              {language === 'es' ? 'O personalizar para nuevo tema:' : 'Or customize for new topic:'}
-                            </Label>
+                        
+                        {/* Customization panel when selected */}
+                        {selectedTemplate?.template_id === template.template_id && (
+                          <div className="mt-4 pt-4 border-t border-amber-200 space-y-3">
                             <div className="flex gap-2">
-                              <Input
-                                id={`customize-topic-${template.template_id}`}
-                                placeholder={language === 'es' ? 'Ej: Multiplicación de decimales' : 'E.g., Decimal multiplication'}
-                                className="flex-1"
-                              />
                               <Button
+                                variant="outline"
                                 size="sm"
-                                onClick={() => {
-                                  const input = document.getElementById(`customize-topic-${template.template_id}`);
-                                  handleCustomizeTemplate(input?.value || '');
-                                }}
-                                disabled={customizeLoading}
-                                className="bg-amber-600 hover:bg-amber-700"
+                                onClick={() => handleApplyTemplate({...template, is_starter: true})}
+                                className="flex-1"
                               >
-                                {customizeLoading ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <>
-                                    <Wand2 className="h-4 w-4 mr-1" />
-                                    {language === 'es' ? 'Adaptar' : 'Adapt'}
-                                  </>
-                                )}
+                                <Copy className="h-4 w-4 mr-2" />
+                                {language === 'es' ? 'Usar esta plantilla' : 'Use this template'}
                               </Button>
                             </div>
+                            <div className="space-y-2">
+                              <Label className="text-xs">
+                                {language === 'es' ? 'O adaptar para tu tema específico:' : 'Or adapt for your specific topic:'}
+                              </Label>
+                              <div className="flex gap-2">
+                                <Input
+                                  id={`customize-topic-${template.template_id}`}
+                                  placeholder={language === 'es' ? 'Ej: Fracciones con denominadores diferentes' : 'E.g., Fractions with different denominators'}
+                                  className="flex-1"
+                                />
+                                <Button
+                                  size="sm"
+                                  onClick={() => {
+                                    const input = document.getElementById(`customize-topic-${template.template_id}`);
+                                    handleCustomizeTemplate(input?.value || '');
+                                  }}
+                                  disabled={customizeLoading}
+                                  className="bg-amber-600 hover:bg-amber-700"
+                                >
+                                  {customizeLoading ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <>
+                                      <Wand2 className="h-4 w-4 mr-1" />
+                                      {language === 'es' ? 'Adaptar con IA' : 'Adapt with AI'}
+                                    </>
+                                  )}
+                                </Button>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                        )}
+                      </div>
+                    ))
+                  )}
                 </div>
+              ) : (
+                /* My Templates */
+                templates.length === 0 ? (
+                  <div className="text-center py-12 text-slate-500">
+                    <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                    <p className="font-medium">
+                      {language === 'es' ? 'No tienes plantillas guardadas' : 'No saved templates'}
+                    </p>
+                    <p className="text-sm mt-1">
+                      {language === 'es' 
+                        ? 'Genera un plan semanal con IA y guárdalo como plantilla' 
+                        : 'Generate a weekly plan with AI and save it as a template'}
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-4"
+                      onClick={() => setTemplateTab('starters')}
+                    >
+                      <Star className="h-4 w-4 mr-2" />
+                      {language === 'es' ? 'Ver plantillas iniciales' : 'View starter templates'}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {templates.map(template => (
+                      <div 
+                        key={template.template_id}
+                        className={`p-4 rounded-lg border transition-all ${
+                          selectedTemplate?.template_id === template.template_id
+                            ? 'border-slate-400 bg-slate-50'
+                            : 'border-slate-200 hover:border-slate-300 bg-white'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div 
+                            className="flex-1 cursor-pointer"
+                            onClick={() => setSelectedTemplate(
+                              selectedTemplate?.template_id === template.template_id ? null : template
+                            )}
+                          >
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-medium text-slate-800">{template.name}</h4>
+                              <Badge variant="outline" className="text-xs">
+                                {template.days_count} {language === 'es' ? 'días' : 'days'}
+                              </Badge>
+                            </div>
+                            {template.description && (
+                              <p className="text-sm text-slate-500 mt-1">{template.description}</p>
+                            )}
+                            <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+                              {template.subject && (
+                                <span className="flex items-center gap-1">
+                                  <BookOpen className="h-3 w-3" />
+                                  {template.subject}
+                                </span>
+                              )}
+                              {template.grade_level && (
+                                <span>{language === 'es' ? 'Grado' : 'Grade'} {template.grade_level}</span>
+                              )}
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                {new Date(template.created_at).toLocaleDateString()}
+                              </span>
+                              {template.use_count > 0 && (
+                                <span>{template.use_count}x {language === 'es' ? 'usado' : 'used'}</span>
+                              )}
+                            </div>
+                            {template.original_topic && (
+                              <p className="text-xs text-slate-400 mt-1 italic">
+                                {language === 'es' ? 'Tema original:' : 'Original topic:'} {template.original_topic}
+                              </p>
+                            )}
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-slate-400 hover:text-red-500"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteTemplate(template.template_id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        
+                        {/* Customization panel when selected */}
+                        {selectedTemplate?.template_id === template.template_id && (
+                          <div className="mt-4 pt-4 border-t border-slate-200 space-y-3">
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleApplyTemplate(template)}
+                                className="flex-1"
+                              >
+                                <Copy className="h-4 w-4 mr-2" />
+                                {language === 'es' ? 'Aplicar tal cual' : 'Apply as-is'}
+                              </Button>
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-xs">
+                                {language === 'es' ? 'O personalizar para nuevo tema:' : 'Or customize for new topic:'}
+                              </Label>
+                              <div className="flex gap-2">
+                                <Input
+                                  id={`customize-topic-${template.template_id}`}
+                                  placeholder={language === 'es' ? 'Ej: Multiplicación de decimales' : 'E.g., Decimal multiplication'}
+                                  className="flex-1"
+                                />
+                                <Button
+                                  size="sm"
+                                  onClick={() => {
+                                    const input = document.getElementById(`customize-topic-${template.template_id}`);
+                                    handleCustomizeTemplate(input?.value || '');
+                                  }}
+                                  disabled={customizeLoading}
+                                  className="bg-slate-700 hover:bg-slate-800"
+                                >
+                                  {customizeLoading ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <>
+                                      <Wand2 className="h-4 w-4 mr-1" />
+                                      {language === 'es' ? 'Adaptar' : 'Adapt'}
+                                    </>
+                                  )}
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )
               )}
             </ScrollArea>
             
