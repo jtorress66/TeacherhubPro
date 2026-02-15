@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
 import Layout from '../components/Layout';
 import ReactMarkdown from 'react-markdown';
 import { Button } from '../components/ui/button';
