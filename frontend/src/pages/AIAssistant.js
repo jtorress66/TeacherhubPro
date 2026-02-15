@@ -826,6 +826,13 @@ const AIAssistant = () => {
                         className="flex items-start gap-4 p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
                         onClick={() => {
                           setGeneratedContent(gen.content);
+                          setGenForm(prev => ({
+                            ...prev,
+                            tool_type: gen.tool_type,
+                            subject: gen.subject,
+                            grade_level: gen.grade_level,
+                            topic: gen.topic
+                          }));
                           setActiveTab('generate');
                         }}
                       >
@@ -841,9 +848,33 @@ const AIAssistant = () => {
                             {new Date(gen.created_at).toLocaleDateString()}
                           </div>
                         </div>
-                        <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); copyToClipboard(gen.content); }}>
-                          <Copy className="h-4 w-4" />
-                        </Button>
+                        <div className="flex gap-1">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={(e) => { e.stopPropagation(); copyToClipboard(gen.content); }}
+                            title={language === 'es' ? 'Copiar' : 'Copy'}
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              handlePrint(gen.content, {
+                                tool_type: gen.tool_type,
+                                subject: gen.subject,
+                                grade_level: gen.grade_level,
+                                topic: gen.topic
+                              }); 
+                            }}
+                            title={language === 'es' ? 'Imprimir / PDF' : 'Print / PDF'}
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                          >
+                            <Printer className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     );
                   })}
