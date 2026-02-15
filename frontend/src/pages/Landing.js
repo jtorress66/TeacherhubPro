@@ -534,7 +534,7 @@ const Landing = () => {
       </section>
 
       {/* AI Features Showcase - Detailed */}
-      <section className="py-24 px-6 bg-white">
+      <section id="ai-features" className="py-24 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 text-sm font-medium mb-4">
