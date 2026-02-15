@@ -2920,7 +2920,7 @@ async def generate_tts(request: TTSRequest):
 # ==================== AI ENDPOINTS MOVED TO routes/ai.py ====================
 # The AI Teaching Assistant endpoints have been refactored to routes/ai.py
 
-# System prompts for different tools
+# Include modular routers in the api_router
 AI_SYSTEM_PROMPTS = {
     "lesson_plan": """You are an expert educational curriculum designer. Generate comprehensive, standards-aligned lesson plans.
 
