@@ -209,6 +209,9 @@ const AppRouter = () => {
       <Route path="/settings" element={
         <ProtectedRoute requireSubscription={false}><Settings /></ProtectedRoute>
       } />
+      <Route path="/ai-assistant" element={
+        <ProtectedRoute><AIAssistant /></ProtectedRoute>
+      } />
       <Route path="/admin" element={
         <ProtectedRoute requireSubscription={false}><AdminPanel /></ProtectedRoute>
       } />
