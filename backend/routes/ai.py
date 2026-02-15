@@ -404,6 +404,18 @@ STARTER_TEMPLATES = [
         "grade_level": "2-5",
         "tags": ["reading", "comprehension", "strategies", "literacy"],
         "is_starter": True,
+        "customization_tips": [
+            "Choose texts that match your current theme or student interests",
+            "Create strategy bookmarks students can use independently",
+            "Pair with a class novel for deeper application",
+            "Add a 'Strategy Detective' badge for students who catch themselves using strategies"
+        ],
+        "customization_tips_es": [
+            "Elige textos que coincidan con tu tema actual o intereses de los estudiantes",
+            "Crea marcadores de estrategias que los estudiantes puedan usar de forma independiente",
+            "Combina con una novela de clase para una aplicación más profunda",
+            "Agrega una insignia de 'Detective de Estrategias' para estudiantes que se encuentren usando estrategias"
+        ],
         "days": {
             "0": """🎯 **Day 1 - Predicting**
 
