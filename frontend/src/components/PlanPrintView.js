@@ -424,30 +424,39 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           </div>
         </div>
 
-        {/* Print Content - Preview */}
-        <div ref={printRef} style={{ fontFamily: 'Arial, sans-serif', padding: '15px', background: 'white' }}>
+        {/* Print Content - Preview styled like actual pages */}
+        <div ref={printRef} style={{ fontFamily: 'Arial, sans-serif', padding: '20px', background: '#e5e5e5' }}>
           
           {/* Page 1: Week 1 Daily Plan */}
-          {renderWeekPage(
-            planDays, 
-            1, 
-            plan.week_start, 
-            plan.week_end, 
-            plan.objective, 
-            plan.skills
-          )}
+          <div style={{ background: 'white', padding: '20px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', aspectRatio: '11/8.5' }}>
+            {renderWeekPage(
+              planDays, 
+              1, 
+              plan.week_start, 
+              plan.week_end, 
+              plan.objective, 
+              plan.skills
+            )}
+          </div>
 
           {/* Page 2: Week 2 Daily Plan (if exists) */}
-          {(plan.week2_start || plan.week2_end) && renderWeekPage(
-            planDaysWeek2, 
-            2, 
-            plan.week2_start, 
-            plan.week2_end, 
-            plan.objective_week2 || plan.objective, 
-            (plan.skills_week2 && plan.skills_week2.some(s => s)) ? plan.skills_week2 : plan.skills
+          {(plan.week2_start || plan.week2_end) && (
+            <div style={{ background: 'white', padding: '20px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', aspectRatio: '11/8.5' }}>
+              {renderWeekPage(
+                planDaysWeek2, 
+                2, 
+                plan.week2_start, 
+                plan.week2_end, 
+                plan.objective_week2 || plan.objective, 
+                (plan.skills_week2 && plan.skills_week2.some(s => s)) ? plan.skills_week2 : plan.skills
+              )}
+            </div>
           )}
 
           {/* Page 3: Standards */}
+          <div style={{ background: 'white', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', aspectRatio: '11/8.5' }}>
+            {renderStandardsPage()}
+          </div>
           {renderStandardsPage()}
         </div>
       </div>
