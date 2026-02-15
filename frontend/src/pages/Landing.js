@@ -192,6 +192,9 @@ const Landing = () => {
             <Link to="/pricing" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">
               {language === 'es' ? 'Precios' : 'Pricing'}
             </Link>
+            <a href="#get-started" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">
+              {language === 'es' ? 'Iniciar sesión' : 'Log in'}
+            </a>
           </div>
           
           <div className="flex items-center gap-3">
