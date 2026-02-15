@@ -40,12 +40,17 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [runTour, setRunTour] = useState(false);
   const [runVideoGuide, setRunVideoGuide] = useState(false);
+  const [templateOfWeek, setTemplateOfWeek] = useState(null);
 
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const response = await axios.get(`${API}/dashboard`, { withCredentials: true });
-        setDashboardData(response.data);
+        const [dashResponse, templateResponse] = await Promise.all([
+          axios.get(`${API}/dashboard`, { withCredentials: true }),
+          axios.get(`${API}/ai/templates/weekly`)
+        ]);
+        setDashboardData(dashResponse.data);
+        setTemplateOfWeek(templateResponse.data);
       } catch (error) {
         console.error('Dashboard fetch error:', error);
       } finally {
