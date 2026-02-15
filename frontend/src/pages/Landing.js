@@ -385,6 +385,98 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* School Customization Section */}
+      <section className="py-16 bg-gradient-to-b from-white to-green-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-medium mb-4">
+              <Building2 className="h-4 w-4" />
+              {language === 'es' ? 'Personalización Escolar' : 'School Customization'}
+            </div>
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-slate-800 mb-4">
+              {language === 'es' 
+                ? 'Tu Escuela, Tu Marca, Tu Plataforma' 
+                : 'Your School, Your Brand, Your Platform'}
+            </h2>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              {language === 'es'
+                ? 'TeacherHubPro se adapta completamente a la identidad de tu institución. Cada escuela obtiene su propia experiencia personalizada.'
+                : 'TeacherHubPro fully adapts to your institution\'s identity. Every school gets their own customized experience.'}
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Custom Branding */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-xl transition-shadow">
+              <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-6">
+                <Palette className="h-7 w-7 text-green-600" />
+              </div>
+              <h3 className="text-xl font-heading font-bold text-slate-800 mb-3">
+                {language === 'es' ? 'Tu Logo y Colores' : 'Your Logo & Colors'}
+              </h3>
+              <p className="text-slate-600">
+                {language === 'es'
+                  ? 'Muestra el logo de tu escuela en todos los documentos y exportaciones PDF. Personaliza los colores para que coincidan con la identidad de tu institución.'
+                  : 'Display your school logo on all documents and PDF exports. Customize colors to match your institution\'s identity.'}
+              </p>
+            </div>
+
+            {/* Custom Templates */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-xl transition-shadow">
+              <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-6">
+                <ClipboardList className="h-7 w-7 text-green-600" />
+              </div>
+              <h3 className="text-xl font-heading font-bold text-slate-800 mb-3">
+                {language === 'es' ? 'Formatos Personalizados' : 'Custom Formats'}
+              </h3>
+              <p className="text-slate-600">
+                {language === 'es'
+                  ? 'Los PDFs de planificación se generan con el formato exacto de tu escuela. Sin adaptaciones manuales - todo listo para imprimir.'
+                  : 'Lesson plan PDFs are generated with your school\'s exact format. No manual adjustments - everything ready to print.'}
+              </p>
+            </div>
+
+            {/* Multi-School Management */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-xl transition-shadow">
+              <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-6">
+                <Users className="h-7 w-7 text-green-600" />
+              </div>
+              <h3 className="text-xl font-heading font-bold text-slate-800 mb-3">
+                {language === 'es' ? 'Panel de Administración' : 'Admin Dashboard'}
+              </h3>
+              <p className="text-slate-600">
+                {language === 'es'
+                  ? 'Administra todos los maestros, clases y configuraciones desde un panel centralizado. Perfecto para coordinadores y directores.'
+                  : 'Manage all teachers, classes, and settings from a centralized dashboard. Perfect for coordinators and principals.'}
+              </p>
+            </div>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="mt-12 flex flex-wrap justify-center gap-8 items-center">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600">100%</div>
+              <div className="text-sm text-slate-500">{language === 'es' ? 'Personalizable' : 'Customizable'}</div>
+            </div>
+            <div className="w-px h-12 bg-slate-200 hidden sm:block"></div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600">EN/ES</div>
+              <div className="text-sm text-slate-500">{language === 'es' ? 'Bilingüe' : 'Bilingual'}</div>
+            </div>
+            <div className="w-px h-12 bg-slate-200 hidden sm:block"></div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600">24/7</div>
+              <div className="text-sm text-slate-500">{language === 'es' ? 'Acceso' : 'Access'}</div>
+            </div>
+            <div className="w-px h-12 bg-slate-200 hidden sm:block"></div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600">PDF</div>
+              <div className="text-sm text-slate-500">{language === 'es' ? 'Exportación' : 'Export'}</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900"></div>
