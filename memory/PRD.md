@@ -808,6 +808,62 @@ The following issues require user action in production:
 - ~~**Refactor `/app/backend/server.py`**: File is monolithic (3000+ lines) and continues to grow. Should be split into logical modules using FastAPI's `APIRouter`.~~ PARTIALLY DONE - Auth and AI routes extracted.
 
 ---
+## Update 2026-02-15 - Landing Page AI Features Showcase
+
+### New AI Features Section on Landing Page
+Added comprehensive showcase of all AI features on the landing page.
+
+**Location:** `/app/frontend/src/pages/Landing.js`
+
+**Navigation Update:**
+- Added "IA Avanzada" / "Advanced AI" link to header navigation
+- Links to new `#ai-features` section
+
+**New Section: "Planificación inteligente con IA"**
+Title, subtitle, and 6 feature cards showcasing all AI capabilities:
+
+1. **Genera Semana Completa** (Generate Full Week)
+   - Purple gradient card
+   - Describes 5-day generation with pedagogical progression
+   - Tags: 5 días, Progresión
+
+2. **Sugerencias por Día** (Daily Suggestions)
+   - Blue gradient card
+   - Explains phase-based daily suggestions
+   - Tags: Lunes → Viernes, Contextual
+
+3. **Plantillas Reutilizables** (Reusable Templates)
+   - Amber gradient card
+   - Save and clone functionality
+   - Tags: Guardar, Clonar
+
+4. **5 Plantillas Iniciales** (5 Starter Templates)
+   - Green gradient card
+   - Lists available subjects
+   - Tags: Matemáticas, Lectura, Ciencias
+
+5. **Adapta con IA** (AI Customize)
+   - Pink gradient card
+   - Template adaptation feature
+   - Tags: Nuevo tema, Misma estructura
+
+6. **Plantilla de la Semana** (Template of the Week)
+   - Violet gradient card
+   - Weekly dashboard spotlight
+   - Tags: Rotación semanal, Tips
+
+**CTA Button:**
+- "Prueba la IA gratis por 7 días" / "Try AI free for 7 days"
+- Purple-to-blue gradient styling
+
+**Design:**
+- Each card has hover effects (scale, shadow, border color change)
+- Color-coded gradient backgrounds matching feature theme
+- Consistent icon styling with white on gradient backgrounds
+- Tags for quick feature scanning
+- Fully bilingual (Spanish/English)
+
+---
 ## Update 2026-02-15 - Template of the Week Feature
 
 ### Template of the Week Dashboard Spotlight (NEW FEATURE)
