@@ -483,7 +483,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           )}
 
           {/* ===== PAGE 3: Standards ===== */}
-          <div className="page" style={{ pageBreakBefore: 'always', fontSize: '10pt', lineHeight: '1.35' }}>
+          <div className="page" style={{ pageBreakBefore: 'always', fontSize: '10pt', lineHeight: '1.35', minHeight: '600px' }}>
             <Header />
             
             {/* Unit Info with BOTH Date Ranges */}
