@@ -614,6 +614,98 @@ const LessonPlanner = () => {
     }
   };
 
+  // AI Day Suggestions handler
+  const handleAIDaySuggestions = async (dayIndex) => {
+    // Get context from the form
+    const objective = activeWeek === 1 ? formData.objective : formData.objective_week2;
+    const topic = formData.story || formData.unit;
+    const dayPhase = DAY_PHASES[dayIndex];
+    const selectedClass = classes.find(c => c.class_id === formData.class_id);
+    
+    if (!objective && !topic) {
+      toast.error(language === 'es' 
+        ? 'Primero agrega un objetivo o tema para generar sugerencias' 
+        : 'Please add an objective or topic first to generate suggestions');
+      return;
+    }
+
+    setAiDayLoading(dayIndex);
+    
+    try {
+      const dayLabel = language === 'es' ? dayPhase.label_es : dayPhase.label_en;
+      const dayName = t(DAYS[dayIndex]);
+      
+      const prompt = `Generate 3-4 specific classroom activities for Day ${dayIndex + 1} (${dayName}) of a lesson plan.
+
+CONTEXT:
+- Day Phase: ${dayLabel} (${dayPhase.phase})
+- Focus for this day: ${dayPhase.focus}
+- Lesson Objective: ${objective || 'Not specified'}
+- Topic/Unit: ${topic || 'Not specified'}
+${selectedClass ? `- Grade: ${selectedClass.grade}` : ''}
+${selectedClass?.subject ? `- Subject: ${selectedClass.subject}` : ''}
+
+REQUIREMENTS:
+1. Activities should be appropriate for the "${dayPhase.phase}" phase of the week
+2. Each activity should be 5-15 minutes
+3. Include a mix of individual, pair, and group activities
+4. Be specific and actionable (not generic)
+5. Include any materials needed
+
+FORMAT each activity as:
+🎯 [Activity Name] (X minutes)
+   Description: [Brief description]
+   Materials: [List materials if needed]
+
+${language === 'es' ? 'Please respond entirely in Spanish.' : 'Please respond in English.'}`;
+
+      const response = await axios.post(`${API}/ai/chat`, {
+        message: prompt,
+        session_id: `day_suggestions_${formData.class_id || 'new'}_${Date.now()}`,
+        language: language,
+        context: `Lesson planning for ${topic || 'a new lesson'}`
+      }, { withCredentials: true });
+
+      setAiDaySuggestions(prev => ({
+        ...prev,
+        [dayIndex]: {
+          content: response.data.content,
+          timestamp: new Date().toISOString()
+        }
+      }));
+
+      toast.success(language === 'es' 
+        ? `Sugerencias para ${dayName} generadas` 
+        : `Suggestions for ${dayName} generated`);
+      
+    } catch (error) {
+      console.error('AI day suggestions error:', error);
+      if (error.response?.status === 403) {
+        toast.error(language === 'es' 
+          ? 'Necesitas una suscripción activa para usar el asistente IA' 
+          : 'You need an active subscription to use the AI assistant');
+      } else {
+        toast.error(language === 'es' ? 'Error al generar sugerencias' : 'Error generating suggestions');
+      }
+    } finally {
+      setAiDayLoading(null);
+    }
+  };
+
+  // Apply AI suggestion to notes
+  const applyAISuggestionToNotes = (dayIndex) => {
+    const suggestion = aiDaySuggestions[dayIndex];
+    if (!suggestion) return;
+    
+    const currentNotes = getWeekDays(activeWeek)[dayIndex]?.notes || '';
+    const newNotes = currentNotes 
+      ? `${currentNotes}\n\n--- ${language === 'es' ? 'Sugerencias IA' : 'AI Suggestions'} ---\n${suggestion.content}`
+      : `--- ${language === 'es' ? 'Sugerencias IA' : 'AI Suggestions'} ---\n${suggestion.content}`;
+    
+    updateDay(dayIndex, 'notes', newNotes);
+    toast.success(language === 'es' ? 'Sugerencias aplicadas a las notas' : 'Suggestions applied to notes');
+  };
+
   if (loading) {
     return (
       <Layout>
