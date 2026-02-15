@@ -5,12 +5,12 @@ import httpx
 import os
 import logging
 
-from ..utils.database import db
-from ..utils.auth import (
+from utils.database import db
+from utils.auth import (
     get_current_user, create_jwt_token, hash_password, verify_password,
     generate_user_id, JWT_EXPIRATION_DAYS
 )
-from ..models import UserCreate, UserLogin, UserResponse
+from models import UserCreate, UserLogin, UserResponse
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/auth", tags=["Authentication"])
