@@ -227,9 +227,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
               <th key={day} style={{ width: '17.6%', textAlign: 'center', padding: '6px', fontSize: '9pt' }}>
                 <div style={{ fontWeight: 'bold' }}>{DAY_LABELS[day][lang]}</div>
                 <div style={{ marginTop: '4px', fontSize: '9pt' }}>
-                  E<Checkbox checked={days[idx]?.eca?.E} />
-                  {' '}C<Checkbox checked={days[idx]?.eca?.C} />
-                  {' '}A<Checkbox checked={days[idx]?.eca?.A} />
+                  E <Checkbox checked={days[idx]?.eca?.E} />
+                  {'  '}C <Checkbox checked={days[idx]?.eca?.C} />
+                  {'  '}A <Checkbox checked={days[idx]?.eca?.A} />
                 </div>
               </th>
             ))}
