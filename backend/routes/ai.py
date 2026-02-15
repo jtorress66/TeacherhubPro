@@ -105,7 +105,7 @@ Please generate high-quality, ready-to-use educational content.
             api_key=EMERGENT_LLM_KEY,
             session_id=f"gen_{uuid.uuid4().hex[:8]}",
             system_message=system_prompt
-        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+        ).with_model("anthropic", "claude-sonnet-4-20250514")
         
         # Send the message
         user_message = UserMessage(text=user_prompt)
@@ -189,7 +189,7 @@ async def ai_chat(request: AIChatRequest, current_user: dict = Depends(get_curre
             api_key=EMERGENT_LLM_KEY,
             session_id=request.session_id,
             system_message=system_message
-        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+        ).with_model("anthropic", "claude-sonnet-4-20250514")
         
         # Send message
         user_message = UserMessage(text=request.message)
@@ -1007,7 +1007,7 @@ FORMAT each day as:
             api_key=EMERGENT_LLM_KEY,
             session_id=f"customize_{template_id}_{uuid.uuid4().hex[:8]}",
             system_message="You are an expert curriculum designer. Adapt lesson plan templates to new topics while preserving their successful structure."
-        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+        ).with_model("anthropic", "claude-sonnet-4-20250514")
         
         user_message = UserMessage(text=prompt)
         response = await chat.send_message(user_message)
