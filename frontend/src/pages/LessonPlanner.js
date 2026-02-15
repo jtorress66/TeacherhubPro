@@ -972,7 +972,12 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
   // Apply template directly (without customization)
   const handleApplyTemplate = async (template) => {
     try {
-      const response = await axios.get(`${API}/ai/templates/${template.template_id}`, { withCredentials: true });
+      // Different endpoint for starter templates
+      const endpoint = template.is_starter 
+        ? `${API}/ai/templates/starters/${template.template_id}`
+        : `${API}/ai/templates/${template.template_id}`;
+      
+      const response = await axios.get(endpoint, { withCredentials: true });
       const fullTemplate = response.data;
       
       // Convert days object to our format
@@ -981,14 +986,15 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
         newSuggestions[parseInt(key)] = {
           content: fullTemplate.days[key],
           timestamp: new Date().toISOString(),
-          isTemplate: true
+          isTemplate: true,
+          isStarter: template.is_starter
         };
       });
 
       setAiDaySuggestions(newSuggestions);
       setShowTemplatesModal(false);
       toast.success(language === 'es' 
-        ? `Plantilla "${template.name}" aplicada` 
+        ? `Plantilla "${language === 'es' && fullTemplate.name_es ? fullTemplate.name_es : template.name}" aplicada` 
         : `Template "${template.name}" applied`);
     } catch (error) {
       console.error('Error applying template:', error);
