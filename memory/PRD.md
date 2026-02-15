@@ -808,7 +808,43 @@ The following issues require user action in production:
 - ~~**Refactor `/app/backend/server.py`**: File is monolithic (3000+ lines) and continues to grow. Should be split into logical modules using FastAPI's `APIRouter`.~~ PARTIALLY DONE - Auth and AI routes extracted.
 
 ---
-## Update 2026-02-15 - Landing Page AI Feature & Refactoring
+## Update 2026-02-15 - AI Lesson Generator & Landing Page Refinement
+
+### AI Lesson Plan Generator (NEW FEATURE)
+Added an "AI Lesson Plan Generator" button directly in the Lesson Planner page:
+
+**Location:** `/app/frontend/src/pages/LessonPlanner.js`
+
+**Features:**
+- Purple gradient "Generar con IA" / "Generate with AI" button in the planner header
+- Modal dialog with form fields:
+  - Subject selection (Math, ELA, Spanish, Science, Social Studies, Art, Music, PE)
+  - Grade level (K-12)
+  - Lesson topic (free text)
+  - Standards framework (Common Core + Puerto Rico, Common Core only, PR only)
+  - Difficulty level (Easy, Medium, Hard)
+  - Duration in minutes
+- Calls the `/api/ai/generate` endpoint with `tool_type: lesson_plan`
+- Auto-populates the lesson plan form with:
+  - Objective extracted from AI response
+  - Topic as the story/theme
+  - Full AI-generated content in the first day's notes
+- Error handling for subscription requirements (shows appropriate message if user needs to subscribe)
+
+**User Flow:**
+1. Teacher opens Lesson Planner (new or existing)
+2. Clicks "Generate with AI" button
+3. Fills in subject, grade, topic, and preferences
+4. Clicks "Generate Plan"
+5. AI generates content based on standards
+6. Form is auto-populated with generated content
+7. Teacher reviews and edits as needed
+8. Saves the plan
+
+### Landing Page Refinement
+- **Removed:** "Log in" link from header navigation
+- **Changed:** "Get Started" button renamed to "Get Started - Log In" / "Comenzar - Iniciar sesión"
+- **Reason:** Both buttons performed the same action (scrolling to auth section), so consolidated for cleaner UX
 
 ### Landing Page Updates
 - **AI Feature Showcase:** Added AI Teaching Assistant to the feature showcase grid (4-column layout)
