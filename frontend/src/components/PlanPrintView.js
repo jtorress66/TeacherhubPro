@@ -116,23 +116,25 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             --school-accent: ${accentColor};
           }
           @page { 
-            size: 11in 8.5in; 
-            margin: 0.15in 0.2in; 
+            size: landscape;
+            margin: 0.25in; 
           }
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: Arial, sans-serif; }
+          body { font-family: Arial, sans-serif; font-size: 9pt; }
           .page {
-            width: 10.6in;
-            height: 8.2in;
+            width: 10.5in;
+            min-height: 7.5in;
+            max-height: 8in;
             page-break-after: always;
             page-break-inside: avoid;
-            overflow: visible;
-            transform: scale(0.92);
-            transform-origin: top left;
+            overflow: hidden;
           }
           .page:last-child { page-break-after: avoid; }
+          table { border-collapse: collapse; width: 100%; }
+          td, th { border: 1px solid black; padding: 2px 3px; vertical-align: top; }
           @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .page { overflow: hidden; }
           }
         </style>
       </head>
