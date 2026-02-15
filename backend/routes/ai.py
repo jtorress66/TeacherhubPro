@@ -641,6 +641,18 @@ STARTER_TEMPLATES = [
         "grade_level": "3-4",
         "tags": ["math", "multiplication", "facts", "fluency"],
         "is_starter": True,
+        "customization_tips": [
+            "Focus on fact families your students struggle with most",
+            "Add digital games like Prodigy or XtraMath for homework practice",
+            "Create a class multiplication chart that grows as students master facts",
+            "Send home flash cards with strategies written on the back"
+        ],
+        "customization_tips_es": [
+            "Enfócate en las familias de hechos con las que tus estudiantes más luchan",
+            "Agrega juegos digitales como Prodigy o XtraMath para práctica en casa",
+            "Crea una tabla de multiplicar de la clase que crezca mientras dominan los hechos",
+            "Envía tarjetas de práctica a casa con estrategias escritas al reverso"
+        ],
         "days": {
             "0": """🎯 **Day 1 - Understanding Multiplication**
 
