@@ -1328,4 +1328,42 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
   - Added Print buttons to Generated Content panel
   - Added Print buttons to History items
 
+---
+## Update 2026-02-15 - Quick Tour & Audio Guide Updates
+
+### Updated: Quick Tour (WelcomeTour.js)
+**New Steps Added:**
+1. AI Teaching Assistant - Meet your AI co-teacher
+2. Templates & Quick Week - Save and reuse lesson plans  
+3. Print & Export PDF - Export AI content as PDF
+
+**Changes:**
+- Increased from 9 to 12 steps
+- Added new icons: Bot, FileText, Printer
+- Updated welcome message to mention AI features
+- Updated Lesson Planner description to mention AI generation
+
+### Updated: Audio Guide (VideoStyleGuide.js)
+**Major Improvements:**
+1. **Auto-Play Audio** - Narration starts automatically when guide opens
+2. **Auto-Advance** - Automatically moves to next step when audio finishes (1 second pause between steps)
+3. **Pause/Resume Controls** - Users can pause and resume the entire guide
+4. **Green "Auto-reproducción" indicator** - Shows when auto-play is active
+5. **Skip Step Button** - Jump to next step without waiting
+
+**New Steps Added:**
+- Step 4: AI Teaching Assistant
+- Step 5: Templates & Quick Week
+- Step 6: Print & Export PDF
+
+**Changes:**
+- Increased from 9 to 12 steps
+- Workflow indicator updated to include AI, Print steps
+- Audio caching for better performance
+- Fallback behavior if TTS fails (auto-advance after 5s)
+
+**Files Modified:**
+- `/app/frontend/src/components/WelcomeTour.js`
+- `/app/frontend/src/components/VideoStyleGuide.js`
+
 
