@@ -306,3 +306,285 @@ async def delete_chat_session(session_id: str, current_user: dict = Depends(get_
     })
     
     return {"deleted_count": result.deleted_count}
+
+
+# ==================== AI TEMPLATES ====================
+
+@router.post("/templates")
+async def create_ai_template(request: dict, current_user: dict = Depends(get_current_user)):
+    """Save an AI-generated plan as a reusable template"""
+    user_id = current_user.get("user_id")
+    
+    # Validate required fields
+    name = request.get("name")
+    if not name:
+        raise HTTPException(status_code=400, detail="Template name is required")
+    
+    template_id = f"tmpl_{uuid.uuid4().hex[:12]}"
+    now = datetime.now(timezone.utc).isoformat()
+    
+    template_doc = {
+        "template_id": template_id,
+        "user_id": user_id,
+        "name": name,
+        "description": request.get("description", ""),
+        "subject": request.get("subject", ""),
+        "grade_level": request.get("grade_level", ""),
+        "original_topic": request.get("original_topic", ""),
+        "standards_framework": request.get("standards_framework", "common_core"),
+        "days": request.get("days", {}),  # Day content keyed by day index
+        "tags": request.get("tags", []),
+        "is_public": request.get("is_public", False),  # For future community sharing
+        "use_count": 0,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.ai_templates.insert_one(template_doc)
+    
+    return {
+        "template_id": template_id,
+        "name": name,
+        "message": "Template saved successfully"
+    }
+
+
+@router.get("/templates")
+async def list_ai_templates(current_user: dict = Depends(get_current_user)):
+    """List user's AI templates"""
+    user_id = current_user.get("user_id")
+    
+    # Get user's own templates
+    templates = await db.ai_templates.find(
+        {"user_id": user_id}
+    ).sort("created_at", -1).to_list(length=100)
+    
+    return [{
+        "template_id": t["template_id"],
+        "name": t["name"],
+        "description": t.get("description", ""),
+        "subject": t.get("subject", ""),
+        "grade_level": t.get("grade_level", ""),
+        "original_topic": t.get("original_topic", ""),
+        "tags": t.get("tags", []),
+        "use_count": t.get("use_count", 0),
+        "days_count": len(t.get("days", {})),
+        "created_at": t["created_at"]
+    } for t in templates]
+
+
+@router.get("/templates/{template_id}")
+async def get_ai_template(template_id: str, current_user: dict = Depends(get_current_user)):
+    """Get a specific AI template with full content"""
+    user_id = current_user.get("user_id")
+    
+    template = await db.ai_templates.find_one({
+        "template_id": template_id,
+        "$or": [
+            {"user_id": user_id},
+            {"is_public": True}
+        ]
+    })
+    
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    # Increment use count
+    await db.ai_templates.update_one(
+        {"template_id": template_id},
+        {"$inc": {"use_count": 1}}
+    )
+    
+    return {
+        "template_id": template["template_id"],
+        "name": template["name"],
+        "description": template.get("description", ""),
+        "subject": template.get("subject", ""),
+        "grade_level": template.get("grade_level", ""),
+        "original_topic": template.get("original_topic", ""),
+        "standards_framework": template.get("standards_framework", "common_core"),
+        "days": template.get("days", {}),
+        "tags": template.get("tags", []),
+        "use_count": template.get("use_count", 0),
+        "created_at": template["created_at"]
+    }
+
+
+@router.put("/templates/{template_id}")
+async def update_ai_template(template_id: str, request: dict, current_user: dict = Depends(get_current_user)):
+    """Update an AI template"""
+    user_id = current_user.get("user_id")
+    
+    # Check ownership
+    template = await db.ai_templates.find_one({
+        "template_id": template_id,
+        "user_id": user_id
+    })
+    
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found or not owned by user")
+    
+    update_fields = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    
+    for field in ["name", "description", "subject", "grade_level", "tags", "days", "is_public"]:
+        if field in request:
+            update_fields[field] = request[field]
+    
+    await db.ai_templates.update_one(
+        {"template_id": template_id},
+        {"$set": update_fields}
+    )
+    
+    return {"message": "Template updated successfully"}
+
+
+@router.delete("/templates/{template_id}")
+async def delete_ai_template(template_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete an AI template"""
+    user_id = current_user.get("user_id")
+    
+    result = await db.ai_templates.delete_one({
+        "template_id": template_id,
+        "user_id": user_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Template not found or not owned by user")
+    
+    return {"message": "Template deleted successfully"}
+
+
+@router.post("/templates/{template_id}/customize")
+async def customize_template(template_id: str, request: dict, current_user: dict = Depends(get_current_user)):
+    """Generate customized content based on a template for a new topic"""
+    
+    # Check AI access
+    has_access = await check_ai_access(current_user)
+    if not has_access:
+        raise HTTPException(
+            status_code=403, 
+            detail="AI features require an active subscription or trial period"
+        )
+    
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(status_code=500, detail="AI service not configured")
+    
+    user_id = current_user.get("user_id")
+    
+    # Get the template
+    template = await db.ai_templates.find_one({
+        "template_id": template_id,
+        "$or": [
+            {"user_id": user_id},
+            {"is_public": True}
+        ]
+    })
+    
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    new_topic = request.get("new_topic", "")
+    new_grade = request.get("new_grade", template.get("grade_level", ""))
+    new_subject = request.get("new_subject", template.get("subject", ""))
+    language = request.get("language", "es")
+    
+    if not new_topic:
+        raise HTTPException(status_code=400, detail="New topic is required")
+    
+    try:
+        # Build the customization prompt
+        template_structure = ""
+        for day_idx, day_content in template.get("days", {}).items():
+            template_structure += f"\n--- Day {int(day_idx) + 1} Structure ---\n{day_content[:500]}...\n"
+        
+        prompt = f"""Adapt this proven lesson plan template to a new topic while keeping the same successful structure and flow.
+
+ORIGINAL TEMPLATE INFO:
+- Name: {template.get('name', 'Untitled')}
+- Original Topic: {template.get('original_topic', 'Not specified')}
+- Structure Preview:
+{template_structure}
+
+NEW LESSON REQUIREMENTS:
+- New Topic: {new_topic}
+- Grade Level: {new_grade}
+- Subject: {new_subject}
+
+INSTRUCTIONS:
+1. Keep the same day-by-day progression (intro → practice → mastery → assessment)
+2. Adapt all activities to fit the new topic
+3. Maintain similar activity types and durations
+4. Update materials and examples for the new topic
+5. Keep the successful pedagogical structure
+
+FORMAT each day as:
+## [DAY NAME] - [PHASE]
+🎯 **Activities:**
+1. [Activity Name] (X min): [Description adapted for new topic]
+2. [Activity Name] (X min): [Description adapted for new topic]
+
+📚 **Materials:** [Updated materials for new topic]
+
+✅ **Success Criteria:** [Updated for new topic]
+
+---
+
+{f'IMPORTANTE: Responde completamente en español.' if language == 'es' else 'Please respond in English.'}"""
+
+        # Call AI
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"customize_{template_id}_{uuid.uuid4().hex[:8]}",
+            system_message="You are an expert curriculum designer. Adapt lesson plan templates to new topics while preserving their successful structure."
+        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+        
+        user_message = UserMessage(text=prompt)
+        response = await chat.send_message(user_message)
+        
+        # Parse response into days (similar to full week generation)
+        day_patterns = [
+            r'##\s*(LUNES|MONDAY|DAY 1|DÍA 1)[^\n]*\n([\s\S]*?)(?=##\s*(MARTES|TUESDAY|DAY 2|DÍA 2)|$)',
+            r'##\s*(MARTES|TUESDAY|DAY 2|DÍA 2)[^\n]*\n([\s\S]*?)(?=##\s*(MIÉRCOLES|WEDNESDAY|DAY 3|DÍA 3)|$)',
+            r'##\s*(MIÉRCOLES|WEDNESDAY|DAY 3|DÍA 3)[^\n]*\n([\s\S]*?)(?=##\s*(JUEVES|THURSDAY|DAY 4|DÍA 4)|$)',
+            r'##\s*(JUEVES|THURSDAY|DAY 4|DÍA 4)[^\n]*\n([\s\S]*?)(?=##\s*(VIERNES|FRIDAY|DAY 5|DÍA 5)|$)',
+            r'##\s*(VIERNES|FRIDAY|DAY 5|DÍA 5)[^\n]*\n([\s\S]*?)$'
+        ]
+        
+        import re
+        customized_days = {}
+        
+        for index, pattern in enumerate(day_patterns):
+            match = re.search(pattern, response, re.IGNORECASE)
+            if match:
+                customized_days[str(index)] = {
+                    "content": match.group(2).strip(),
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }
+        
+        # Fallback if parsing didn't work well
+        if len(customized_days) < 3:
+            sections = re.split(r'(?=##\s*(?:DAY|DÍA|LUNES|MARTES|MIÉRCOLES|JUEVES|VIERNES|MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY))', response, flags=re.IGNORECASE)
+            for index, section in enumerate(sections):
+                if index < 5 and section.strip():
+                    customized_days[str(index)] = {
+                        "content": section.strip(),
+                        "timestamp": datetime.now(timezone.utc).isoformat()
+                    }
+        
+        # Update template use count
+        await db.ai_templates.update_one(
+            {"template_id": template_id},
+            {"$inc": {"use_count": 1}}
+        )
+        
+        return {
+            "template_id": template_id,
+            "template_name": template.get("name"),
+            "new_topic": new_topic,
+            "customized_days": customized_days,
+            "full_response": response
+        }
+        
+    except Exception as e:
+        logger.error(f"Template customization error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Customization failed: {str(e)}")
