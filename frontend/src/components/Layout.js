@@ -62,9 +62,9 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen paper-bg">
+    <div className={cn("min-h-screen", isDarkMode ? "bg-background" : "paper-bg")}>
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 px-4 py-3">
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-card border-b border-border px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button 
@@ -75,11 +75,21 @@ const Layout = ({ children }) => {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <span className="text-lg font-heading font-bold text-slate-800">TeacherHubPro</span>
+            <span className="text-lg font-heading font-bold text-foreground">TeacherHubPro</span>
           </div>
-          <Button variant="ghost" size="icon" onClick={toggleLanguage}>
-            <Globe className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={toggleTheme}
+              title={isDarkMode ? (language === 'es' ? 'Modo claro' : 'Light mode') : (language === 'es' ? 'Modo oscuro' : 'Dark mode')}
+            >
+              {isDarkMode ? <Sun className="h-5 w-5 text-amber-500" /> : <Moon className="h-5 w-5" />}
+            </Button>
+            <Button variant="ghost" size="icon" onClick={toggleLanguage}>
+              <Globe className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </header>
 
