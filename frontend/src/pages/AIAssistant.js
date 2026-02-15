@@ -157,12 +157,12 @@ const AIAssistant = () => {
         body: JSON.stringify(genForm)
       });
 
+      const data = await response.json();
+      
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Generation failed');
+        throw new Error(data.detail || 'Generation failed');
       }
 
-      const data = await response.json();
       setGeneratedContent(data.content);
       toast.success(language === 'es' ? '¡Contenido generado!' : 'Content generated!');
       loadGenerations();
