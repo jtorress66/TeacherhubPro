@@ -573,7 +573,13 @@ const AIAssistant = () => {
                           : 'bg-slate-100 text-slate-800'
                       }`}
                     >
-                      <pre className="whitespace-pre-wrap text-sm font-sans">{msg.content}</pre>
+                      {msg.role === 'assistant' ? (
+                        <div className="prose prose-sm max-w-none prose-slate">
+                          <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        </div>
+                      ) : (
+                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                      )}
                     </div>
                     {msg.role === 'user' && (
                       <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0">
