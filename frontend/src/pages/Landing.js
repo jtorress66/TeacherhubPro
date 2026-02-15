@@ -212,19 +212,19 @@ const Landing = () => {
           </div>
           
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">
+            <a href="#features" className="text-sm font-medium text-slate-800 hover:text-slate-900 transition-colors">
               {language === 'es' ? 'Funciones' : 'Features'}
             </a>
-            <a href="#ai-assistant" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">
+            <a href="#ai-assistant" className="text-sm font-medium text-slate-800 hover:text-slate-900 transition-colors">
               {language === 'es' ? 'Asistente IA' : 'AI Assistant'}
             </a>
-            <a href="#ai-features" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">
+            <a href="#ai-features" className="text-sm font-medium text-slate-800 hover:text-slate-900 transition-colors">
               {language === 'es' ? 'IA Avanzada' : 'Advanced AI'}
             </a>
-            <a href="#customization" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">
+            <a href="#customization" className="text-sm font-medium text-slate-800 hover:text-slate-900 transition-colors">
               {language === 'es' ? 'Personalización' : 'Customization'}
             </a>
-            <Link to="/pricing" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">
+            <Link to="/pricing" className="text-sm font-medium text-slate-800 hover:text-slate-900 transition-colors">
               {language === 'es' ? 'Precios' : 'Pricing'}
             </Link>
           </div>
