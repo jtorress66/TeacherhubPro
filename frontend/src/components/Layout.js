@@ -34,6 +34,7 @@ const Layout = ({ children }) => {
   const { user, logout } = useAuth();
   const { t, language, toggleLanguage } = useLanguage();
   const { school, branding } = useSchool();
+  const { isDarkMode, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navItems = [
