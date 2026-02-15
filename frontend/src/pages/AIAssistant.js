@@ -668,7 +668,8 @@ const AIAssistant = () => {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </Layout>
   );
 };
 
