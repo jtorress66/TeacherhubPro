@@ -235,16 +235,18 @@ const AppRouter = () => {
 
 function App() {
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <SchoolProvider>
-          <BrowserRouter>
-            <Toaster position="top-right" richColors />
-            <AppRouter />
-          </BrowserRouter>
-        </SchoolProvider>
-      </AuthProvider>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <SchoolProvider>
+            <BrowserRouter>
+              <Toaster position="top-right" richColors />
+              <AppRouter />
+            </BrowserRouter>
+          </SchoolProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 
