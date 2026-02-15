@@ -194,6 +194,194 @@ const AIAssistant = () => {
     toast.success(language === 'es' ? '¡Copiado!' : 'Copied!');
   };
 
+  const handlePrint = (content, metadata = {}) => {
+    // Get tool type label
+    const toolLabels = {
+      lesson_plan: language === 'es' ? 'Plan de Lección' : 'Lesson Plan',
+      quiz: language === 'es' ? 'Examen/Quiz' : 'Quiz/Assessment',
+      summary: language === 'es' ? 'Resumen del Tema' : 'Topic Summary',
+      activities: language === 'es' ? 'Ideas de Actividades' : 'Activity Ideas',
+      worksheet: language === 'es' ? 'Hoja de Trabajo' : 'Worksheet'
+    };
+
+    const toolType = metadata.tool_type || genForm.tool_type;
+    const subject = metadata.subject || genForm.subject || '';
+    const gradeLevel = metadata.grade_level || genForm.grade_level || '';
+    const topic = metadata.topic || genForm.topic || '';
+    const toolLabel = toolLabels[toolType] || toolType;
+
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    
+    // Convert markdown to HTML for printing (simple conversion)
+    const htmlContent = content
+      .replace(/^### (.*$)/gim, '<h3 style="font-size: 16px; font-weight: 600; margin: 16px 0 8px 0; color: #1e293b;">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 style="font-size: 18px; font-weight: 600; margin: 20px 0 10px 0; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 style="font-size: 22px; font-weight: 700; margin: 24px 0 12px 0; color: #0f172a;">$1</h1>')
+      .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+      .replace(/^- (.*$)/gim, '<li style="margin: 4px 0; margin-left: 20px;">$1</li>')
+      .replace(/^\d+\. (.*$)/gim, '<li style="margin: 4px 0; margin-left: 20px; list-style-type: decimal;">$1</li>')
+      .replace(/^---$/gim, '<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 16px 0;">')
+      .replace(/\n\n/g, '</p><p style="margin: 12px 0;">')
+      .replace(/\n/g, '<br>');
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${toolLabel} - ${topic || 'TeacherHubPro'}</title>
+        <style>
+          @media print {
+            body { 
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            .no-print { display: none !important; }
+            @page { margin: 0.75in; }
+          }
+          body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #1e293b;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #10b981;
+          }
+          .header-left h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #10b981;
+            margin: 0 0 4px 0;
+          }
+          .header-left p {
+            font-size: 12px;
+            color: #64748b;
+            margin: 0;
+          }
+          .meta-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 10pt;
+          }
+          .meta-item {
+            display: flex;
+            flex-direction: column;
+          }
+          .meta-label {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 9pt;
+            text-transform: uppercase;
+          }
+          .meta-value {
+            color: #1e293b;
+          }
+          .content {
+            font-size: 11pt;
+          }
+          .content h1 { font-size: 18pt; color: #0f172a; margin: 20px 0 12px 0; }
+          .content h2 { font-size: 14pt; color: #1e293b; margin: 18px 0 10px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+          .content h3 { font-size: 12pt; color: #334155; margin: 14px 0 8px 0; }
+          .content ul, .content ol { margin: 8px 0; padding-left: 24px; }
+          .content li { margin: 4px 0; }
+          .content p { margin: 10px 0; }
+          .content hr { border: none; border-top: 1px solid #e2e8f0; margin: 16px 0; }
+          .content strong { font-weight: 600; }
+          .footer {
+            margin-top: 30px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            font-size: 9pt;
+            color: #94a3b8;
+          }
+          .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+          }
+          .print-btn:hover { background: #059669; }
+        </style>
+      </head>
+      <body>
+        <button class="print-btn no-print" onclick="window.print()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          ${language === 'es' ? 'Imprimir / Guardar PDF' : 'Print / Save PDF'}
+        </button>
+
+        <div class="header">
+          <div class="header-left">
+            <h1>TeacherHubPro</h1>
+            <p>${language === 'es' ? 'Generado con Asistente de IA' : 'Generated with AI Assistant'}</p>
+          </div>
+          <div style="text-align: right; font-size: 10pt; color: #64748b;">
+            <div style="font-weight: 600; color: #7c3aed;">${toolLabel}</div>
+            <div>${new Date().toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+          </div>
+        </div>
+
+        ${(subject || gradeLevel || topic) ? `
+        <div class="meta-info">
+          ${subject ? `<div class="meta-item"><span class="meta-label">${language === 'es' ? 'Materia' : 'Subject'}</span><span class="meta-value">${subject}</span></div>` : ''}
+          ${gradeLevel ? `<div class="meta-item"><span class="meta-label">${language === 'es' ? 'Grado' : 'Grade'}</span><span class="meta-value">${gradeLevel}</span></div>` : ''}
+          ${topic ? `<div class="meta-item"><span class="meta-label">${language === 'es' ? 'Tema' : 'Topic'}</span><span class="meta-value">${topic}</span></div>` : ''}
+        </div>
+        ` : ''}
+
+        <div class="content">
+          ${htmlContent}
+        </div>
+
+        <div class="footer">
+          ${language === 'es' 
+            ? 'Creado con TeacherHubPro - Asistente de IA para Maestros' 
+            : 'Created with TeacherHubPro - AI Assistant for Teachers'}
+          <br>
+          © ${new Date().getFullYear()} TeacherHubPro
+        </div>
+      </body>
+      </html>
+    `);
+    
+    printWindow.document.close();
+    
+    // Focus and trigger print after content loads
+    printWindow.onload = () => {
+      printWindow.focus();
+    };
+  };
+
   const startNewChat = () => {
     setChatMessages([]);
     setChatSessionId(`chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
