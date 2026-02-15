@@ -900,8 +900,13 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
   const fetchTemplates = async () => {
     setTemplatesLoading(true);
     try {
-      const response = await axios.get(`${API}/ai/templates`, { withCredentials: true });
-      setTemplates(response.data);
+      // Fetch both user templates and starter templates in parallel
+      const [userResponse, starterResponse] = await Promise.all([
+        axios.get(`${API}/ai/templates`, { withCredentials: true }),
+        axios.get(`${API}/ai/templates/starters`)
+      ]);
+      setTemplates(userResponse.data);
+      setStarterTemplates(starterResponse.data);
     } catch (error) {
       console.error('Error fetching templates:', error);
       toast.error(language === 'es' ? 'Error al cargar plantillas' : 'Error loading templates');
