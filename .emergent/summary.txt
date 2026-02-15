@@ -17,145 +17,756 @@ The user wants to build a comprehensive, teacher-focused web application called 
 **User's preferred language**: English. The next agent must respond in **English**.
 
 **what currently exists?**
-A full-stack FastAPI/React application, TeacherHubPro. The session focused heavily on UI/UX enhancements based on user feedback.
-
-Key completed items include:
--   **Landing Page Overhaul:** The landing page was completely redesigned to match a modern reference site (link.com), featuring animations, a professional layout, and clear sections for features and school customization.
--   **AI Teaching Assistant:** A new major feature was implemented. It uses Claude Sonnet 4.5 to generate educational materials. The backend endpoints (, ) are complete and gated for subscribed users. A new frontend page () provides the UI with tools for generation, a chat interface, and a history tab.
--   **Print View Refinements:** The lesson plan print view underwent numerous iterative fixes to resolve content cut-offs, adjust font sizes, and match a user-provided paper format, including fixing checkbox spacing and page overflow issues.
-
-The application is functional, with the AI assistant backend and UI complete. The current task is to market this new AI feature on the redesigned landing page.
+A full-stack FastAPI/React application, TeacherHubPro. A significant number of AI-powered features have been added, centered around lesson planning. The backend has been partially refactored from a monolithic  into a modular structure with , , and  directories, although this refactoring is incomplete. The frontend has seen major additions to the Lesson Planner, Dashboard, and Landing Page to support and showcase these new AI capabilities. Multiple user-reported bugs related to UI and API functionality have been fixed.
 
 **Last working item**:
--   **Last item agent was working:** The user requested to add the newly built AI Teaching Assistant feature to the landing page to advertise it. The agent started updating  by adding the AI feature to the  array and was planning to create a dedicated section to describe it, similar to other features.
+-   **Last item agent was working:** The user reported a Network error when trying to generate AI content, despite confirming their Emergent Universal Key credits are sufficient. The previous agent identified this as a backend issue and was about to investigate the logs to diagnose the root cause.
 -   **Status:** IN PROGRESS
 -   **Agent Testing Done:** N
--   **Which testing method agent to use?** screenshot tool. The agent should take screenshots of the updated landing page, showing the feature grid and the new dedicated AI section, to verify the changes.
+-   **Which testing method agent to use?** backend testing agent. The agent should first check the backend logs (==> /var/log/supervisor/backend.err.log <==
+2026-02-15 17:15:03,923 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/root/.venv/lib/python3.11/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+[92m18:40:31 - LiteLLM:INFO[0m: utils.py:3427 - 
+LiteLLM completion() model= claude-sonnet-4-5-20250929; provider = openai
+2026-02-15 18:40:31,665 - LiteLLM - INFO - 
+LiteLLM completion() model= claude-sonnet-4-5-20250929; provider = openai
+2026-02-15 18:41:32,045 - openai._base_client - INFO - Retrying request to /chat/completions in 0.393025 seconds
+2026-02-15 18:42:32,446 - openai._base_client - INFO - Retrying request to /chat/completions in 0.817568 seconds
+2026-02-15 18:43:33,394 - server - ERROR - AI generation error: Failed to generate chat completion: litellm.BadGatewayError: BadGatewayError: OpenAIException - Error code: 502
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [5499]
+INFO:     Started server process [10864]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [10864]
+INFO:     Started server process [11167]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11167]
+INFO:     Started server process [11388]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11388]
+INFO:     Started server process [11654]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11654]
+INFO:     Started server process [11954]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11954]
+INFO:     Started server process [12422]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [12422]
+INFO:     Started server process [12557]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [12557]
+INFO:     Stopping reloader process [5497]
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [12877] using WatchFiles
+INFO:     Started server process [12879]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2026-02-15 18:50:40,087 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/root/.venv/lib/python3.11/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+[92m18:50:40 - LiteLLM:INFO[0m: utils.py:3427 - 
+LiteLLM completion() model= claude-sonnet-4-5-20250929; provider = openai
+2026-02-15 18:50:40,512 - LiteLLM - INFO - 
+LiteLLM completion() model= claude-sonnet-4-5-20250929; provider = openai
+2026-02-15 18:50:41,120 - routes.ai - ERROR - AI generation error: Failed to generate chat completion: litellm.BadRequestError: OpenAIException - Budget has been exceeded! Current cost: 1.809363, Max budget: 1.4
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [46] using WatchFiles
+INFO:     Started server process [84]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [48] using WatchFiles
+
+==> /var/log/supervisor/backend.out.log <==
+INFO:     10.79.161.66:39844 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55778 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:47406 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.167.28:47406 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55778 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.161.66:39844 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:34932 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.167.28:48448 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.161.66:34932 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.79.161.66:33996 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:34932 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:34932 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.161.66:33996 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:34932 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:34932 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:33996 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:34932 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:34932 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48462 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48462 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:57670 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:57670 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37944 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37944 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37944 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:52856 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37944 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37944 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.167.28:52856 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37944 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37944 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37948 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:52856 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.167.28:52856 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.167.28:52856 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:43366 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.167.28:43366 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:54004 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.79.167.28:57722 - "POST /api/ai/generate HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:36240 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:36240 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:36240 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55462 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:36240 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55468 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:36240 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:36240 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55472 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.165.66:36240 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55462 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55474 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55472 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:36240 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55472 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55472 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55474 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55480 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55474 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55472 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55472 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55474 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55474 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55474 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:60716 - "POST /api/auth/login HTTP/1.1" 200 OK
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+INFO:     10.79.161.66:58044 - "POST /api/ai/generate HTTP/1.1" 500 Internal Server Error
+INFO:     10.79.167.28:56652 - "POST /api/auth/login HTTP/1.1" 200 OK
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+INFO:     10.79.167.28:56652 - "POST /api/ai/generate HTTP/1.1" 500 Internal Server Error
+INFO:     10.79.167.28:57230 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.161.66:53318 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.167.28:34416 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.167.28:34416 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.161.66:41596 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.167.28:38044 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized) for errors during the  call. If logs aren't clear, use the backend testing agent to write a test that directly calls the AI generation endpoint with valid data and authentication to reproduce the Network Error and identify the failure point.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Add AI Feature to Landing Page (P0)**
-    -   **Description:** The landing page needs to be updated to showcase the new AI Teaching Assistant feature. This involves adding it to the existing feature showcase and creating a new, detailed section for it.
+-   **Issue 1: AI Content Generation Fails with Network Error (P0)**
+    -   **Description:** The Generate Content feature on the AI Assistant page fails with a Network error toast notification. This occurs even though the user has confirmed their Emergent LLM key has sufficient credits. The previous issue was a budget limit, but that has been resolved, indicating a different underlying problem.
     -   **Next debug checklist:**
-        1.  In , adjust the feature showcase grid from 3 to 4 columns to include the new AI Assistant card.
-        2.  Create a new, dedicated section on the landing page that explains the benefits and capabilities of the AI Assistant, similar to the existing School Customization section.
-        3.  Ensure the new sections are responsive and visually consistent with the rest of the page.
-        4.  Take screenshots to verify the new layout.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend.
+        1.  Examine the backend logs for any errors immediately after the user triggers the AI generation: ==> /var/log/supervisor/backend.err.log <==
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [3783]
+INFO:     Stopping reloader process [1509]
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [3800] using WatchFiles
+INFO:     Started server process [3802]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2026-02-15 16:57:59,128 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/root/.venv/lib/python3.11/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+WARNING:  WatchFiles detected changes in 'routes/ai.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [3802]
+INFO:     Started server process [4411]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [4411]
+INFO:     Stopping reloader process [3800]
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [4423] using WatchFiles
+INFO:     Started server process [4425]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2026-02-15 17:06:44,949 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/root/.venv/lib/python3.11/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+WARNING:  WatchFiles detected changes in 'routes/ai.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [4425]
+INFO:     Started server process [5145]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'routes/ai.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [5145]
+INFO:     Started server process [5188]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'routes/ai.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [5188]
+INFO:     Started server process [5293]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'routes/ai.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [5293]
+INFO:     Started server process [5357]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'routes/ai.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [5357]
+INFO:     Started server process [5428]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'routes/ai.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [5428]
+INFO:     Started server process [5471]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [5471]
+INFO:     Stopping reloader process [4423]
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [5497] using WatchFiles
+INFO:     Started server process [5499]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2026-02-15 17:15:03,923 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/root/.venv/lib/python3.11/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+[92m18:40:31 - LiteLLM:INFO[0m: utils.py:3427 - 
+LiteLLM completion() model= claude-sonnet-4-5-20250929; provider = openai
+2026-02-15 18:40:31,665 - LiteLLM - INFO - 
+LiteLLM completion() model= claude-sonnet-4-5-20250929; provider = openai
+2026-02-15 18:41:32,045 - openai._base_client - INFO - Retrying request to /chat/completions in 0.393025 seconds
+2026-02-15 18:42:32,446 - openai._base_client - INFO - Retrying request to /chat/completions in 0.817568 seconds
+2026-02-15 18:43:33,394 - server - ERROR - AI generation error: Failed to generate chat completion: litellm.BadGatewayError: BadGatewayError: OpenAIException - Error code: 502
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [5499]
+INFO:     Started server process [10864]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [10864]
+INFO:     Started server process [11167]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11167]
+INFO:     Started server process [11388]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11388]
+INFO:     Started server process [11654]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11654]
+INFO:     Started server process [11954]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11954]
+INFO:     Started server process [12422]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [12422]
+INFO:     Started server process [12557]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [12557]
+INFO:     Stopping reloader process [5497]
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [12877] using WatchFiles
+INFO:     Started server process [12879]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2026-02-15 18:50:40,087 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/root/.venv/lib/python3.11/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+[92m18:50:40 - LiteLLM:INFO[0m: utils.py:3427 - 
+LiteLLM completion() model= claude-sonnet-4-5-20250929; provider = openai
+2026-02-15 18:50:40,512 - LiteLLM - INFO - 
+LiteLLM completion() model= claude-sonnet-4-5-20250929; provider = openai
+2026-02-15 18:50:41,120 - routes.ai - ERROR - AI generation error: Failed to generate chat completion: litellm.BadRequestError: OpenAIException - Budget has been exceeded! Current cost: 1.809363, Max budget: 1.4
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [46] using WatchFiles
+INFO:     Started server process [84]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [48] using WatchFiles
 
--   **Issue 2: Refactor monolithic  file (P1)**
-    -   **Description:** The  file contains all backend logic (auth, plans, users, AI, etc.) and is becoming difficult to maintain. The addition of the AI endpoints has further increased its size.
-    -   **Attempted fixes:** None. This is a known technical debt item.
+==> /var/log/supervisor/backend.out.log <==
+INFO:     10.79.167.28:36434 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:44028 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:36434 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:57272 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:44028 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.167.28:36434 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:44028 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.161.66:57272 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:44028 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:57272 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:44028 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.161.66:57272 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:44028 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.167.28:36434 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:44028 - "GET /api/plans HTTP/1.1" 200 OK
+INFO:     10.79.167.28:36434 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:57272 - "GET /api/classes HTTP/1.1" 200 OK
+INFO:     10.79.161.66:57280 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.165.66:44028 - "GET /api/plans HTTP/1.1" 200 OK
+INFO:     10.79.167.28:36434 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:57272 - "GET /api/classes HTTP/1.1" 200 OK
+INFO:     10.79.161.66:57280 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.161.66:57280 - "GET /api/ai/templates HTTP/1.1" 200 OK
+INFO:     10.79.165.66:32880 - "GET /api/ai/templates/starters HTTP/1.1" 200 OK
+INFO:     10.79.165.66:46140 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:46140 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:46140 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.79.165.66:46140 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.165.66:46140 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.167.28:36580 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:42762 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:46140 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:46140 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:42762 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.165.66:46140 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:36580 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.165.66:46140 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.167.28:36580 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:46140 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:36580 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.165.66:46140 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.167.28:36580 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:42762 - "GET /api/plans HTTP/1.1" 200 OK
+INFO:     10.79.165.66:46144 - "GET /api/classes HTTP/1.1" 200 OK
+INFO:     10.79.165.66:46140 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.161.66:42762 - "GET /api/plans HTTP/1.1" 200 OK
+INFO:     10.79.167.28:36580 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:42762 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.165.66:46140 - "GET /api/classes HTTP/1.1" 200 OK
+INFO:     10.79.165.66:46140 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:46140 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:42762 - "GET /api/ai/templates HTTP/1.1" 200 OK
+INFO:     10.79.161.66:42762 - "GET /api/ai/templates/starters HTTP/1.1" 200 OK
+INFO:     10.79.165.66:42882 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:42882 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:47818 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.161.66:51518 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.161.66:51518 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.167.28:53690 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.79.167.28:53690 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.161.66:51518 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.167.28:53690 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:51518 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.167.28:53690 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:51518 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.161.66:51534 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:51528 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.167.28:53690 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.161.66:51546 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:51518 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.165.66:56324 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:56324 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:58618 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:58618 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.167.28:40280 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.161.66:32948 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.161.66:44202 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.161.66:44202 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.161.66:35672 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.167.28:39380 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:46154 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:46154 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:55778 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:55778 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:55778 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55778 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.167.28:47406 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:39844 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:39844 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.167.28:47406 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55778 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.161.66:39852 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:39844 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55778 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.167.28:47410 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:47406 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.161.66:39844 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:39844 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55778 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.167.28:47406 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:39844 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55778 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:47406 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.167.28:47406 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55778 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.161.66:39844 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:34932 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.167.28:48448 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.161.66:34932 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.79.161.66:33996 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:34932 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:34932 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.161.66:33996 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:34932 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:34932 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:33996 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:34932 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:34932 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48448 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48462 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:48462 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:57670 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:57670 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37944 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37944 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37944 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:52856 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37944 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37944 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.167.28:52856 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37944 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37944 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.161.66:37948 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:52856 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.167.28:52856 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.165.66:57670 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.167.28:52856 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:43366 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.167.28:43366 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:54004 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.79.167.28:57722 - "POST /api/ai/generate HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:36240 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:36240 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.165.66:36240 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55462 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:36240 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55468 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:36240 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:36240 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55472 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.165.66:36240 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55462 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55474 - "GET /api/ai/templates/weekly HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55472 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:36240 - "GET /api/dashboard HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55472 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55472 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55474 - "GET /api/schools/school_default HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55480 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55474 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55472 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55472 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55474 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55474 - "GET /api/ai/generations HTTP/1.1" 200 OK
+INFO:     10.79.165.66:55474 - "GET /api/subscription/status HTTP/1.1" 200 OK
+INFO:     10.79.167.28:60716 - "POST /api/auth/login HTTP/1.1" 200 OK
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+INFO:     10.79.161.66:58044 - "POST /api/ai/generate HTTP/1.1" 500 Internal Server Error
+INFO:     10.79.167.28:56652 - "POST /api/auth/login HTTP/1.1" 200 OK
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+INFO:     10.79.167.28:56652 - "POST /api/ai/generate HTTP/1.1" 500 Internal Server Error
+INFO:     10.79.167.28:57230 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.161.66:53318 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.167.28:34416 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.167.28:34416 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.161.66:41596 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.79.167.28:38044 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized.
+        2.  Verify the request payload being sent from the frontend  to the  endpoint.
+        3.  Check the  file, specifically the  function, for potential issues in how it calls the  library.
+        4.  Confirm that the environment variables, including , are correctly loaded and accessible within the  route context.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a critical bug blocking a core paid feature of the application. Fixing it will restore the AI content generation functionality.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** Y (The feature has had multiple failure points: auth, budget, and now this network error).
+    -   **Should Test frontend/backend/both after fix?** Backend.
+
+-   **Issue 2: Complete the Refactoring of  (P1)**
+    -   **Description:** The backend  file was partially refactored. New directories (, , ) were created, and the AI endpoints were moved to . However, a significant amount of code (auth, plans, users, schools, etc.) still resides in the monolithic , creating confusion and potential for duplicate route conflicts.
     -   **Next debug checklist:**
-        1.  Create a  directory in .
-        2.  Create separate Python files for each domain (e.g., , , ).
-        3.  Use FastAPI's  in each new file to move the relevant endpoints from .
-        4.  Import and include the new routers in the main  file.
-    -   **Why fix this issue and what will be achieved with the fix?** Refactoring will improve maintainability, reduce complexity, and make it easier to add new features without introducing regressions.
-    -   **Status:** NOT STARTED
+        1.  Create new route files in  for each remaining domain (e.g., , , ).
+        2.  Systematically move the corresponding Pydantic models from  to .
+        3.  Move the FastAPI endpoints (, , etc.) from  to their respective new route files.
+        4.  Update the main  to import and include these new routers.
+        5.  Delete the now-redundant code from , leaving only the main FastAPI app setup and router inclusions.
+    -   **Why fix this issue and what will be achieved with the fix?** Completing the refactor will eliminate technical debt, improve code maintainability, prevent future route conflicts, and make the backend architecture clean and scalable.
+    -   **Status:** IN PROGRESS
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Backend (requires extensive regression testing).
 
 **In progress Task List**:
--   **Task 1: Complete Landing Page Update for AI Feature**
-    -   **Where to resume:** The agent has modified the  array in . The next step is to update the JSX to render a 4-item grid and then add a new dedicated section for the AI Assistant below the feature showcase.
-    -   **What will be achieved with this?** The new AI assistant will be prominently featured on the landing page to attract new customers.
+-   **Task 1: Complete Backend Refactoring**
+    -   **Where to resume:** The AI routes have been modularized. The next step is to do the same for the remaining domains: authentication, lesson plans, users, schools, etc. Start by creating , , and  in the  directory and moving the relevant endpoints from .
+    -   **What will be achieved with this?** A clean, modular, and maintainable backend architecture.
     -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Frontend.
+    -   **Should Test frontend/backend/both after fix?** Backend.
+    -   **Blocked on something:** Blocked by the P0 Network Error issue. The backend should be stable before continuing a major refactor.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks (P1):**
-    *   **Save AI Generations:** Implement functionality for teachers to save AI-generated lesson plans directly into their Lesson Planner.
     *   **Drag-and-Drop Seating Chart Editor:** A visual tool for creating seating charts.
     *   **Quick Week Copy:** A button in the Lesson Planner to duplicate an entire week's plan.
     *   **Super Admin Bulk Tools:** A CSV import for adding multiple teachers at once.
 -   **Future Tasks (P2):**
     *   **Audit Log:** Implement logging for critical actions (e.g., grade changes).
     *   **Planner Style Customization:** Allow Super Admin to select different planner layouts/styles per school.
+    *   **Community Templates:** Allow teachers to share their saved templates with other users, building a community knowledge base.
 
 **Completed work in this session**
--   **AI Teaching Assistant (New Feature):**
-    -   Integrated Claude Sonnet 4.5 using the Emergent LLM Key.
-    -   Created secure backend endpoints (, ) in  for paid subscribers.
-    -   Built a new frontend page at  with a three-tab UI (Generate, Chat, History).
-    -   Added the feature to the main navigation sidebar in .
--   **Landing Page Redesign (Major Iteration):**
-    -   Completely rewrote  to match the modern, animated style of a user-provided reference site (link.com).
-    -   The new design includes a sticky header, an animated hero section, a partner logo carousel, interactive feature cards, and a redesigned auth section.
-    -   Added a Log in link to the header and improved the Get Started section with a two-column layout and social proof.
-    -   Fixed the footer to include all required legal links and corrected routing issues.
--   **Multiple UI Fixes:**
-    -   **Print View:** Performed extensive rewrites of  to fix content cut-off issues, adjust styling to match user references precisely, and ensure the Standards page fits on a single page.
-    -   **Logo Sizing:** Iteratively increased the logo size on both the Landing page and Pricing page for better visibility and consistency.
-    -   **Pricing Page:** Corrected the contact email and updated the header to match the new Landing page design.
+-   **Backend Refactoring (Initiated):**
+    -   Created a modular structure: , , .
+    -   Moved AI endpoints from  into .
+    -   Moved Pydantic models into .
+    -   Created shared utility files for database and auth helpers.
+-   **AI Lesson Planner Enhancements:**
+    -   **AI Lesson Generator:** Added a Generar con IA button directly within the Lesson Planner for in-place generation.
+    -   **AI Day Suggestions:** Added a feature for each day of the week to get AI-suggested activities based on the pedagogical phase (Intro, Practice, etc.).
+    -   **Generate Full Week:** Implemented a button to generate a coherent 5-day lesson plan automatically.
+    -   **AI Templates:** Created backend and frontend for saving, listing, and applying user-generated lesson plan templates.
+    -   **Starter Templates:** Added 5 pre-built Starter Templates for new users, served from the backend and displayed in the UI.
+-   **Dashboard Feature:**
+    -   **Template of the Week:** Added a spotlight card on the dashboard featuring a random starter template with customization tips.
+-   **Landing Page Overhaul:**
+    -   Added a comprehensive Advanced AI section showcasing all the new AI features (Full Week Gen, Day Suggestions, Templates, etc.).
+    -   Updated the header navigation to be darker for better visibility.
+-   **Critical Bug Fixes:**
+    -   Fixed body stream already read error in  by correctly handling .
+    -   Added the main  component to the AI Assistant page to restore sidebar navigation.
+    -   Installed  and implemented it to correctly render AI-generated chat and content.
+    -   Corrected AI API calls to use  with  for proper cookie-based authentication.
+    -   Resolved AI generation failures by removing duplicate AI endpoints from  that were conflicting with the new modular routes.
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Monolithic  file needs refactoring.**
-    -   **Debug checklist:** The  file has continued to grow and now includes logic for plans, users, auth, grades, and the new AI feature. It should be broken down into logical modules (e.g., , , ) using FastAPI's .
-    -   **Why to solve this issue and what will be achieved with this?** Refactoring will improve maintainability, reduce complexity, and make it easier to add new features without introducing regressions.
-    -   **Should Test frontend/backend/both after fix:** Backend (requires extensive regression testing).
+-   **Issue 1: Monolithic  file refactoring is incomplete.**
+    -   **Debug checklist:** See **Issue 2** in **All Pending/In progress Issue list**.
+    -   **Why to solve this issue and what will be achieved with this?** To improve maintainability, reduce complexity, and prevent bugs.
+    -   **Should Test frontend/backend/both after fix:** Backend.
     -   **Is recurring issue?** Y
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** Monolithic  file.
--   **Recurrence count:** 4
--   **Status:** NOT STARTED
+-   **Recurrence count:** 5
+-   **Status:** IN PROGRESS
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **AI Integration:** Successfully integrated the Claude Sonnet 4.5 model using the  subagent, the  library, and the . The implementation is gated behind user subscriptions.
--   **Advanced Frontend Development (React):** Executed a major redesign of the landing page, incorporating modern CSS techniques like gradients, animations, glass-morphism, and responsive layouts to mimic a professional reference website.
--   **Iterative UI/UX Refinement:** Engaged in a rapid, multi-step feedback loop with the user to refine the print view and landing page, demonstrating responsiveness to highly specific visual requirements.
+-   **Backend Refactoring:** Began migration from a monolithic  to a modular structure using FastAPI's .
+-   **Feature-Led Development:** Rapidly built a cascade of interconnected AI features based on user feedback (Generate Week -> Templates -> Starter Templates -> Template of the Week).
+-   **Frontend State Management:** Managed complex local state in React components (, ) to handle AI data, modals, and UI changes.
+-   **API Debugging:** Diagnosed and fixed a series of frontend and backend bugs, including auth issues, response handling, and duplicate endpoint conflicts.
 
 **key DB schema**
--   No changes were made to the database schema in this session. The AI generations are currently not persisted to the database.
+-   **ai_templates:**  (Implicitly created collection for storing user-generated templates).
 
 **changes in tech stack**
--   **New Integration:** Added Anthropic Claude Sonnet 4.5 via the  library.
+-   **Added:**  for rendering markdown content in the frontend.
 
 **All files of reference**
--   **/app/frontend/src/pages/Landing.js**: Heavily rewritten to be a modern, animated landing page. Currently being modified to add the AI feature.
--   **/app/frontend/src/pages/AIAssistant.js**: The newly created page for the AI Teaching Assistant.
--   **/app/backend/server.py**: Modified to include the new AI endpoints and Pydantic models.
--   **/app/frontend/src/components/PlanPrintView.js**: Substantially modified to fix complex print layout issues.
--   **/app/frontend/src/App.js**: Modified to add the  route.
--   **/app/frontend/src/components/Layout.js**: Modified to add the Asistente IA link to the sidebar.
+-   **/app/backend/routes/ai.py**: New file containing all AI endpoints, including templates and template of the week.
+-   **/app/backend/server.py**: Partially refactored, but still contains most of the application's non-AI endpoints. The main source of technical debt.
+-   **/app/frontend/src/pages/LessonPlanner.js**: Heavily modified to include all new in-place AI generation and template features.
+-   **/app/frontend/src/pages/AIAssistant.js**: Heavily modified to fix multiple bugs related to layout, authentication, and response rendering.
+-   **/app/frontend/src/pages/Dashboard.js**: Modified to add the Template of the Week feature.
+-   **/app/frontend/src/pages/Landing.js**: Modified to add a large new section showcasing all the advanced AI features.
 
 **Areas that need refactoring**:
--   **/app/backend/server.py**: This monolithic file is the highest priority for refactoring. The recent addition of AI logic makes this task even more critical for the health of the codebase.
+-   **/app/backend/server.py**: This is the top priority. The refactoring is half-done and must be completed to stabilize the backend and improve maintainability. All remaining endpoints (auth, users, plans, schools) need to be moved to their own route files.
 
 **key api endpoints**
--   : (New) Generates educational content using Claude Sonnet 4.5. Requires active subscription.
--   : (New) Provides a conversational interface with the AI assistant. Requires active subscription.
+-   : (New) Save a generated week plan as a template.
+-   : (New) List user-saved templates.
+-   : (New) Delete a user template.
+-   : (New) Get pre-built starter templates.
+-   : (New) Get the featured template for the dashboard.
 
 **Critical Info for New Agent**
--   **User is highly visual:** The user provides very specific feedback, often with reference images. Expect to iterate on UI tasks multiple times. Use screenshots extensively to confirm changes.
--   **Prioritize Landing Page:** The immediate task is to finish adding the AI Assistant feature to the landing page. This is the highest priority.
--   **Refactor  next:** Once the landing page update is complete and approved, you must propose and plan the refactoring of . It is a recurring issue and a significant source of technical debt.
--   **AI Feature is Key:** The user is excited about the new AI feature. The next logical step after marketing it is to allow teachers to save the generated content, as suggested by the previous agent.
+-   **Focus on the Network Error:** The immediate priority is to solve the Network error on the AI Generate page. The user's credits are fine, so this is a technical bug in the backend. Start by checking backend logs.
+-   **Backend is in a fragile state:** The  refactoring is incomplete. Be aware that some routes might exist in  while others are in the  directory. The goal is to move everything out of .
+-   **User is Engaged:** The user provides frequent, iterative feedback. Expect to work on a feature, get feedback, and then enhance it. The current AI feature set was built this way.
+-   **Authentication is Cookie-Based:** All authenticated API requests from the frontend must use  with the  option. The agent already fixed this for , but be mindful of this for any new authenticated endpoints.
 
 **documents and test reports created in this job**
--    (updated)
+-    (updated multiple times)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Asks to add the new AI feature to the landing page. (Status: IN PROGRESS)
-2.  **User:** Requests an AI search/generation feature similar to Teachy.ai, using a top model like Claude, with specific standards (Common Core & PR CORE), for paid subscribers. (Status: COMPLETED)
-3.  **User:** Specifies the AI model as Claude Sonnet 4.5 and confirms requirements. (Status: COMPLETED)
-4.  **User:** Praises the new landing page but reports the footer is missing links and the Terms link is broken. (Status: COMPLETED)
-5.  **User:** Asks to make the Get Started section more attractive and add a Login link to the header. (Status: COMPLETED)
-6.  **User:** Reports the landing page logo is too small and the pricing page header doesn't match. (Status: COMPLETED)
-7.  **User:** Asks to redesign the landing page to be similar to a provided URL (link.com). (Status: COMPLETED)
-8.  **User:** Requests a much bigger logo and app name on the landing page, and wants to add messaging about school customization to attract customers. (Status: COMPLETED)
-9.  **User:** Reports the print view's Standards page is overflowing and the preview is inaccurate. (Status: COMPLETED)
-10. **User:** Reports two specific print view issues: spacing for E C A checkboxes and excessive white space on the Standards page. (Status: COMPLETED)
+1.  **User:** Reports Network error when generating AI content, confirms their Emergent Universal Key credits are now good. (Status: IN PROGRESS)
+2.  **Agent:** Asks user to switch to their own OpenAI key in the future. (Status: RESOLVED)
+3.  **User:** Responds to keep the Emergent Key for now. (Status: RESOLVED)
+4.  **Agent:** Explains the budget limit issue and instructs the user on how to add balance to their Emergent Universal Key. (Status: RESOLVED)
+5.  **User:** Reports AI generation is not working at all. (Status: RESOLVED - diagnosed as budget issue)
+6.  **User:** Reports AI chat shows raw markdown symbols (, ). (Status: COMPLETED - fixed with )
+7.  **User:** Reports the AI Assistant page has no navigation back to the dashboard. (Status: COMPLETED - fixed by adding Layout component)
+8.  **User:** Reports an error (body stream already read) when generating lesson plans. (Status: COMPLETED - fixed response handling)
+9.  **User:** Asks to darken the header navigation fonts on the landing page. (Status: COMPLETED)
+10. **User:** Asks to showcase all the new AI features on the landing page. (Status: COMPLETED)
 
 **Project Health Check:**
--   **Broken:** None.
--   **Mocked:** The partner school logos on the landing page carousel are currently just text placeholders.
+-   **Broken:** The AI content generation feature is currently broken due to a Network error.
+-   **Mocked:** The partner school logos on the landing page carousel are still text placeholders.
 
 **3rd Party Integrations**
 -   **Emergent-managed Google Auth:** For social login.
@@ -163,17 +774,17 @@ The application is functional, with the AI assistant backend and UI complete. Th
 -   **Resend:** For sending emails (requires User API Key).
 -   **Anthropic Claude Sonnet 4.5:** For the AI Teaching Assistant (uses Emergent LLM Key).
 -   **OpenAI TTS:** For the Audio Guide feature (uses Emergent LLM Key).
+-   **react-markdown:** (New) For rendering markdown in the frontend.
 
 **Testing status**
 -   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** None.
--   **Known regressions:** None.
+-   **Known regressions:** The core AI generation feature, which was working, is now failing with a Network error.
 
 **Credentials to test flow:**
 -   **Super Admin Email:** 
 -   **Password:** 
 
 **What agent forgot to execute**
--   The agent has not completed the visual implementation of adding the AI Assistant to the landing page. While the code has been partially modified, the new section and grid adjustments are not yet built.
--   The recurring technical debt of the monolithic  file has not been addressed.</analysis>
+-   The agent did not fully complete the refactoring of . While the structure was created and AI routes were moved, the majority of the endpoints (auth, users, plans, etc.) still reside in the monolithic , leaving the backend in an inconsistent and fragile state. This needs to be completed to pay down significant technical debt.</analysis>

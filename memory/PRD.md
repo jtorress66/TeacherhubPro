@@ -178,8 +178,8 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
 5. Implement seating chart drag/drop
 
 ## URLs
-- Frontend: https://classmate-128.preview.emergentagent.com
-- Backend API: https://classmate-128.preview.emergentagent.com/api
+- Frontend: https://teachersuite.preview.emergentagent.com
+- Backend API: https://teachersuite.preview.emergentagent.com/api
 
 ## Database Collections
 - users, user_sessions, schools
