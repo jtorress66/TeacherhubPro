@@ -808,6 +808,37 @@ The following issues require user action in production:
 - ~~**Refactor `/app/backend/server.py`**: File is monolithic (3000+ lines) and continues to grow. Should be split into logical modules using FastAPI's `APIRouter`.~~ PARTIALLY DONE - Auth and AI routes extracted.
 
 ---
+## Update 2026-02-15 - Generate Full Week Feature
+
+### Generate Full Week AI Plan (NEW FEATURE)
+Added a "Generate Full Week" button that creates a coherent 5-day lesson plan with proper pedagogical progression.
+
+**Location:** `/app/frontend/src/pages/LessonPlanner.js`
+
+**Features:**
+- **"Generar semana completa" Button** - Purple gradient button in the Plan Semanal header
+- Generates all 5 days at once with coherent learning progression:
+  - Day 1: Introduction - Hook, activate prior knowledge, introduce concepts
+  - Day 2: Guided Practice - Teacher modeling, scaffolded practice
+  - Day 3: Independent Practice - Centers, partner work, collaboration
+  - Day 4: Mastery & Extension - Higher-order thinking, real-world application
+  - Day 5: Assessment & Reflection - Evaluation, self-reflection, closure
+- **Visual Indicators**: Purple dots on day tabs show which days have AI suggestions
+- **Bulk Actions**:
+  - "Apply All" button to add all suggestions to notes at once
+  - "Clear All" button (trash icon) to remove all suggestions
+- AI parses response and assigns content to appropriate days
+
+**User Flow:**
+1. Teacher adds an objective for the week
+2. Clicks "Generar semana completa" button
+3. AI generates a coherent 5-day plan
+4. Purple dots appear on all day tabs indicating suggestions
+5. Teacher can review each day's suggestions
+6. Click "Apply All" to add suggestions to all days' notes
+7. Or apply/dismiss individually per day
+
+---
 ## Update 2026-02-15 - AI Day Suggestions Feature
 
 ### AI Suggested Activities for Each Day (NEW FEATURE)
