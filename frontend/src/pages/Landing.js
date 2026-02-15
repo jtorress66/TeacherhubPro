@@ -165,6 +165,35 @@ const Landing = () => {
           </div>
         </div>
       )
+    },
+    {
+      title: language === 'es' ? 'Asistente de IA' : 'AI Assistant',
+      desc: language === 'es' 
+        ? 'Genera materiales educativos basados en estándares nacionales al instante.' 
+        : 'Generate educational materials based on national standards instantly.',
+      visual: (
+        <div className="bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl shadow-2xl p-6 transform hover:scale-105 transition-all duration-500 text-white">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+              <Sparkles className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <div className="font-semibold">{language === 'es' ? 'Claude AI' : 'Claude AI'}</div>
+              <div className="text-xs text-white/70">{language === 'es' ? 'Powered by Anthropic' : 'Powered by Anthropic'}</div>
+            </div>
+          </div>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2">
+              <Zap className="h-4 w-4" />
+              <span>{language === 'es' ? 'Planes de lección' : 'Lesson plans'}</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2">
+              <Brain className="h-4 w-4" />
+              <span>{language === 'es' ? 'Quizzes y exámenes' : 'Quizzes & tests'}</span>
+            </div>
+          </div>
+        </div>
+      )
     }
   ];
 
