@@ -7,7 +7,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { BookOpen, Calendar, Users, ClipboardList, CheckCircle, Globe, BarChart3, Mail, Palette, Shield, Building2, Sparkles, ArrowRight, FileText, GraduationCap, School, Printer, Bot, Zap, Brain } from 'lucide-react';
+import { BookOpen, Calendar, Users, ClipboardList, CheckCircle, Globe, BarChart3, Mail, Palette, Shield, Building2, Sparkles, ArrowRight, FileText, GraduationCap, School, Printer, Bot, Zap, Brain, FileQuestion, Lightbulb, Target } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Landing = () => {
