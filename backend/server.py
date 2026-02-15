@@ -387,6 +387,42 @@ class PortalEmailRequest(BaseModel):
     parent_email: EmailStr
     expires_days: int = 30
 
+# ==================== AI ASSISTANT MODELS ====================
+
+class AIGenerationRequest(BaseModel):
+    tool_type: str  # lesson_plan, quiz, summary, activities, worksheet, chat
+    subject: str
+    grade_level: str
+    topic: str
+    standards_framework: str = "common_core"  # common_core, pr_core, both
+    language: str = "es"  # es or en
+    additional_instructions: Optional[str] = None
+    difficulty_level: Optional[str] = "medium"  # easy, medium, hard
+    num_questions: Optional[int] = 10  # for quizzes
+    duration_minutes: Optional[int] = 45  # for lesson plans
+
+class AIChatRequest(BaseModel):
+    message: str
+    session_id: str
+    language: str = "es"
+    context: Optional[str] = None  # Optional context like current lesson plan
+
+class AIGenerationResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    generation_id: str
+    tool_type: str
+    content: str
+    metadata: Dict[str, Any] = {}
+    created_at: str
+
+class AIChatMessage(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    message_id: str
+    session_id: str
+    role: str  # user or assistant
+    content: str
+    created_at: str
+
 # ==================== AUTHENTICATION HELPERS ====================
 
 def generate_user_id():
