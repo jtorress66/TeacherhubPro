@@ -70,9 +70,11 @@ const LessonPlanner = () => {
   const [showTemplatesModal, setShowTemplatesModal] = useState(false);
   const [showSaveTemplateModal, setShowSaveTemplateModal] = useState(false);
   const [templates, setTemplates] = useState([]);
+  const [starterTemplates, setStarterTemplates] = useState([]);
   const [templatesLoading, setTemplatesLoading] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [customizeLoading, setCustomizeLoading] = useState(false);
+  const [templateTab, setTemplateTab] = useState('starters'); // 'starters' or 'my'
   const [templateForm, setTemplateForm] = useState({
     name: '',
     description: '',
