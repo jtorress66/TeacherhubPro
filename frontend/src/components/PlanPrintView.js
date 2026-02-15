@@ -361,45 +361,45 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
                 <div><strong>Unit:</strong> {plan.unit || '_____'} | <strong>Story:</strong> {plan.story || '_____'}</div>
                 <div><strong>Teacher:</strong> {plan.teacher_name || '_____'} | <strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}</div>
               </div>
-              <div style={{ padding: '7px 10px', fontSize: '11pt' }}>
+              <div style={{ padding: '4px 6px', fontSize: '9pt' }}>
                 <div>
                   <strong>Date:</strong> From {plan.week2_start || '_____'} To {plan.week2_end || '_____'}
-                  <span style={{ marginLeft: '10px', fontWeight: 'bold', color: '#16a34a' }}>(Week 2)</span>
+                  <span style={{ marginLeft: '8px', fontWeight: 'bold', color: '#16a34a' }}>(Week 2)</span>
                 </div>
               </div>
             </div>
 
             {/* Objective - Week 2 */}
-            <div style={{ border: '1px solid black', padding: '7px 10px', marginBottom: '8px' }}>
-              <span style={{ fontWeight: 'bold', fontSize: '11pt' }}>Objective of the week: </span>
-              <span style={{ fontSize: '10pt' }}>{plan.objective_week2 || plan.objective || '_____'}</span>
+            <div style={{ border: '1px solid black', padding: '4px 6px', marginBottom: '4px' }}>
+              <span style={{ fontWeight: 'bold', fontSize: '9pt' }}>Objective of the week: </span>
+              <span style={{ fontSize: '8pt' }}>{plan.objective_week2 || plan.objective || '_____'}</span>
             </div>
 
             {/* Skills - Week 2 */}
-            <div style={{ border: '1px solid black', padding: '7px 10px', marginBottom: '8px' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '11pt', borderBottom: '1px solid black', marginBottom: '5px', paddingBottom: '3px' }}>
+            <div style={{ border: '1px solid black', padding: '4px 6px', marginBottom: '4px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '9pt', borderBottom: '1px solid black', marginBottom: '3px', paddingBottom: '2px' }}>
                 Skills of the week:
               </div>
-              <ol style={{ marginLeft: '22px', fontSize: '10pt' }}>
+              <ol style={{ marginLeft: '18px', fontSize: '8pt', marginTop: '2px', marginBottom: '2px' }}>
                 {((plan.skills_week2 && plan.skills_week2.some(s => s)) ? plan.skills_week2 : plan.skills || []).filter(s => s).map((skill, i) => (
-                  <li key={i} style={{ marginBottom: '3px' }}>{skill}</li>
+                  <li key={i} style={{ marginBottom: '1px' }}>{skill}</li>
                 ))}
               </ol>
             </div>
 
             {/* Daily Plan Table - Week 2 */}
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8.5pt', tableLayout: 'fixed' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '7pt', tableLayout: 'fixed' }}>
               <thead>
                 <tr>
-                  <th style={{ border: '1px solid black', padding: '5px', width: '13%', background: '#f0f0f0', fontSize: '9pt' }}></th>
+                  <th style={{ border: '1px solid black', padding: '3px', width: '12%', background: '#f0f0f0', fontSize: '7.5pt' }}></th>
                   {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, dayIdx) => (
-                    <th key={day} style={{ border: '1px solid black', padding: '5px', width: '17.4%', background: '#f0f0f0', textAlign: 'center', fontSize: '10pt' }}>
+                    <th key={day} style={{ border: '1px solid black', padding: '3px', width: '17.6%', background: '#f0f0f0', textAlign: 'center', fontSize: '8pt' }}>
                       {DAY_LABELS[day][lang]}
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '3px', fontSize: '9pt' }}>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '2px', fontSize: '7pt' }}>
                         {['E', 'C', 'A'].map(eca => (
-                          <span key={eca} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <span key={eca} style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
                             <span>{eca}</span>
-                            <Checkbox checked={planDaysWeek2[dayIdx]?.eca?.[eca]} size={10} />
+                            <Checkbox checked={planDaysWeek2[dayIdx]?.eca?.[eca]} size={8} />
                           </span>
                         ))}
                       </div>
@@ -410,9 +410,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
               <tbody>
                 {/* Day Theme */}
                 <tr>
-                  <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', fontSize: '9pt' }}>Day Theme</td>
+                  <td style={{ border: '1px solid black', padding: '3px', fontWeight: 'bold', fontSize: '7.5pt' }}>Day Theme</td>
                   {planDaysWeek2.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '5px', textAlign: 'center', fontSize: '9pt' }}>
+                    <td key={i} style={{ border: '1px solid black', padding: '3px', textAlign: 'center', fontSize: '7.5pt' }}>
                       {day.theme || ''}
                     </td>
                   ))}
@@ -420,14 +420,14 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
                 
                 {/* DOK Levels */}
                 <tr>
-                  <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', fontSize: '8pt' }}>
-                    Type of Taxonomy: Webb (2005) Levels
+                  <td style={{ border: '1px solid black', padding: '2px', fontWeight: 'bold', fontSize: '6.5pt' }}>
+                    Taxonomy: Webb (2005)
                   </td>
                   {planDaysWeek2.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '4px', fontSize: '8pt' }}>
+                    <td key={i} style={{ border: '1px solid black', padding: '2px', fontSize: '6.5pt' }}>
                       {[1, 2, 3, 4].map(level => (
-                        <div key={level} style={{ marginBottom: '2px', lineHeight: '1.25' }}>
-                          <Checkbox checked={day.dok_levels?.includes(level)} size={9} /> Level {level}
+                        <div key={level} style={{ marginBottom: '1px', lineHeight: '1.15' }}>
+                          <Checkbox checked={day.dok_levels?.includes(level)} size={7} /> L{level}
                         </div>
                       ))}
                     </td>
@@ -436,14 +436,14 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
 
                 {/* Activities */}
                 <tr>
-                  <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', fontSize: '9pt' }}>Activities</td>
+                  <td style={{ border: '1px solid black', padding: '2px', fontWeight: 'bold', fontSize: '7pt' }}>Activities</td>
                   {planDaysWeek2.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '4px', fontSize: '7.5pt' }}>
+                    <td key={i} style={{ border: '1px solid black', padding: '2px', fontSize: '6pt' }}>
                       {Object.keys(ACTIVITY_LABELS).map(actType => {
                         const activity = day.activities?.find(a => a.activity_type === actType);
                         return (
-                          <div key={actType} style={{ marginBottom: '2px', lineHeight: '1.2' }}>
-                            <Checkbox checked={activity?.checked} size={9} /> {ACTIVITY_LABELS[actType][lang]}
+                          <div key={actType} style={{ marginBottom: '1px', lineHeight: '1.1' }}>
+                            <Checkbox checked={activity?.checked} size={6} /> {ACTIVITY_LABELS[actType][lang]}
                             {actType === 'other' && activity?.checked && activity?.notes && (
                               <span style={{ fontStyle: 'italic' }}>: {activity.notes}</span>
                             )}
