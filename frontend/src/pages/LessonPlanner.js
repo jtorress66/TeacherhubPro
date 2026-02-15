@@ -668,6 +668,142 @@ const LessonPlanner = () => {
           />
         )}
 
+        {/* AI Generation Modal */}
+        <Dialog open={showAIModal} onOpenChange={setShowAIModal}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                  <Sparkles className="h-5 w-5 text-white" />
+                </div>
+                {language === 'es' ? 'Generar Plan con IA' : 'Generate Plan with AI'}
+              </DialogTitle>
+              <DialogDescription>
+                {language === 'es' 
+                  ? 'Describe tu lección y la IA generará un plan basado en estándares.' 
+                  : 'Describe your lesson and AI will generate a standards-based plan.'}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Materia' : 'Subject'}</Label>
+                  <Select 
+                    value={aiForm.subject} 
+                    onValueChange={(v) => setAIForm(prev => ({ ...prev, subject: v }))}
+                  >
+                    <SelectTrigger data-testid="ai-modal-subject">
+                      <SelectValue placeholder={language === 'es' ? 'Seleccionar...' : 'Select...'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {AI_SUBJECTS.map(s => (
+                        <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Grado' : 'Grade Level'}</Label>
+                  <Select 
+                    value={aiForm.grade_level} 
+                    onValueChange={(v) => setAIForm(prev => ({ ...prev, grade_level: v }))}
+                  >
+                    <SelectTrigger data-testid="ai-modal-grade">
+                      <SelectValue placeholder={language === 'es' ? 'Seleccionar...' : 'Select...'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {GRADE_LEVELS.map(g => (
+                        <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>{language === 'es' ? 'Tema de la Lección' : 'Lesson Topic'}</Label>
+                <Input
+                  value={aiForm.topic}
+                  onChange={(e) => setAIForm(prev => ({ ...prev, topic: e.target.value }))}
+                  placeholder={language === 'es' ? 'Ej: Fracciones equivalentes' : 'E.g., Equivalent fractions'}
+                  data-testid="ai-modal-topic"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Estándares' : 'Standards'}</Label>
+                  <Select 
+                    value={aiForm.standards_framework} 
+                    onValueChange={(v) => setAIForm(prev => ({ ...prev, standards_framework: v }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="both">{language === 'es' ? 'CC + PR' : 'CC + PR'}</SelectItem>
+                      <SelectItem value="common_core">Common Core</SelectItem>
+                      <SelectItem value="pr_core">Puerto Rico</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Dificultad' : 'Difficulty'}</Label>
+                  <Select 
+                    value={aiForm.difficulty_level} 
+                    onValueChange={(v) => setAIForm(prev => ({ ...prev, difficulty_level: v }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="easy">{language === 'es' ? 'Fácil' : 'Easy'}</SelectItem>
+                      <SelectItem value="medium">{language === 'es' ? 'Medio' : 'Medium'}</SelectItem>
+                      <SelectItem value="hard">{language === 'es' ? 'Difícil' : 'Hard'}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>{language === 'es' ? 'Duración (minutos)' : 'Duration (minutes)'}</Label>
+                <Input
+                  type="number"
+                  value={aiForm.duration_minutes}
+                  onChange={(e) => setAIForm(prev => ({ ...prev, duration_minutes: parseInt(e.target.value) || 45 }))}
+                />
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button variant="outline" onClick={() => setShowAIModal(false)}>
+                {language === 'es' ? 'Cancelar' : 'Cancel'}
+              </Button>
+              <Button 
+                onClick={handleAIGenerate} 
+                disabled={aiGenerating}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                data-testid="ai-modal-generate"
+              >
+                {aiGenerating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    {language === 'es' ? 'Generando...' : 'Generating...'}
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    {language === 'es' ? 'Generar Plan' : 'Generate Plan'}
+                  </>
+                )}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Plan Header Info */}
         <Card className="bg-white border-slate-100">
           <CardContent className="p-6">
