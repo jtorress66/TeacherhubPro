@@ -129,13 +129,10 @@ const AIAssistant = () => {
 
   const loadGenerations = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/ai/generations`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await axios.get(`${API_URL}/api/ai/generations`, {
+        withCredentials: true
       });
-      if (response.ok) {
-        const data = await response.json();
-        setGenerations(data);
-      }
+      setGenerations(response.data);
     } catch (error) {
       console.error('Failed to load generations:', error);
     }
