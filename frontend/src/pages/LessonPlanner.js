@@ -624,6 +624,17 @@ const LessonPlanner = () => {
             )}
           </div>
           <div className="flex gap-2 flex-wrap">
+            {/* AI Generate Button */}
+            <Button 
+              variant="outline" 
+              onClick={() => setShowAIModal(true)}
+              className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 text-purple-700 hover:from-purple-100 hover:to-blue-100"
+              data-testid="ai-generate-btn"
+            >
+              <Wand2 className="h-4 w-4 mr-2" />
+              {language === 'es' ? 'Generar con IA' : 'Generate with AI'}
+            </Button>
+            
             {planId !== 'new' && (
               <>
                 <Button variant="outline" onClick={() => setShowPrintView(true)} data-testid="print-plan-btn">
