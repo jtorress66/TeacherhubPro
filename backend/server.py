@@ -19,6 +19,10 @@ import resend
 from emergentintegrations.llm.openai import OpenAITextToSpeech
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
+# Import modular routes
+from routes.auth import router as auth_router
+from routes.ai import router as ai_router
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
