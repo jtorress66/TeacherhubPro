@@ -6,10 +6,10 @@ import logging
 
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
-from ..utils.database import db
-from ..utils.auth import get_current_user
-from ..utils.constants import EMERGENT_LLM_KEY, AI_SYSTEM_PROMPTS, STANDARDS_INFO, FREE_TRIAL_DAYS
-from ..models import AIGenerationRequest, AIChatRequest
+from utils.database import db
+from utils.auth import get_current_user
+from utils.constants import EMERGENT_LLM_KEY, AI_SYSTEM_PROMPTS, STANDARDS_INFO, FREE_TRIAL_DAYS
+from models import AIGenerationRequest, AIChatRequest
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/ai", tags=["AI Assistant"])
