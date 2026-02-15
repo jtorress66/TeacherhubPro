@@ -323,6 +323,18 @@ STARTER_TEMPLATES = [
         "grade_level": "3-4",
         "tags": ["math", "fractions", "hands-on", "visual"],
         "is_starter": True,
+        "customization_tips": [
+            "Replace 'pizza' theme with local food favorites (e.g., 'pastelitos', 'quesadillas')",
+            "Adjust the manipulatives based on what's available (LEGO blocks work great!)",
+            "For advanced students, extend to fifths and sixths on Day 3",
+            "Add a 'Fraction in Real Life' homework where students find fractions at home"
+        ],
+        "customization_tips_es": [
+            "Reemplaza el tema de 'pizza' con comidas locales favoritas (ej: 'pastelitos', 'quesadillas')",
+            "Ajusta los manipulativos según lo disponible (¡los bloques LEGO funcionan muy bien!)",
+            "Para estudiantes avanzados, extiende a quintos y sextos el Día 3",
+            "Agrega tarea de 'Fracciones en la Vida Real' donde encuentren fracciones en casa"
+        ],
         "days": {
             "0": """🎯 **Day 1 - Introduction & Exploration**
 
