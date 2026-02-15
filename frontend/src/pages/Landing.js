@@ -172,12 +172,12 @@ const Landing = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Minimal Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img 
               src="https://static.prod-images.emergentagent.com/jobs/3f72aedc-992b-4d25-83bd-5bb47e46011f/images/0f969775d262b8ea24538b15f4cc9cbeaf4a878afa90805ec86f8619b9caac6c.png"
               alt="TeacherHubPro Logo"
-              className="h-16 w-16 object-contain"
+              className="h-20 w-20 object-contain"
             />
             <span className="text-xl font-bold text-slate-800">TeacherHubPro</span>
           </div>
