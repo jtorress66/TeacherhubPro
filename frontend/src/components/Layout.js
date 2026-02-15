@@ -20,7 +20,8 @@ import {
   BarChart3,
   Briefcase,
   CreditCard,
-  Shield
+  Shield,
+  Sparkles
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
