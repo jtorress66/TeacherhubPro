@@ -530,6 +530,157 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* AI Features Showcase - Detailed */}
+      <section className="py-24 px-6 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 text-sm font-medium mb-4">
+              <Wand2 className="h-4 w-4" />
+              {language === 'es' ? 'Funciones de IA Avanzadas' : 'Advanced AI Features'}
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+              {language === 'es' ? 'Planificación inteligente con IA' : 'Intelligent planning with AI'}
+            </h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              {language === 'es' 
+                ? 'Desde generar un plan completo hasta sugerencias diarias, la IA te ayuda en cada paso.' 
+                : 'From generating a complete plan to daily suggestions, AI helps you every step of the way.'}
+            </p>
+          </div>
+
+          {/* AI Features Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Feature 1: Generate Full Week */}
+            <div className="group bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-6 border border-purple-100 hover:shadow-xl hover:border-purple-300 transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <CalendarDays className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                {language === 'es' ? 'Genera Semana Completa' : 'Generate Full Week'}
+              </h3>
+              <p className="text-slate-600 mb-4">
+                {language === 'es' 
+                  ? 'Con un clic, genera actividades para los 5 días con progresión pedagógica: introducción → práctica → dominio → evaluación.'
+                  : 'With one click, generate activities for all 5 days with pedagogical progression: intro → practice → mastery → assessment.'}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">5 {language === 'es' ? 'días' : 'days'}</span>
+                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">{language === 'es' ? 'Progresión' : 'Progression'}</span>
+              </div>
+            </div>
+
+            {/* Feature 2: Daily AI Suggestions */}
+            <div className="group bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-100 hover:shadow-xl hover:border-blue-300 transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Lightbulb className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                {language === 'es' ? 'Sugerencias por Día' : 'Daily Suggestions'}
+              </h3>
+              <p className="text-slate-600 mb-4">
+                {language === 'es' 
+                  ? 'Cada día muestra su fase pedagógica (Introducción, Práctica, Dominio). Obtén sugerencias específicas para cada etapa.'
+                  : 'Each day shows its pedagogical phase (Introduction, Practice, Mastery). Get specific suggestions for each stage.'}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">{language === 'es' ? 'Lunes → Viernes' : 'Mon → Fri'}</span>
+                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">{language === 'es' ? 'Contextual' : 'Contextual'}</span>
+              </div>
+            </div>
+
+            {/* Feature 3: AI Templates */}
+            <div className="group bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-100 hover:shadow-xl hover:border-amber-300 transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Layers className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                {language === 'es' ? 'Plantillas Reutilizables' : 'Reusable Templates'}
+              </h3>
+              <p className="text-slate-600 mb-4">
+                {language === 'es' 
+                  ? 'Guarda tus mejores planes como plantillas. Clona y personaliza para nuevos temas con un clic.'
+                  : 'Save your best plans as templates. Clone and customize for new topics with one click.'}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs">{language === 'es' ? 'Guardar' : 'Save'}</span>
+                <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs">{language === 'es' ? 'Clonar' : 'Clone'}</span>
+              </div>
+            </div>
+
+            {/* Feature 4: Starter Templates */}
+            <div className="group bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100 hover:shadow-xl hover:border-green-300 transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Star className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                {language === 'es' ? '5 Plantillas Iniciales' : '5 Starter Templates'}
+              </h3>
+              <p className="text-slate-600 mb-4">
+                {language === 'es' 
+                  ? 'Comienza inmediatamente con plantillas profesionales: Fracciones, Comprensión Lectora, Método Científico, Escritura y Multiplicación.'
+                  : 'Start immediately with pro templates: Fractions, Reading Comprehension, Scientific Method, Writing, and Multiplication.'}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">{language === 'es' ? 'Matemáticas' : 'Math'}</span>
+                <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">{language === 'es' ? 'Lectura' : 'ELA'}</span>
+                <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">{language === 'es' ? 'Ciencias' : 'Science'}</span>
+              </div>
+            </div>
+
+            {/* Feature 5: Customize Templates */}
+            <div className="group bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-6 border border-pink-100 hover:shadow-xl hover:border-pink-300 transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Copy className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                {language === 'es' ? 'Adapta con IA' : 'AI Customize'}
+              </h3>
+              <p className="text-slate-600 mb-4">
+                {language === 'es' 
+                  ? 'Toma cualquier plantilla y adáptala a un nuevo tema. La IA mantiene la estructura exitosa mientras cambia el contenido.'
+                  : 'Take any template and adapt it to a new topic. AI keeps the successful structure while changing the content.'}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-2 py-1 bg-pink-100 text-pink-700 rounded text-xs">{language === 'es' ? 'Nuevo tema' : 'New topic'}</span>
+                <span className="px-2 py-1 bg-pink-100 text-pink-700 rounded text-xs">{language === 'es' ? 'Misma estructura' : 'Same structure'}</span>
+              </div>
+            </div>
+
+            {/* Feature 6: Template of the Week */}
+            <div className="group bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl p-6 border border-violet-100 hover:shadow-xl hover:border-violet-300 transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Sparkles className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                {language === 'es' ? 'Plantilla de la Semana' : 'Template of the Week'}
+              </h3>
+              <p className="text-slate-600 mb-4">
+                {language === 'es' 
+                  ? 'Cada semana destacamos una plantilla diferente en tu dashboard con tips de personalización específicos.'
+                  : 'Each week we spotlight a different template on your dashboard with specific customization tips.'}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-2 py-1 bg-violet-100 text-violet-700 rounded text-xs">{language === 'es' ? 'Rotación semanal' : 'Weekly rotation'}</span>
+                <span className="px-2 py-1 bg-violet-100 text-violet-700 rounded text-xs">{language === 'es' ? 'Tips' : 'Tips'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center mt-12">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 shadow-lg"
+              onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
+            >
+              <Wand2 className="h-5 w-5 mr-2" />
+              {language === 'es' ? 'Prueba la IA gratis por 7 días' : 'Try AI free for 7 days'}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Customization Section */}
       <section id="customization" className="py-24 px-6 bg-gradient-to-b from-slate-900 to-slate-800 text-white relative overflow-hidden">
         {/* Background pattern */}
