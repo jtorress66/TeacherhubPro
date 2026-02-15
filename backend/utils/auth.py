@@ -6,7 +6,7 @@ import jwt
 import uuid
 import os
 
-from .database import db
+from utils.database import db
 
 # JWT Configuration
 JWT_SECRET = os.environ.get('JWT_SECRET', 'teacherhub-secret-key-change-in-production')
