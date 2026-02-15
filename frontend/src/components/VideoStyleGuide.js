@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from './ui/button';
 import axios from 'axios';
 import { 
@@ -33,11 +33,13 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [audioCache, setAudioCache] = useState({});
-  const [autoPlay, setAutoPlay] = useState(true); // Auto-play enabled by default
   const [isPaused, setIsPaused] = useState(false);
+  const [autoPlay] = useState(true);
+  
   const audioRef = useRef(null);
-  const hasStartedRef = useRef(false);
+  const audioCacheRef = useRef({});
+  const isPlayingRef = useRef(false);
+  const currentStepRef = useRef(0);
 
   // Comprehensive workflow guide content - Updated with new AI features
   const steps = [
@@ -45,10 +47,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
       icon: Sparkles,
       iconBg: 'from-amber-400 to-orange-500',
       image: '🎓',
-      title: {
-        en: "Welcome to TeacherHubPro!",
-        es: "¡Bienvenido a TeacherHubPro!"
-      },
+      title: { en: "Welcome to TeacherHubPro!", es: "¡Bienvenido a TeacherHubPro!" },
       content: {
         en: "I'll guide you through setting up your digital classroom. This audio tour will automatically walk you through everything. Sit back and listen!",
         es: "Te guiaré para configurar tu aula digital. Este recorrido de audio te llevará automáticamente por todo. ¡Siéntate y escucha!"
@@ -62,10 +61,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
       icon: Users,
       iconBg: 'from-green-400 to-emerald-600',
       image: '👥',
-      title: {
-        en: "Step 1: Create Your Classes",
-        es: "Paso 1: Crea tus Clases"
-      },
+      title: { en: "Step 1: Create Your Classes", es: "Paso 1: Crea tus Clases" },
       content: {
         en: "First, create your classes. Go to 'Classes' in the sidebar, click 'Add Class', and enter the class name, subject, and grade level.",
         es: "Primero, crea tus clases. Ve a 'Clases' en la barra lateral, haz clic en 'Agregar Clase' e ingresa el nombre, materia y nivel de grado."
@@ -74,19 +70,13 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
         en: "Step one is creating your classes. This is the foundation of everything else. Go to Classes in the sidebar, click Add Class, and enter the class name, subject, and grade level. You need classes before you can create lesson plans, take attendance, or record grades.",
         es: "El primer paso es crear tus clases. Esta es la base de todo lo demás. Ve a Clases en la barra lateral, haz clic en Agregar Clase e ingresa el nombre, materia y nivel de grado. Necesitas clases antes de poder crear planes de lección, tomar asistencia o registrar calificaciones."
       },
-      tip: {
-        en: "💡 You must create classes first before using other features!",
-        es: "💡 ¡Debes crear clases primero antes de usar otras funciones!"
-      }
+      tip: { en: "💡 You must create classes first before using other features!", es: "💡 ¡Debes crear clases primero antes de usar otras funciones!" }
     },
     {
       icon: GraduationCap,
       iconBg: 'from-blue-400 to-blue-600',
       image: '🎒',
-      title: {
-        en: "Step 2: Add Your Students",
-        es: "Paso 2: Agrega tus Estudiantes"
-      },
+      title: { en: "Step 2: Add Your Students", es: "Paso 2: Agrega tus Estudiantes" },
       content: {
         en: "After creating a class, add your students. Click on a class, then 'Add Student'. Enter their name, student ID, and parent email.",
         es: "Después de crear una clase, agrega tus estudiantes. Haz clic en una clase, luego 'Agregar Estudiante'. Ingresa su nombre, ID y correo de los padres."
@@ -100,10 +90,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
       icon: Calendar,
       iconBg: 'from-purple-400 to-purple-600',
       image: '📅',
-      title: {
-        en: "Step 3: Create Lesson Plans",
-        es: "Paso 3: Crea Planes de Lección"
-      },
+      title: { en: "Step 3: Create Lesson Plans", es: "Paso 3: Crea Planes de Lección" },
       content: {
         en: "Create lesson plans in the Planner. Select a class, choose a week, and fill in objectives and activities. Use AI to generate plans instantly!",
         es: "Crea planes de lección en el Planificador. Selecciona una clase, elige una semana y completa objetivos y actividades. ¡Usa la IA para generar planes al instante!"
@@ -117,10 +104,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
       icon: Bot,
       iconBg: 'from-violet-400 to-purple-600',
       image: '🤖',
-      title: {
-        en: "Step 4: AI Teaching Assistant",
-        es: "Paso 4: Asistente de IA"
-      },
+      title: { en: "Step 4: AI Teaching Assistant", es: "Paso 4: Asistente de IA" },
       content: {
         en: "Meet your AI co-teacher! Generate lesson plans, quizzes, worksheets, and summaries aligned with Common Core and PR CORE standards.",
         es: "¡Conoce a tu co-maestro de IA! Genera planes de lección, exámenes, hojas de trabajo y resúmenes alineados con Common Core y PR CORE."
@@ -134,10 +118,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
       icon: FileText,
       iconBg: 'from-indigo-400 to-indigo-600',
       image: '📋',
-      title: {
-        en: "Step 5: Templates & Quick Week",
-        es: "Paso 5: Plantillas y Semana Rápida"
-      },
+      title: { en: "Step 5: Templates & Quick Week", es: "Paso 5: Plantillas y Semana Rápida" },
       content: {
         en: "Save your best lesson plans as templates! Use 'Generate Full Week' to create a complete 5-day plan with AI, or browse starter templates.",
         es: "¡Guarda tus mejores planes como plantillas! Usa 'Generar Semana Completa' para crear un plan de 5 días con IA, o explora plantillas de inicio."
@@ -151,10 +132,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
       icon: Printer,
       iconBg: 'from-emerald-400 to-green-600',
       image: '🖨️',
-      title: {
-        en: "Step 6: Print & Export PDF",
-        es: "Paso 6: Imprimir y Exportar PDF"
-      },
+      title: { en: "Step 6: Print & Export PDF", es: "Paso 6: Imprimir y Exportar PDF" },
       content: {
         en: "Export any AI-generated content as PDF! Print quizzes, worksheets, and lesson plans with professional formatting.",
         es: "¡Exporta cualquier contenido de IA como PDF! Imprime exámenes, hojas de trabajo y planes con formato profesional."
@@ -168,10 +146,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
       icon: ClipboardCheck,
       iconBg: 'from-teal-400 to-teal-600',
       image: '✅',
-      title: {
-        en: "Step 7: Take Attendance",
-        es: "Paso 7: Toma Asistencia"
-      },
+      title: { en: "Step 7: Take Attendance", es: "Paso 7: Toma Asistencia" },
       content: {
         en: "Taking attendance is quick and easy. Go to 'Attendance', select your class and date, then mark each student with one click.",
         es: "Tomar asistencia es rápido y fácil. Ve a 'Asistencia', selecciona tu clase y fecha, luego marca cada estudiante con un clic."
@@ -185,10 +160,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
       icon: BookOpen,
       iconBg: 'from-rose-400 to-rose-600',
       image: '📊',
-      title: {
-        en: "Step 8: Record Grades",
-        es: "Paso 8: Registra Calificaciones"
-      },
+      title: { en: "Step 8: Record Grades", es: "Paso 8: Registra Calificaciones" },
       content: {
         en: "Use the Gradebook to track student progress. Create assignment categories, add assignments, and enter grades. GPAs are calculated automatically.",
         es: "Usa el Libro de Calificaciones para seguir el progreso. Crea categorías de tareas, agrega asignaciones e ingresa notas. Los promedios se calculan automáticamente."
@@ -202,10 +174,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
       icon: Mail,
       iconBg: 'from-cyan-400 to-cyan-600',
       image: '📧',
-      title: {
-        en: "Step 9: Share with Parents",
-        es: "Paso 9: Comparte con Padres"
-      },
+      title: { en: "Step 9: Share with Parents", es: "Paso 9: Comparte con Padres" },
       content: {
         en: "Keep parents informed! Click 'Send Portal Link' next to any student. Parents receive a secure link to view grades and attendance.",
         es: "¡Mantén informados a los padres! Haz clic en 'Enviar Enlace' junto a cualquier estudiante. Los padres reciben un enlace seguro para ver notas y asistencia."
@@ -219,10 +188,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
       icon: Briefcase,
       iconBg: 'from-orange-400 to-orange-600',
       image: '💼',
-      title: {
-        en: "Bonus: Substitute Packets",
-        es: "Extra: Paquetes para Sustitutos"
-      },
+      title: { en: "Bonus: Substitute Packets", es: "Extra: Paquetes para Sustitutos" },
       content: {
         en: "Going to be absent? Generate a comprehensive substitute packet with class info, lesson plans, and emergency contacts in one click!",
         es: "¿Vas a estar ausente? ¡Genera un paquete completo para el sustituto con información de clase, planes y contactos de emergencia en un clic!"
@@ -236,10 +202,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
       icon: CheckCircle2,
       iconBg: 'from-lime-400 to-green-600',
       image: '🎉',
-      title: {
-        en: "You're Ready!",
-        es: "¡Estás Listo!"
-      },
+      title: { en: "You're Ready!", es: "¡Estás Listo!" },
       content: {
         en: "That's the complete workflow! Classes → Students → Plans → AI Tools → Attendance → Grades → Parents. You can restart this guide anytime!",
         es: "¡Ese es el flujo completo! Clases → Estudiantes → Planes → Herramientas IA → Asistencia → Notas → Padres. ¡Puedes reiniciar esta guía cuando quieras!"
@@ -256,56 +219,70 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
   const isFirst = currentStep === 0;
   const isLast = currentStep === steps.length - 1;
 
-  // Generate and play audio for current step
-  const playNarration = useCallback(async () => {
-    if (isMuted || isPaused) return;
-    
-    const cacheKey = `${currentStep}-${lang}`;
+  // Keep refs in sync
+  useEffect(() => {
+    currentStepRef.current = currentStep;
+  }, [currentStep]);
+
+  // Play narration for a specific step
+  const playNarrationForStep = async (stepIndex) => {
+    // Prevent duplicate plays
+    if (isPlayingRef.current) {
+      return;
+    }
+
+    const stepData = steps[stepIndex];
+    const cacheKey = `${stepIndex}-${lang}`;
     
     // Check cache first
-    if (audioCache[cacheKey]) {
+    if (audioCacheRef.current[cacheKey]) {
       if (audioRef.current) {
-        audioRef.current.src = audioCache[cacheKey];
+        isPlayingRef.current = true;
+        setIsPlaying(true);
+        audioRef.current.src = audioCacheRef.current[cacheKey];
         try {
           await audioRef.current.play();
-          setIsPlaying(true);
         } catch (e) {
           console.log('Audio play failed:', e);
+          isPlayingRef.current = false;
+          setIsPlaying(false);
         }
       }
       return;
     }
 
+    // Generate new audio
     setIsLoading(true);
     try {
       const response = await axios.post(`${API}/tts/generate`, {
-        text: step.narration[lang],
+        text: stepData.narration[lang],
         language: lang
       }, { withCredentials: true });
 
       if (response.data.audio_url) {
         // Cache the audio
-        setAudioCache(prev => ({
-          ...prev,
-          [cacheKey]: response.data.audio_url
-        }));
+        audioCacheRef.current[cacheKey] = response.data.audio_url;
 
-        if (audioRef.current && !isPaused) {
+        // Only play if we're still on the same step and not paused
+        if (currentStepRef.current === stepIndex && audioRef.current && !isPaused) {
+          isPlayingRef.current = true;
+          setIsPlaying(true);
           audioRef.current.src = response.data.audio_url;
           try {
             await audioRef.current.play();
-            setIsPlaying(true);
           } catch (e) {
             console.log('Audio play failed:', e);
+            isPlayingRef.current = false;
+            setIsPlaying(false);
           }
         }
       }
     } catch (error) {
       console.error('Error generating narration:', error);
       // If TTS fails, auto-advance after a delay
-      if (autoPlay && !isPaused) {
+      if (autoPlay && !isPaused && currentStepRef.current === stepIndex) {
         setTimeout(() => {
-          if (!isLast) {
+          if (currentStepRef.current === stepIndex && stepIndex < steps.length - 1) {
             setCurrentStep(prev => prev + 1);
           }
         }, 5000);
@@ -313,49 +290,71 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [currentStep, lang, audioCache, step, isMuted, isPaused, autoPlay, isLast]);
+  };
 
-  // Auto-play audio when step changes (or on initial load)
+  // Auto-play when step changes
   useEffect(() => {
-    if (run && autoPlay && !isPaused) {
-      // Small delay to ensure component is ready
-      const timer = setTimeout(() => {
-        playNarration();
-      }, 500);
-      return () => clearTimeout(timer);
+    if (!run || !autoPlay || isPaused || isMuted) return;
+
+    // Stop any current audio first
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
-  }, [currentStep, run, autoPlay, isPaused, playNarration]);
+    isPlayingRef.current = false;
+    setIsPlaying(false);
+
+    // Delay to ensure clean transition
+    const timer = setTimeout(() => {
+      playNarrationForStep(currentStep);
+    }, 300);
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStep, run, isPaused, isMuted]);
 
   // Handle audio end - auto-advance to next step
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      const handleEnded = () => {
-        setIsPlaying(false);
-        // Auto-advance to next step when audio ends
-        if (autoPlay && !isPaused && !isLast) {
-          setTimeout(() => {
-            setCurrentStep(prev => prev + 1);
-          }, 1000); // 1 second pause between steps
-        } else if (isLast) {
-          // On last step, show completion state
-          setIsPlaying(false);
-        }
-      };
-      audio.addEventListener('ended', handleEnded);
-      return () => audio.removeEventListener('ended', handleEnded);
-    }
-  }, [autoPlay, isPaused, isLast]);
+    if (!audio) return;
+
+    const handleEnded = () => {
+      isPlayingRef.current = false;
+      setIsPlaying(false);
+      
+      // Auto-advance to next step when audio ends
+      if (autoPlay && !isPaused && currentStepRef.current < steps.length - 1) {
+        setTimeout(() => {
+          setCurrentStep(prev => prev + 1);
+        }, 1500); // 1.5 second pause between steps
+      }
+    };
+
+    const handleError = () => {
+      isPlayingRef.current = false;
+      setIsPlaying(false);
+    };
+
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('error', handleError);
+    
+    return () => {
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('error', handleError);
+    };
+  }, [autoPlay, isPaused, steps.length]);
 
   const togglePause = () => {
     if (isPaused) {
       // Resume
       setIsPaused(false);
-      if (audioRef.current && audioRef.current.src) {
-        audioRef.current.play();
-        setIsPlaying(true);
-      } else {
-        playNarration();
+      if (audioRef.current && audioRef.current.src && audioRef.current.paused) {
+        audioRef.current.play().then(() => {
+          isPlayingRef.current = true;
+          setIsPlaying(true);
+        }).catch(() => {});
+      } else if (!isPlayingRef.current) {
+        playNarrationForStep(currentStep);
       }
     } else {
       // Pause
@@ -363,22 +362,27 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
       if (audioRef.current) {
         audioRef.current.pause();
       }
+      isPlayingRef.current = false;
       setIsPlaying(false);
     }
   };
 
   const toggleMute = () => {
+    const newMuted = !isMuted;
+    setIsMuted(newMuted);
     if (audioRef.current) {
-      audioRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
+      audioRef.current.muted = newMuted;
     }
   };
 
   const handleNext = () => {
     if (audioRef.current) {
       audioRef.current.pause();
-      setIsPlaying(false);
+      audioRef.current.currentTime = 0;
     }
+    isPlayingRef.current = false;
+    setIsPlaying(false);
+    
     if (isLast) {
       localStorage.setItem('teacherhubpro_guide_completed', 'true');
       onClose();
@@ -390,8 +394,11 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
   const handleBack = () => {
     if (audioRef.current) {
       audioRef.current.pause();
-      setIsPlaying(false);
+      audioRef.current.currentTime = 0;
     }
+    isPlayingRef.current = false;
+    setIsPlaying(false);
+    
     if (!isFirst) {
       setCurrentStep(prev => prev - 1);
     }
@@ -405,6 +412,16 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
     onClose();
   };
 
+  const goToStep = (index) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    isPlayingRef.current = false;
+    setIsPlaying(false);
+    setCurrentStep(index);
+  };
+
   if (!run) return null;
 
   const IconComponent = step.icon;
@@ -412,7 +429,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       {/* Hidden audio element */}
-      <audio ref={audioRef} />
+      <audio ref={audioRef} preload="none" />
       
       {/* Backdrop */}
       <div 
@@ -440,7 +457,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
             {autoPlay && !isPaused && (
               <span className="flex items-center gap-1 text-xs text-lime-600 bg-lime-50 px-2 py-1 rounded-full">
                 <span className="w-2 h-2 bg-lime-500 rounded-full animate-pulse" />
-                {lang === 'es' ? 'Auto-reproducción' : 'Auto-playing'}
+                {lang === 'es' ? 'Auto' : 'Auto'}
               </span>
             )}
           </div>
@@ -462,8 +479,8 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
                 <Pause className="h-4 w-4" />
               )}
               {isPaused 
-                ? (lang === 'es' ? 'Reanudar' : 'Resume') 
-                : (lang === 'es' ? 'Pausar' : 'Pause')
+                ? (lang === 'es' ? 'Play' : 'Play') 
+                : (lang === 'es' ? 'Pausa' : 'Pause')
               }
             </Button>
             
@@ -472,7 +489,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
               variant="ghost"
               onClick={toggleMute}
               className="text-gray-400 hover:text-gray-600"
-              title={isMuted ? (lang === 'es' ? 'Activar sonido' : 'Unmute') : (lang === 'es' ? 'Silenciar' : 'Mute')}
+              title={isMuted ? (lang === 'es' ? 'Activar' : 'Unmute') : (lang === 'es' ? 'Silenciar' : 'Mute')}
             >
               {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
             </Button>
@@ -482,7 +499,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
               variant="ghost"
               onClick={handleNext}
               className="text-gray-400 hover:text-gray-600"
-              title={lang === 'es' ? 'Saltar paso' : 'Skip step'}
+              title={lang === 'es' ? 'Siguiente' : 'Skip'}
             >
               <SkipForward className="h-4 w-4" />
             </Button>
@@ -491,7 +508,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
           <button
             onClick={handleSkip}
             className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-            title={lang === 'es' ? 'Cerrar guía' : 'Close guide'}
+            title={lang === 'es' ? 'Cerrar' : 'Close'}
           >
             <X className="h-5 w-5 text-gray-400" />
           </button>
@@ -506,7 +523,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
                 <span className="w-1 h-4 bg-lime-500 rounded animate-pulse" style={{ animationDelay: '150ms' }} />
                 <span className="w-1 h-4 bg-lime-500 rounded animate-pulse" style={{ animationDelay: '300ms' }} />
               </div>
-              <span>{lang === 'es' ? 'Reproduciendo narración...' : 'Playing narration...'}</span>
+              <span>{lang === 'es' ? 'Reproduciendo...' : 'Playing...'}</span>
             </div>
           </div>
         )}
@@ -555,7 +572,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
                         : 'bg-gray-100 text-gray-400'
                   }`}>
                     {lang === 'es' 
-                      ? ['Clases', 'Estudiantes', 'Planes', 'IA', 'PDF', 'Asist.', 'Notas', 'Padres'][idx]
+                      ? ['Clases', 'Alumnos', 'Planes', 'IA', 'PDF', 'Asist.', 'Notas', 'Padres'][idx]
                       : item
                     }
                   </span>
@@ -570,13 +587,7 @@ const VideoStyleGuide = ({ language, run, onClose }) => {
             {steps.map((_, index) => (
               <button
                 key={index}
-                onClick={() => {
-                  if (audioRef.current) {
-                    audioRef.current.pause();
-                    setIsPlaying(false);
-                  }
-                  setCurrentStep(index);
-                }}
+                onClick={() => goToStep(index)}
                 className={`h-2 rounded-full transition-all duration-300 ${
                   index === currentStep 
                     ? 'w-8 bg-gradient-to-r from-lime-500 to-green-500' 
