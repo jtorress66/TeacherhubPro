@@ -511,56 +511,56 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
                 {['listeningAndSpeaking', 'foundationalSkills', 'reading', 'writing', 'language'].map(domain => {
                   const standard = getStandardsForWeek(1).find(s => s.domain === domain);
                   return (
-                    <div key={domain} style={{ marginBottom: '5px', fontSize: '8pt' }}>
-                      <Checkbox checked={standard?.codes?.length > 0} size={8} />
+                    <div key={domain} style={{ marginBottom: '6px', fontSize: '9pt' }}>
+                      <Checkbox checked={standard?.codes?.length > 0} size={9} />
                       <strong style={{ marginLeft: '4px' }}>{STANDARD_LABELS[domain][lang]}</strong>
                       {standard?.codes?.length > 0 && (
-                        <span style={{ marginLeft: '6px', fontFamily: 'monospace', fontSize: '7pt' }}>
+                        <span style={{ marginLeft: '8px', fontFamily: 'monospace', fontSize: '8pt' }}>
                           {standard.codes.join(', ')}
                         </span>
                       )}
                     </div>
                   );
                 })}
-                <div style={{ border: '1px solid black', padding: '6px', marginTop: '8px', minHeight: '60px' }}>
-                  <strong style={{ fontSize: '8pt' }}>Expectations:</strong>
-                  <div style={{ marginTop: '4px', fontSize: '7.5pt' }}>{getExpectationForWeek(1)}</div>
+                <div style={{ border: '1px solid black', padding: '8px', marginTop: '10px', minHeight: '80px' }}>
+                  <strong style={{ fontSize: '9pt' }}>Expectations:</strong>
+                  <div style={{ marginTop: '5px', fontSize: '9pt' }}>{getExpectationForWeek(1)}</div>
                 </div>
               </div>
 
               {/* Second Week */}
-              <div style={{ padding: '8px' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '10pt', borderBottom: '1px solid black', marginBottom: '8px', paddingBottom: '4px' }}>
+              <div style={{ padding: '10px' }}>
+                <div style={{ fontWeight: 'bold', fontSize: '11pt', borderBottom: '1px solid black', marginBottom: '10px', paddingBottom: '4px' }}>
                   Standard: Second Week
                 </div>
                 {['listeningAndSpeaking', 'foundationalSkills', 'reading', 'writing', 'language'].map(domain => {
                   const standard = getStandardsForWeek(2).find(s => s.domain === domain);
                   return (
-                    <div key={domain} style={{ marginBottom: '5px', fontSize: '8pt' }}>
-                      <Checkbox checked={standard?.codes?.length > 0} size={8} />
+                    <div key={domain} style={{ marginBottom: '6px', fontSize: '9pt' }}>
+                      <Checkbox checked={standard?.codes?.length > 0} size={9} />
                       <strong style={{ marginLeft: '4px' }}>{STANDARD_LABELS[domain][lang]}</strong>
                       {standard?.codes?.length > 0 && (
-                        <span style={{ marginLeft: '6px', fontFamily: 'monospace', fontSize: '7pt' }}>
+                        <span style={{ marginLeft: '8px', fontFamily: 'monospace', fontSize: '8pt' }}>
                           {standard.codes.join(', ')}
                         </span>
                       )}
                     </div>
                   );
                 })}
-                <div style={{ border: '1px solid black', padding: '6px', marginTop: '8px', minHeight: '60px' }}>
-                  <strong style={{ fontSize: '8pt' }}>Expectations:</strong>
-                  <div style={{ marginTop: '4px', fontSize: '7.5pt' }}>{getExpectationForWeek(2)}</div>
+                <div style={{ border: '1px solid black', padding: '8px', marginTop: '10px', minHeight: '80px' }}>
+                  <strong style={{ fontSize: '9pt' }}>Expectations:</strong>
+                  <div style={{ marginTop: '5px', fontSize: '9pt' }}>{getExpectationForWeek(2)}</div>
                 </div>
               </div>
             </div>
 
             {/* Integration Section */}
-            <div style={{ border: '1px solid black', padding: '8px' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '9pt', marginBottom: '6px' }}>Integration with other subjects:</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', fontSize: '8pt' }}>
+            <div style={{ border: '1px solid black', padding: '10px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '10pt', marginBottom: '8px' }}>Integration with other subjects:</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '9pt' }}>
                 {['mathematics', 'spanish', 'socialStudies', 'science', 'health', 'art', 'physicalEducation', 'religion'].map(subject => (
-                  <span key={subject} style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                    <Checkbox checked={plan.subject_integration?.includes(subject)} size={8} />
+                  <span key={subject} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <Checkbox checked={plan.subject_integration?.includes(subject)} size={9} />
                     <span>{subject.charAt(0).toUpperCase() + subject.slice(1).replace(/([A-Z])/g, ' $1')}</span>
                   </span>
                 ))}
@@ -568,11 +568,11 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             </div>
 
             {/* Signature Section */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', marginTop: '25px' }}>
-              <div style={{ borderTop: '1px solid black', paddingTop: '6px', textAlign: 'center', fontSize: '9pt' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', marginTop: '35px' }}>
+              <div style={{ borderTop: '1px solid black', paddingTop: '6px', textAlign: 'center', fontSize: '10pt' }}>
                 Teacher's Signature / Date
               </div>
-              <div style={{ borderTop: '1px solid black', paddingTop: '6px', textAlign: 'center', fontSize: '9pt' }}>
+              <div style={{ borderTop: '1px solid black', paddingTop: '6px', textAlign: 'center', fontSize: '10pt' }}>
                 Principal's Signature / Date
               </div>
             </div>
