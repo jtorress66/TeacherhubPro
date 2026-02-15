@@ -1172,6 +1172,85 @@ ${language === 'es' ? 'Please respond entirely in Spanish.' : 'Please respond in
                 
                 return (
                 <TabsContent key={day} value={String(dayIndex)} className="space-y-4">
+                  {/* Day Header with Phase Badge and AI Button */}
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                    <div className="flex items-center gap-3">
+                      <Badge 
+                        variant="outline" 
+                        className={`text-xs ${
+                          dayIndex === 0 ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                          dayIndex === 4 ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                          'bg-slate-50 text-slate-600 border-slate-200'
+                        }`}
+                      >
+                        {language === 'es' ? DAY_PHASES[dayIndex].label_es : DAY_PHASES[dayIndex].label_en}
+                      </Badge>
+                      <span className="text-xs text-slate-400">
+                        {language === 'es' ? DAY_PHASES[dayIndex].focus.split(',')[0] : DAY_PHASES[dayIndex].focus.split(',')[0]}
+                      </span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleAIDaySuggestions(dayIndex)}
+                      disabled={aiDayLoading === dayIndex}
+                      className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                      data-testid={`ai-suggest-day-${dayIndex}`}
+                    >
+                      {aiDayLoading === dayIndex ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                          {language === 'es' ? 'Generando...' : 'Generating...'}
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="h-4 w-4 mr-1" />
+                          {language === 'es' ? 'Sugerir actividades' : 'Suggest activities'}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                  {/* AI Suggestions Panel (if available) */}
+                  {aiDaySuggestions[dayIndex] && (
+                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200 p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="h-4 w-4 text-purple-600" />
+                          <span className="text-sm font-medium text-purple-800">
+                            {language === 'es' ? 'Sugerencias de IA' : 'AI Suggestions'}
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => applyAISuggestionToNotes(dayIndex)}
+                            className="text-xs text-purple-600 hover:text-purple-700 hover:bg-purple-100"
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            {language === 'es' ? 'Aplicar a notas' : 'Apply to notes'}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setAiDaySuggestions(prev => {
+                              const newSuggestions = { ...prev };
+                              delete newSuggestions[dayIndex];
+                              return newSuggestions;
+                            })}
+                            className="text-xs text-slate-500 hover:text-slate-700"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="text-sm text-slate-700 whitespace-pre-wrap max-h-48 overflow-y-auto">
+                        {aiDaySuggestions[dayIndex].content}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Day Theme */}
                   <div className="space-y-2">
                     <Label>{t('dayTheme')}</Label>
