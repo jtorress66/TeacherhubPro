@@ -66,6 +66,19 @@ const LessonPlanner = () => {
   const [aiDayLoading, setAiDayLoading] = useState(null); // Track which day is loading
   const [aiFullWeekLoading, setAiFullWeekLoading] = useState(false); // Full week generation
   
+  // AI Templates state
+  const [showTemplatesModal, setShowTemplatesModal] = useState(false);
+  const [showSaveTemplateModal, setShowSaveTemplateModal] = useState(false);
+  const [templates, setTemplates] = useState([]);
+  const [templatesLoading, setTemplatesLoading] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [customizeLoading, setCustomizeLoading] = useState(false);
+  const [templateForm, setTemplateForm] = useState({
+    name: '',
+    description: '',
+    tags: ''
+  });
+  
   // Day sequence phases for AI context
   const DAY_PHASES = {
     0: { phase: 'introduction', label_es: 'Introducción', label_en: 'Introduction', focus: 'Hook students, activate prior knowledge, introduce key concepts' },
