@@ -456,14 +456,14 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
 
                 {/* Materials */}
                 <tr>
-                  <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', fontSize: '9pt' }}>Materials</td>
+                  <td style={{ border: '1px solid black', padding: '2px', fontWeight: 'bold', fontSize: '7pt' }}>Materials</td>
                   {planDaysWeek2.map((day, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '4px', fontSize: '7.5pt' }}>
+                    <td key={i} style={{ border: '1px solid black', padding: '2px', fontSize: '6pt' }}>
                       {Object.keys(MATERIAL_LABELS).map(matType => {
                         const material = day.materials?.find(m => m.material_type === matType);
                         return (
-                          <div key={matType} style={{ marginBottom: '2px', lineHeight: '1.2' }}>
-                            <Checkbox checked={material?.checked} size={9} /> {MATERIAL_LABELS[matType][lang]}
+                          <div key={matType} style={{ marginBottom: '1px', lineHeight: '1.1' }}>
+                            <Checkbox checked={material?.checked} size={6} /> {MATERIAL_LABELS[matType][lang]}
                           </div>
                         );
                       })}
@@ -474,26 +474,26 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             </table>
 
             {/* ECA Legend */}
-            <div style={{ marginTop: '8px', fontSize: '9pt', borderTop: '1px solid #999', paddingTop: '5px' }}>
+            <div style={{ marginTop: '4px', fontSize: '7pt', borderTop: '1px solid #999', paddingTop: '3px' }}>
               <strong>E/C/A:</strong> E = {ECA_LABELS.E[lang]}, C = {ECA_LABELS.C[lang]}, A = {ECA_LABELS.A[lang]}
             </div>
           </div>
           )}
 
           {/* ===== PAGE 3: Standards ===== */}
-          <div className="page" style={{ pageBreakBefore: 'always', fontSize: '11pt', lineHeight: '1.4' }}>
+          <div className="page" style={{ pageBreakBefore: 'always', fontSize: '9pt', lineHeight: '1.3' }}>
             <Header />
             
             {/* Unit Info with BOTH Date Ranges */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '14px', fontSize: '11pt' }}>
-              <div style={{ padding: '10px 12px', borderRight: '1px solid black' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '8px', fontSize: '9pt' }}>
+              <div style={{ padding: '6px 8px', borderRight: '1px solid black' }}>
                 <div><strong>Unit:</strong> {plan.unit || '_____'}</div>
                 <div><strong>Story:</strong> {plan.story || '_____'}</div>
                 <div><strong>Teacher:</strong> {plan.teacher_name || '_____'}</div>
                 <div><strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}</div>
               </div>
-              <div style={{ padding: '10px 12px' }}>
-                <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Date</div>
+              <div style={{ padding: '6px 8px' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '3px' }}>Date</div>
                 <div>From: To: {plan.week_start || '_____'} - {plan.week_end || '_____'}</div>
                 {(plan.week2_start || plan.week2_end) && (
                   <div>From: To: {plan.week2_start || '_____'} - {plan.week2_end || '_____'}</div>
@@ -501,11 +501,11 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
               </div>
             </div>
 
-            {/* Standards Grid - LARGER */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '14px' }}>
+            {/* Standards Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '8px' }}>
               {/* First Week */}
-              <div style={{ padding: '12px', borderRight: '1px solid black' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '12pt', borderBottom: '1px solid black', marginBottom: '12px', paddingBottom: '5px' }}>
+              <div style={{ padding: '8px', borderRight: '1px solid black' }}>
+                <div style={{ fontWeight: 'bold', fontSize: '10pt', borderBottom: '1px solid black', marginBottom: '8px', paddingBottom: '4px' }}>
                   Standard: First Week
                 </div>
                 {['listeningAndSpeaking', 'foundationalSkills', 'reading', 'writing', 'language'].map(domain => {
