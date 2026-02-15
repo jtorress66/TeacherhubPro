@@ -457,7 +457,6 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           <div style={{ background: 'white', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', aspectRatio: '11/8.5' }}>
             {renderStandardsPage()}
           </div>
-          {renderStandardsPage()}
         </div>
       </div>
     </div>
