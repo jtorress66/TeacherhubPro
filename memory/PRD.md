@@ -808,6 +808,66 @@ The following issues require user action in production:
 - ~~**Refactor `/app/backend/server.py`**: File is monolithic (3000+ lines) and continues to grow. Should be split into logical modules using FastAPI's `APIRouter`.~~ PARTIALLY DONE - Auth and AI routes extracted.
 
 ---
+## Update 2026-02-15 - Template of the Week Feature
+
+### Template of the Week Dashboard Spotlight (NEW FEATURE)
+Added a prominent "Template of the Week" card on the dashboard that showcases a different starter template each week.
+
+**Backend:** `/app/backend/routes/ai.py`
+- `GET /api/ai/templates/weekly` - Returns the template of the week based on week number
+- Automatically rotates through 5 starter templates (week 1-5, then repeats)
+- Includes customization tips in both English and Spanish
+
+**Frontend:** `/app/frontend/src/pages/Dashboard.js`
+- Beautiful amber/orange gradient card positioned prominently after the welcome header
+- Shows:
+  - "✨ Plantilla de la Semana" / "✨ Template of the Week" badge
+  - Template name and description (bilingual)
+  - Subject, grade level, and duration
+  - "Usar esta plantilla" / "Use this template" CTA button
+  - Customization tips panel with 3 actionable suggestions
+
+**Customization Tips Added to Each Template:**
+
+1. **Introduction to Fractions:**
+   - Replace pizza theme with local foods (pastelitos, quesadillas)
+   - Use available manipulatives (LEGO blocks)
+   - Extend to fifths/sixths for advanced students
+   - Add real-life fraction homework
+
+2. **Reading Comprehension Strategies:**
+   - Choose texts matching current theme/student interests
+   - Create strategy bookmarks
+   - Pair with class novel
+   - Add "Strategy Detective" badges
+
+3. **Scientific Method:**
+   - Connect experiments to current science unit
+   - Feature diverse scientists (especially Latino!)
+   - Turn Day 4 into mini science fair
+   - Connect to real-world issues students care about
+
+4. **Writing Process Workshop:**
+   - Choose genre aligned with standards
+   - Use mentor texts from favorite authors
+   - Publish digitally (Book Creator, Google Slides)
+   - Invite parents to Author's Celebration
+
+5. **Multiplication Facts:**
+   - Focus on fact families students struggle with
+   - Add digital games (Prodigy, XtraMath)
+   - Create growing class multiplication chart
+   - Send home flash cards with strategies
+
+**Rotation Schedule:**
+- Week 1: Introduction to Fractions
+- Week 2: Reading Comprehension Strategies
+- Week 3: Introduction to Scientific Method
+- Week 4: Writing Process Workshop
+- Week 5: Mastering Multiplication Facts
+- (Repeats)
+
+---
 ## Update 2026-02-15 - Starter Templates Feature
 
 ### Starter Templates - Pre-built Lesson Plans (NEW FEATURE)
