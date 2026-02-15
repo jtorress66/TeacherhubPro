@@ -35,6 +35,7 @@ const Layout = ({ children }) => {
 
   const navItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: t('dashboard'), gradient: 'from-blue-400 to-blue-600' },
+    { path: '/ai-assistant', icon: Sparkles, label: language === 'es' ? 'Asistente IA' : 'AI Assistant', gradient: 'from-purple-500 to-pink-500', isNew: true },
     { path: '/planner', icon: Calendar, label: t('planner'), gradient: 'from-purple-400 to-purple-600' },
     { path: '/templates', icon: FileText, label: language === 'es' ? 'Plantillas' : 'Templates', gradient: 'from-indigo-400 to-indigo-600' },
     { path: '/attendance', icon: ClipboardCheck, label: t('attendance'), gradient: 'from-teal-400 to-teal-600' },
