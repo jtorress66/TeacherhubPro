@@ -892,6 +892,157 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
     toast.success(language === 'es' ? 'Todas las sugerencias aplicadas' : 'All suggestions applied');
   };
 
+  // ==================== AI TEMPLATES ====================
+  
+  // Fetch templates
+  const fetchTemplates = async () => {
+    setTemplatesLoading(true);
+    try {
+      const response = await axios.get(`${API}/ai/templates`, { withCredentials: true });
+      setTemplates(response.data);
+    } catch (error) {
+      console.error('Error fetching templates:', error);
+      toast.error(language === 'es' ? 'Error al cargar plantillas' : 'Error loading templates');
+    } finally {
+      setTemplatesLoading(false);
+    }
+  };
+
+  // Save current AI suggestions as template
+  const handleSaveTemplate = async () => {
+    if (!templateForm.name.trim()) {
+      toast.error(language === 'es' ? 'El nombre es requerido' : 'Name is required');
+      return;
+    }
+
+    if (Object.keys(aiDaySuggestions).length === 0) {
+      toast.error(language === 'es' ? 'No hay sugerencias para guardar' : 'No suggestions to save');
+      return;
+    }
+
+    try {
+      const selectedClass = classes.find(c => c.class_id === formData.class_id);
+      const days = {};
+      Object.keys(aiDaySuggestions).forEach(key => {
+        days[key] = aiDaySuggestions[key].content;
+      });
+
+      await axios.post(`${API}/ai/templates`, {
+        name: templateForm.name,
+        description: templateForm.description,
+        subject: selectedClass?.subject || '',
+        grade_level: selectedClass?.grade || '',
+        original_topic: formData.story || formData.unit || formData.objective || '',
+        tags: templateForm.tags.split(',').map(t => t.trim()).filter(Boolean),
+        days: days
+      }, { withCredentials: true });
+
+      toast.success(language === 'es' ? '¡Plantilla guardada!' : 'Template saved!');
+      setShowSaveTemplateModal(false);
+      setTemplateForm({ name: '', description: '', tags: '' });
+    } catch (error) {
+      console.error('Error saving template:', error);
+      toast.error(language === 'es' ? 'Error al guardar plantilla' : 'Error saving template');
+    }
+  };
+
+  // Delete a template
+  const handleDeleteTemplate = async (templateId) => {
+    if (!window.confirm(language === 'es' ? '¿Eliminar esta plantilla?' : 'Delete this template?')) {
+      return;
+    }
+
+    try {
+      await axios.delete(`${API}/ai/templates/${templateId}`, { withCredentials: true });
+      setTemplates(prev => prev.filter(t => t.template_id !== templateId));
+      toast.success(language === 'es' ? 'Plantilla eliminada' : 'Template deleted');
+    } catch (error) {
+      console.error('Error deleting template:', error);
+      toast.error(language === 'es' ? 'Error al eliminar' : 'Error deleting');
+    }
+  };
+
+  // Apply template directly (without customization)
+  const handleApplyTemplate = async (template) => {
+    try {
+      const response = await axios.get(`${API}/ai/templates/${template.template_id}`, { withCredentials: true });
+      const fullTemplate = response.data;
+      
+      // Convert days object to our format
+      const newSuggestions = {};
+      Object.keys(fullTemplate.days).forEach(key => {
+        newSuggestions[parseInt(key)] = {
+          content: fullTemplate.days[key],
+          timestamp: new Date().toISOString(),
+          isTemplate: true
+        };
+      });
+
+      setAiDaySuggestions(newSuggestions);
+      setShowTemplatesModal(false);
+      toast.success(language === 'es' 
+        ? `Plantilla "${template.name}" aplicada` 
+        : `Template "${template.name}" applied`);
+    } catch (error) {
+      console.error('Error applying template:', error);
+      toast.error(language === 'es' ? 'Error al aplicar plantilla' : 'Error applying template');
+    }
+  };
+
+  // Customize template with new topic
+  const handleCustomizeTemplate = async (newTopic) => {
+    if (!selectedTemplate || !newTopic.trim()) {
+      toast.error(language === 'es' ? 'Ingresa un nuevo tema' : 'Please enter a new topic');
+      return;
+    }
+
+    setCustomizeLoading(true);
+    try {
+      const selectedClass = classes.find(c => c.class_id === formData.class_id);
+      
+      const response = await axios.post(`${API}/ai/templates/${selectedTemplate.template_id}/customize`, {
+        new_topic: newTopic,
+        new_grade: selectedClass?.grade || selectedTemplate.grade_level,
+        new_subject: selectedClass?.subject || selectedTemplate.subject,
+        language: language
+      }, { withCredentials: true });
+
+      // Apply customized content
+      const newSuggestions = {};
+      Object.keys(response.data.customized_days).forEach(key => {
+        newSuggestions[parseInt(key)] = {
+          content: response.data.customized_days[key].content,
+          timestamp: new Date().toISOString(),
+          isCustomized: true
+        };
+      });
+
+      setAiDaySuggestions(newSuggestions);
+      setShowTemplatesModal(false);
+      setSelectedTemplate(null);
+      toast.success(language === 'es' 
+        ? '¡Plantilla personalizada aplicada!' 
+        : 'Customized template applied!');
+    } catch (error) {
+      console.error('Error customizing template:', error);
+      if (error.response?.status === 403) {
+        toast.error(language === 'es' 
+          ? 'Necesitas una suscripción activa' 
+          : 'You need an active subscription');
+      } else {
+        toast.error(language === 'es' ? 'Error al personalizar' : 'Error customizing');
+      }
+    } finally {
+      setCustomizeLoading(false);
+    }
+  };
+
+  // Open templates modal
+  const openTemplatesModal = () => {
+    setShowTemplatesModal(true);
+    fetchTemplates();
+  };
+
   if (loading) {
     return (
       <Layout>
