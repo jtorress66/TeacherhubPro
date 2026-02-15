@@ -487,10 +487,8 @@ const AIAssistant = () => {
                       <p>{language === 'es' ? 'Generando contenido...' : 'Generating content...'}</p>
                     </div>
                   ) : generatedContent ? (
-                    <div className="prose prose-sm max-w-none max-h-[500px] overflow-y-auto">
-                      <pre className="whitespace-pre-wrap text-sm bg-slate-50 p-4 rounded-lg font-sans">
-                        {generatedContent}
-                      </pre>
+                    <div className="prose prose-sm max-w-none max-h-[500px] overflow-y-auto bg-slate-50 p-4 rounded-lg">
+                      <ReactMarkdown>{generatedContent}</ReactMarkdown>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-12 text-slate-400">
