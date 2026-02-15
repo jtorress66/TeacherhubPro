@@ -1296,4 +1296,36 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 - `/app/frontend/package.json` - Added @tailwindcss/typography dependency
 - `/app/frontend/tailwind.config.js` - Added typography plugin
 
+---
+## Update 2026-02-15 - Print/PDF Feature for AI Generated Content
+
+### New Feature: Print/Save PDF for AI Materials
+
+**Description:** Added the ability to print or save AI-generated content (quizzes, worksheets, lesson plans) as PDF documents.
+
+**Features:**
+1. **Print Button:** Green printer icon appears next to Copy button when content is generated
+2. **Professional Print Layout:**
+   - TeacherHubPro branded header with logo
+   - Content type label (Quiz, Lesson Plan, etc.)
+   - Metadata section (Subject, Grade, Topic)
+   - Clean typography and formatting
+   - Footer with branding
+3. **History Tab Integration:** Each history item now has its own Print button
+4. **Browser Print Dialog:** Opens native print dialog for saving as PDF or printing directly
+
+**User Flow:**
+1. Generate content using AI Assistant
+2. Click the green printer icon in the "Contenido Generado" header
+3. A new window opens with professionally formatted content
+4. Click "Imprimir / Guardar PDF" button to open print dialog
+5. Choose "Save as PDF" or print directly
+
+**Files Modified:**
+- `/app/frontend/src/pages/AIAssistant.js`
+  - Added `Printer` icon import
+  - Added `handlePrint()` function with professional formatting
+  - Added Print buttons to Generated Content panel
+  - Added Print buttons to History items
+
 
