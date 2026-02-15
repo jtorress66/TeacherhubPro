@@ -639,9 +639,25 @@ const AIAssistant = () => {
                     {language === 'es' ? 'Contenido Generado' : 'Generated Content'}
                   </CardTitle>
                   {generatedContent && (
-                    <Button variant="ghost" size="sm" onClick={() => copyToClipboard(generatedContent)}>
-                      <Copy className="h-4 w-4" />
-                    </Button>
+                    <div className="flex gap-1">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => copyToClipboard(generatedContent)}
+                        title={language === 'es' ? 'Copiar' : 'Copy'}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handlePrint(generatedContent)}
+                        title={language === 'es' ? 'Imprimir / PDF' : 'Print / PDF'}
+                        className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                      >
+                        <Printer className="h-4 w-4" />
+                      </Button>
+                    </div>
                   )}
                 </CardHeader>
                 <CardContent>
