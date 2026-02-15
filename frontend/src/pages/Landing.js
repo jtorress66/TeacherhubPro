@@ -224,9 +224,6 @@ const Landing = () => {
             <Link to="/pricing" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">
               {language === 'es' ? 'Precios' : 'Pricing'}
             </Link>
-            <a href="#get-started" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">
-              {language === 'es' ? 'Iniciar sesión' : 'Log in'}
-            </a>
           </div>
           
           <div className="flex items-center gap-3">
@@ -245,7 +242,7 @@ const Landing = () => {
               className="bg-slate-900 hover:bg-slate-800 text-white"
               onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
             >
-              {language === 'es' ? 'Comenzar' : 'Get started'}
+              {language === 'es' ? 'Comenzar - Iniciar sesión' : 'Get Started - Log In'}
             </Button>
           </div>
         </div>
