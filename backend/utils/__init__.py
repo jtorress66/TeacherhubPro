@@ -1,6 +1,6 @@
 """Utilities package"""
-from .database import db, client
-from .auth import (
+from utils.database import db, client
+from utils.auth import (
     get_current_user, 
     create_jwt_token, 
     hash_password, 
@@ -9,7 +9,7 @@ from .auth import (
     generate_session_token,
     JWT_EXPIRATION_DAYS
 )
-from .constants import (
+from utils.constants import (
     SUBSCRIPTION_PLANS,
     FREE_TRIAL_DAYS,
     STRIPE_API_KEY,
