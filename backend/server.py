@@ -3307,7 +3307,11 @@ async def delete_chat_session(session_id: str, current_user: dict = Depends(get_
     
     return {"deleted_count": result.deleted_count}
 
-# Include the router in the main app
+# Include modular routers in the api_router
+api_router.include_router(auth_router)
+api_router.include_router(ai_router)
+
+# Include the main api_router in the app
 app.include_router(api_router)
 
 app.add_middleware(
