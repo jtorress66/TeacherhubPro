@@ -703,7 +703,43 @@ The following issues require user action in production:
   5. GPA calculation uses standard percentage scale (90+=A, 80+=B, 70+=C, 60+=D, <60=F)
 
 ---
-## Current Backlog (Updated 2026-02-14)
+## Update 2026-02-15 - UI Fixes (Print View, Landing Logo, Pricing Email)
+
+### Issues Fixed
+
+#### 1. Print View Font Size Fix (P0)
+- **Problem:** Print preview fonts were too small (6-9pt) leaving excessive white space
+- **Solution:** Increased fonts throughout PlanPrintView.js:
+  - Page font size: 9pt → 10pt
+  - Info grid text: 10pt → 11pt
+  - Objective/Skills headers: 10pt → 11pt
+  - Table headers: 9pt → 10pt
+  - Table cells: 7-8pt → 8-9pt
+  - Checkbox sizes: 7-9px → 8-10px
+  - Line height: 1.15-1.25 → 1.25-1.3
+  - Padding increased throughout
+- **Files Modified:** `/app/frontend/src/components/PlanPrintView.js`
+
+#### 2. Landing Page Logo Size Fix (P1)
+- **Problem:** Logo was the same visual weight as the app name text
+- **Solution:** 
+  - Increased logo size: `h-20 w-20` → `h-24 w-24`
+  - Reduced text size: `text-3xl` → `text-2xl`
+- **Files Modified:** `/app/frontend/src/pages/Landing.js`
+
+#### 3. Pricing Page Email Fix (P1)
+- **Problem:** Contact email showed `support@teacherhub.com` instead of correct address
+- **Solution:** Updated email to `support@teacherhubpro.com`
+- **Files Modified:** `/app/frontend/src/pages/Pricing.js`
+
+### Testing Status
+- Screenshots verified all three fixes working correctly
+- Print preview shows readable text with proper balance of content/whitespace
+- Landing page logo is visibly larger than text
+- Pricing page displays correct email address
+
+---
+## Current Backlog (Updated 2026-02-15)
 
 ### P1 (High Priority - Next)
 - Drag-and-Drop Seating Chart Editor
