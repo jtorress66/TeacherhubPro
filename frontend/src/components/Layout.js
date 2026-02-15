@@ -162,8 +162,8 @@ const Layout = ({ children }) => {
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200",
                     isActive 
-                      ? "bg-white shadow-md font-medium" 
-                      : "text-slate-600 hover:bg-white/60 hover:shadow-sm"
+                      ? "bg-secondary shadow-md font-medium" 
+                      : "text-muted-foreground hover:bg-secondary/60 hover:shadow-sm"
                   )}
                   data-testid={`nav-${item.path.slice(1)}`}
                 >
@@ -173,7 +173,7 @@ const Layout = ({ children }) => {
                   )}>
                     <item.icon className="h-4 w-4 text-white" />
                   </div>
-                  <span className={isActive ? "text-slate-800" : ""}>{item.label}</span>
+                  <span className={isActive ? "text-foreground" : ""}>{item.label}</span>
                   {item.isNew && (
                     <span className="ml-auto text-[10px] px-1.5 py-0.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-bold">
                       NEW
@@ -181,7 +181,7 @@ const Layout = ({ children }) => {
                   )}
                   {isActive && !item.isNew && (
                     <ChevronRight 
-                      className="h-4 w-4 ml-auto text-slate-400"
+                      className="h-4 w-4 ml-auto text-muted-foreground"
                     />
                   )}
                 </Link>
