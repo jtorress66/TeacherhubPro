@@ -808,6 +808,61 @@ The following issues require user action in production:
 - ~~**Refactor `/app/backend/server.py`**: File is monolithic (3000+ lines) and continues to grow. Should be split into logical modules using FastAPI's `APIRouter`.~~ PARTIALLY DONE - Auth and AI routes extracted.
 
 ---
+## Update 2026-02-15 - Starter Templates Feature
+
+### Starter Templates - Pre-built Lesson Plans (NEW FEATURE)
+Added 5 professionally designed starter templates that new users can immediately use and customize.
+
+**Backend:** `/app/backend/routes/ai.py`
+- `GET /api/ai/templates/starters` - List all starter templates
+- `GET /api/ai/templates/starters/{id}` - Get full starter template content
+- Starter templates are stored as Python constants (no database required)
+
+**Starter Templates Available:**
+1. **Introduction to Fractions** (Math, Grades 3-4)
+   - Hands-on approach using visual models and manipulatives
+   - 5-day progression: exploration → practice → mastery
+   - Tags: math, fractions, hands-on, visual
+
+2. **Reading Comprehension Strategies** (ELA, Grades 2-5)
+   - Teaching predicting, questioning, visualizing, summarizing
+   - Strategy-focused daily lessons
+   - Tags: reading, comprehension, strategies, literacy
+
+3. **Introduction to Scientific Method** (Science, Grades 3-6)
+   - Hands-on exploration through simple experiments
+   - Variables, hypotheses, data collection
+   - Tags: science, experiments, inquiry, STEM
+
+4. **Writing Process Workshop** (ELA, Grades 2-6)
+   - Full writing process: prewriting → drafting → revising → editing → publishing
+   - Tags: writing, process, workshop, literacy
+
+5. **Mastering Multiplication Facts** (Math, Grades 3-4)
+   - Strategies and games for fact fluency
+   - Tags: math, multiplication, facts, fluency
+
+**Frontend UI Updates:**
+- Templates modal now has two tabs:
+  - **"Plantillas Iniciales"** (Starter Templates) - Amber styling, shown by default
+  - **"Mis Plantillas"** (My Templates) - User's saved templates
+- Starter templates show:
+  - "Inicial" badge with star icon
+  - Bilingual names/descriptions (Spanish and English)
+  - Subject with icon
+  - Grade level range
+  - Tags
+- Click template to expand options:
+  - "Usar esta plantilla" - Apply as-is
+  - "Adaptar con IA" - Enter new topic for AI customization
+
+**Benefits:**
+- Solves cold-start problem for new users
+- Professional, curriculum-aligned content
+- Reduces planning time significantly
+- Easily customizable for specific topics
+
+---
 ## Update 2026-02-15 - AI Templates Feature
 
 ### AI Templates - Clone & Customize (NEW FEATURE)
