@@ -103,13 +103,13 @@ const Layout = ({ children }) => {
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-0 left-0 z-50 h-full w-64 bg-white/90 backdrop-blur-xl border-r border-slate-200/50 transform transition-transform duration-200 ease-in-out shadow-xl lg:shadow-none",
+        "fixed top-0 left-0 z-50 h-full w-64 bg-card/95 backdrop-blur-xl border-r border-border transform transition-transform duration-200 ease-in-out shadow-xl lg:shadow-none",
         "lg:translate-x-0",
         sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         <div className="flex flex-col h-full">
           {/* Logo - School branded or default */}
-          <div className="p-6 border-b border-slate-200/50">
+          <div className="p-6 border-b border-border">
             <div className="flex items-center justify-between">
               <Link to="/dashboard" className="flex items-center gap-3 group">
                 {school?.logo_url ? (
@@ -129,12 +129,12 @@ const Layout = ({ children }) => {
                 <div className="flex flex-col">
                   <span 
                     className="text-lg font-heading font-bold leading-tight"
-                    style={{ color: branding.secondary_color }}
+                    style={{ color: isDarkMode ? '#f8fafc' : branding.secondary_color }}
                   >
                     {school?.name || 'TeacherHubPro'}
                   </span>
                   {school?.name && (
-                    <span className="text-xs text-slate-500">TeacherHubPro</span>
+                    <span className="text-xs text-muted-foreground">TeacherHubPro</span>
                   )}
                 </div>
               </Link>
