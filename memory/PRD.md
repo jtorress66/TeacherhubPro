@@ -808,6 +808,43 @@ The following issues require user action in production:
 - ~~**Refactor `/app/backend/server.py`**: File is monolithic (3000+ lines) and continues to grow. Should be split into logical modules using FastAPI's `APIRouter`.~~ PARTIALLY DONE - Auth and AI routes extracted.
 
 ---
+## Update 2026-02-15 - AI Day Suggestions Feature
+
+### AI Suggested Activities for Each Day (NEW FEATURE)
+Added contextual AI activity suggestions for each day of the week in the Lesson Planner.
+
+**Location:** `/app/frontend/src/pages/LessonPlanner.js`
+
+**Pedagogical Day Phases:**
+- Day 1 (Monday): **Introduction** - Hook students, activate prior knowledge
+- Day 2 (Tuesday): **Guided Practice** - Model skills with teacher support
+- Day 3 (Wednesday): **Independent Practice** - Small groups, peer collaboration
+- Day 4 (Thursday): **Mastery** - Application, extension activities
+- Day 5 (Friday): **Assessment** - Formative/summative assessment, reflection
+
+**Features:**
+- Phase badge displayed for each day (color-coded: blue for intro, amber for assessment)
+- "Sugerir actividades" / "Suggest activities" button with sparkles icon
+- AI generates 3-4 specific activities tailored to:
+  - The lesson's objective
+  - The day's position in the learning sequence
+  - Grade level (if class is selected)
+  - Subject (if specified)
+- Purple gradient suggestions panel with:
+  - AI-generated activity list (name, duration, description, materials)
+  - "Apply to notes" button to add suggestions to day's notes
+  - Dismiss button to close panel
+- Loading state with spinner during generation
+
+**User Flow:**
+1. Teacher adds an objective for the week
+2. Clicks "Suggest activities" on any day
+3. AI generates activities appropriate for that day's phase
+4. Teacher reviews suggestions
+5. Optionally applies suggestions to notes or dismisses
+6. Can generate suggestions for different days independently
+
+---
 ## Update 2026-02-15 - AI Lesson Generator & Landing Page Refinement
 
 ### AI Lesson Plan Generator (NEW FEATURE)
