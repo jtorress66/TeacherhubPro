@@ -60,6 +60,19 @@ const LessonPlanner = () => {
     duration_minutes: 45
   });
   
+  // AI Day Suggestions state
+  const [aiDaySuggestions, setAiDaySuggestions] = useState({});
+  const [aiDayLoading, setAiDayLoading] = useState(null); // Track which day is loading
+  
+  // Day sequence phases for AI context
+  const DAY_PHASES = {
+    0: { phase: 'introduction', label_es: 'Introducción', label_en: 'Introduction', focus: 'Hook students, activate prior knowledge, introduce key concepts' },
+    1: { phase: 'guided_practice', label_es: 'Práctica Guiada', label_en: 'Guided Practice', focus: 'Model skills, guided practice with teacher support' },
+    2: { phase: 'independent_practice', label_es: 'Práctica Independiente', label_en: 'Independent Practice', focus: 'Independent work, small group activities, peer collaboration' },
+    3: { phase: 'mastery', label_es: 'Dominio', label_en: 'Mastery', focus: 'Application, extension activities, deeper understanding' },
+    4: { phase: 'assessment', label_es: 'Evaluación', label_en: 'Assessment', focus: 'Formative/summative assessment, reflection, closure' }
+  };
+  
   // Subject options for AI
   const AI_SUBJECTS = [
     { value: 'math', label: language === 'es' ? 'Matemáticas' : 'Mathematics' },
