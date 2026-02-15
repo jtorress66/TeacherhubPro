@@ -354,7 +354,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
 
           {/* ===== PAGE 2: Week 2 Daily Plan ===== */}
           {(plan.week2_start || plan.week2_end) && (
-          <div className="page" style={{ pageBreakBefore: 'always', fontSize: '10pt', lineHeight: '1.3' }}>
+          <div className="page" style={{ pageBreakBefore: 'always', fontSize: '10pt', lineHeight: '1.3', minHeight: '600px', paddingBottom: '10px', borderBottom: '2px dashed #ccc', marginBottom: '20px' }}>
             <Header />
             
             {/* Info Grid - Week 2 */}
