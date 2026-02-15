@@ -226,7 +226,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <div ref={printRef} style={{ fontFamily: 'Arial, sans-serif', padding: '8px', background: 'white' }}>
           
           {/* ===== PAGE 1: Week 1 Daily Plan ===== */}
-          <div className="page" style={{ fontSize: '10pt', lineHeight: '1.3' }}>
+          <div className="page" style={{ fontSize: '10pt', lineHeight: '1.3', minHeight: '600px', paddingBottom: '10px', borderBottom: '2px dashed #ccc', marginBottom: '20px' }}>
             <Header />
             
             {/* Info Grid */}
