@@ -168,6 +168,84 @@ const Dashboard = () => {
           onClose={() => setRunVideoGuide(false)} 
         />
 
+        {/* Template of the Week Spotlight */}
+        {templateOfWeek && (
+          <Card className="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 border-amber-200 shadow-lg overflow-hidden relative">
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-amber-200/30 rounded-full -translate-y-24 translate-x-24 blur-2xl"></div>
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-200/30 rounded-full translate-y-16 -translate-x-16 blur-2xl"></div>
+            
+            <CardContent className="p-6 relative z-10">
+              <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+                {/* Left side - Template info */}
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2.5 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl shadow-lg">
+                      <Star className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <Badge className="bg-amber-100 text-amber-800 border-amber-300">
+                        {language === 'es' ? '✨ Plantilla de la Semana' : '✨ Template of the Week'}
+                      </Badge>
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-slate-800 mb-2">
+                    {language === 'es' && templateOfWeek.name_es ? templateOfWeek.name_es : templateOfWeek.name}
+                  </h3>
+                  
+                  <p className="text-slate-600 text-sm mb-4">
+                    {language === 'es' && templateOfWeek.description_es ? templateOfWeek.description_es : templateOfWeek.description}
+                  </p>
+                  
+                  <div className="flex items-center gap-4 text-sm text-slate-500 mb-4">
+                    <span className="flex items-center gap-1">
+                      <BookOpen className="h-4 w-4" />
+                      {templateOfWeek.subject === 'math' ? (language === 'es' ? 'Matemáticas' : 'Math') :
+                       templateOfWeek.subject === 'ela' ? (language === 'es' ? 'Lectura/Escritura' : 'ELA') :
+                       templateOfWeek.subject === 'science' ? (language === 'es' ? 'Ciencias' : 'Science') :
+                       templateOfWeek.subject}
+                    </span>
+                    <span>{language === 'es' ? 'Grados' : 'Grades'} {templateOfWeek.grade_level}</span>
+                    <span>{templateOfWeek.days_count} {language === 'es' ? 'días' : 'days'}</span>
+                  </div>
+
+                  <Button 
+                    onClick={() => navigate('/planner/new')}
+                    className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg"
+                    data-testid="use-template-btn"
+                  >
+                    <Wand2 className="h-4 w-4 mr-2" />
+                    {language === 'es' ? 'Usar esta plantilla' : 'Use this template'}
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </div>
+                
+                {/* Right side - Customization tips */}
+                <div className="lg:w-80 bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-amber-100">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Lightbulb className="h-4 w-4 text-amber-600" />
+                    <span className="text-sm font-semibold text-slate-700">
+                      {language === 'es' ? 'Tips para personalizar' : 'Customization Tips'}
+                    </span>
+                  </div>
+                  <ul className="space-y-2">
+                    {(language === 'es' && templateOfWeek.customization_tips_es 
+                      ? templateOfWeek.customization_tips_es 
+                      : templateOfWeek.customization_tips
+                    )?.slice(0, 3).map((tip, index) => (
+                      <li key={index} className="flex items-start gap-2 text-xs text-slate-600">
+                        <span className="text-amber-500 mt-0.5">•</span>
+                        <span>{tip}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 stagger-children">
           <Card className="bg-white border-slate-100 card-hover animate-fade-in opacity-0" style={{ animationDelay: '0ms', animationFillMode: 'forwards' }}>
