@@ -408,6 +408,128 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* AI Teaching Assistant Section */}
+      <section id="ai-assistant" className="py-24 px-6 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-10 right-10 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse"></div>
+          <div className="absolute bottom-10 left-10 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Left - Visual Demo */}
+            <div className="order-2 lg:order-1">
+              <div className="bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 rounded-2xl shadow-2xl p-8 text-white relative overflow-hidden">
+                {/* Decorative elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
+                
+                <div className="relative z-10">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                      <Bot className="h-7 w-7 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-xl font-bold">{language === 'es' ? 'Asistente de IA' : 'AI Teaching Assistant'}</div>
+                      <div className="text-sm text-white/70 flex items-center gap-2">
+                        <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                        Claude Sonnet 4.5
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Demo chat interface */}
+                  <div className="space-y-3 mb-6">
+                    <div className="bg-white/10 rounded-lg p-3 text-sm backdrop-blur-sm">
+                      <div className="text-white/60 text-xs mb-1">{language === 'es' ? 'Tú preguntaste:' : 'You asked:'}</div>
+                      {language === 'es' 
+                        ? '¿Cómo puedo enseñar fracciones equivalentes a 4to grado?' 
+                        : 'How can I teach equivalent fractions to 4th grade?'}
+                    </div>
+                    <div className="bg-white/20 rounded-lg p-3 text-sm backdrop-blur-sm">
+                      <div className="text-white/60 text-xs mb-1 flex items-center gap-1">
+                        <Sparkles className="h-3 w-3" /> 
+                        {language === 'es' ? 'Respuesta IA:' : 'AI Response:'}
+                      </div>
+                      {language === 'es' 
+                        ? 'Aquí tienes un plan de lección basado en el estándar CCSS.MATH.4.NF.A.1 con actividades manipulativas...' 
+                        : "Here's a lesson plan based on CCSS.MATH.4.NF.A.1 standard with hands-on activities..."}
+                    </div>
+                  </div>
+
+                  {/* Tool buttons */}
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { icon: BookOpen, label: language === 'es' ? 'Planes de Lección' : 'Lesson Plans' },
+                      { icon: FileQuestion, label: language === 'es' ? 'Quizzes' : 'Quizzes' },
+                      { icon: ClipboardList, label: language === 'es' ? 'Hojas de Trabajo' : 'Worksheets' },
+                      { icon: Lightbulb, label: language === 'es' ? 'Ideas' : 'Ideas' },
+                    ].map((tool, i) => (
+                      <div key={i} className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2 text-sm backdrop-blur-sm">
+                        <tool.icon className="h-4 w-4" />
+                        {tool.label}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right - Text Content */}
+            <div className="order-1 lg:order-2">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100 text-purple-700 text-sm font-medium mb-6">
+                <Sparkles className="h-4 w-4" />
+                {language === 'es' ? 'Nuevo: Inteligencia Artificial' : 'New: Artificial Intelligence'}
+              </div>
+              
+              <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+                {language === 'es' 
+                  ? 'Tu asistente de IA para enseñar mejor' 
+                  : 'Your AI assistant to teach better'}
+              </h2>
+              
+              <p className="text-xl text-slate-600 mb-8">
+                {language === 'es'
+                  ? 'Genera planes de lección, quizzes, resúmenes y actividades basadas en los estándares Common Core y Puerto Rico, al instante.'
+                  : 'Generate lesson plans, quizzes, summaries, and activities based on Common Core and Puerto Rico standards, instantly.'}
+              </p>
+
+              <div className="space-y-4 mb-8">
+                {[
+                  { icon: Target, text: language === 'es' ? 'Alineado con Common Core y PR CORE' : 'Aligned with Common Core & PR CORE' },
+                  { icon: Zap, text: language === 'es' ? 'Genera contenido en segundos' : 'Generate content in seconds' },
+                  { icon: Globe, text: language === 'es' ? 'Bilingüe: Español e Inglés' : 'Bilingual: Spanish & English' },
+                  { icon: Brain, text: language === 'es' ? 'Powered by Claude Sonnet 4.5' : 'Powered by Claude Sonnet 4.5' },
+                ].map((item, index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <item.icon className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <span className="text-slate-700">{item.text}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-4">
+                <Button 
+                  size="lg" 
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-6"
+                  onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
+                >
+                  {language === 'es' ? 'Probar gratis' : 'Try it free'}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <div className="flex items-center gap-2 text-sm text-slate-500">
+                  <Shield className="h-4 w-4" />
+                  {language === 'es' ? 'Incluido en suscripción' : 'Included in subscription'}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Customization Section */}
       <section id="customization" className="py-24 px-6 bg-gradient-to-b from-slate-900 to-slate-800 text-white relative overflow-hidden">
         {/* Background pattern */}
