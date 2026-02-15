@@ -534,6 +534,73 @@ const LessonPlanner = () => {
     });
   };
 
+  // AI Generation handler
+  const handleAIGenerate = async () => {
+    if (!aiForm.subject || !aiForm.grade_level || !aiForm.topic) {
+      toast.error(language === 'es' ? 'Por favor completa todos los campos' : 'Please fill in all fields');
+      return;
+    }
+
+    setAIGenerating(true);
+    try {
+      const response = await axios.post(`${API}/ai/generate`, {
+        tool_type: 'lesson_plan',
+        subject: aiForm.subject,
+        grade_level: aiForm.grade_level,
+        topic: aiForm.topic,
+        standards_framework: aiForm.standards_framework,
+        language: language,
+        difficulty_level: aiForm.difficulty_level,
+        duration_minutes: aiForm.duration_minutes,
+        additional_instructions: language === 'es' 
+          ? 'Genera un plan de lección semanal estructurado con objetivos, actividades diarias y materiales.'
+          : 'Generate a structured weekly lesson plan with objectives, daily activities, and materials.'
+      }, { withCredentials: true });
+
+      // Parse the AI response and populate form fields
+      const aiContent = response.data.content;
+      
+      // Extract objective from AI content (usually the first main section)
+      const objectiveMatch = aiContent.match(/(?:Learning Objectives?|Objetivos?)[:\s]*([^\n]+)/i);
+      const objective = objectiveMatch ? objectiveMatch[1].trim() : aiForm.topic;
+      
+      // Update form with AI-generated content
+      setFormData(prev => ({
+        ...prev,
+        objective: objective,
+        story: aiForm.topic,
+        // Store the full AI content in notes for the first day
+        days: prev.days.map((day, i) => {
+          if (i === 0) {
+            return {
+              ...day,
+              theme: aiForm.topic,
+              notes: `--- ${language === 'es' ? 'Generado por IA' : 'AI Generated'} ---\n\n${aiContent.substring(0, 2000)}${aiContent.length > 2000 ? '...' : ''}`
+            };
+          }
+          return day;
+        })
+      }));
+
+      setShowAIModal(false);
+      toast.success(language === 'es' 
+        ? '¡Plan generado! Revisa y edita según necesites.' 
+        : 'Plan generated! Review and edit as needed.');
+      
+    } catch (error) {
+      console.error('AI generation error:', error);
+      if (error.response?.status === 403) {
+        toast.error(language === 'es' 
+          ? 'Necesitas una suscripción activa para usar el asistente IA' 
+          : 'You need an active subscription to use the AI assistant');
+      } else {
+        toast.error(language === 'es' ? 'Error al generar el plan' : 'Error generating plan');
+      }
+    } finally {
+      setAIGenerating(false);
+    }
+  };
+
   if (loading) {
     return (
       <Layout>
