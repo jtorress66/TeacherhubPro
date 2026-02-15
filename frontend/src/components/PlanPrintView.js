@@ -298,22 +298,22 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     </div>
   );
 
-  // Standards Page
+  // Standards Page - Compact to fit on ONE page
   const renderStandardsPage = () => (
-    <div className="print-page" style={{ fontSize: '10pt' }}>
+    <div className="print-page" style={{ fontSize: '9pt' }}>
       <Header />
       
       {/* Unit Info */}
-      <table style={{ marginBottom: '15px' }}>
+      <table style={{ marginBottom: '8px' }}>
         <tbody>
           <tr>
-            <td style={{ width: '50%', padding: '10px 12px', fontSize: '11pt', lineHeight: '1.6' }}>
+            <td style={{ width: '50%', padding: '6px 8px', fontSize: '10pt', lineHeight: '1.4' }}>
               <div><strong>Unit:</strong> {plan.unit || '_____'}</div>
               <div><strong>Story:</strong> {plan.story || '_____'}</div>
               <div><strong>Teacher:</strong> {plan.teacher_name || '_____'}</div>
               <div><strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}</div>
             </td>
-            <td style={{ width: '50%', padding: '10px 12px', fontSize: '11pt', lineHeight: '1.6' }}>
+            <td style={{ width: '50%', padding: '6px 8px', fontSize: '10pt', lineHeight: '1.4' }}>
               <div><strong>Date</strong></div>
               <div>From: To: {plan.week_start || '_____'} - {plan.week_end || '_____'}</div>
               {(plan.week2_start || plan.week2_end) && (
@@ -325,49 +325,49 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       </table>
 
       {/* Standards Grid */}
-      <table style={{ marginBottom: '20px' }}>
+      <table style={{ marginBottom: '10px' }}>
         <tbody>
           <tr>
-            <td style={{ width: '50%', padding: '15px', verticalAlign: 'top' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '12pt', borderBottom: '2px solid black', marginBottom: '12px', paddingBottom: '6px' }}>
+            <td style={{ width: '50%', padding: '8px 10px', verticalAlign: 'top' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '11pt', borderBottom: '2px solid black', marginBottom: '6px', paddingBottom: '3px' }}>
                 Standard: First Week
               </div>
               {['listeningAndSpeaking', 'foundationalSkills', 'reading', 'writing', 'language'].map(domain => {
                 const standard = getStandardsForWeek(1).find(s => s.domain === domain);
                 return (
-                  <div key={domain} style={{ marginBottom: '8px', fontSize: '10pt' }}>
+                  <div key={domain} style={{ marginBottom: '4px', fontSize: '9pt' }}>
                     <Checkbox checked={standard?.codes?.length > 0} />
                     {' '}<strong>{STANDARD_LABELS[domain][lang]}</strong>
                     {standard?.codes?.length > 0 && (
-                      <span style={{ marginLeft: '10px' }}>{standard.codes.join(', ')}</span>
+                      <span style={{ marginLeft: '8px' }}>{standard.codes.join(', ')}</span>
                     )}
                   </div>
                 );
               })}
-              <div style={{ border: '1px solid black', padding: '12px', marginTop: '20px', minHeight: '120px' }}>
-                <strong style={{ fontSize: '10pt' }}>Expectations:</strong>
-                <div style={{ marginTop: '8px', fontSize: '10pt', lineHeight: '1.5' }}>{getExpectationForWeek(1)}</div>
+              <div style={{ border: '1px solid black', padding: '8px', marginTop: '10px', minHeight: '60px' }}>
+                <strong style={{ fontSize: '9pt' }}>Expectations:</strong>
+                <div style={{ marginTop: '4px', fontSize: '9pt', lineHeight: '1.3' }}>{getExpectationForWeek(1)}</div>
               </div>
             </td>
-            <td style={{ width: '50%', padding: '15px', verticalAlign: 'top' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '12pt', borderBottom: '2px solid black', marginBottom: '12px', paddingBottom: '6px' }}>
+            <td style={{ width: '50%', padding: '8px 10px', verticalAlign: 'top' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '11pt', borderBottom: '2px solid black', marginBottom: '6px', paddingBottom: '3px' }}>
                 Standard: Second Week
               </div>
               {['listeningAndSpeaking', 'foundationalSkills', 'reading', 'writing', 'language'].map(domain => {
                 const standard = getStandardsForWeek(2).find(s => s.domain === domain);
                 return (
-                  <div key={domain} style={{ marginBottom: '8px', fontSize: '10pt' }}>
+                  <div key={domain} style={{ marginBottom: '4px', fontSize: '9pt' }}>
                     <Checkbox checked={standard?.codes?.length > 0} />
                     {' '}<strong>{STANDARD_LABELS[domain][lang]}</strong>
                     {standard?.codes?.length > 0 && (
-                      <span style={{ marginLeft: '10px' }}>{standard.codes.join(', ')}</span>
+                      <span style={{ marginLeft: '8px' }}>{standard.codes.join(', ')}</span>
                     )}
                   </div>
                 );
               })}
-              <div style={{ border: '1px solid black', padding: '12px', marginTop: '20px', minHeight: '120px' }}>
-                <strong style={{ fontSize: '10pt' }}>Expectations:</strong>
-                <div style={{ marginTop: '8px', fontSize: '10pt', lineHeight: '1.5' }}>{getExpectationForWeek(2)}</div>
+              <div style={{ border: '1px solid black', padding: '8px', marginTop: '10px', minHeight: '60px' }}>
+                <strong style={{ fontSize: '9pt' }}>Expectations:</strong>
+                <div style={{ marginTop: '4px', fontSize: '9pt', lineHeight: '1.3' }}>{getExpectationForWeek(2)}</div>
               </div>
             </td>
           </tr>
@@ -375,12 +375,12 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       </table>
 
       {/* Integration */}
-      <table style={{ marginBottom: '25px' }}>
+      <table style={{ marginBottom: '10px' }}>
         <tbody>
           <tr>
-            <td style={{ padding: '15px' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '12px', fontSize: '11pt' }}>Integration with other subjects:</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', fontSize: '10pt' }}>
+            <td style={{ padding: '8px 10px' }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '6px', fontSize: '10pt' }}>Integration with other subjects:</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', fontSize: '9pt' }}>
                 {['mathematics', 'spanish', 'socialStudies', 'science', 'health', 'art', 'physicalEducation', 'religion'].map(subject => (
                   <span key={subject}>
                     <Checkbox checked={plan.subject_integration?.includes(subject)} />
@@ -394,11 +394,11 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       </table>
 
       {/* Signatures */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '50px', paddingTop: '20px' }}>
-        <div style={{ borderTop: '1px solid black', paddingTop: '8px', width: '40%', textAlign: 'center', fontSize: '10pt' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', paddingTop: '10px' }}>
+        <div style={{ borderTop: '1px solid black', paddingTop: '5px', width: '40%', textAlign: 'center', fontSize: '9pt' }}>
           Teacher's Signature / Date
         </div>
-        <div style={{ borderTop: '1px solid black', paddingTop: '8px', width: '40%', textAlign: 'center', fontSize: '10pt' }}>
+        <div style={{ borderTop: '1px solid black', paddingTop: '5px', width: '40%', textAlign: 'center', fontSize: '9pt' }}>
           Principal's Signature / Date
         </div>
       </div>
