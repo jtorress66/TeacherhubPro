@@ -225,9 +225,10 @@ const AIAssistant = () => {
   const selectedTool = tools.find(t => t.id === genForm.tool_type);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-6 text-white">
+    <Layout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-6 text-white">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
             <Sparkles className="h-7 w-7" />
