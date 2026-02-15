@@ -2922,30 +2922,6 @@ async def generate_tts(request: TTSRequest):
 
 # Include modular routers in the api_router
 
-# Standards reference data
-STANDARDS_INFO = {
-    "common_core": {
-        "name": "Common Core State Standards",
-        "name_es": "Estándares Comunes Estatales",
-        "subjects": {
-            "math": "CCSS.MATH",
-            "ela": "CCSS.ELA-LITERACY",
-            "science": "NGSS"
-        }
-    },
-    "pr_core": {
-        "name": "Puerto Rico Core Standards",
-        "name_es": "Estándares de Puerto Rico",
-        "subjects": {
-            "math": "PR.MATH",
-            "spanish": "PR.ESP",
-            "english": "PR.ING",
-            "science": "PR.CIEN",
-            "social_studies": "PR.EST.SOC"
-        }
-    }
-}
-
 async def check_ai_access(user: dict) -> bool:
     """Check if user has access to AI features (paid subscription or trial)"""
     user_id = user.get("user_id")
