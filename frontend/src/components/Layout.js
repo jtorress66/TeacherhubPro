@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useSchool } from '../contexts/SchoolContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { Button } from './ui/button';
 import { 
   LayoutDashboard, 
@@ -21,7 +22,9 @@ import {
   Briefcase,
   CreditCard,
   Shield,
-  Sparkles
+  Sparkles,
+  Moon,
+  Sun
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
