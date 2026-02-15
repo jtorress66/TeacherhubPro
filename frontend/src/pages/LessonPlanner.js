@@ -63,6 +63,7 @@ const LessonPlanner = () => {
   // AI Day Suggestions state
   const [aiDaySuggestions, setAiDaySuggestions] = useState({});
   const [aiDayLoading, setAiDayLoading] = useState(null); // Track which day is loading
+  const [aiFullWeekLoading, setAiFullWeekLoading] = useState(false); // Full week generation
   
   // Day sequence phases for AI context
   const DAY_PHASES = {
