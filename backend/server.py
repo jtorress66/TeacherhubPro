@@ -2921,9 +2921,6 @@ async def generate_tts(request: TTSRequest):
 # The AI Teaching Assistant endpoints have been refactored to routes/ai.py
 
 # Include modular routers in the api_router
-
-
-# Include modular routers in the api_router
 api_router.include_router(auth_router)
 api_router.include_router(ai_router)
 
