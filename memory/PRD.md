@@ -1366,4 +1366,35 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 - `/app/frontend/src/components/WelcomeTour.js`
 - `/app/frontend/src/components/VideoStyleGuide.js`
 
+---
+## Update 2026-02-15 - Dark Mode Feature
+
+### New Feature: Dark Mode Toggle
+
+**Description:** Added a full dark mode option for teachers who plan late at night or prefer darker interfaces.
+
+**Features:**
+1. **Toggle Button in Sidebar:** Moon/Sun icon with "Oscuro/Claro" (Dark/Light) label
+2. **Mobile Header Toggle:** Quick access toggle in mobile header  
+3. **Persistent Preference:** Saves to localStorage
+4. **System Detection:** Auto-detects OS dark mode preference on first visit
+5. **Full Theme Support:** All UI elements properly styled for dark mode
+
+**Technical Implementation:**
+- Created `/app/frontend/src/contexts/ThemeContext.js` - Theme state management
+- Added `ThemeProvider` to App.js wrapping all other providers
+- Updated Layout.js with theme toggle and dark mode compatible classes
+- Tailwind already had `.dark` class variables defined in `index.css`
+
+**Dark Mode Colors:**
+- Background: Dark slate/navy (#1a1f2e)
+- Cards: Slightly lighter dark (#1e2536)
+- Text: Light gray/white for contrast
+- Accent colors preserved (lime green primary)
+
+**Files Modified:**
+- `/app/frontend/src/contexts/ThemeContext.js` (NEW)
+- `/app/frontend/src/App.js` - Added ThemeProvider
+- `/app/frontend/src/components/Layout.js` - Added toggle and dark classes
+
 
