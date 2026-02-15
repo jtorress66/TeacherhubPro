@@ -148,26 +148,15 @@ const AIAssistant = () => {
     setGeneratedContent('');
 
     try {
-      const response = await fetch(`${API_URL}/api/ai/generate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(genForm)
+      const response = await axios.post(`${API_URL}/api/ai/generate`, genForm, {
+        withCredentials: true
       });
 
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.detail || 'Generation failed');
-      }
-
-      setGeneratedContent(data.content);
+      setGeneratedContent(response.data.content);
       toast.success(language === 'es' ? '¡Contenido generado!' : 'Content generated!');
       loadGenerations();
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.detail || error.message);
     } finally {
       setIsLoading(false);
     }
