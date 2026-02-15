@@ -1220,4 +1220,55 @@ Started modular refactoring of the monolithic `server.py`:
 - ✅ AI generations endpoint verified (modular route)
 - ✅ Landing page screenshots captured
 
+---
+## Update 2026-02-15 - P0 Bug Fix: AI Network Error
+
+### Bug Fixed: AI Content Generation "Network Error"
+
+**Issue:** Users reported "Network error" when trying to generate AI content (lesson plans, quizzes, etc.), despite having sufficient Emergent LLM Key credits.
+
+**Root Cause:** The model name `claude-sonnet-4-5-20250929` was not available in the Emergent LLM Key's supported model list. The emergentintegrations library was attempting to call the model but failing due to invalid model name.
+
+**Evidence from Logs:**
+```
+LiteLLM completion() model= claude-sonnet-4-5-20250929; provider = openai
+openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 seconds
+```
+
+**Solution:** Updated the model name from `claude-sonnet-4-5-20250929` to `claude-sonnet-4-20250514` which is a valid model in the Emergent LLM Key's available models.
+
+**Files Modified:**
+- `/app/backend/routes/ai.py` - Lines 108, 192, 1010 (all 3 occurrences updated)
+
+**Verification:**
+- Test report: `/app/test_reports/iteration_10.json`
+- Success rate: 100% (14/14 backend tests passed)
+- All AI endpoints verified working:
+  - POST /api/ai/generate (lesson_plan, quiz, summary) ✅
+  - POST /api/ai/chat (single message, multi-turn) ✅
+  - GET /api/ai/chat/history/{session_id} ✅
+  - GET /api/ai/templates/starters ✅
+  - GET /api/ai/templates/weekly ✅
+  - GET /api/ai/generations ✅
+
+---
+## Current Backlog (Updated 2026-02-15)
+
+### P0 (Critical) - Completed
+- ✅ AI Network Error bug fix
+
+### P1 (High Priority - Next)
+- Complete Backend Refactoring (server.py still has ~2900 lines)
+- Drag-and-Drop Seating Chart Editor
+- Quick Week Copy (duplicate + shift dates by 7 days)
+- Super Admin Bulk Tools (CSV import for teachers)
+
+### P2 (Medium Priority)
+- Audit Log for grades/attendance changes
+- Google Classroom Integration
+- Report card generation
+
+### Technical Debt
+- **Refactor `/app/backend/server.py`**: Partially done (auth, ai routes extracted). Remaining: schools, classes, students, plans, attendance, gradebook, dashboard, subscription, super admin routes.
+
 
