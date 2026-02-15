@@ -215,6 +215,9 @@ const Landing = () => {
             <a href="#features" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">
               {language === 'es' ? 'Funciones' : 'Features'}
             </a>
+            <a href="#ai-assistant" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">
+              {language === 'es' ? 'Asistente IA' : 'AI Assistant'}
+            </a>
             <a href="#customization" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">
               {language === 'es' ? 'Personalización' : 'Customization'}
             </a>
