@@ -666,8 +666,10 @@ const Landing = () => {
                   </TabsContent>
                 </div>
               </Tabs>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
       </section>
 
