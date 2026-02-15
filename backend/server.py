@@ -2917,7 +2917,8 @@ async def generate_tts(request: TTSRequest):
         logger.error(f"Error generating TTS: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating TTS: {str(e)}")
 
-# ==================== AI TEACHING ASSISTANT ENDPOINTS ====================
+# ==================== AI ENDPOINTS MOVED TO routes/ai.py ====================
+# The AI Teaching Assistant endpoints have been refactored to routes/ai.py
 
 # System prompts for different tools
 AI_SYSTEM_PROMPTS = {
