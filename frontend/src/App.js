@@ -7,6 +7,7 @@ import axios from "axios";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { SchoolProvider } from "./contexts/SchoolContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 // Pages
 import Landing from "./pages/Landing";
