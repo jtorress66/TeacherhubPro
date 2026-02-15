@@ -172,28 +172,17 @@ const AIAssistant = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/ai/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          message: userMessage,
-          session_id: chatSessionId,
-          language: language
-        })
+      const response = await axios.post(`${API_URL}/api/ai/chat`, {
+        message: userMessage,
+        session_id: chatSessionId,
+        language: language
+      }, {
+        withCredentials: true
       });
 
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.detail || 'Chat failed');
-      }
-
-      setChatMessages(prev => [...prev, { role: 'assistant', content: data.content, created_at: data.created_at }]);
+      setChatMessages(prev => [...prev, { role: 'assistant', content: response.data.content, created_at: response.data.created_at }]);
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.detail || error.message);
       setChatMessages(prev => prev.slice(0, -1)); // Remove user message on error
     } finally {
       setIsLoading(false);
