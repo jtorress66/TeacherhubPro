@@ -190,7 +190,7 @@ const Layout = ({ children }) => {
           </nav>
 
           {/* User Section */}
-          <div className="p-4 border-t border-slate-200/50 bg-slate-50/50">
+          <div className="p-4 border-t border-border bg-secondary/50">
             <div className="flex items-center gap-3 mb-4 px-2">
               <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center overflow-hidden shadow-md">
                 {user?.picture ? (
@@ -202,8 +202,8 @@ const Layout = ({ children }) => {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-slate-800 truncate">{user?.name}</p>
-                <p className="text-xs text-slate-500 truncate">{user?.email}</p>
+                <p className="font-medium text-foreground truncate">{user?.name}</p>
+                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
               </div>
             </div>
             
@@ -211,23 +211,34 @@ const Layout = ({ children }) => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="flex-1 hover:bg-slate-100"
+                className="flex-1"
+                onClick={toggleTheme}
+                title={isDarkMode ? (language === 'es' ? 'Modo claro' : 'Light mode') : (language === 'es' ? 'Modo oscuro' : 'Dark mode')}
+              >
+                {isDarkMode ? <Sun className="h-4 w-4 mr-2 text-amber-500" /> : <Moon className="h-4 w-4 mr-2" />}
+                {isDarkMode ? (language === 'es' ? 'Claro' : 'Light') : (language === 'es' ? 'Oscuro' : 'Dark')}
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex-1"
                 onClick={toggleLanguage}
               >
                 <Globe className="h-4 w-4 mr-2" />
                 {language.toUpperCase()}
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex-1 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                onClick={handleLogout}
-                data-testid="logout-btn"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                {t('logout')}
-              </Button>
             </div>
+            
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full mt-2 hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-950 dark:hover:text-red-400"
+              onClick={handleLogout}
+              data-testid="logout-btn"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              {t('logout')}
+            </Button>
           </div>
         </div>
       </aside>
