@@ -22,7 +22,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const AIAssistant = () => {
   const { language } = useLanguage();
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('generate');
   const [isLoading, setIsLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState('');
