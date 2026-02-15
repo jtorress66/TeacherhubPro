@@ -1380,10 +1380,13 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
                   <TabsTrigger 
                     key={day} 
                     value={String(i)}
-                    className="text-xs md:text-sm"
+                    className={`text-xs md:text-sm relative ${aiDaySuggestions[i] ? 'pr-6' : ''}`}
                     data-testid={`day-tab-${day}`}
                   >
                     {t(day).slice(0, 3)}
+                    {aiDaySuggestions[i] && (
+                      <span className="absolute right-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+                    )}
                   </TabsTrigger>
                 ))}
               </TabsList>
