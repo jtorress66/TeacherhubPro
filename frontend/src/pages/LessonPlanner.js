@@ -707,6 +707,177 @@ ${language === 'es' ? 'Please respond entirely in Spanish.' : 'Please respond in
     toast.success(language === 'es' ? 'Sugerencias aplicadas a las notas' : 'Suggestions applied to notes');
   };
 
+  // Generate Full Week AI suggestions
+  const handleAIFullWeek = async () => {
+    const objective = activeWeek === 1 ? formData.objective : formData.objective_week2;
+    const topic = formData.story || formData.unit;
+    const selectedClass = classes.find(c => c.class_id === formData.class_id);
+    
+    if (!objective && !topic) {
+      toast.error(language === 'es' 
+        ? 'Primero agrega un objetivo o tema para generar el plan semanal' 
+        : 'Please add an objective or topic first to generate the weekly plan');
+      return;
+    }
+
+    setAiFullWeekLoading(true);
+    
+    try {
+      const prompt = `Create a complete 5-day lesson plan with specific activities for each day, following a coherent learning progression.
+
+LESSON CONTEXT:
+- Objective: ${objective || 'Not specified'}
+- Topic/Unit: ${topic || 'Not specified'}
+${selectedClass ? `- Grade: ${selectedClass.grade}` : ''}
+${selectedClass?.subject ? `- Subject: ${selectedClass.subject}` : ''}
+
+WEEKLY STRUCTURE (follow this pedagogical progression):
+
+**DAY 1 - INTRODUCTION:**
+Focus: Hook students, activate prior knowledge, introduce key vocabulary and concepts
+- Include an engaging opener/hook activity
+- Pre-assessment or KWL chart
+- Introduction of main concepts
+
+**DAY 2 - GUIDED PRACTICE:**
+Focus: Teacher modeling, think-alouds, guided practice with scaffolding
+- Teacher demonstrates skills/concepts
+- Guided practice with the whole class
+- Check for understanding activities
+
+**DAY 3 - INDEPENDENT PRACTICE:**
+Focus: Student-centered activities, small groups, peer collaboration
+- Centers or station activities
+- Partner work
+- Independent application
+
+**DAY 4 - MASTERY & EXTENSION:**
+Focus: Deepen understanding, challenge activities, real-world application
+- Higher-order thinking activities
+- Extension projects
+- Cross-curricular connections
+
+**DAY 5 - ASSESSMENT & REFLECTION:**
+Focus: Formative/summative assessment, reflection, celebration of learning
+- Assessment activity
+- Student self-reflection
+- Closure and preview of next unit
+
+FORMAT each day as:
+## [DAY NAME] - [PHASE]
+🎯 **Activities:**
+1. [Activity Name] (X min): [Description]
+2. [Activity Name] (X min): [Description]
+3. [Activity Name] (X min): [Description]
+
+📚 **Materials:** [List key materials]
+
+✅ **Success Criteria:** [How students show understanding]
+
+---
+
+${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Please respond in English.'}`;
+
+      const response = await axios.post(`${API}/ai/chat`, {
+        message: prompt,
+        session_id: `full_week_${formData.class_id || 'new'}_${Date.now()}`,
+        language: language,
+        context: `Full week lesson planning for ${topic || 'a new lesson'}`
+      }, { withCredentials: true });
+
+      const fullContent = response.data.content;
+      
+      // Parse the response and split by days
+      const dayPatterns = [
+        /##\s*(LUNES|MONDAY|DAY 1|DÍA 1)[^\n]*\n([\s\S]*?)(?=##\s*(MARTES|TUESDAY|DAY 2|DÍA 2)|$)/i,
+        /##\s*(MARTES|TUESDAY|DAY 2|DÍA 2)[^\n]*\n([\s\S]*?)(?=##\s*(MIÉRCOLES|WEDNESDAY|DAY 3|DÍA 3)|$)/i,
+        /##\s*(MIÉRCOLES|WEDNESDAY|DAY 3|DÍA 3)[^\n]*\n([\s\S]*?)(?=##\s*(JUEVES|THURSDAY|DAY 4|DÍA 4)|$)/i,
+        /##\s*(JUEVES|THURSDAY|DAY 4|DÍA 4)[^\n]*\n([\s\S]*?)(?=##\s*(VIERNES|FRIDAY|DAY 5|DÍA 5)|$)/i,
+        /##\s*(VIERNES|FRIDAY|DAY 5|DÍA 5)[^\n]*\n([\s\S]*?)$/i
+      ];
+
+      const newSuggestions = {};
+      
+      dayPatterns.forEach((pattern, index) => {
+        const match = fullContent.match(pattern);
+        if (match) {
+          newSuggestions[index] = {
+            content: match[2].trim(),
+            timestamp: new Date().toISOString(),
+            isFullWeek: true
+          };
+        }
+      });
+
+      // If parsing didn't work well, split by simple markers
+      if (Object.keys(newSuggestions).length < 3) {
+        // Fallback: split content roughly into 5 parts
+        const sections = fullContent.split(/(?=##\s*(?:DAY|DÍA|LUNES|MARTES|MIÉRCOLES|JUEVES|VIERNES|MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY))/i);
+        sections.forEach((section, index) => {
+          if (index < 5 && section.trim()) {
+            newSuggestions[index] = {
+              content: section.trim(),
+              timestamp: new Date().toISOString(),
+              isFullWeek: true
+            };
+          }
+        });
+      }
+
+      // If still not enough, put everything in day 0 and partial content in others
+      if (Object.keys(newSuggestions).length === 0) {
+        const contentParts = fullContent.split('\n\n');
+        const partSize = Math.ceil(contentParts.length / 5);
+        for (let i = 0; i < 5; i++) {
+          const start = i * partSize;
+          const end = start + partSize;
+          const dayContent = contentParts.slice(start, end).join('\n\n');
+          if (dayContent.trim()) {
+            newSuggestions[i] = {
+              content: dayContent.trim(),
+              timestamp: new Date().toISOString(),
+              isFullWeek: true
+            };
+          }
+        }
+      }
+
+      setAiDaySuggestions(newSuggestions);
+
+      toast.success(language === 'es' 
+        ? '¡Plan semanal completo generado! Revisa cada día.' 
+        : 'Full weekly plan generated! Review each day.');
+      
+    } catch (error) {
+      console.error('AI full week error:', error);
+      if (error.response?.status === 403) {
+        toast.error(language === 'es' 
+          ? 'Necesitas una suscripción activa para usar el asistente IA' 
+          : 'You need an active subscription to use the AI assistant');
+      } else {
+        toast.error(language === 'es' ? 'Error al generar el plan semanal' : 'Error generating weekly plan');
+      }
+    } finally {
+      setAiFullWeekLoading(false);
+    }
+  };
+
+  // Apply all AI suggestions to notes
+  const applyAllSuggestionsToNotes = () => {
+    Object.keys(aiDaySuggestions).forEach(dayIndex => {
+      const suggestion = aiDaySuggestions[dayIndex];
+      if (suggestion) {
+        const idx = parseInt(dayIndex);
+        const currentNotes = getWeekDays(activeWeek)[idx]?.notes || '';
+        const newNotes = currentNotes 
+          ? `${currentNotes}\n\n--- ${language === 'es' ? 'Sugerencias IA' : 'AI Suggestions'} ---\n${suggestion.content}`
+          : `--- ${language === 'es' ? 'Sugerencias IA' : 'AI Suggestions'} ---\n${suggestion.content}`;
+        updateDay(idx, 'notes', newNotes);
+      }
+    });
+    toast.success(language === 'es' ? 'Todas las sugerencias aplicadas' : 'All suggestions applied');
+  };
+
   if (loading) {
     return (
       <Layout>
