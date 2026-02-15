@@ -13,10 +13,11 @@ import { Checkbox } from '../components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '../components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from '../components/ui/dialog';
 import { Skeleton } from '../components/ui/skeleton';
+import { ScrollArea } from '../components/ui/scroll-area';
 import { toast } from 'sonner';
-import { Calendar, Plus, Copy, FileDown, Save, Trash2, ChevronLeft, ChevronRight, Printer, BookOpen, Sparkles, Loader2, Wand2 } from 'lucide-react';
+import { Calendar, Plus, Copy, FileDown, Save, Trash2, ChevronLeft, ChevronRight, Printer, BookOpen, Sparkles, Loader2, Wand2, FolderOpen, Star, Clock, Layers } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
