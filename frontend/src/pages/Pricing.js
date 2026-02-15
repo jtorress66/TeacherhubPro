@@ -166,8 +166,12 @@ const Pricing = () => {
       <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-3">
-            <BookOpen className="h-8 w-8 text-slate-700" />
-            <span className="text-2xl font-heading font-bold text-slate-800">TeacherHubPro</span>
+            <img 
+              src="https://static.prod-images.emergentagent.com/jobs/3f72aedc-992b-4d25-83bd-5bb47e46011f/images/0f969775d262b8ea24538b15f4cc9cbeaf4a878afa90805ec86f8619b9caac6c.png"
+              alt="TeacherHubPro Logo"
+              className="h-12 w-12 object-contain"
+            />
+            <span className="text-xl font-bold text-slate-800">TeacherHubPro</span>
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/">
