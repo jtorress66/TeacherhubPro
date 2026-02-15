@@ -794,6 +794,7 @@ The following issues require user action in production:
 ## Current Backlog (Updated 2026-02-15)
 
 ### P1 (High Priority - Next)
+- Save AI Generations to Lesson Planner
 - Drag-and-Drop Seating Chart Editor
 - Quick Week Copy (duplicate + shift dates by 7 days)
 - Super Admin Bulk Tools (CSV import for teachers)
@@ -804,5 +805,78 @@ The following issues require user action in production:
 - Report card generation
 
 ### Technical Debt (Recurring)
-- **Refactor `/app/backend/server.py`**: File is monolithic (3000+ lines) and continues to grow. Should be split into logical modules using FastAPI's `APIRouter`.
+- ~~**Refactor `/app/backend/server.py`**: File is monolithic (3000+ lines) and continues to grow. Should be split into logical modules using FastAPI's `APIRouter`.~~ PARTIALLY DONE - Auth and AI routes extracted.
+
+---
+## Update 2026-02-15 - Landing Page AI Feature & Refactoring
+
+### Landing Page Updates
+- **AI Feature Showcase:** Added AI Teaching Assistant to the feature showcase grid (4-column layout)
+- **Dedicated AI Section:** Created new purple-gradient section showcasing the AI assistant with:
+  - Demo chat interface visual
+  - Feature bullets (Common Core & PR CORE aligned, bilingual, powered by Claude)
+  - "Try it free" CTA button
+- **Navigation Update:** Added "Asistente IA" / "AI Assistant" link to header navigation
+
+### Code Refactoring (COMPLETED)
+Started modular refactoring of the monolithic `server.py`:
+
+#### New Directory Structure
+```
+/app/backend/
+├── models/
+│   └── __init__.py          # All Pydantic models
+├── utils/
+│   ├── __init__.py          # Exports
+│   ├── database.py          # MongoDB connection
+│   ├── auth.py              # Auth helpers (JWT, password hashing)
+│   └── constants.py         # App constants, AI prompts
+├── routes/
+│   ├── __init__.py          # Router exports
+│   ├── auth.py              # Auth endpoints (login, register, etc.)
+│   └── ai.py                # AI assistant endpoints
+└── server.py                # Main app (includes modular routers)
+```
+
+#### What Was Extracted
+1. **Auth Routes** (`routes/auth.py`):
+   - POST /api/auth/register
+   - POST /api/auth/login
+   - POST /api/auth/session (Google OAuth)
+   - GET /api/auth/me
+   - POST /api/auth/logout
+   - PUT /api/auth/profile
+
+2. **AI Routes** (`routes/ai.py`):
+   - POST /api/ai/generate
+   - POST /api/ai/chat
+   - GET /api/ai/chat/history/{session_id}
+   - GET /api/ai/generations
+   - GET /api/ai/generations/{generation_id}
+   - DELETE /api/ai/chat/sessions/{session_id}
+
+3. **Shared Utilities**:
+   - Database connection (utils/database.py)
+   - Authentication helpers (utils/auth.py)
+   - Constants and AI prompts (utils/constants.py)
+   - Pydantic models (models/__init__.py)
+
+#### Still In server.py (To Extract Later)
+- School endpoints
+- Class endpoints
+- Student endpoints
+- Lesson Plan endpoints
+- Attendance endpoints
+- Gradebook endpoints
+- Dashboard endpoints
+- Subscription/Stripe endpoints
+- Super Admin endpoints
+- Parent Portal endpoints
+
+### Testing Status
+- ✅ Health endpoint verified
+- ✅ Auth login verified (modular route)
+- ✅ AI generations endpoint verified (modular route)
+- ✅ Landing page screenshots captured
+
 
