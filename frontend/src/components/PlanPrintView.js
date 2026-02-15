@@ -221,19 +221,19 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         </div>
 
         {/* Print Content */}
-        <div ref={printRef} style={{ fontFamily: 'Arial, sans-serif', padding: '4px', background: 'white' }}>
+        <div ref={printRef} style={{ fontFamily: 'Arial, sans-serif', padding: '8px', background: 'white' }}>
           
           {/* ===== PAGE 1: Week 1 Daily Plan ===== */}
-          <div className="page" style={{ fontSize: '8pt', lineHeight: '1.2' }}>
+          <div className="page" style={{ fontSize: '9pt', lineHeight: '1.25' }}>
             <Header />
             
             {/* Info Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '4px' }}>
-              <div style={{ padding: '4px 6px', borderRight: '1px solid black', fontSize: '9pt' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', border: '1px solid black', marginBottom: '6px' }}>
+              <div style={{ padding: '6px 8px', borderRight: '1px solid black', fontSize: '10pt' }}>
                 <div><strong>Unit:</strong> {plan.unit || '_____'} | <strong>Story:</strong> {plan.story || '_____'}</div>
                 <div><strong>Teacher:</strong> {plan.teacher_name || '_____'} | <strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}</div>
               </div>
-              <div style={{ padding: '4px 6px', fontSize: '9pt' }}>
+              <div style={{ padding: '6px 8px', fontSize: '10pt' }}>
                 <div>
                   <strong>Date:</strong> From {plan.week_start || '_____'} To {plan.week_end || '_____'}
                 </div>
@@ -241,36 +241,36 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             </div>
 
             {/* Objective */}
-            <div style={{ border: '1px solid black', padding: '4px 6px', marginBottom: '4px' }}>
-              <span style={{ fontWeight: 'bold', fontSize: '9pt' }}>Objective of the week: </span>
-              <span style={{ fontSize: '8pt' }}>{plan.objective || '_____'}</span>
+            <div style={{ border: '1px solid black', padding: '6px 8px', marginBottom: '6px' }}>
+              <span style={{ fontWeight: 'bold', fontSize: '10pt' }}>Objective of the week: </span>
+              <span style={{ fontSize: '9pt' }}>{plan.objective || '_____'}</span>
             </div>
 
             {/* Skills - Numbered list */}
-            <div style={{ border: '1px solid black', padding: '4px 6px', marginBottom: '4px' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '9pt', borderBottom: '1px solid black', marginBottom: '3px', paddingBottom: '2px' }}>
+            <div style={{ border: '1px solid black', padding: '6px 8px', marginBottom: '6px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '10pt', borderBottom: '1px solid black', marginBottom: '4px', paddingBottom: '3px' }}>
                 Skills of the week:
               </div>
-              <ol style={{ marginLeft: '18px', fontSize: '8pt', marginTop: '2px', marginBottom: '2px' }}>
+              <ol style={{ marginLeft: '20px', fontSize: '9pt', marginTop: '3px', marginBottom: '3px' }}>
                 {(plan.skills || []).filter(s => s).map((skill, i) => (
-                  <li key={i} style={{ marginBottom: '1px' }}>{skill}</li>
+                  <li key={i} style={{ marginBottom: '2px' }}>{skill}</li>
                 ))}
               </ol>
             </div>
 
             {/* Daily Plan Table */}
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '7pt', tableLayout: 'fixed' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8pt', tableLayout: 'fixed' }}>
               <thead>
                 <tr>
-                  <th style={{ border: '1px solid black', padding: '3px', width: '12%', background: '#f0f0f0', fontSize: '7.5pt' }}></th>
+                  <th style={{ border: '1px solid black', padding: '4px', width: '12%', background: '#f0f0f0', fontSize: '8pt' }}></th>
                   {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, dayIdx) => (
-                    <th key={day} style={{ border: '1px solid black', padding: '3px', width: '17.6%', background: '#f0f0f0', textAlign: 'center', fontSize: '8pt' }}>
+                    <th key={day} style={{ border: '1px solid black', padding: '4px', width: '17.6%', background: '#f0f0f0', textAlign: 'center', fontSize: '9pt' }}>
                       {DAY_LABELS[day][lang]}
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '2px', fontSize: '7pt' }}>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '2px', fontSize: '8pt' }}>
                         {['E', 'C', 'A'].map(eca => (
-                          <span key={eca} style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                          <span key={eca} style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
                             <span>{eca}</span>
-                            <Checkbox checked={planDays[dayIdx]?.eca?.[eca]} size={8} />
+                            <Checkbox checked={planDays[dayIdx]?.eca?.[eca]} size={9} />
                           </span>
                         ))}
                       </div>
