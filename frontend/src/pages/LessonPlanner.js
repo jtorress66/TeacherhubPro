@@ -1066,6 +1066,30 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
             )}
           </div>
           <div className="flex gap-2 flex-wrap">
+            {/* Templates Button */}
+            <Button 
+              variant="outline" 
+              onClick={openTemplatesModal}
+              className="border-amber-200 text-amber-700 hover:bg-amber-50"
+              data-testid="templates-btn"
+            >
+              <Layers className="h-4 w-4 mr-2" />
+              {language === 'es' ? 'Plantillas' : 'Templates'}
+            </Button>
+            
+            {/* Save as Template Button (shown when there are AI suggestions) */}
+            {Object.keys(aiDaySuggestions).length > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setShowSaveTemplateModal(true)}
+                className="border-green-200 text-green-700 hover:bg-green-50"
+                data-testid="save-template-btn"
+              >
+                <Star className="h-4 w-4 mr-2" />
+                {language === 'es' ? 'Guardar plantilla' : 'Save Template'}
+              </Button>
+            )}
+            
             {/* AI Generate Button */}
             <Button 
               variant="outline" 
