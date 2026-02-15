@@ -369,8 +369,8 @@ const Pricing = () => {
           </p>
           <p className="mt-2">
             {language === 'es' 
-              ? '¿Preguntas? Contáctanos en support@teacherhub.com' 
-              : 'Questions? Contact us at support@teacherhub.com'}
+              ? '¿Preguntas? Contáctanos en support@teacherhubpro.com' 
+              : 'Questions? Contact us at support@teacherhubpro.com'}
           </p>
         </div>
       </div>
