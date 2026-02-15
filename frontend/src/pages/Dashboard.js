@@ -18,7 +18,12 @@ import {
   ChevronRight,
   Clock,
   HelpCircle,
-  PlayCircle
+  PlayCircle,
+  Sparkles,
+  Star,
+  Lightbulb,
+  Wand2,
+  ArrowRight
 } from 'lucide-react';
 import Layout from '../components/Layout';
 import WelcomeTour from '../components/WelcomeTour';
