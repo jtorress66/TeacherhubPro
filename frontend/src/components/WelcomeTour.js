@@ -11,13 +11,16 @@ import {
   BookOpen,
   Mail,
   Briefcase,
-  Sparkles
+  Sparkles,
+  Bot,
+  FileText,
+  Printer
 } from 'lucide-react';
 
 const WelcomeTour = ({ language, run, onClose }) => {
   const [currentStep, setCurrentStep] = useState(0);
 
-  // Bilingual tour content with icons
+  // Bilingual tour content with icons - Updated with new AI features
   const steps = [
     {
       icon: Sparkles,
@@ -27,8 +30,8 @@ const WelcomeTour = ({ language, run, onClose }) => {
         es: "¡Bienvenido a TeacherHubPro!"
       },
       content: {
-        en: "Let's take a quick tour to help you get started. We'll show you the key features that will make your teaching life easier!",
-        es: "¡Hagamos un recorrido rápido para ayudarte a comenzar! Te mostraremos las funciones clave que harán tu vida docente más fácil."
+        en: "Let's take a quick tour to help you get started. We'll show you the key features including our powerful AI assistant that will make your teaching life easier!",
+        es: "¡Hagamos un recorrido rápido para ayudarte a comenzar! Te mostraremos las funciones clave incluyendo nuestro poderoso asistente de IA que hará tu vida docente más fácil."
       }
     },
     {
@@ -39,8 +42,8 @@ const WelcomeTour = ({ language, run, onClose }) => {
         es: "Tu Panel de Control"
       },
       content: {
-        en: "This is your command center! See your classes at a glance, quick stats, and easy navigation to all features. Everything you need is just one click away.",
-        es: "¡Este es tu centro de comando! Ve tus clases de un vistazo, estadísticas rápidas y navegación fácil. Todo lo que necesitas está a un clic de distancia."
+        en: "This is your command center! See your classes at a glance, quick stats, Template of the Week suggestions, and easy navigation to all features.",
+        es: "¡Este es tu centro de comando! Ve tus clases de un vistazo, estadísticas rápidas, sugerencias de plantillas de la semana y navegación fácil a todas las funciones."
       }
     },
     {
@@ -63,8 +66,44 @@ const WelcomeTour = ({ language, run, onClose }) => {
         es: "Planificador de Lecciones"
       },
       content: {
-        en: "Plan your week with ease! Create detailed lesson plans with objectives, daily activities, and notes. Save templates to reuse your best plans.",
-        es: "¡Planifica tu semana con facilidad! Crea planes detallados con objetivos, actividades diarias y notas. Guarda plantillas para reutilizar tus mejores planes."
+        en: "Plan your week with ease! Create detailed lesson plans with objectives and activities. Use AI to generate entire week plans or get daily suggestions instantly!",
+        es: "¡Planifica tu semana con facilidad! Crea planes detallados con objetivos y actividades. ¡Usa la IA para generar planes semanales completos o sugerencias diarias al instante!"
+      }
+    },
+    {
+      icon: Bot,
+      iconBg: 'bg-gradient-to-br from-violet-400 to-purple-600',
+      title: {
+        en: "AI Teaching Assistant",
+        es: "Asistente de IA"
+      },
+      content: {
+        en: "Meet your AI co-teacher! Generate lesson plans, quizzes, worksheets, and summaries aligned with Common Core and PR CORE standards. Chat with AI for teaching ideas anytime!",
+        es: "¡Conoce a tu co-maestro de IA! Genera planes de lección, exámenes, hojas de trabajo y resúmenes alineados con Common Core y PR CORE. ¡Chatea con la IA para ideas de enseñanza!"
+      }
+    },
+    {
+      icon: FileText,
+      iconBg: 'bg-gradient-to-br from-indigo-400 to-indigo-600',
+      title: {
+        en: "Templates & Quick Week",
+        es: "Plantillas y Semana Rápida"
+      },
+      content: {
+        en: "Save your best lesson plans as templates to reuse anytime! Use 'Generate Full Week' to create a complete 5-day plan with AI, or browse starter templates for inspiration.",
+        es: "¡Guarda tus mejores planes como plantillas para reutilizar! Usa 'Generar Semana Completa' para crear un plan de 5 días con IA, o explora plantillas de inicio para inspiración."
+      }
+    },
+    {
+      icon: Printer,
+      iconBg: 'bg-gradient-to-br from-emerald-400 to-green-600',
+      title: {
+        en: "Print & Export PDF",
+        es: "Imprimir y Exportar PDF"
+      },
+      content: {
+        en: "Export any AI-generated content as a beautifully formatted PDF! Print quizzes, worksheets, and lesson plans directly from the AI Assistant with professional formatting.",
+        es: "¡Exporta cualquier contenido generado por IA como un PDF bien formateado! Imprime exámenes, hojas de trabajo y planes de lección directamente desde el Asistente de IA."
       }
     },
     {
@@ -123,8 +162,8 @@ const WelcomeTour = ({ language, run, onClose }) => {
         es: "¡Todo Listo!"
       },
       content: {
-        en: "That's it! You're ready to start using TeacherHubPro. Remember, you can restart this tour anytime by clicking the 'Tour' button. Happy teaching!",
-        es: "¡Eso es todo! Estás listo para usar TeacherHubPro. Recuerda que puedes reiniciar este recorrido haciendo clic en 'Recorrido'. ¡Feliz enseñanza!"
+        en: "That's it! You're ready to start using TeacherHubPro. Don't forget to try the AI Assistant for lesson planning help. Happy teaching!",
+        es: "¡Eso es todo! Estás listo para usar TeacherHubPro. No olvides probar el Asistente de IA para ayuda con planificación. ¡Feliz enseñanza!"
       }
     }
   ];
