@@ -1458,3 +1458,36 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 
 ### Technical Debt
 - **Refactor `/app/backend/server.py`**: Partially done (auth, ai routes extracted). Remaining: schools, classes, students, plans, attendance, gradebook, dashboard, subscription, super admin routes.
+---
+## Update 2026-02-16 - UI Enhancements & Transitions
+
+### Features Implemented:
+
+1. **Browser Tab & Favicon**
+   - Changed title from "Emergent | Fullstack App" to "TeacherHubPro"
+   - Added custom SVG favicon with cyan-blue gradient "T" logo
+   - Updated meta description for SEO
+
+2. **Landing Page Hero Update**
+   - Changed headline from "The digital planner for your school" to "Your complete classroom in one platform"
+   - Updated tagline to mention AI planning, presentations, gradebook, and attendance
+   - Updated floating cards to show "AI Lesson Plan" and "Presentaciones - 6 slides"
+
+3. **New AI Presentations Section on Landing Page**
+   - Added new section with cyan-blue-purple gradient background
+   - Highlights features: AI Generate, 8 Visual Themes, Save & Load, Download HTML
+   - Shows "✨ Transiciones activadas" indicator
+   - Includes visual demo with slide thumbnails
+
+4. **Presentation Transitions**
+   - Added global transition selector with 4 options: None, Fade, Slide, Zoom
+   - Transitions apply during presentation mode when navigating between slides
+   - CSS animations: fade (opacity), slide (translate-x), zoom (scale)
+   - Transition indicator shown at bottom of presentation mode
+
+**Files Modified:**
+- `/app/frontend/public/index.html` - Updated title, favicon, and meta description
+- `/app/frontend/src/pages/Landing.js` - Updated hero tagline, added AI Presentations section
+- `/app/frontend/src/pages/PresentationCreator.js` - Added transition selector and animation logic
+
+**Test Report:** `/app/test_reports/iteration_12.json` - 100% pass rate
