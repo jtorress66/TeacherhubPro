@@ -1397,4 +1397,64 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 - `/app/frontend/src/App.js` - Added ThemeProvider
 - `/app/frontend/src/components/Layout.js` - Added toggle and dark classes
 
+---
+## Update 2026-02-16 - AI Presentation Creator Backend & Save/Download
 
+### New Feature: AI Presentation Backend (P0 Complete)
+
+**Description:** Implemented complete backend for the AI Presentation Creator, enabling AI-powered slide generation, saving presentations to the database, loading saved presentations, and downloading as HTML.
+
+**Features Implemented:**
+1. **AI Presentation Generation** - `POST /api/ai/presentation/generate`
+   - Generates 4-8 slides based on topic, subject, and grade level
+   - Uses Claude Sonnet 4 via emergentintegrations
+   - Returns structured JSON with slide templates, titles, content, and emojis
+   - Supports English and Spanish
+
+2. **Presentation CRUD Operations:**
+   - `POST /api/ai/presentations` - Save new presentation
+   - `GET /api/ai/presentations` - List user's presentations
+   - `GET /api/ai/presentations/{id}` - Load specific presentation
+   - `PUT /api/ai/presentations/{id}` - Update presentation
+   - `DELETE /api/ai/presentations/{id}` - Delete presentation
+
+3. **Frontend Enhancements:**
+   - New, Open, Save, Download buttons in header
+   - Save dialog with presentation name input
+   - Open dialog showing saved presentations list with delete option
+   - Download as HTML file for offline use
+   - Editing indicator showing current presentation name
+   - Full dark mode support
+
+**Database Collection Added:**
+- `presentations`: `{ presentation_id, user_id, school_id, name, topic, subject, grade_level, theme_id, slides[], created_at, updated_at }`
+
+**Files Modified:**
+- `/app/backend/routes/ai.py` - Added presentation generation and CRUD endpoints (lines 1065-1290)
+- `/app/backend/models/__init__.py` - Added PresentationSlide, PresentationCreate, PresentationUpdate, PresentationResponse, AIGeneratePresentationRequest models
+- `/app/frontend/src/pages/PresentationCreator.js` - Added save/load/download functionality, state management, and API integration
+
+**Test Results:**
+- Backend: 100% (11/11 tests passed)
+- Frontend: 100% (all UI flows verified)
+- Test report: `/app/test_reports/iteration_11.json`
+
+---
+## Current Backlog (Updated 2026-02-16)
+
+### P0 (Critical) - Completed
+- ✅ AI Presentation Backend & Save/Download
+
+### P1 (High Priority - Next)
+- Complete Backend Refactoring (server.py still has ~2900 lines)
+- Drag-and-Drop Seating Chart Editor
+- Quick Week Copy (duplicate + shift dates by 7 days)
+- Super Admin Bulk Tools (CSV import for teachers)
+
+### P2 (Medium Priority)
+- Audit Log for grades/attendance changes
+- Google Classroom Integration
+- Report card generation
+
+### Technical Debt
+- **Refactor `/app/backend/server.py`**: Partially done (auth, ai routes extracted). Remaining: schools, classes, students, plans, attendance, gradebook, dashboard, subscription, super admin routes.
