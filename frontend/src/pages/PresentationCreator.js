@@ -1054,19 +1054,153 @@ const PresentationCreator = () => {
     <Layout>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
               <Presentation className="h-8 w-8 text-cyan-600" />
               {language === 'es' ? 'Creador de Presentaciones' : 'Presentation Creator'}
             </h1>
-            <p className="text-slate-500 mt-1">
+            <p className="text-slate-500 dark:text-slate-400 mt-1">
               {language === 'es' 
                 ? 'Crea presentaciones educativas impactantes con IA' 
                 : 'Create engaging educational presentations with AI'}
             </p>
+            {currentPresentationId && (
+              <p className="text-xs text-cyan-600 mt-1 flex items-center gap-1">
+                <CheckCircle2 className="h-3 w-3" />
+                {language === 'es' ? `Editando: ${presentationName}` : `Editing: ${presentationName}`}
+              </p>
+            )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            {/* New Button */}
+            <Button variant="outline" onClick={createNewPresentation} className="gap-2" data-testid="new-presentation-btn">
+              <Plus className="h-4 w-4" />
+              {language === 'es' ? 'Nuevo' : 'New'}
+            </Button>
+            
+            {/* Load Button */}
+            <Dialog open={showLoadDialog} onOpenChange={setShowLoadDialog}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="gap-2" data-testid="load-presentation-btn">
+                  <FolderOpen className="h-4 w-4" />
+                  {language === 'es' ? 'Abrir' : 'Open'}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <FolderOpen className="h-5 w-5 text-cyan-600" />
+                    {language === 'es' ? 'Mis Presentaciones' : 'My Presentations'}
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {savedPresentations.length === 0 ? (
+                    <p className="text-slate-500 text-center py-8">
+                      {language === 'es' ? 'No hay presentaciones guardadas' : 'No saved presentations'}
+                    </p>
+                  ) : (
+                    savedPresentations.map((pres) => (
+                      <div 
+                        key={pres.presentation_id}
+                        onClick={() => loadPresentation(pres.presentation_id)}
+                        className="p-4 border rounded-lg hover:border-cyan-500 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 cursor-pointer transition-all group"
+                        data-testid={`presentation-item-${pres.presentation_id}`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h3 className="font-medium text-slate-800 dark:text-white">{pres.name}</h3>
+                            <p className="text-sm text-slate-500">{pres.topic || pres.subject || ''}</p>
+                            <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+                              <span className="flex items-center gap-1">
+                                <Layers className="h-3 w-3" />
+                                {pres.slides_count} {language === 'es' ? 'diapositivas' : 'slides'}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                {new Date(pres.updated_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-600 hover:bg-red-50"
+                            onClick={(e) => deletePresentation(pres.presentation_id, e)}
+                            data-testid={`delete-presentation-${pres.presentation_id}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+            
+            {/* Save Button */}
+            <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+              <DialogTrigger asChild>
+                <Button className="gap-2 bg-green-600 hover:bg-green-700" data-testid="save-presentation-btn">
+                  <Save className="h-4 w-4" />
+                  {language === 'es' ? 'Guardar' : 'Save'}
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Save className="h-5 w-5 text-green-600" />
+                    {language === 'es' ? 'Guardar Presentación' : 'Save Presentation'}
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label>{language === 'es' ? 'Nombre de la presentación' : 'Presentation name'}</Label>
+                    <Input 
+                      value={presentationName}
+                      onChange={(e) => setPresentationName(e.target.value)}
+                      placeholder={language === 'es' ? 'Mi presentación...' : 'My presentation...'}
+                      data-testid="presentation-name-input"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                    <span className="text-sm text-slate-600 dark:text-slate-300">
+                      <Layers className="h-4 w-4 inline mr-2" />
+                      {slides.length} {language === 'es' ? 'diapositivas' : 'slides'}
+                    </span>
+                    <span className="text-sm text-slate-600 dark:text-slate-300">
+                      {language === 'es' ? 'Tema:' : 'Theme:'} {selectedTheme.name}
+                    </span>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+                      {language === 'es' ? 'Cancelar' : 'Cancel'}
+                    </Button>
+                    <Button 
+                      onClick={savePresentation} 
+                      disabled={isSaving}
+                      className="bg-green-600 hover:bg-green-700"
+                      data-testid="confirm-save-btn"
+                    >
+                      {isSaving ? (
+                        <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{language === 'es' ? 'Guardando...' : 'Saving...'}</>
+                      ) : (
+                        <><Save className="h-4 w-4 mr-2" />{currentPresentationId ? (language === 'es' ? 'Actualizar' : 'Update') : (language === 'es' ? 'Guardar' : 'Save')}</>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+            
+            {/* Download Button */}
+            <Button variant="outline" onClick={downloadPresentation} className="gap-2" data-testid="download-presentation-btn">
+              <Download className="h-4 w-4" />
+              {language === 'es' ? 'Descargar' : 'Download'}
+            </Button>
+            
+            {/* Help Button */}
             <Dialog open={showHelp} onOpenChange={setShowHelp}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="gap-2">
@@ -1084,7 +1218,9 @@ const PresentationCreator = () => {
                 <HelpContent />
               </DialogContent>
             </Dialog>
-            <Button variant="outline" onClick={startPresentation} className="gap-2">
+            
+            {/* Present Button */}
+            <Button onClick={startPresentation} className="gap-2 bg-cyan-600 hover:bg-cyan-700" data-testid="present-btn">
               <Play className="h-4 w-4" />
               {language === 'es' ? 'Presentar' : 'Present'}
             </Button>
