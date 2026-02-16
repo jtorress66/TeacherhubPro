@@ -229,29 +229,37 @@ const PresentationCreator = () => {
 
     setIsGenerating(true);
     try {
-      const response = await axios.post(`${API}/api/ai/generate-presentation`, {
+      const response = await axios.post(`${API}/api/ai/presentation/generate`, {
         topic: presentationTopic,
         grade_level: gradeLevel,
         subject: subject,
         num_slides: 6,
-        language: language
+        language: language,
+        theme: selectedTheme.id
       }, { withCredentials: true });
 
       if (response.data.slides) {
         setSlides(response.data.slides.map((slide, idx) => ({
           id: Date.now() + idx,
-          imageType: 'emoji',
+          imageType: slide.imageType || 'emoji',
           ...slide
         })));
         setCurrentSlide(0);
-        toast.success(language === 'es' ? '¡Presentación generada!' : 'Presentation generated!');
+        toast.success(language === 'es' ? '¡Presentación generada con IA!' : 'AI Presentation generated!');
       }
     } catch (error) {
       console.error('Error generating presentation:', error);
-      const sampleSlides = generateSampleSlides(presentationTopic, gradeLevel, subject, language);
-      setSlides(sampleSlides);
-      setCurrentSlide(0);
-      toast.success(language === 'es' ? '¡Presentación creada!' : 'Presentation created!');
+      if (error.response?.status === 403) {
+        toast.error(language === 'es' 
+          ? 'Necesitas una suscripción activa para usar IA' 
+          : 'You need an active subscription to use AI');
+      } else {
+        // Fallback to sample slides
+        const sampleSlides = generateSampleSlides(presentationTopic, gradeLevel, subject, language);
+        setSlides(sampleSlides);
+        setCurrentSlide(0);
+        toast.info(language === 'es' ? '¡Presentación de ejemplo creada!' : 'Sample presentation created!');
+      }
     } finally {
       setIsGenerating(false);
     }
