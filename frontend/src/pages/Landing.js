@@ -700,7 +700,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-green-400 text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-cyan-400 text-sm font-medium mb-6">
                 <Palette className="h-4 w-4" />
                 {language === 'es' ? 'Personalización total' : 'Full customization'}
               </div>
@@ -725,8 +725,8 @@ const Landing = () => {
                   { icon: Shield, text: language === 'es' ? 'Panel de administración centralizado' : 'Centralized admin dashboard' },
                 ].map((item, index) => (
                   <div key={index} className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
-                      <item.icon className="h-5 w-5 text-green-400" />
+                    <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                      <item.icon className="h-5 w-5 text-cyan-400" />
                     </div>
                     <span className="text-slate-200">{item.text}</span>
                   </div>
@@ -768,7 +768,7 @@ const Landing = () => {
               </div>
               
               {/* Floating badges */}
-              <div className="absolute -top-4 -right-4 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
+              <div className="absolute -top-4 -right-4 bg-cyan-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
                 {language === 'es' ? 'Tu logo aquí' : 'Your logo here'}
               </div>
               <div className="absolute -bottom-4 -left-4 bg-purple-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
@@ -782,15 +782,15 @@ const Landing = () => {
       {/* Get Started Section */}
       <section id="get-started" className="py-24 px-6 relative overflow-hidden">
         {/* Background decoration */}
-        <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-white to-blue-50"></div>
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-50 via-white to-blue-50"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
         
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left - Text and Benefits */}
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-100 text-cyan-700 text-sm font-medium mb-6">
                 <Sparkles className="h-4 w-4" />
                 {language === 'es' ? '7 días gratis' : '7 days free'}
               </div>
@@ -814,7 +814,7 @@ const Landing = () => {
                   { icon: CheckCircle, text: language === 'es' ? 'Soporte en español e inglés' : 'Support in Spanish & English' },
                 ].map((item, index) => (
                   <div key={index} className="flex items-center gap-3 justify-center lg:justify-start">
-                    <item.icon className="h-5 w-5 text-green-500 flex-shrink-0" />
+                    <item.icon className="h-5 w-5 text-cyan-500 flex-shrink-0" />
                     <span className="text-slate-600">{item.text}</span>
                   </div>
                 ))}
@@ -824,7 +824,7 @@ const Landing = () => {
               <div className="flex items-center gap-4 justify-center lg:justify-start">
                 <div className="flex -space-x-2">
                   {[...Array(4)].map((_, i) => (
-                    <div key={i} className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 border-2 border-white flex items-center justify-center text-white text-xs font-bold">
+                    <div key={i} className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 border-2 border-white flex items-center justify-center text-white text-xs font-bold">
                       {['M', 'J', 'L', 'A'][i]}
                     </div>
                   ))}
@@ -843,14 +843,14 @@ const Landing = () => {
                     <TabsList className="w-full rounded-none border-b bg-slate-50/80 p-0 h-auto">
                       <TabsTrigger 
                         value="login" 
-                        className="flex-1 py-4 rounded-none data-[state=active]:bg-white data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-green-500 font-medium"
+                        className="flex-1 py-4 rounded-none data-[state=active]:bg-white data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-cyan-500 font-medium"
                         data-testid="login-tab"
                       >
                         {language === 'es' ? 'Iniciar sesión' : 'Sign in'}
                       </TabsTrigger>
                       <TabsTrigger 
                         value="register"
-                        className="flex-1 py-4 rounded-none data-[state=active]:bg-white data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-green-500 font-medium"
+                        className="flex-1 py-4 rounded-none data-[state=active]:bg-white data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-cyan-500 font-medium"
                         data-testid="register-tab"
                       >
                         {language === 'es' ? 'Crear cuenta' : 'Create account'}
@@ -964,7 +964,7 @@ const Landing = () => {
                       </div>
                       <Button 
                         type="submit" 
-                        className="w-full h-12 bg-green-600 hover:bg-green-700 text-white"
+                        className="w-full h-12 bg-cyan-600 hover:bg-cyan-700 text-white"
                         disabled={isLoading}
                         data-testid="register-submit"
                       >
