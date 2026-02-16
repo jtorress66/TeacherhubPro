@@ -206,7 +206,7 @@ const Landing = () => {
             <img 
               src="https://customer-assets.emergentagent.com/job_teachersuite/artifacts/swlef12w_ChatGPT%20Image%20Feb%2015%2C%202026%2C%2009_08_36%20PM.png"
               alt="TeacherHubPro Logo"
-              className="h-16 w-16 object-contain"
+              className="h-24 w-24 object-contain"
             />
             <div className="flex flex-col">
               <span className="text-2xl font-bold text-slate-800">TeacherHubPro</span>
