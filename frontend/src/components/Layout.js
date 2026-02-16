@@ -64,7 +64,12 @@ const Layout = ({ children }) => {
   return (
     <div className={cn("min-h-screen", isDarkMode ? "bg-background" : "paper-bg")}>
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-card border-b border-border px-4 py-3">
+      <header className={cn(
+        "lg:hidden fixed top-0 left-0 right-0 z-50 border-b border-border/50 px-4 py-3",
+        isDarkMode 
+          ? "bg-gradient-to-r from-slate-800 via-slate-800/95 to-emerald-900/30" 
+          : "bg-gradient-to-r from-lime-50 via-emerald-50/80 to-white"
+      )}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button 
@@ -75,7 +80,15 @@ const Layout = ({ children }) => {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <span className="text-lg font-heading font-bold text-foreground">TeacherHubPro</span>
+            <div className="flex items-center gap-2">
+              <div 
+                className="p-1.5 rounded-lg shadow-md"
+                style={{ background: `linear-gradient(135deg, ${branding.primary_color}, ${branding.secondary_color})` }}
+              >
+                <BookOpen className="h-4 w-4 text-white" />
+              </div>
+              <span className="text-lg font-heading font-bold text-foreground">TeacherHubPro</span>
+            </div>
           </div>
           <div className="flex items-center gap-1">
             <Button 
