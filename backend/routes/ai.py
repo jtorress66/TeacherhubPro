@@ -1000,7 +1000,7 @@ FORMAT each day as:
 
 ---
 
-{f'IMPORTANTE: Responde completamente en español.' if language == 'es' else 'Please respond in English.'}"""
+{'IMPORTANTE: Responde completamente en español.' if language == 'es' else 'Please respond in English.'}"""
 
         # Call AI
         chat = LlmChat(
