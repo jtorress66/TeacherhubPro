@@ -108,33 +108,45 @@ const Layout = ({ children }) => {
         sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         <div className="flex flex-col h-full">
-          {/* Logo - School branded or default */}
-          <div className="p-6 border-b border-border">
+          {/* Logo - Enhanced header with gradient background */}
+          <div className={cn(
+            "p-5 border-b border-border/50",
+            isDarkMode 
+              ? "bg-gradient-to-br from-slate-800 via-slate-800/95 to-emerald-900/30" 
+              : "bg-gradient-to-br from-lime-50 via-emerald-50/80 to-white"
+          )}>
             <div className="flex items-center justify-between">
-              <Link to="/dashboard" className="flex items-center gap-3 group">
+              <Link to="/dashboard" className="flex items-center gap-4 group">
                 {school?.logo_url ? (
                   <img 
                     src={school.logo_url} 
                     alt={school.name} 
-                    className="h-10 w-10 object-contain rounded-lg border bg-white p-1"
+                    className="h-14 w-14 object-contain rounded-xl border-2 border-white/80 bg-white p-1.5 shadow-lg group-hover:shadow-xl transition-all duration-200"
                   />
                 ) : (
                   <div 
-                    className="p-2 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow"
+                    className="p-3 rounded-xl shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-200"
                     style={{ background: `linear-gradient(135deg, ${branding.primary_color}, ${branding.secondary_color})` }}
                   >
-                    <BookOpen className="h-5 w-5 text-white" />
+                    <BookOpen className="h-7 w-7 text-white" />
                   </div>
                 )}
                 <div className="flex flex-col">
                   <span 
-                    className="text-lg font-heading font-bold leading-tight"
+                    className="text-xl font-heading font-bold leading-tight tracking-tight"
                     style={{ color: isDarkMode ? '#f8fafc' : branding.secondary_color }}
                   >
                     {school?.name || 'TeacherHubPro'}
                   </span>
-                  {school?.name && (
-                    <span className="text-xs text-muted-foreground">TeacherHubPro</span>
+                  {school?.name ? (
+                    <span className="text-xs font-medium text-muted-foreground mt-0.5">TeacherHubPro</span>
+                  ) : (
+                    <span className={cn(
+                      "text-xs font-medium mt-0.5",
+                      isDarkMode ? "text-emerald-400" : "text-lime-600"
+                    )}>
+                      {language === 'es' ? 'Tu aula digital' : 'Your digital classroom'}
+                    </span>
                   )}
                 </div>
               </Link>
