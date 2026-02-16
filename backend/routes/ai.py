@@ -1059,3 +1059,298 @@ FORMAT each day as:
     except Exception as e:
         logger.error(f"Template customization error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Customization failed: {str(e)}")
+
+
+# ==================== PRESENTATIONS ====================
+
+@router.post("/presentation/generate")
+async def generate_presentation_ai(request: AIGeneratePresentationRequest, current_user: dict = Depends(get_current_user)):
+    """Generate a presentation using AI for kids/students"""
+    
+    # Check AI access
+    has_access = await check_ai_access(current_user)
+    if not has_access:
+        raise HTTPException(
+            status_code=403, 
+            detail="AI features require an active subscription or trial period"
+        )
+    
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(status_code=500, detail="AI service not configured")
+    
+    try:
+        language_instruction = "Responde completamente en español." if request.language == "es" else "Respond entirely in English."
+        
+        system_prompt = """You are an expert educational presentation designer who creates fun, engaging, and visually captivating presentations for students and kids.
+Your presentations should:
+- Be age-appropriate and engaging for the specified grade level
+- Use simple, clear language that students can understand
+- Include fun facts and interesting information
+- Suggest relevant emojis for visual appeal
+- Follow a logical learning progression
+
+You must respond ONLY with valid JSON, no other text."""
+
+        user_prompt = f"""{language_instruction}
+
+Create a {request.num_slides}-slide educational presentation for:
+- Topic: {request.topic}
+- Subject: {request.subject}
+- Grade Level: {request.grade_level}
+
+The presentation should be fun, colorful, and captivating for students!
+
+Return ONLY a valid JSON object in this exact format:
+{{
+  "title": "Main presentation title",
+  "slides": [
+    {{
+      "template": "title",
+      "title": "Engaging main title with emoji",
+      "subtitle": "Subtitle or tagline",
+      "content": "",
+      "image": "🎯",
+      "bullets": []
+    }},
+    {{
+      "template": "content",
+      "title": "Slide title",
+      "subtitle": "",
+      "content": "Brief intro text",
+      "image": "📚",
+      "bullets": ["Key point 1", "Key point 2", "Key point 3"]
+    }},
+    {{
+      "template": "image-right",
+      "title": "Visual concept title",
+      "subtitle": "",
+      "content": "Explanation text that goes with the image",
+      "image": "🔬",
+      "bullets": []
+    }},
+    {{
+      "template": "two-column",
+      "title": "Comparison or facts",
+      "subtitle": "",
+      "content": "",
+      "image": "",
+      "bullets": ["Fact 1", "Fact 2", "Fact 3", "Fact 4"]
+    }},
+    {{
+      "template": "quote",
+      "title": "Key Takeaway",
+      "subtitle": "",
+      "content": "An inspiring or memorable quote or fact",
+      "image": "💡",
+      "bullets": []
+    }},
+    {{
+      "template": "content",
+      "title": "Quiz Time! / Activities",
+      "subtitle": "",
+      "content": "Let's practice what we learned!",
+      "image": "🎮",
+      "bullets": ["Activity 1", "Activity 2", "Activity 3"]
+    }}
+  ]
+}}
+
+Template options: "title", "content", "image-left", "image-right", "full-image", "two-column", "quote"
+Use appropriate emojis for the image field to make it visually engaging for kids.
+Make sure each slide has educational value while being fun and engaging."""
+
+        # Call AI
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"pres_{uuid.uuid4().hex[:8]}",
+            system_message=system_prompt
+        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        
+        user_message = UserMessage(text=user_prompt)
+        response = await chat.send_message(user_message)
+        
+        # Parse JSON response
+        import json
+        
+        # Clean response - remove markdown code blocks if present
+        cleaned_response = response.strip()
+        if cleaned_response.startswith("```json"):
+            cleaned_response = cleaned_response[7:]
+        if cleaned_response.startswith("```"):
+            cleaned_response = cleaned_response[3:]
+        if cleaned_response.endswith("```"):
+            cleaned_response = cleaned_response[:-3]
+        cleaned_response = cleaned_response.strip()
+        
+        try:
+            presentation_data = json.loads(cleaned_response)
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse AI response as JSON: {e}")
+            # Return a fallback structure
+            presentation_data = {
+                "title": request.topic,
+                "slides": [
+                    {
+                        "template": "title",
+                        "title": request.topic,
+                        "subtitle": f"{request.subject} - {request.grade_level}",
+                        "content": "",
+                        "image": "📚",
+                        "bullets": []
+                    }
+                ]
+            }
+        
+        # Add imageType to each slide
+        slides = []
+        for slide in presentation_data.get("slides", []):
+            slide["imageType"] = "emoji"
+            slides.append(slide)
+        
+        return {
+            "title": presentation_data.get("title", request.topic),
+            "slides": slides,
+            "theme": request.theme
+        }
+        
+    except Exception as e:
+        logger.error(f"Presentation generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Presentation generation failed: {str(e)}")
+
+
+@router.post("/presentations")
+async def save_presentation(request: PresentationCreate, current_user: dict = Depends(get_current_user)):
+    """Save a presentation to the database"""
+    user_id = current_user.get("user_id")
+    school_id = current_user.get("school_id")
+    
+    presentation_id = f"pres_{uuid.uuid4().hex[:12]}"
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Convert slides to dicts
+    slides_data = [slide.model_dump() if hasattr(slide, 'model_dump') else dict(slide) for slide in request.slides]
+    
+    presentation_doc = {
+        "presentation_id": presentation_id,
+        "user_id": user_id,
+        "school_id": school_id,
+        "name": request.name,
+        "topic": request.topic,
+        "subject": request.subject,
+        "grade_level": request.grade_level,
+        "theme_id": request.theme_id,
+        "slides": slides_data,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.presentations.insert_one(presentation_doc)
+    
+    return {
+        "presentation_id": presentation_id,
+        "name": request.name,
+        "message": "Presentation saved successfully"
+    }
+
+
+@router.get("/presentations")
+async def list_presentations(current_user: dict = Depends(get_current_user)):
+    """List user's presentations"""
+    user_id = current_user.get("user_id")
+    
+    presentations = await db.presentations.find(
+        {"user_id": user_id}
+    ).sort("updated_at", -1).to_list(length=100)
+    
+    return [{
+        "presentation_id": p["presentation_id"],
+        "name": p["name"],
+        "topic": p.get("topic", ""),
+        "subject": p.get("subject", ""),
+        "grade_level": p.get("grade_level", ""),
+        "theme_id": p.get("theme_id", "ocean"),
+        "slides_count": len(p.get("slides", [])),
+        "created_at": p["created_at"],
+        "updated_at": p["updated_at"]
+    } for p in presentations]
+
+
+@router.get("/presentations/{presentation_id}")
+async def get_presentation(presentation_id: str, current_user: dict = Depends(get_current_user)):
+    """Get a specific presentation"""
+    user_id = current_user.get("user_id")
+    
+    presentation = await db.presentations.find_one({
+        "presentation_id": presentation_id,
+        "user_id": user_id
+    })
+    
+    if not presentation:
+        raise HTTPException(status_code=404, detail="Presentation not found")
+    
+    return {
+        "presentation_id": presentation["presentation_id"],
+        "user_id": presentation["user_id"],
+        "school_id": presentation.get("school_id"),
+        "name": presentation["name"],
+        "topic": presentation.get("topic", ""),
+        "subject": presentation.get("subject", ""),
+        "grade_level": presentation.get("grade_level", ""),
+        "theme_id": presentation.get("theme_id", "ocean"),
+        "slides": presentation.get("slides", []),
+        "created_at": presentation["created_at"],
+        "updated_at": presentation["updated_at"]
+    }
+
+
+@router.put("/presentations/{presentation_id}")
+async def update_presentation(presentation_id: str, request: PresentationUpdate, current_user: dict = Depends(get_current_user)):
+    """Update a presentation"""
+    user_id = current_user.get("user_id")
+    
+    # Check ownership
+    presentation = await db.presentations.find_one({
+        "presentation_id": presentation_id,
+        "user_id": user_id
+    })
+    
+    if not presentation:
+        raise HTTPException(status_code=404, detail="Presentation not found")
+    
+    update_data = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    
+    if request.name is not None:
+        update_data["name"] = request.name
+    if request.topic is not None:
+        update_data["topic"] = request.topic
+    if request.subject is not None:
+        update_data["subject"] = request.subject
+    if request.grade_level is not None:
+        update_data["grade_level"] = request.grade_level
+    if request.theme_id is not None:
+        update_data["theme_id"] = request.theme_id
+    if request.slides is not None:
+        update_data["slides"] = [slide.model_dump() if hasattr(slide, 'model_dump') else dict(slide) for slide in request.slides]
+    
+    await db.presentations.update_one(
+        {"presentation_id": presentation_id},
+        {"$set": update_data}
+    )
+    
+    return {"message": "Presentation updated successfully"}
+
+
+@router.delete("/presentations/{presentation_id}")
+async def delete_presentation(presentation_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a presentation"""
+    user_id = current_user.get("user_id")
+    
+    result = await db.presentations.delete_one({
+        "presentation_id": presentation_id,
+        "user_id": user_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Presentation not found")
+    
+    return {"message": "Presentation deleted successfully"}
