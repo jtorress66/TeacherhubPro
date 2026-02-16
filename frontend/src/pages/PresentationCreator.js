@@ -490,7 +490,8 @@ const PresentationCreator = () => {
       content: '',
       image: '',
       imageType: 'emoji',
-      bullets: []
+      bullets: [],
+      transition: globalTransition
     };
     setSlides([...slides, newSlide]);
     setCurrentSlide(slides.length);
