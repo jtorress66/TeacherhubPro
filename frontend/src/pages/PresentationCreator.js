@@ -1016,26 +1016,54 @@ const PresentationCreator = () => {
     </Dialog>
   );
 
-  // Fullscreen presentation mode
+  // Fullscreen presentation mode with transitions
   if (isPresenting) {
+    const handleSlideChange = (direction) => {
+      const newSlide = direction === 'next' 
+        ? Math.min(currentSlide + 1, slides.length - 1)
+        : Math.max(currentSlide - 1, 0);
+      
+      if (newSlide !== currentSlide && globalTransition !== 'none') {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setCurrentSlide(newSlide);
+          setTimeout(() => setIsTransitioning(false), 50);
+        }, 300);
+      } else {
+        setCurrentSlide(newSlide);
+      }
+    };
+
+    const getTransitionClass = () => {
+      if (!isTransitioning) return 'opacity-100 translate-x-0 scale-100';
+      switch (globalTransition) {
+        case 'fade': return 'opacity-0';
+        case 'slide': return 'opacity-0 translate-x-full';
+        case 'zoom': return 'opacity-0 scale-50';
+        default: return '';
+      }
+    };
+
     return (
       <div 
         ref={presentationRef}
         className="fixed inset-0 bg-black z-50 flex items-center justify-center"
         onClick={(e) => {
           if (e.clientX > window.innerWidth / 2) {
-            setCurrentSlide(Math.min(currentSlide + 1, slides.length - 1));
+            handleSlideChange('next');
           } else {
-            setCurrentSlide(Math.max(currentSlide - 1, 0));
+            handleSlideChange('prev');
           }
         }}
       >
-        <div className="w-full h-full max-w-[1920px] max-h-[1080px] aspect-video">
+        <div className={`w-full h-full max-w-[1920px] max-h-[1080px] aspect-video transition-all duration-300 ease-in-out ${getTransitionClass()}`}>
           {renderSlideContent(slides[currentSlide])}
         </div>
         
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/50 px-4 py-2 rounded-full text-white text-sm">
           <span>{currentSlide + 1} / {slides.length}</span>
+          <span className="opacity-50">|</span>
+          <span className="capitalize">{globalTransition === 'none' ? '—' : `✨ ${globalTransition}`}</span>
           <span className="opacity-50">|</span>
           <span>{language === 'es' ? 'Clic para avanzar' : 'Click to advance'}</span>
         </div>
