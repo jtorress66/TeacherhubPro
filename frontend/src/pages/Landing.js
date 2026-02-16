@@ -200,7 +200,7 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Minimal Header with Gradient */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-lime-50/95 via-emerald-50/90 to-white/95 backdrop-blur-lg border-b border-lime-100/50 shadow-sm">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-cyan-50/95 via-blue-50/90 to-white/95 backdrop-blur-lg border-b border-cyan-100/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <img 
@@ -210,24 +210,24 @@ const Landing = () => {
             />
             <div className="flex flex-col">
               <span className="text-2xl font-bold text-slate-800">TeacherHubPro</span>
-              <span className="text-xs font-medium text-lime-600">{language === 'es' ? 'Tu aula digital' : 'Your digital classroom'}</span>
+              <span className="text-xs font-medium text-cyan-600">{language === 'es' ? 'Tu aula digital' : 'Your digital classroom'}</span>
             </div>
           </div>
           
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm font-medium text-slate-700 hover:text-lime-700 transition-colors">
+            <a href="#features" className="text-sm font-medium text-slate-700 hover:text-cyan-600 transition-colors">
               {language === 'es' ? 'Funciones' : 'Features'}
             </a>
-            <a href="#ai-assistant" className="text-sm font-medium text-slate-700 hover:text-lime-700 transition-colors">
+            <a href="#ai-assistant" className="text-sm font-medium text-slate-700 hover:text-cyan-600 transition-colors">
               {language === 'es' ? 'Asistente IA' : 'AI Assistant'}
             </a>
-            <a href="#ai-features" className="text-sm font-medium text-slate-700 hover:text-lime-700 transition-colors">
+            <a href="#ai-features" className="text-sm font-medium text-slate-700 hover:text-cyan-600 transition-colors">
               {language === 'es' ? 'IA Avanzada' : 'Advanced AI'}
             </a>
-            <a href="#customization" className="text-sm font-medium text-slate-700 hover:text-lime-700 transition-colors">
+            <a href="#customization" className="text-sm font-medium text-slate-700 hover:text-cyan-600 transition-colors">
               {language === 'es' ? 'Personalización' : 'Customization'}
             </a>
-            <Link to="/pricing" className="text-sm font-medium text-slate-700 hover:text-lime-700 transition-colors">
+            <Link to="/pricing" className="text-sm font-medium text-slate-700 hover:text-cyan-600 transition-colors">
               {language === 'es' ? 'Precios' : 'Pricing'}
             </Link>
           </div>
@@ -245,7 +245,7 @@ const Landing = () => {
             </Button>
             <Button 
               size="sm" 
-              className="bg-gradient-to-r from-lime-600 to-emerald-600 hover:from-lime-700 hover:to-emerald-700 text-white shadow-md"
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-md"
               onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
             >
               {language === 'es' ? 'Comenzar - Iniciar sesión' : 'Get Started - Log In'}
@@ -255,28 +255,28 @@ const Landing = () => {
       </header>
 
       {/* Hero Section with Enhanced Gradient */}
-      <section className="pt-32 pb-20 px-6 relative overflow-hidden bg-gradient-to-br from-lime-50/50 via-emerald-50/30 to-transparent">
+      <section className="pt-32 pb-20 px-6 relative overflow-hidden bg-gradient-to-br from-cyan-50/50 via-blue-50/30 to-transparent">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-lime-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute bottom-20 left-1/3 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-20 left-10 w-72 h-72 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse"></div>
+          <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-20 left-1/3 w-72 h-72 bg-sky-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
         </div>
 
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left - Text Content */}
             <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-100 text-cyan-700 text-sm font-medium mb-6">
                 <Sparkles className="h-4 w-4" />
                 {language === 'es' ? 'Diseñado para maestros' : 'Built for teachers'}
               </div>
               
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 leading-tight mb-6">
                 {language === 'es' ? (
-                  <>El planificador <span className="text-green-600">digital</span> para tu escuela</>
+                  <>El planificador <span className="text-cyan-600">digital</span> para tu escuela</>
                 ) : (
-                  <>The <span className="text-green-600">digital</span> planner for your school</>
+                  <>The <span className="text-cyan-600">digital</span> planner for your school</>
                 )}
               </h1>
               
