@@ -35,7 +35,7 @@ async def check_ai_access(user: dict) -> bool:
                 trial_end = created_date + timedelta(days=FREE_TRIAL_DAYS)
                 if datetime.now(timezone.utc) < trial_end:
                     return True
-            except:
+            except ValueError:
                 pass
     
     return False
