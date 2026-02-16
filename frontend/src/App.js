@@ -35,6 +35,7 @@ import TermsOfUse from "./pages/TermsOfUse";
 import CookiesPolicy from "./pages/CookiesPolicy";
 import Accessibility from "./pages/Accessibility";
 import AIAssistant from "./pages/AIAssistant";
+import PresentationCreator from "./pages/PresentationCreator";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
