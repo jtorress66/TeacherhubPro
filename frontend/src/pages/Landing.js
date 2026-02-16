@@ -72,7 +72,7 @@ const Landing = () => {
 
   // Floating animated cards data
   const floatingCards = [
-    { label: language === 'es' ? 'Planificación' : 'Lesson Plan', value: 'Unit 5 - Week 3', color: 'bg-green-500', delay: '0s' },
+    { label: language === 'es' ? 'Planificación' : 'Lesson Plan', value: 'Unit 5 - Week 3', color: 'bg-cyan-500', delay: '0s' },
     { label: language === 'es' ? 'Asistencia' : 'Attendance', value: '28/30', color: 'bg-blue-500', delay: '0.5s' },
     { label: language === 'es' ? 'Calificaciones' : 'Grades', value: 'A (95%)', color: 'bg-purple-500', delay: '1s' },
     { label: language === 'es' ? 'PDF Listo' : 'PDF Ready', value: language === 'es' ? 'Exportar' : 'Export', color: 'bg-orange-500', delay: '1.5s' },
@@ -96,8 +96,8 @@ const Landing = () => {
       visual: (
         <div className="bg-white rounded-xl shadow-2xl p-6 transform hover:scale-105 transition-all duration-500">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <Calendar className="h-5 w-5 text-green-600" />
+            <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
+              <Calendar className="h-5 w-5 text-cyan-600" />
             </div>
             <div>
               <div className="font-semibold text-slate-800">{language === 'es' ? 'Semana 1' : 'Week 1'}</div>
@@ -106,9 +106,9 @@ const Landing = () => {
           </div>
           <div className="grid grid-cols-5 gap-1 text-xs">
             {['L', 'M', 'Mi', 'J', 'V'].map((day, i) => (
-              <div key={i} className="bg-green-50 p-2 rounded text-center">
-                <div className="font-semibold text-green-700">{day}</div>
-                <div className="w-full h-1 bg-green-400 rounded mt-1"></div>
+              <div key={i} className="bg-cyan-50 p-2 rounded text-center">
+                <div className="font-semibold text-cyan-700">{day}</div>
+                <div className="w-full h-1 bg-cyan-400 rounded mt-1"></div>
               </div>
             ))}
           </div>
@@ -134,7 +134,7 @@ const Landing = () => {
           <div className="flex gap-2">
             <div className="w-8 h-8 rounded-full bg-blue-500"></div>
             <div className="w-8 h-8 rounded-full bg-purple-500"></div>
-            <div className="w-8 h-8 rounded-full bg-green-500"></div>
+            <div className="w-8 h-8 rounded-full bg-cyan-500"></div>
             <div className="flex-1 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg"></div>
           </div>
         </div>
@@ -159,7 +159,7 @@ const Landing = () => {
             <div className="h-2 w-1/2 bg-slate-300 rounded mb-3"></div>
             <div className="grid grid-cols-5 gap-1">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-8 bg-green-100 rounded"></div>
+                <div key={i} className="h-8 bg-cyan-100 rounded"></div>
               ))}
             </div>
           </div>
