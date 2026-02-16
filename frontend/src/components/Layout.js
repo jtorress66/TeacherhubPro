@@ -24,7 +24,8 @@ import {
   Shield,
   Sparkles,
   Moon,
-  Sun
+  Sun,
+  Presentation
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
