@@ -687,6 +687,89 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* AI Presentation Creator Section - NEW */}
+      <section className="py-24 px-6 bg-gradient-to-br from-cyan-600 via-blue-600 to-purple-600 text-white relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-10 right-20 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-10 left-20 w-80 h-80 bg-purple-300/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }}></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Left - Content */}
+            <div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 text-white text-sm font-medium mb-6 backdrop-blur-sm">
+                <Sparkles className="h-4 w-4" />
+                {language === 'es' ? '¡NUEVO! Presentaciones con IA' : 'NEW! AI Presentations'}
+              </div>
+              
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                {language === 'es' 
+                  ? 'Crea presentaciones que cautivan' 
+                  : 'Create presentations that captivate'}
+              </h2>
+              
+              <p className="text-xl text-white/90 mb-8 max-w-lg">
+                {language === 'es' 
+                  ? 'Genera presentaciones educativas completas con IA. Elige temas visuales, agrega imágenes, aplica transiciones y guarda para usar después.' 
+                  : 'Generate complete educational presentations with AI. Choose visual themes, add images, apply transitions, and save for later use.'}
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                {[
+                  { icon: Wand2, title: language === 'es' ? 'Genera con IA' : 'AI Generate', desc: language === 'es' ? '6+ diapositivas en segundos' : '6+ slides in seconds' },
+                  { icon: Palette, title: language === 'es' ? '8 Temas Visuales' : '8 Visual Themes', desc: language === 'es' ? 'Océano, Galaxia, Pizarra...' : 'Ocean, Galaxy, Blackboard...' },
+                  { icon: FileText, title: language === 'es' ? 'Guardar y Cargar' : 'Save & Load', desc: language === 'es' ? 'Biblioteca personal' : 'Personal library' },
+                  { icon: Printer, title: language === 'es' ? 'Descargar HTML' : 'Download HTML', desc: language === 'es' ? 'Usa sin internet' : 'Use offline' },
+                ].map((feature, idx) => (
+                  <div key={idx} className="bg-white/10 rounded-xl p-4 backdrop-blur-sm hover:bg-white/20 transition-all">
+                    <feature.icon className="h-6 w-6 mb-2 text-cyan-300" />
+                    <h4 className="font-semibold text-sm">{feature.title}</h4>
+                    <p className="text-white/70 text-xs">{feature.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <Button 
+                size="lg" 
+                className="bg-white text-cyan-700 hover:bg-white/90 px-8"
+                onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
+              >
+                {language === 'es' ? 'Crear mi primera presentación' : 'Create my first presentation'}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Right - Visual Demo */}
+            <div className="hidden lg:block">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                {/* Fake presentation preview */}
+                <div className="bg-gradient-to-br from-purple-700 to-indigo-600 rounded-xl aspect-video mb-4 flex flex-col items-center justify-center text-white p-6">
+                  <span className="text-6xl mb-4">🌌</span>
+                  <h3 className="text-2xl font-bold text-center">{language === 'es' ? 'El Sistema Solar' : 'The Solar System'}</h3>
+                  <p className="text-white/70 text-sm mt-2">{language === 'es' ? 'Ciencias - 4to Grado' : 'Science - 4th Grade'}</p>
+                </div>
+                
+                {/* Slide thumbnails */}
+                <div className="grid grid-cols-6 gap-2">
+                  {['🎯', '🌍', '☀️', '🌙', '🚀', '✨'].map((emoji, idx) => (
+                    <div key={idx} className="bg-gradient-to-br from-purple-600 to-indigo-500 rounded aspect-video flex items-center justify-center text-xl">
+                      {emoji}
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Transition indicator */}
+                <div className="mt-4 flex items-center justify-center gap-2 text-white/70 text-sm">
+                  <span className="px-3 py-1 bg-white/10 rounded-full">{language === 'es' ? '✨ Transiciones activadas' : '✨ Transitions enabled'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Customization Section */}
       <section id="customization" className="py-24 px-6 bg-gradient-to-b from-slate-900 to-slate-800 text-white relative overflow-hidden">
         {/* Background pattern */}
