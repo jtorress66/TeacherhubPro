@@ -204,9 +204,9 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <img 
-              src="https://static.prod-images.emergentagent.com/jobs/d43730cb-0c10-4415-b3cf-2e164436bb49/images/7ba32bc7087415a558e0e0914af56f8135cea2f23bcf3e4af81e45fbf573c2c7.png"
+              src="https://static.prod-images.emergentagent.com/jobs/d43730cb-0c10-4415-b3cf-2e164436bb49/images/574b9ea32e55074fcbcedb428e4eba3190335185ef2e40557052152d60a32f51.png"
               alt="TeacherHubPro Logo"
-              className="h-20 w-20 object-contain"
+              className="h-16 w-16 object-contain mix-blend-darken"
             />
             <div className="flex flex-col">
               <span className="text-2xl font-bold text-slate-800">TeacherHubPro</span>
