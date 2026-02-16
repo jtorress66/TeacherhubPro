@@ -1324,29 +1324,67 @@ const PresentationCreator = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Slide Editor */}
           <div className="lg:col-span-2 space-y-4">
-            {/* Theme Selector */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Palette className="h-4 w-4" />
-                  {language === 'es' ? 'Tema Visual' : 'Visual Theme'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {themes.map((theme) => (
-                    <button
-                      key={theme.id}
-                      onClick={() => setSelectedTheme(theme)}
-                      className={`w-10 h-10 rounded-lg bg-gradient-to-br ${theme.bg} border-2 transition-all ${
-                        selectedTheme.id === theme.id ? 'border-cyan-500 scale-110 shadow-lg' : 'border-transparent'
-                      }`}
-                      title={theme.name}
-                    />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            {/* Theme & Transition Selectors */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Theme Selector */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Palette className="h-4 w-4" />
+                    {language === 'es' ? 'Tema Visual' : 'Visual Theme'}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {themes.map((theme) => (
+                      <button
+                        key={theme.id}
+                        onClick={() => setSelectedTheme(theme)}
+                        className={`w-10 h-10 rounded-lg bg-gradient-to-br ${theme.bg} border-2 transition-all ${
+                          selectedTheme.id === theme.id ? 'border-cyan-500 scale-110 shadow-lg' : 'border-transparent'
+                        }`}
+                        title={theme.name}
+                      />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Transition Selector */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    {language === 'es' ? 'Transición' : 'Transition'}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { id: 'none', label: language === 'es' ? 'Ninguna' : 'None', icon: '—' },
+                      { id: 'fade', label: language === 'es' ? 'Desvanecer' : 'Fade', icon: '✨' },
+                      { id: 'slide', label: language === 'es' ? 'Deslizar' : 'Slide', icon: '➡️' },
+                      { id: 'zoom', label: language === 'es' ? 'Zoom' : 'Zoom', icon: '🔍' },
+                    ].map((t) => (
+                      <button
+                        key={t.id}
+                        onClick={() => setGlobalTransition(t.id)}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
+                          globalTransition === t.id 
+                            ? 'bg-cyan-500 text-white shadow-lg scale-105' 
+                            : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                        }`}
+                        title={t.label}
+                        data-testid={`transition-${t.id}`}
+                      >
+                        <span>{t.icon}</span>
+                        <span className="hidden sm:inline">{t.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Main Preview */}
             <Card className="overflow-hidden">
