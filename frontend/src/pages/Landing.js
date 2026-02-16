@@ -337,7 +337,7 @@ const Landing = () => {
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 bg-white rounded-2xl shadow-2xl p-6 border border-slate-100">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                      <div className="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center">
                         <BookOpen className="h-4 w-4 text-white" />
                       </div>
                       <span className="font-semibold text-slate-800">TeacherHubPro</span>
@@ -349,11 +349,11 @@ const Landing = () => {
                     <div className="h-3 bg-slate-100 rounded w-1/2"></div>
                     <div className="grid grid-cols-5 gap-2 mt-4">
                       {[...Array(5)].map((_, i) => (
-                        <div key={i} className="h-16 bg-green-50 rounded-lg border border-green-100"></div>
+                        <div key={i} className="h-16 bg-cyan-50 rounded-lg border border-cyan-100"></div>
                       ))}
                     </div>
                     <div className="flex gap-2 mt-4">
-                      <div className="flex-1 h-10 bg-green-500 rounded-lg"></div>
+                      <div className="flex-1 h-10 bg-cyan-500 rounded-lg"></div>
                       <div className="w-10 h-10 bg-slate-100 rounded-lg"></div>
                     </div>
                   </div>
@@ -439,7 +439,7 @@ const Landing = () => {
                     <div>
                       <div className="text-xl font-bold">{language === 'es' ? 'Asistente de IA' : 'AI Teaching Assistant'}</div>
                       <div className="text-sm text-white/70 flex items-center gap-2">
-                        <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                        <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
                         Claude Sonnet 4.5
                       </div>
                     </div>
@@ -614,8 +614,8 @@ const Landing = () => {
             </div>
 
             {/* Feature 4: Starter Templates */}
-            <div className="group bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100 hover:shadow-xl hover:border-green-300 transition-all duration-300">
-              <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <div className="group bg-gradient-to-br from-cyan-50 to-blue-50 rounded-2xl p-6 border border-cyan-100 hover:shadow-xl hover:border-cyan-300 transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Star className="h-7 w-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">
@@ -627,9 +627,9 @@ const Landing = () => {
                   : 'Start immediately with pro templates: Fractions, Reading Comprehension, Scientific Method, Writing, and Multiplication.'}
               </p>
               <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">{language === 'es' ? 'Matemáticas' : 'Math'}</span>
-                <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">{language === 'es' ? 'Lectura' : 'ELA'}</span>
-                <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">{language === 'es' ? 'Ciencias' : 'Science'}</span>
+                <span className="px-2 py-1 bg-cyan-100 text-cyan-700 rounded text-xs">{language === 'es' ? 'Matemáticas' : 'Math'}</span>
+                <span className="px-2 py-1 bg-cyan-100 text-cyan-700 rounded text-xs">{language === 'es' ? 'Lectura' : 'ELA'}</span>
+                <span className="px-2 py-1 bg-cyan-100 text-cyan-700 rounded text-xs">{language === 'es' ? 'Ciencias' : 'Science'}</span>
               </div>
             </div>
 
