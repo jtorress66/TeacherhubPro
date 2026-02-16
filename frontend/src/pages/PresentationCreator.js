@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from '../components/ui/button';
@@ -39,7 +39,13 @@ import {
   CheckCircle2,
   ArrowRight,
   FileImage,
-  Globe
+  Globe,
+  Save,
+  FolderOpen,
+  Download,
+  FileDown,
+  Clock,
+  Layers
 } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
