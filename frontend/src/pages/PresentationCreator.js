@@ -103,8 +103,292 @@ const PresentationCreator = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [presentationName, setPresentationName] = useState('');
+  const [currentPresentationId, setCurrentPresentationId] = useState(null);
+  const [savedPresentations, setSavedPresentations] = useState([]);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showLoadDialog, setShowLoadDialog] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
   const presentationRef = useRef(null);
+
+  // Load saved presentations on mount
+  useEffect(() => {
+    loadPresentationsList();
+  }, []);
+
+  // Load presentations list
+  const loadPresentationsList = async () => {
+    try {
+      const response = await axios.get(`${API}/api/ai/presentations`, { withCredentials: true });
+      setSavedPresentations(response.data);
+    } catch (error) {
+      console.error('Error loading presentations:', error);
+    }
+  };
+
+  // Save presentation
+  const savePresentation = async () => {
+    if (!presentationName.trim()) {
+      toast.error(language === 'es' ? 'Ingrese un nombre para la presentación' : 'Enter a presentation name');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const slidesData = slides.map(({ id, ...slide }) => slide);
+      
+      if (currentPresentationId) {
+        // Update existing
+        await axios.put(`${API}/api/ai/presentations/${currentPresentationId}`, {
+          name: presentationName,
+          topic: presentationTopic,
+          subject: subject,
+          grade_level: gradeLevel,
+          theme_id: selectedTheme.id,
+          slides: slidesData
+        }, { withCredentials: true });
+        toast.success(language === 'es' ? '¡Presentación actualizada!' : 'Presentation updated!');
+      } else {
+        // Create new
+        const response = await axios.post(`${API}/api/ai/presentations`, {
+          name: presentationName,
+          topic: presentationTopic,
+          subject: subject,
+          grade_level: gradeLevel,
+          theme_id: selectedTheme.id,
+          slides: slidesData
+        }, { withCredentials: true });
+        setCurrentPresentationId(response.data.presentation_id);
+        toast.success(language === 'es' ? '¡Presentación guardada!' : 'Presentation saved!');
+      }
+      
+      setShowSaveDialog(false);
+      loadPresentationsList();
+    } catch (error) {
+      console.error('Error saving presentation:', error);
+      toast.error(language === 'es' ? 'Error al guardar' : 'Error saving');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Load a presentation
+  const loadPresentation = async (presentationId) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${API}/api/ai/presentations/${presentationId}`, { withCredentials: true });
+      const data = response.data;
+      
+      // Set all the state
+      setPresentationName(data.name);
+      setPresentationTopic(data.topic || '');
+      setSubject(data.subject || '');
+      setGradeLevel(data.grade_level || '');
+      setCurrentPresentationId(data.presentation_id);
+      
+      // Find and set theme
+      const theme = themes.find(t => t.id === data.theme_id) || themes[0];
+      setSelectedTheme(theme);
+      
+      // Set slides with IDs
+      setSlides(data.slides.map((slide, idx) => ({
+        id: Date.now() + idx,
+        ...slide
+      })));
+      
+      setCurrentSlide(0);
+      setShowLoadDialog(false);
+      toast.success(language === 'es' ? '¡Presentación cargada!' : 'Presentation loaded!');
+    } catch (error) {
+      console.error('Error loading presentation:', error);
+      toast.error(language === 'es' ? 'Error al cargar' : 'Error loading');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Delete a saved presentation
+  const deletePresentation = async (presentationId, e) => {
+    e.stopPropagation();
+    if (!window.confirm(language === 'es' ? '¿Eliminar esta presentación?' : 'Delete this presentation?')) {
+      return;
+    }
+    
+    try {
+      await axios.delete(`${API}/api/ai/presentations/${presentationId}`, { withCredentials: true });
+      
+      if (currentPresentationId === presentationId) {
+        setCurrentPresentationId(null);
+        setPresentationName('');
+      }
+      
+      loadPresentationsList();
+      toast.success(language === 'es' ? 'Presentación eliminada' : 'Presentation deleted');
+    } catch (error) {
+      console.error('Error deleting presentation:', error);
+      toast.error(language === 'es' ? 'Error al eliminar' : 'Error deleting');
+    }
+  };
+
+  // Download as HTML
+  const downloadPresentation = () => {
+    const theme = selectedTheme;
+    const gradientColors = getGradientColors(theme.bg);
+    
+    const slidesHtml = slides.map((slide, index) => {
+      const bgStyle = `background: linear-gradient(135deg, ${gradientColors.from}, ${gradientColors.to});`;
+      const textColor = theme.text.includes('white') ? 'color: white;' : 'color: #1e293b;';
+      
+      let content = '';
+      switch (slide.template) {
+        case 'title':
+          content = `
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 40px;">
+              <h1 style="font-size: 48px; font-weight: bold; margin-bottom: 20px;">${slide.title || ''}</h1>
+              <p style="font-size: 24px; opacity: 0.9;">${slide.subtitle || ''}</p>
+            </div>`;
+          break;
+        case 'content':
+          content = `
+            <div style="display: flex; flex-direction: column; padding: 40px; height: 100%;">
+              <h2 style="font-size: 36px; font-weight: bold; margin-bottom: 24px;">${slide.title || ''}</h2>
+              ${slide.content ? `<p style="font-size: 20px; margin-bottom: 16px;">${slide.content}</p>` : ''}
+              ${slide.bullets?.length ? `<ul style="list-style: disc; margin-left: 24px; font-size: 20px;">
+                ${slide.bullets.map(b => `<li style="margin-bottom: 12px;">${b}</li>`).join('')}
+              </ul>` : ''}
+            </div>`;
+          break;
+        case 'image-left':
+        case 'image-right':
+          const isLeft = slide.template === 'image-left';
+          content = `
+            <div style="display: flex; flex-direction: ${isLeft ? 'row' : 'row-reverse'}; height: 100%;">
+              <div style="width: 50%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); font-size: 80px;">
+                ${slide.imageType === 'emoji' || !slide.image || slide.image.length <= 4 
+                  ? (slide.image || '📚')
+                  : `<img src="${slide.image}" style="max-width: 100%; max-height: 100%; object-fit: cover;" />`}
+              </div>
+              <div style="width: 50%; padding: 40px; display: flex; flex-direction: column; justify-content: center;">
+                <h2 style="font-size: 32px; font-weight: bold; margin-bottom: 16px;">${slide.title || ''}</h2>
+                <p style="font-size: 18px;">${slide.content || ''}</p>
+              </div>
+            </div>`;
+          break;
+        case 'two-column':
+          const mid = Math.ceil((slide.bullets?.length || 0) / 2);
+          content = `
+            <div style="display: flex; flex-direction: column; padding: 40px; height: 100%;">
+              <h2 style="font-size: 36px; font-weight: bold; margin-bottom: 24px; text-align: center;">${slide.title || ''}</h2>
+              <div style="display: flex; flex: 1; gap: 32px;">
+                <div style="flex: 1;">
+                  ${(slide.bullets || []).slice(0, mid).map((b, i) => `
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 12px;">
+                      <span style="min-width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-weight: bold;">${i + 1}</span>
+                      ${b}
+                    </div>
+                  `).join('')}
+                </div>
+                <div style="flex: 1;">
+                  ${(slide.bullets || []).slice(mid).map((b, i) => `
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 12px;">
+                      <span style="min-width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-weight: bold;">${mid + i + 1}</span>
+                      ${b}
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>`;
+          break;
+        case 'quote':
+          content = `
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 40px;">
+              <div style="font-size: 60px; margin-bottom: 24px;">${slide.image || '💭'}</div>
+              <blockquote style="font-size: 28px; font-style: italic; max-width: 800px;">
+                ${slide.content || ''}
+              </blockquote>
+              <h3 style="font-size: 20px; margin-top: 24px; font-weight: 600;">${slide.title || ''}</h3>
+            </div>`;
+          break;
+        default:
+          content = `
+            <div style="display: flex; flex-direction: column; padding: 40px; height: 100%;">
+              <h2 style="font-size: 36px; font-weight: bold;">${slide.title || ''}</h2>
+              <p style="font-size: 20px;">${slide.content || ''}</p>
+            </div>`;
+      }
+      
+      return `
+        <div class="slide" style="${bgStyle} ${textColor} width: 100%; height: 100vh; page-break-after: always;">
+          ${content}
+        </div>`;
+    }).join('');
+
+    const html = `<!DOCTYPE html>
+<html lang="${language}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${presentationName || presentationTopic || 'Presentation'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .slide { display: flex; flex-direction: column; }
+    @media print {
+      .slide { page-break-after: always; height: 100vh; }
+    }
+  </style>
+</head>
+<body>
+  ${slidesHtml}
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${presentationName || presentationTopic || 'presentation'}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast.success(language === 'es' ? '¡Presentación descargada!' : 'Presentation downloaded!');
+  };
+
+  // Helper to get gradient colors
+  const getGradientColors = (bg) => {
+    const colorMap = {
+      'from-blue-600': '#2563eb', 'to-cyan-500': '#06b6d4',
+      'from-orange-500': '#f97316', 'to-pink-500': '#ec4899',
+      'from-green-600': '#16a34a', 'to-emerald-500': '#10b981',
+      'from-purple-700': '#7c3aed', 'to-indigo-600': '#4f46e5',
+      'from-slate-100': '#f1f5f9', 'to-white': '#ffffff',
+      'from-slate-900': '#0f172a', 'to-slate-800': '#1e293b',
+      'from-pink-400': '#f472b6', 'to-purple-400': '#c084fc',
+      'from-amber-500': '#f59e0b', 'to-green-500': '#22c55e'
+    };
+    const parts = bg.split(' ');
+    return {
+      from: colorMap[parts[0]] || '#2563eb',
+      to: colorMap[parts[1]] || '#06b6d4'
+    };
+  };
+
+  // Create new presentation (reset state)
+  const createNewPresentation = () => {
+    setSlides([{ id: 1, template: 'title', title: '', subtitle: '', content: '', image: '', imageType: 'emoji', bullets: [] }]);
+    setCurrentSlide(0);
+    setSelectedTheme(themes[0]);
+    setPresentationName('');
+    setPresentationTopic('');
+    setSubject('');
+    setGradeLevel('');
+    setCurrentPresentationId(null);
+    toast.success(language === 'es' ? 'Nueva presentación creada' : 'New presentation created');
+  };
 
   // Handle file upload
   const handleFileUpload = useCallback((e) => {
