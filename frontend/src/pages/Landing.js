@@ -274,16 +274,16 @@ const Landing = () => {
               
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 leading-tight mb-6">
                 {language === 'es' ? (
-                  <>El planificador <span className="text-cyan-600">digital</span> para tu escuela</>
+                  <>Tu aula <span className="text-cyan-600">completa</span> en una plataforma</>
                 ) : (
-                  <>The <span className="text-cyan-600">digital</span> planner for your school</>
+                  <>Your <span className="text-cyan-600">complete</span> classroom in one platform</>
                 )}
               </h1>
               
               <p className="text-xl text-slate-600 mb-8 max-w-lg">
                 {language === 'es' 
-                  ? 'TeacherHubPro te ayuda a planificar, dar seguimiento y reportar de forma rápida y segura con el formato de tu escuela.' 
-                  : 'TeacherHubPro helps you plan, track, and report quickly and securely with your school\'s format.'}
+                  ? 'Planificación con IA, presentaciones interactivas, calificaciones, asistencia, y más. Todo lo que necesitas para enseñar mejor.' 
+                  : 'AI-powered lesson planning, interactive presentations, gradebook, attendance, and more. Everything you need to teach better.'}
               </p>
               
               <div className="flex flex-wrap gap-4">
