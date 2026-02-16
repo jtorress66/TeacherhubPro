@@ -72,10 +72,10 @@ const Landing = () => {
 
   // Floating animated cards data
   const floatingCards = [
-    { label: language === 'es' ? 'Planificación' : 'Lesson Plan', value: 'Unit 5 - Week 3', color: 'bg-cyan-500', delay: '0s' },
-    { label: language === 'es' ? 'Asistencia' : 'Attendance', value: '28/30', color: 'bg-blue-500', delay: '0.5s' },
-    { label: language === 'es' ? 'Calificaciones' : 'Grades', value: 'A (95%)', color: 'bg-purple-500', delay: '1s' },
-    { label: language === 'es' ? 'PDF Listo' : 'PDF Ready', value: language === 'es' ? 'Exportar' : 'Export', color: 'bg-orange-500', delay: '1.5s' },
+    { label: language === 'es' ? 'Planificación IA' : 'AI Lesson Plan', value: 'Unit 5 - Week 3', color: 'bg-cyan-500', delay: '0s' },
+    { label: language === 'es' ? 'Presentaciones' : 'Presentations', value: '🎯 6 slides', color: 'bg-purple-500', delay: '0.5s' },
+    { label: language === 'es' ? 'Calificaciones' : 'Grades', value: 'A (95%)', color: 'bg-blue-500', delay: '1s' },
+    { label: language === 'es' ? 'Asistencia' : 'Attendance', value: '28/30', color: 'bg-green-500', delay: '1.5s' },
   ];
 
   const partnerSchools = [
