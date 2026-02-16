@@ -88,7 +88,7 @@ const stockCategories = [
 const PresentationCreator = () => {
   const { language } = useLanguage();
   const [slides, setSlides] = useState([
-    { id: 1, template: 'title', title: '', subtitle: '', content: '', image: '', imageType: 'emoji', bullets: [] }
+    { id: 1, template: 'title', title: '', subtitle: '', content: '', image: '', imageType: 'emoji', bullets: [], transition: 'fade' }
   ]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedTheme, setSelectedTheme] = useState(themes[0]);
@@ -103,6 +103,8 @@ const PresentationCreator = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [globalTransition, setGlobalTransition] = useState('fade');
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [presentationName, setPresentationName] = useState('');
   const [currentPresentationId, setCurrentPresentationId] = useState(null);
   const [savedPresentations, setSavedPresentations] = useState([]);
