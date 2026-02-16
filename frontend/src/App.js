@@ -204,6 +204,9 @@ const AppRouter = () => {
       <Route path="/substitute-packet" element={
         <ProtectedRoute><SubstitutePacket /></ProtectedRoute>
       } />
+      <Route path="/presentations" element={
+        <ProtectedRoute><PresentationCreator /></ProtectedRoute>
+      } />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/subscription/success" element={
         <ProtectedRoute requireSubscription={false}><SubscriptionSuccess /></ProtectedRoute>
