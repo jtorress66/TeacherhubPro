@@ -163,15 +163,18 @@ const Pricing = () => {
   const PublicWrapper = ({ children }) => (
     <div className="min-h-screen paper-bg">
       {/* Header */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <header className="border-b border-cyan-100/50 bg-gradient-to-r from-cyan-50/95 via-blue-50/90 to-white/95 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-4">
             <img 
-              src="https://static.prod-images.emergentagent.com/jobs/3f72aedc-992b-4d25-83bd-5bb47e46011f/images/0f969775d262b8ea24538b15f4cc9cbeaf4a878afa90805ec86f8619b9caac6c.png"
+              src="https://customer-assets.emergentagent.com/job_teachersuite/artifacts/swlef12w_ChatGPT%20Image%20Feb%2015%2C%202026%2C%2009_08_36%20PM.png"
               alt="TeacherHubPro Logo"
               className="h-20 w-20 object-contain"
             />
-            <span className="text-xl font-bold text-slate-800">TeacherHubPro</span>
+            <div className="flex flex-col">
+              <span className="text-2xl font-bold text-slate-800">TeacherHubPro</span>
+              <span className="text-xs font-medium text-cyan-600">{language === 'es' ? 'Tu aula digital' : 'Your digital classroom'}</span>
+            </div>
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/">
