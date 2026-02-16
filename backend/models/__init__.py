@@ -372,3 +372,57 @@ class AIChatMessage(BaseModel):
     role: str
     content: str
     created_at: str
+
+
+# Presentation Models
+class PresentationSlide(BaseModel):
+    template: str = "content"  # title, content, image-left, image-right, full-image, two-column, quote
+    title: str = ""
+    subtitle: str = ""
+    content: str = ""
+    image: str = ""
+    imageType: str = "emoji"  # emoji, uploaded, url, stock
+    bullets: List[str] = []
+    transition: str = "none"  # none, fade, slide, zoom
+
+
+class PresentationCreate(BaseModel):
+    name: str
+    topic: Optional[str] = None
+    subject: Optional[str] = None
+    grade_level: Optional[str] = None
+    theme_id: str = "ocean"
+    slides: List[PresentationSlide] = []
+
+
+class PresentationUpdate(BaseModel):
+    name: Optional[str] = None
+    topic: Optional[str] = None
+    subject: Optional[str] = None
+    grade_level: Optional[str] = None
+    theme_id: Optional[str] = None
+    slides: Optional[List[PresentationSlide]] = None
+
+
+class PresentationResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    presentation_id: str
+    user_id: str
+    school_id: Optional[str] = None
+    name: str
+    topic: Optional[str] = None
+    subject: Optional[str] = None
+    grade_level: Optional[str] = None
+    theme_id: str
+    slides: List[Dict] = []
+    created_at: str
+    updated_at: str
+
+
+class AIGeneratePresentationRequest(BaseModel):
+    topic: str
+    subject: str
+    grade_level: str
+    num_slides: int = 6
+    language: str = "es"
+    theme: str = "ocean"
