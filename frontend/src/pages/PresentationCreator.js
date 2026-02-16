@@ -381,9 +381,10 @@ const PresentationCreator = () => {
 
   // Create new presentation (reset state)
   const createNewPresentation = () => {
-    setSlides([{ id: 1, template: 'title', title: '', subtitle: '', content: '', image: '', imageType: 'emoji', bullets: [] }]);
+    setSlides([{ id: 1, template: 'title', title: '', subtitle: '', content: '', image: '', imageType: 'emoji', bullets: [], transition: 'fade' }]);
     setCurrentSlide(0);
     setSelectedTheme(themes[0]);
+    setGlobalTransition('fade');
     setPresentationName('');
     setPresentationTopic('');
     setSubject('');
