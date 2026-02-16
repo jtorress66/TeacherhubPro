@@ -199,32 +199,35 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      {/* Minimal Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-100">
+      {/* Minimal Header with Gradient */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-lime-50/95 via-emerald-50/90 to-white/95 backdrop-blur-lg border-b border-lime-100/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img 
               src="https://static.prod-images.emergentagent.com/jobs/3f72aedc-992b-4d25-83bd-5bb47e46011f/images/0f969775d262b8ea24538b15f4cc9cbeaf4a878afa90805ec86f8619b9caac6c.png"
               alt="TeacherHubPro Logo"
-              className="h-20 w-20 object-contain"
+              className="h-20 w-20 object-contain drop-shadow-md"
             />
-            <span className="text-xl font-bold text-slate-800">TeacherHubPro</span>
+            <div className="flex flex-col">
+              <span className="text-2xl font-bold text-slate-800">TeacherHubPro</span>
+              <span className="text-xs font-medium text-lime-600">{language === 'es' ? 'Tu aula digital' : 'Your digital classroom'}</span>
+            </div>
           </div>
           
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm font-medium text-slate-800 hover:text-slate-900 transition-colors">
+            <a href="#features" className="text-sm font-medium text-slate-700 hover:text-lime-700 transition-colors">
               {language === 'es' ? 'Funciones' : 'Features'}
             </a>
-            <a href="#ai-assistant" className="text-sm font-medium text-slate-800 hover:text-slate-900 transition-colors">
+            <a href="#ai-assistant" className="text-sm font-medium text-slate-700 hover:text-lime-700 transition-colors">
               {language === 'es' ? 'Asistente IA' : 'AI Assistant'}
             </a>
-            <a href="#ai-features" className="text-sm font-medium text-slate-800 hover:text-slate-900 transition-colors">
+            <a href="#ai-features" className="text-sm font-medium text-slate-700 hover:text-lime-700 transition-colors">
               {language === 'es' ? 'IA Avanzada' : 'Advanced AI'}
             </a>
-            <a href="#customization" className="text-sm font-medium text-slate-800 hover:text-slate-900 transition-colors">
+            <a href="#customization" className="text-sm font-medium text-slate-700 hover:text-lime-700 transition-colors">
               {language === 'es' ? 'Personalización' : 'Customization'}
             </a>
-            <Link to="/pricing" className="text-sm font-medium text-slate-800 hover:text-slate-900 transition-colors">
+            <Link to="/pricing" className="text-sm font-medium text-slate-700 hover:text-lime-700 transition-colors">
               {language === 'es' ? 'Precios' : 'Pricing'}
             </Link>
           </div>
@@ -242,7 +245,7 @@ const Landing = () => {
             </Button>
             <Button 
               size="sm" 
-              className="bg-slate-900 hover:bg-slate-800 text-white"
+              className="bg-gradient-to-r from-lime-600 to-emerald-600 hover:from-lime-700 hover:to-emerald-700 text-white shadow-md"
               onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
             >
               {language === 'es' ? 'Comenzar - Iniciar sesión' : 'Get Started - Log In'}
@@ -251,13 +254,13 @@ const Landing = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6 relative overflow-hidden">
+      {/* Hero Section with Enhanced Gradient */}
+      <section className="pt-32 pb-20 px-6 relative overflow-hidden bg-gradient-to-br from-lime-50/50 via-emerald-50/30 to-transparent">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute bottom-20 left-1/3 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-20 left-10 w-72 h-72 bg-lime-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse"></div>
+          <div className="absolute top-40 right-10 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-20 left-1/3 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
         </div>
 
         <div className="max-w-7xl mx-auto">
