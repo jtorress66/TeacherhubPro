@@ -202,11 +202,12 @@ const Landing = () => {
       {/* Minimal Header with Gradient */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-lime-50/95 via-emerald-50/90 to-white/95 backdrop-blur-lg border-b border-lime-100/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <img 
               src="https://static.prod-images.emergentagent.com/jobs/3f72aedc-992b-4d25-83bd-5bb47e46011f/images/0f969775d262b8ea24538b15f4cc9cbeaf4a878afa90805ec86f8619b9caac6c.png"
               alt="TeacherHubPro Logo"
-              className="h-20 w-20 object-contain drop-shadow-md"
+              className="h-28 w-28 object-contain"
+              style={{ background: 'transparent' }}
             />
             <div className="flex flex-col">
               <span className="text-2xl font-bold text-slate-800">TeacherHubPro</span>
