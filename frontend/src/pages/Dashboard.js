@@ -211,7 +211,7 @@ const Dashboard = () => {
                   </div>
 
                   <Button 
-                    onClick={() => navigate('/planner/new')}
+                    onClick={() => navigate('/planner/new', { state: { templateId: templateOfWeek.template_id, isStarter: true } })}
                     className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg"
                     data-testid="use-template-btn"
                   >
