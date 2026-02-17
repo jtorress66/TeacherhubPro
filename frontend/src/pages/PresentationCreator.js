@@ -104,6 +104,7 @@ const PresentationCreator = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [activeImageTab, setActiveImageTab] = useState('upload');
   const [globalTransition, setGlobalTransition] = useState('fade');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [presentationName, setPresentationName] = useState('');
