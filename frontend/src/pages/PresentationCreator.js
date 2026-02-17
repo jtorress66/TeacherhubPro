@@ -958,8 +958,6 @@ const PresentationCreator = () => {
   );
 
   // Image Picker Modal - Using manual tab state to avoid Radix focus issues
-  const [activeImageTab, setActiveImageTab] = useState('upload');
-  
   const ImagePickerModal = () => {
     if (!showImagePicker) return null;
     
