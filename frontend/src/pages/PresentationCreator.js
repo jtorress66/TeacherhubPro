@@ -740,7 +740,14 @@ const PresentationCreator = () => {
       case 'content':
         return (
           <div className={`${baseClasses} flex flex-col p-8`}>
-            <h2 className={`${isPreview ? 'text-base' : 'text-3xl md:text-4xl'} font-bold mb-6`}>{slide.title}</h2>
+            <div className="flex items-start gap-4 mb-6">
+              {slide.image && (
+                <div className="flex-shrink-0">
+                  {renderImage(slide, false)}
+                </div>
+              )}
+              <h2 className={`${isPreview ? 'text-base' : 'text-3xl md:text-4xl'} font-bold`}>{slide.title}</h2>
+            </div>
             {slide.content && <p className={`${sizeClass} mb-4 opacity-90`}>{slide.content}</p>}
             {slide.bullets.length > 0 && (
               <ul className="space-y-3">
