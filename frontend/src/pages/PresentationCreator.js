@@ -115,11 +115,61 @@ const PresentationCreator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
   const presentationRef = useRef(null);
+  const slideIndexRef = useRef(currentSlide);
+
+  // Keep slideIndexRef in sync with currentSlide
+  useEffect(() => {
+    slideIndexRef.current = currentSlide;
+  }, [currentSlide]);
 
   // Load saved presentations on mount
   useEffect(() => {
     loadPresentationsList();
   }, []);
+
+  // Keyboard navigation for presentation mode
+  useEffect(() => {
+    if (!isPresenting) return;
+
+    const handleKeyDown = (e) => {
+      if (isTransitioning) return;
+      
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        const nextSlide = Math.min(slideIndexRef.current + 1, slides.length - 1);
+        if (nextSlide !== slideIndexRef.current) {
+          if (globalTransition !== 'none') {
+            setIsTransitioning(true);
+            setTimeout(() => {
+              setCurrentSlide(nextSlide);
+              setIsTransitioning(false);
+            }, 300);
+          } else {
+            setCurrentSlide(nextSlide);
+          }
+        }
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const prevSlide = Math.max(slideIndexRef.current - 1, 0);
+        if (prevSlide !== slideIndexRef.current) {
+          if (globalTransition !== 'none') {
+            setIsTransitioning(true);
+            setTimeout(() => {
+              setCurrentSlide(prevSlide);
+              setIsTransitioning(false);
+            }, 300);
+          } else {
+            setCurrentSlide(prevSlide);
+          }
+        }
+      } else if (e.key === 'Escape') {
+        exitPresentation();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isPresenting, slides.length, globalTransition, isTransitioning]);
 
   // Load presentations list
   const loadPresentationsList = async () => {
