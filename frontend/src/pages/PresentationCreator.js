@@ -1699,8 +1699,14 @@ const PresentationCreator = () => {
                             size="icon"
                             className="absolute -top-2 -right-2 h-6 w-6"
                             onClick={() => {
-                              updateSlide(currentSlide, 'image', '');
-                              updateSlide(currentSlide, 'imageType', 'emoji');
+                              const newSlides = [...slides];
+                              newSlides[currentSlide] = { 
+                                ...newSlides[currentSlide], 
+                                image: '', 
+                                imageType: 'emoji' 
+                              };
+                              setSlides(newSlides);
+                              toast.info(language === 'es' ? 'Imagen eliminada' : 'Image removed');
                             }}
                           >
                             <X className="h-3 w-3" />
