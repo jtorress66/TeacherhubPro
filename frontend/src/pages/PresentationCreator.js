@@ -579,6 +579,13 @@ const PresentationCreator = () => {
     newSlides[index] = { ...newSlides[index], [field]: value };
     setSlides(newSlides);
   };
+  
+  // Update multiple fields at once to avoid state batching issues
+  const updateSlideMultiple = (index, updates) => {
+    const newSlides = [...slides];
+    newSlides[index] = { ...newSlides[index], ...updates };
+    setSlides(newSlides);
+  };
 
   const generateWithAI = async () => {
     if (!presentationTopic || !gradeLevel || !subject) {
