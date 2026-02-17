@@ -997,8 +997,14 @@ const PresentationCreator = () => {
                   placeholder="https://example.com/image.jpg"
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleImageUrl()}
+                  data-testid="image-url-input"
                 />
-                <Button onClick={handleImageUrl} className="bg-cyan-600 hover:bg-cyan-700">
+                <Button 
+                  onClick={handleImageUrl} 
+                  className="bg-cyan-600 hover:bg-cyan-700"
+                  data-testid="add-image-url-btn"
+                >
                   {language === 'es' ? 'Agregar' : 'Add'}
                 </Button>
               </div>
