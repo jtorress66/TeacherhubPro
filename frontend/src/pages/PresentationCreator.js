@@ -1654,11 +1654,35 @@ const PresentationCreator = () => {
                         <ImageIcon className="h-4 w-4" />
                       </Button>
                     </div>
+                    {/* Show image preview when a non-emoji image is set */}
                     {slides[currentSlide].imageType !== 'emoji' && slides[currentSlide].image && (
-                      <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
-                        <CheckCircle2 className="h-3 w-3" />
-                        {language === 'es' ? 'Imagen agregada' : 'Image added'}
-                      </p>
+                      <div className="mt-2 space-y-2">
+                        <p className="text-xs text-green-600 flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3" />
+                          {language === 'es' ? 'Imagen agregada' : 'Image added'}
+                        </p>
+                        <div className="relative inline-block">
+                          <img 
+                            src={slides[currentSlide].image} 
+                            alt="Preview" 
+                            className="h-20 w-auto rounded-lg border shadow-sm"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            className="absolute -top-2 -right-2 h-6 w-6"
+                            onClick={() => {
+                              updateSlide(currentSlide, 'image', '');
+                              updateSlide(currentSlide, 'imageType', 'emoji');
+                            }}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
