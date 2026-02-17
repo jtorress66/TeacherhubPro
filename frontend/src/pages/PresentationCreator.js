@@ -544,12 +544,13 @@ const PresentationCreator = () => {
       }
     } catch (error) {
       console.error('Search error:', error);
-      // Fallback to local generation if API fails
-      const hash = query.split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0);
+      // Fallback to Unsplash Source API if backend fails
+      const cleanQuery = query.trim().replace(/\s+/g, ',');
+      const timestamp = Date.now();
       const results = Array.from({length: 12}, (_, i) => ({
         id: `img_${i}`,
-        url: `https://picsum.photos/seed/${Math.abs(hash) + i * 100}/800/600`,
-        thumb: `https://picsum.photos/seed/${Math.abs(hash) + i * 100}/300/200`,
+        url: `https://source.unsplash.com/800x600/?${encodeURIComponent(cleanQuery)}&sig=${timestamp}_${i}`,
+        thumb: `https://source.unsplash.com/300x200/?${encodeURIComponent(cleanQuery)}&sig=${timestamp}_${i}`,
         alt: query
       }));
       setSearchResults(results);
