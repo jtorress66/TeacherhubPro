@@ -1023,15 +1023,22 @@ const PresentationCreator = () => {
   // Fullscreen presentation mode with transitions
   if (isPresenting) {
     const handleSlideChange = (direction) => {
+      // Prevent clicks during transition
+      if (isTransitioning) return;
+      
       const newSlide = direction === 'next' 
         ? Math.min(currentSlide + 1, slides.length - 1)
         : Math.max(currentSlide - 1, 0);
       
-      if (newSlide !== currentSlide && globalTransition !== 'none') {
+      // Only proceed if we're actually changing slides
+      if (newSlide === currentSlide) return;
+      
+      if (globalTransition !== 'none') {
         setIsTransitioning(true);
+        // Use a single timeout to change slide and clear transition flag
         setTimeout(() => {
           setCurrentSlide(newSlide);
-          setTimeout(() => setIsTransitioning(false), 50);
+          setIsTransitioning(false);
         }, 300);
       } else {
         setCurrentSlide(newSlide);
@@ -1048,23 +1055,28 @@ const PresentationCreator = () => {
       }
     };
 
+    const handleClick = (e) => {
+      // Ignore clicks on buttons
+      if (e.target.closest('button')) return;
+      
+      if (e.clientX > window.innerWidth / 2) {
+        handleSlideChange('next');
+      } else {
+        handleSlideChange('prev');
+      }
+    };
+
     return (
       <div 
         ref={presentationRef}
-        className="fixed inset-0 bg-black z-50 flex items-center justify-center"
-        onClick={(e) => {
-          if (e.clientX > window.innerWidth / 2) {
-            handleSlideChange('next');
-          } else {
-            handleSlideChange('prev');
-          }
-        }}
+        className="fixed inset-0 bg-black z-50 flex items-center justify-center cursor-pointer"
+        onClick={handleClick}
       >
         <div className={`w-full h-full max-w-[1920px] max-h-[1080px] aspect-video transition-all duration-300 ease-in-out ${getTransitionClass()}`}>
           {renderSlideContent(slides[currentSlide])}
         </div>
         
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/50 px-4 py-2 rounded-full text-white text-sm">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/50 px-4 py-2 rounded-full text-white text-sm pointer-events-none">
           <span>{currentSlide + 1} / {slides.length}</span>
           <span className="opacity-50">|</span>
           <span className="capitalize">{globalTransition === 'none' ? '—' : `✨ ${globalTransition}`}</span>
@@ -1075,7 +1087,7 @@ const PresentationCreator = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-4 right-4 text-white hover:bg-white/20"
+          className="absolute top-4 right-4 text-white hover:bg-white/20 z-10"
           onClick={(e) => { e.stopPropagation(); exitPresentation(); }}
         >
           <X className="h-6 w-6" />
