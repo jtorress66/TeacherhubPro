@@ -200,6 +200,12 @@ const LessonPlanner = () => {
         } else if (searchParams.get('class')) {
           setFormData(prev => ({ ...prev, class_id: searchParams.get('class') }));
         }
+        
+        // Check if a template was passed from Dashboard (Template of the Week)
+        if (location.state?.templateId) {
+          setPendingTemplateId(location.state.templateId);
+          setPendingTemplateIsStarter(location.state.isStarter || false);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
         toast.error(t('error'));
