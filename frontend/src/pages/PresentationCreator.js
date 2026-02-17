@@ -1072,26 +1072,31 @@ const PresentationCreator = () => {
 
   // Fullscreen presentation mode with transitions
   if (isPresenting) {
-    const handleSlideChange = (direction) => {
-      // Prevent clicks during transition
+    const goToSlide = (newSlide) => {
       if (isTransitioning) return;
-      
-      const newSlide = direction === 'next' 
-        ? Math.min(currentSlide + 1, slides.length - 1)
-        : Math.max(currentSlide - 1, 0);
-      
-      // Only proceed if we're actually changing slides
-      if (newSlide === currentSlide) return;
+      if (newSlide === slideIndexRef.current) return;
+      if (newSlide < 0 || newSlide >= slides.length) return;
       
       if (globalTransition !== 'none') {
         setIsTransitioning(true);
-        // Use a single timeout to change slide and clear transition flag
         setTimeout(() => {
           setCurrentSlide(newSlide);
           setIsTransitioning(false);
         }, 300);
       } else {
         setCurrentSlide(newSlide);
+      }
+    };
+
+    const handleClick = (e) => {
+      // Ignore clicks on buttons
+      if (e.target.closest('button')) return;
+      if (isTransitioning) return;
+      
+      if (e.clientX > window.innerWidth / 2) {
+        goToSlide(slideIndexRef.current + 1);
+      } else {
+        goToSlide(slideIndexRef.current - 1);
       }
     };
 
@@ -1102,17 +1107,6 @@ const PresentationCreator = () => {
         case 'slide': return 'opacity-0 translate-x-full';
         case 'zoom': return 'opacity-0 scale-50';
         default: return '';
-      }
-    };
-
-    const handleClick = (e) => {
-      // Ignore clicks on buttons
-      if (e.target.closest('button')) return;
-      
-      if (e.clientX > window.innerWidth / 2) {
-        handleSlideChange('next');
-      } else {
-        handleSlideChange('prev');
       }
     };
 
@@ -1131,7 +1125,7 @@ const PresentationCreator = () => {
           <span className="opacity-50">|</span>
           <span className="capitalize">{globalTransition === 'none' ? '—' : `✨ ${globalTransition}`}</span>
           <span className="opacity-50">|</span>
-          <span>{language === 'es' ? 'Clic para avanzar' : 'Click to advance'}</span>
+          <span>{language === 'es' ? '← → o clic' : '← → or click'}</span>
         </div>
         
         <Button
