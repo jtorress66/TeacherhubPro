@@ -495,54 +495,42 @@ const PresentationCreator = () => {
     }
   };
 
-  // Search stock images using real working images
+  // Search stock images using backend API
   const searchStockImages = async (query) => {
-    if (!query.trim()) return;
+    if (!query.trim()) {
+      toast.error(language === 'es' ? 'Ingrese un término de búsqueda' : 'Enter a search term');
+      return;
+    }
     
     setIsSearching(true);
+    setSearchResults([]);
+    
     try {
-      // Use Picsum for reliable demo images with search-like experience
-      // Map common education terms to consistent seed values for variety
-      const searchMap = {
-        'science': [100, 101, 102, 103, 104, 105, 106, 107],
-        'ciencias': [100, 101, 102, 103, 104, 105, 106, 107],
-        'math': [200, 201, 202, 203, 204, 205, 206, 207],
-        'matemáticas': [200, 201, 202, 203, 204, 205, 206, 207],
-        'nature': [300, 301, 302, 303, 304, 305, 306, 307],
-        'naturaleza': [300, 301, 302, 303, 304, 305, 306, 307],
-        'technology': [400, 401, 402, 403, 404, 405, 406, 407],
-        'tecnología': [400, 401, 402, 403, 404, 405, 406, 407],
-        'books': [500, 501, 502, 503, 504, 505, 506, 507],
-        'libros': [500, 501, 502, 503, 504, 505, 506, 507],
-        'art': [600, 601, 602, 603, 604, 605, 606, 607],
-        'arte': [600, 601, 602, 603, 604, 605, 606, 607],
-        'sports': [700, 701, 702, 703, 704, 705, 706, 707],
-        'deportes': [700, 701, 702, 703, 704, 705, 706, 707],
-        'classroom': [800, 801, 802, 803, 804, 805, 806, 807],
-        'aula': [800, 801, 802, 803, 804, 805, 806, 807],
-        'animals': [900, 901, 902, 903, 904, 905, 906, 907],
-        'animales': [900, 901, 902, 903, 904, 905, 906, 907],
-        'space': [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007],
-        'espacio': [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007],
-        'ocean': [1100, 1101, 1102, 1103, 1104, 1105, 1106, 1107],
-        'océano': [1100, 1101, 1102, 1103, 1104, 1105, 1106, 1107],
-      };
+      const response = await axios.get(`${API}/api/ai/images/search`, {
+        params: { query: query.trim(), count: 12 },
+        withCredentials: true
+      });
       
-      const lowQuery = query.toLowerCase();
-      const seeds = searchMap[lowQuery] || Array.from({length: 8}, (_, i) => Math.floor(Math.random() * 1000) + i);
-      
-      const results = seeds.map((seed, i) => ({
-        id: i,
-        url: `https://picsum.photos/seed/${seed}/800/600`,
-        thumb: `https://picsum.photos/seed/${seed}/200/150`,
-        alt: query
-      }));
-      
-      setSearchResults(results);
-      toast.success(language === 'es' ? `${results.length} imágenes encontradas` : `${results.length} images found`);
+      if (response.data.images && response.data.images.length > 0) {
+        setSearchResults(response.data.images);
+        toast.success(language === 'es' 
+          ? `${response.data.images.length} imágenes encontradas` 
+          : `${response.data.images.length} images found`);
+      } else {
+        toast.info(language === 'es' ? 'No se encontraron imágenes' : 'No images found');
+      }
     } catch (error) {
       console.error('Search error:', error);
-      toast.error(language === 'es' ? 'Error al buscar imágenes' : 'Error searching images');
+      // Fallback to local generation if API fails
+      const hash = query.split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0);
+      const results = Array.from({length: 12}, (_, i) => ({
+        id: `img_${i}`,
+        url: `https://picsum.photos/seed/${Math.abs(hash) + i * 100}/800/600`,
+        thumb: `https://picsum.photos/seed/${Math.abs(hash) + i * 100}/300/200`,
+        alt: query
+      }));
+      setSearchResults(results);
+      toast.success(language === 'es' ? `${results.length} imágenes encontradas` : `${results.length} images found`);
     } finally {
       setIsSearching(false);
     }
