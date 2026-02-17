@@ -561,12 +561,18 @@ const PresentationCreator = () => {
 
   // Select stock image
   const selectStockImage = (url) => {
-    updateSlide(currentSlide, 'image', url);
-    updateSlide(currentSlide, 'imageType', 'stock');
+    // Update both fields at once
+    const newSlides = [...slides];
+    newSlides[currentSlide] = { 
+      ...newSlides[currentSlide], 
+      image: url, 
+      imageType: 'stock' 
+    };
+    setSlides(newSlides);
     setShowImagePicker(false);
     setSearchResults([]);
     setImageSearch('');
-    toast.success(language === 'es' ? '¡Imagen agregada!' : 'Image added!');
+    toast.success(language === 'es' ? '¡Imagen seleccionada!' : 'Image selected!');
   };
 
   const addSlide = (template = 'content') => {
