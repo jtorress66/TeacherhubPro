@@ -956,138 +956,207 @@ const PresentationCreator = () => {
     </div>
   );
 
-  // Image Picker Modal
-  const ImagePickerModal = () => (
-    <Dialog open={showImagePicker} onOpenChange={setShowImagePicker}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <ImageIcon className="h-5 w-5 text-cyan-600" />
-            {language === 'es' ? 'Agregar Imagen' : 'Add Image'}
-          </DialogTitle>
-        </DialogHeader>
+  // Image Picker Modal - Using manual tab state to avoid Radix focus issues
+  const [activeImageTab, setActiveImageTab] = useState('upload');
+  
+  const ImagePickerModal = () => {
+    if (!showImagePicker) return null;
+    
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        {/* Backdrop */}
+        <div 
+          className="absolute inset-0 bg-black/50" 
+          onClick={() => setShowImagePicker(false)}
+        />
         
-        <Tabs defaultValue="upload" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="upload" className="gap-2">
+        {/* Modal Content */}
+        <div className="relative bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-2xl mx-4 p-6 max-h-[90vh] overflow-y-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <ImageIcon className="h-5 w-5 text-cyan-600" />
+              {language === 'es' ? 'Agregar Imagen' : 'Add Image'}
+            </h2>
+            <button 
+              onClick={() => setShowImagePicker(false)}
+              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          
+          {/* Tab Buttons */}
+          <div className="flex gap-2 mb-4 border-b pb-4">
+            <button
+              onClick={() => setActiveImageTab('upload')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                activeImageTab === 'upload' 
+                  ? 'bg-cyan-600 text-white' 
+                  : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200'
+              }`}
+            >
               <Upload className="h-4 w-4" />
               {language === 'es' ? 'Subir' : 'Upload'}
-            </TabsTrigger>
-            <TabsTrigger value="url" className="gap-2">
+            </button>
+            <button
+              onClick={() => setActiveImageTab('url')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                activeImageTab === 'url' 
+                  ? 'bg-cyan-600 text-white' 
+                  : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200'
+              }`}
+            >
               <Link className="h-4 w-4" />
               URL
-            </TabsTrigger>
-            <TabsTrigger value="search" className="gap-2">
+            </button>
+            <button
+              onClick={() => setActiveImageTab('search')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                activeImageTab === 'search' 
+                  ? 'bg-cyan-600 text-white' 
+                  : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200'
+              }`}
+            >
               <Search className="h-4 w-4" />
               {language === 'es' ? 'Buscar' : 'Search'}
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Upload Tab */}
-          <TabsContent value="upload" className="space-y-4">
-            <div 
-              className="border-2 border-dashed border-cyan-300 rounded-xl p-8 text-center cursor-pointer hover:border-cyan-500 hover:bg-cyan-50 transition-all"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Upload className="h-12 w-12 mx-auto text-cyan-500 mb-4" />
-              <p className="font-medium text-slate-700">
-                {language === 'es' ? 'Haz clic para seleccionar imagen' : 'Click to select image'}
-              </p>
-              <p className="text-sm text-slate-500 mt-2">
-                JPEG, PNG, GIF, WebP, AVIF • {language === 'es' ? 'Máx 5MB' : 'Max 5MB'}
-              </p>
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/avif"
-              className="hidden"
-              onChange={handleFileUpload}
-            />
-          </TabsContent>
-
-          {/* URL Tab */}
-          <TabsContent value="url" className="space-y-4">
-            <div className="space-y-2">
-              <Label>{language === 'es' ? 'URL de la imagen' : 'Image URL'}</Label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="https://example.com/image.jpg"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleImageUrl()}
-                  data-testid="image-url-input"
-                />
-                <Button 
-                  onClick={handleImageUrl} 
-                  className="bg-cyan-600 hover:bg-cyan-700"
-                  data-testid="add-image-url-btn"
-                >
-                  {language === 'es' ? 'Agregar' : 'Add'}
-                </Button>
-              </div>
-              <p className="text-xs text-slate-500">
-                {language === 'es' 
-                  ? 'Pega el enlace directo a cualquier imagen de internet'
-                  : 'Paste the direct link to any image from the internet'}
-              </p>
-            </div>
-          </TabsContent>
-
-          {/* Search Tab */}
-          <TabsContent value="search" className="space-y-4">
-            <div className="flex gap-2">
-              <Input
-                placeholder={language === 'es' ? 'Buscar imágenes...' : 'Search images...'}
-                value={imageSearch}
-                onChange={(e) => setImageSearch(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && searchStockImages(imageSearch)}
-              />
-              <Button 
-                onClick={() => searchStockImages(imageSearch)} 
-                disabled={isSearching}
-                className="bg-cyan-600 hover:bg-cyan-700"
+            </button>
+          </div>
+          
+          {/* Upload Tab Content */}
+          {activeImageTab === 'upload' && (
+            <div className="space-y-4">
+              <div 
+                className="border-2 border-dashed border-cyan-300 rounded-xl p-8 text-center cursor-pointer hover:border-cyan-500 hover:bg-cyan-50 dark:hover:bg-cyan-950 transition-all"
+                onClick={() => fileInputRef.current?.click()}
               >
-                {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-              </Button>
+                <Upload className="h-12 w-12 mx-auto text-cyan-500 mb-4" />
+                <p className="font-medium text-slate-700 dark:text-slate-200">
+                  {language === 'es' ? 'Haz clic para seleccionar imagen' : 'Click to select image'}
+                </p>
+                <p className="text-sm text-slate-500 mt-2">
+                  JPEG, PNG, GIF, WebP • {language === 'es' ? 'Máx 5MB' : 'Max 5MB'}
+                </p>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                className="hidden"
+                onChange={handleFileUpload}
+              />
             </div>
-            
-            {/* Quick category buttons */}
-            <div className="flex flex-wrap gap-2">
-              {stockCategories.map((cat) => (
-                <Button
-                  key={cat.id}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setImageSearch(cat.id);
-                    searchStockImages(cat.id);
-                  }}
-                >
-                  {language === 'es' ? cat.nameEs : cat.name}
-                </Button>
-              ))}
-            </div>
-
-            {/* Search Results */}
-            {searchResults.length > 0 && (
-              <div className="grid grid-cols-4 gap-2 max-h-64 overflow-y-auto">
-                {searchResults.map((img) => (
-                  <img
-                    key={img.id}
-                    src={img.thumb}
-                    alt={img.alt}
-                    className="w-full h-20 object-cover rounded-lg cursor-pointer hover:ring-2 hover:ring-cyan-500 transition-all"
-                    onClick={() => selectStockImage(img.url)}
+          )}
+          
+          {/* URL Tab Content */}
+          {activeImageTab === 'url' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  {language === 'es' ? 'URL de la imagen' : 'Image URL'}
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="https://example.com/image.jpg"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleImageUrl()}
+                    className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent dark:bg-slate-800"
+                    autoFocus
                   />
+                  <button 
+                    onClick={handleImageUrl}
+                    className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium"
+                  >
+                    {language === 'es' ? 'Agregar' : 'Add'}
+                  </button>
+                </div>
+                <p className="text-xs text-slate-500 mt-2">
+                  {language === 'es' 
+                    ? 'Pega el enlace directo a cualquier imagen de internet'
+                    : 'Paste the direct link to any image from the internet'}
+                </p>
+              </div>
+              
+              {/* Preview URL */}
+              {imageUrl && (
+                <div className="border rounded-lg p-4">
+                  <p className="text-sm font-medium mb-2">{language === 'es' ? 'Vista previa:' : 'Preview:'}</p>
+                  <img 
+                    src={imageUrl} 
+                    alt="Preview" 
+                    className="max-h-40 rounded-lg mx-auto"
+                    onError={(e) => e.target.style.display = 'none'}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* Search Tab Content */}
+          {activeImageTab === 'search' && (
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder={language === 'es' ? 'Buscar imágenes...' : 'Search images...'}
+                  value={imageSearch}
+                  onChange={(e) => setImageSearch(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && searchStockImages(imageSearch)}
+                  className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent dark:bg-slate-800"
+                  autoFocus
+                />
+                <button 
+                  onClick={() => searchStockImages(imageSearch)}
+                  disabled={isSearching}
+                  className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium disabled:opacity-50"
+                >
+                  {isSearching ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
+                </button>
+              </div>
+              
+              {/* Quick category buttons */}
+              <div className="flex flex-wrap gap-2">
+                {stockCategories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => {
+                      setImageSearch(cat.id);
+                      searchStockImages(cat.id);
+                    }}
+                    className="px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-lg text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    {language === 'es' ? cat.nameEs : cat.name}
+                  </button>
                 ))}
               </div>
-            )}
-            
-            <p className="text-xs text-slate-500 flex items-center gap-1">
-              <Globe className="h-3 w-3" />
-              {language === 'es' ? 'Imágenes de Unsplash - Gratis para uso educativo' : 'Images from Unsplash - Free for educational use'}
-            </p>
+
+              {/* Search Results */}
+              {searchResults.length > 0 && (
+                <div className="grid grid-cols-4 gap-2 max-h-64 overflow-y-auto">
+                  {searchResults.map((img) => (
+                    <img
+                      key={img.id}
+                      src={img.thumb}
+                      alt={img.alt}
+                      className="w-full h-20 object-cover rounded-lg cursor-pointer hover:ring-2 hover:ring-cyan-500 transition-all"
+                      onClick={() => selectStockImage(img.url)}
+                    />
+                  ))}
+                </div>
+              )}
+              
+              <p className="text-xs text-slate-500 flex items-center gap-1">
+                <Globe className="h-3 w-3" />
+                {language === 'es' ? 'Imágenes de Unsplash - Gratis para uso educativo' : 'Images from Unsplash - Free for educational use'}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
           </TabsContent>
         </Tabs>
       </DialogContent>
