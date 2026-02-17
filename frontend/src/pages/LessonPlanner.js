@@ -215,7 +215,48 @@ const LessonPlanner = () => {
     };
 
     fetchData();
-  }, [planId, searchParams, t]);
+  }, [planId, searchParams, t, location.state]);
+
+  // Apply pending template from Dashboard (Template of the Week)
+  useEffect(() => {
+    if (!loading && pendingTemplateId && !selectedPlan) {
+      const applyPendingTemplate = async () => {
+        try {
+          const endpoint = pendingTemplateIsStarter 
+            ? `${API}/ai/templates/starters/${pendingTemplateId}`
+            : `${API}/ai/templates/${pendingTemplateId}`;
+          
+          const response = await axios.get(endpoint, { withCredentials: true });
+          const fullTemplate = response.data;
+          
+          // Convert days object to our format
+          const newSuggestions = {};
+          Object.keys(fullTemplate.days).forEach(key => {
+            newSuggestions[parseInt(key)] = {
+              content: fullTemplate.days[key],
+              timestamp: new Date().toISOString(),
+              isTemplate: true,
+              isStarter: pendingTemplateIsStarter
+            };
+          });
+
+          setAiDaySuggestions(newSuggestions);
+          toast.success(language === 'es' 
+            ? `✨ Plantilla "${fullTemplate.name_es || fullTemplate.name}" cargada` 
+            : `✨ Template "${fullTemplate.name}" loaded`);
+          
+          // Clear the pending template
+          setPendingTemplateId(null);
+          setPendingTemplateIsStarter(false);
+        } catch (error) {
+          console.error('Error applying template:', error);
+          toast.error(language === 'es' ? 'Error al cargar plantilla' : 'Error loading template');
+        }
+      };
+      
+      applyPendingTemplate();
+    }
+  }, [loading, pendingTemplateId, pendingTemplateIsStarter, selectedPlan, language]);
 
   const loadPlanToForm = (plan) => {
     // Create days for both weeks - Week 1 (indices 0-4) and Week 2 (indices 5-9)
