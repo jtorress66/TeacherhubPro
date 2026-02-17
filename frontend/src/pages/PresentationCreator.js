@@ -1674,6 +1674,7 @@ const PresentationCreator = () => {
                         size="icon"
                         onClick={() => setShowImagePicker(true)}
                         title={language === 'es' ? 'Agregar imagen' : 'Add image'}
+                        data-testid="image-picker-btn"
                       >
                         <ImageIcon className="h-4 w-4" />
                       </Button>
