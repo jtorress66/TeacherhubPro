@@ -1157,11 +1157,6 @@ const PresentationCreator = () => {
       </div>
     );
   };
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
-  );
 
   // Fullscreen presentation mode with transitions
   if (isPresenting) {
