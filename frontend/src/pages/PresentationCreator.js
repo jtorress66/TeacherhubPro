@@ -528,7 +528,7 @@ const PresentationCreator = () => {
         topic: presentationTopic,
         grade_level: gradeLevel,
         subject: subject,
-        num_slides: 6,
+        num_slides: numSlides,
         language: language,
         theme: selectedTheme.id
       }, { withCredentials: true });
@@ -540,7 +540,7 @@ const PresentationCreator = () => {
           ...slide
         })));
         setCurrentSlide(0);
-        toast.success(language === 'es' ? '¡Presentación generada con IA!' : 'AI Presentation generated!');
+        toast.success(language === 'es' ? `¡${response.data.slides.length} diapositivas generadas con IA!` : `${response.data.slides.length} slides generated with AI!`);
       }
     } catch (error) {
       console.error('Error generating presentation:', error);
