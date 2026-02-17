@@ -1360,19 +1360,22 @@ async def delete_presentation(presentation_id: str, current_user: dict = Depends
 
 @router.get("/images/search")
 async def search_images(query: str, count: int = 12, current_user: dict = Depends(get_current_user)):
-    """Search for stock images using Lorem Picsum (reliable, always working)"""
-    import hashlib
+    """Search for stock images using Unsplash Source API with actual keyword search"""
+    import time
     
-    # Create deterministic seeds from query for consistent results
-    base_hash = int(hashlib.md5(query.lower().encode()).hexdigest()[:8], 16)
+    # Clean and encode the query for URL
+    clean_query = query.strip().replace(' ', ',')
+    timestamp = int(time.time() * 1000)
     
     images = []
     for i in range(count):
-        seed = base_hash + i * 100
+        # Use Unsplash Source API with keyword search
+        # The sig parameter ensures unique images for each request
+        sig = f"{timestamp}_{i}"
         images.append({
-            "id": f"img_{seed}",
-            "url": f"https://picsum.photos/seed/{seed}/800/600",
-            "thumb": f"https://picsum.photos/seed/{seed}/300/200",
+            "id": f"img_{sig}",
+            "url": f"https://source.unsplash.com/800x600/?{clean_query}&sig={sig}",
+            "thumb": f"https://source.unsplash.com/300x200/?{clean_query}&sig={sig}",
             "alt": query
         })
     
