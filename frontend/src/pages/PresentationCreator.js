@@ -390,6 +390,7 @@ const PresentationCreator = () => {
     setPresentationTopic('');
     setSubject('');
     setGradeLevel('');
+    setNumSlides(6);
     setCurrentPresentationId(null);
     toast.success(language === 'es' ? 'Nueva presentación creada' : 'New presentation created');
   };
