@@ -1354,3 +1354,32 @@ async def delete_presentation(presentation_id: str, current_user: dict = Depends
         raise HTTPException(status_code=404, detail="Presentation not found")
     
     return {"message": "Presentation deleted successfully"}
+
+
+# ==================== IMAGE SEARCH & UPLOAD ====================
+
+@router.get("/images/search")
+async def search_images(query: str, count: int = 12, current_user: dict = Depends(get_current_user)):
+    """Search for stock images using Lorem Picsum (reliable, always working)"""
+    import hashlib
+    
+    # Create deterministic seeds from query for consistent results
+    base_hash = int(hashlib.md5(query.lower().encode()).hexdigest()[:8], 16)
+    
+    images = []
+    for i in range(count):
+        seed = base_hash + i * 100
+        images.append({
+            "id": f"img_{seed}",
+            "url": f"https://picsum.photos/seed/{seed}/800/600",
+            "thumb": f"https://picsum.photos/seed/{seed}/300/200",
+            "alt": query
+        })
+    
+    return {"images": images, "query": query}
+
+
+@router.post("/images/upload")
+async def upload_image(current_user: dict = Depends(get_current_user)):
+    """Upload endpoint placeholder - images are handled as base64 on frontend"""
+    return {"message": "Use base64 encoding for image uploads", "status": "info"}
