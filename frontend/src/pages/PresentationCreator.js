@@ -97,6 +97,7 @@ const PresentationCreator = () => {
   const [presentationTopic, setPresentationTopic] = useState('');
   const [gradeLevel, setGradeLevel] = useState('');
   const [subject, setSubject] = useState('');
+  const [numSlides, setNumSlides] = useState(6);
   const [showHelp, setShowHelp] = useState(false);
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [imageSearch, setImageSearch] = useState('');
