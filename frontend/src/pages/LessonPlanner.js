@@ -35,6 +35,7 @@ const SUBJECT_INTEGRATION = ['mathematics', 'spanish', 'socialStudies', 'science
 
 const LessonPlanner = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { planId } = useParams();
   const [searchParams] = useSearchParams();
   const { t, language } = useLanguage();
@@ -48,6 +49,8 @@ const LessonPlanner = () => {
   const [showPrintView, setShowPrintView] = useState(false);
   const [school, setSchool] = useState(null);
   const [activeWeek, setActiveWeek] = useState(1); // Toggle between Week 1 and Week 2
+  const [pendingTemplateId, setPendingTemplateId] = useState(null);
+  const [pendingTemplateIsStarter, setPendingTemplateIsStarter] = useState(false);
   
   // AI Generation state
   const [showAIModal, setShowAIModal] = useState(false);
