@@ -722,6 +722,11 @@ const PresentationCreator = () => {
       case 'title':
         return (
           <div className={`${baseClasses} flex flex-col items-center justify-center p-8 text-center`}>
+            {slide.image && (
+              <div className="mb-6">
+                {renderImage(slide, !isPreview)}
+              </div>
+            )}
             <h1 className={`${titleClass} font-bold mb-4`}>{slide.title || (language === 'es' ? 'Título' : 'Title')}</h1>
             <p className={`${subtitleClass} opacity-90`}>{slide.subtitle}</p>
             <div className={`mt-6 w-24 h-1 ${theme.accent} rounded-full`}></div>
