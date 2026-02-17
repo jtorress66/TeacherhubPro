@@ -1144,53 +1144,83 @@ const PresentationCreator = () => {
           {/* Search Tab Content */}
           {activeImageTab === 'search' && (
             <div className="space-y-4">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder={language === 'es' ? 'Buscar imágenes...' : 'Search images...'}
-                  value={imageSearch}
-                  onChange={(e) => setImageSearch(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && searchStockImages(imageSearch)}
-                  className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent dark:bg-slate-800"
-                  autoFocus
-                />
-                <button 
-                  onClick={() => searchStockImages(imageSearch)}
-                  disabled={isSearching}
-                  className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium disabled:opacity-50"
-                >
-                  {isSearching ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
-                </button>
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  {language === 'es' ? 'Describe la imagen que necesitas' : 'Describe the image you need'}
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder={language === 'es' ? 'Ej: planetas del sistema solar, dinosaurios, números...' : 'Ex: solar system planets, dinosaurs, numbers...'}
+                    value={imageSearch}
+                    onChange={(e) => setImageSearch(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && searchStockImages(imageSearch)}
+                    className="flex-1 px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent dark:bg-slate-800 text-base"
+                    autoFocus
+                  />
+                  <button 
+                    onClick={() => searchStockImages(imageSearch)}
+                    disabled={isSearching || !imageSearch.trim()}
+                    className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {isSearching ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
+                    {language === 'es' ? 'Buscar' : 'Search'}
+                  </button>
+                </div>
               </div>
               
-              {/* Quick category buttons */}
-              <div className="flex flex-wrap gap-2">
-                {stockCategories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => {
-                      setImageSearch(cat.id);
-                      searchStockImages(cat.id);
-                    }}
-                    className="px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-lg text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
-                  >
-                    {language === 'es' ? cat.nameEs : cat.name}
-                  </button>
-                ))}
-              </div>
+              {/* Quick suggestions (not categories, just helpful examples) */}
+              {searchResults.length === 0 && (
+                <div className="text-sm text-slate-500">
+                  <p className="mb-2">{language === 'es' ? 'Ideas de búsqueda:' : 'Search ideas:'}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      language === 'es' ? 'planetas' : 'planets',
+                      language === 'es' ? 'dinosaurios' : 'dinosaurs', 
+                      language === 'es' ? 'animales marinos' : 'sea animals',
+                      language === 'es' ? 'volcán' : 'volcano',
+                      language === 'es' ? 'mapas' : 'maps',
+                      language === 'es' ? 'matemáticas' : 'math',
+                      language === 'es' ? 'música' : 'music',
+                      language === 'es' ? 'deportes' : 'sports'
+                    ].map((suggestion) => (
+                      <button
+                        key={suggestion}
+                        onClick={() => {
+                          setImageSearch(suggestion);
+                          searchStockImages(suggestion);
+                        }}
+                        className="px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-full text-xs hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Search Results */}
               {searchResults.length > 0 && (
-                <div className="grid grid-cols-4 gap-2 max-h-64 overflow-y-auto">
-                  {searchResults.map((img) => (
-                    <img
-                      key={img.id}
-                      src={img.thumb}
-                      alt={img.alt}
-                      className="w-full h-20 object-cover rounded-lg cursor-pointer hover:ring-2 hover:ring-cyan-500 transition-all"
-                      onClick={() => selectStockImage(img.url)}
-                    />
-                  ))}
+                <div>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                    {language === 'es' 
+                      ? `${searchResults.length} imágenes para "${imageSearch}"` 
+                      : `${searchResults.length} images for "${imageSearch}"`}
+                  </p>
+                  <div className="grid grid-cols-4 gap-2 max-h-64 overflow-y-auto">
+                    {searchResults.map((img) => (
+                      <img
+                        key={img.id}
+                        src={img.thumb}
+                        alt={img.alt}
+                        className="w-full h-20 object-cover rounded-lg cursor-pointer hover:ring-2 hover:ring-cyan-500 transition-all"
+                        onClick={() => selectStockImage(img.url)}
+                        onError={(e) => {
+                          e.target.style.opacity = '0.5';
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
               
