@@ -819,7 +819,9 @@ const PresentationCreator = () => {
       case 'quote':
         return (
           <div className={`${baseClasses} flex flex-col items-center justify-center p-8 text-center`}>
-            <div className="text-6xl mb-6">{slide.image || '💭'}</div>
+            <div className="mb-6">
+              {renderImage(slide, !isPreview)}
+            </div>
             <blockquote className={`${isPreview ? 'text-sm' : 'text-2xl md:text-3xl'} italic max-w-3xl`}>
               {slide.content || (language === 'es' ? '"Tu cita aquí"' : '"Your quote here"')}
             </blockquote>
