@@ -470,26 +470,49 @@ const PresentationCreator = () => {
     const reader = new FileReader();
     reader.onload = (event) => {
       const base64 = event.target?.result;
-      updateSlide(currentSlide, 'image', base64);
-      updateSlide(currentSlide, 'imageType', 'uploaded');
-      setShowImagePicker(false);
-      toast.success(language === 'es' ? '¡Imagen agregada!' : 'Image added!');
+      if (base64) {
+        // Update both fields at once
+        const newSlides = [...slides];
+        newSlides[currentSlide] = { 
+          ...newSlides[currentSlide], 
+          image: base64, 
+          imageType: 'uploaded' 
+        };
+        setSlides(newSlides);
+        setShowImagePicker(false);
+        toast.success(language === 'es' ? '¡Imagen subida exitosamente!' : 'Image uploaded successfully!');
+      }
+    };
+    reader.onerror = () => {
+      toast.error(language === 'es' ? 'Error al leer archivo' : 'Error reading file');
     };
     reader.readAsDataURL(file);
-  }, [currentSlide, language]);
+    
+    // Reset input
+    e.target.value = '';
+  }, [currentSlide, language, slides]);
 
   // Handle image URL
   const handleImageUrl = () => {
-    if (!imageUrl.trim()) return;
+    if (!imageUrl.trim()) {
+      toast.error(language === 'es' ? 'Ingrese una URL' : 'Enter a URL');
+      return;
+    }
     
     // Basic URL validation
     try {
       new URL(imageUrl);
-      updateSlide(currentSlide, 'image', imageUrl);
-      updateSlide(currentSlide, 'imageType', 'url');
+      // Update both fields at once
+      const newSlides = [...slides];
+      newSlides[currentSlide] = { 
+        ...newSlides[currentSlide], 
+        image: imageUrl.trim(), 
+        imageType: 'url' 
+      };
+      setSlides(newSlides);
       setShowImagePicker(false);
       setImageUrl('');
-      toast.success(language === 'es' ? '¡Imagen agregada!' : 'Image added!');
+      toast.success(language === 'es' ? '¡Imagen agregada desde URL!' : 'Image added from URL!');
     } catch {
       toast.error(language === 'es' ? 'URL inválida' : 'Invalid URL');
     }
