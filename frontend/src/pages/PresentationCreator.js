@@ -1269,13 +1269,14 @@ const PresentationCreator = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               <div>
                 <Label>{language === 'es' ? 'Tema' : 'Topic'}</Label>
                 <Input 
                   placeholder={language === 'es' ? 'Ej: El Sistema Solar' : 'Ex: The Solar System'}
                   value={presentationTopic}
                   onChange={(e) => setPresentationTopic(e.target.value)}
+                  data-testid="presentation-topic-input"
                 />
               </div>
               <div>
@@ -1307,11 +1308,29 @@ const PresentationCreator = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <div>
+                <Label>{language === 'es' ? 'Diapositivas' : 'Slides'}</Label>
+                <Select value={numSlides.toString()} onValueChange={(val) => setNumSlides(parseInt(val))}>
+                  <SelectTrigger data-testid="num-slides-select"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="3">3</SelectItem>
+                    <SelectItem value="4">4</SelectItem>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="6">6</SelectItem>
+                    <SelectItem value="8">8</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="12">12</SelectItem>
+                    <SelectItem value="15">15</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex items-end">
                 <Button 
                   onClick={generateWithAI} 
                   disabled={isGenerating}
                   className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700"
+                  data-testid="generate-ai-btn"
                 >
                   {isGenerating ? (
                     <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{language === 'es' ? 'Generando...' : 'Generating...'}</>
