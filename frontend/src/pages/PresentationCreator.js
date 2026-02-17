@@ -689,8 +689,6 @@ const PresentationCreator = () => {
 
   // Render image based on type
   const renderImage = (slide, isLarge = false) => {
-    const sizeClass = isLarge ? 'w-full h-full' : 'w-full h-full';
-    
     if (!slide.image) {
       return <span className="text-6xl">📚</span>;
     }
@@ -699,13 +697,19 @@ const PresentationCreator = () => {
       return <span className={isLarge ? 'text-9xl' : 'text-6xl'}>{slide.image}</span>;
     }
 
+    // For URL, uploaded, and stock images
     return (
       <img 
         src={slide.image} 
         alt={slide.title || 'Slide image'}
-        className={`${sizeClass} object-cover`}
+        className={`${isLarge ? 'max-w-full max-h-full w-auto h-auto' : 'w-full h-full'} object-contain`}
         onError={(e) => {
+          console.error('Image failed to load:', slide.image);
+          e.target.onerror = null;
+          e.target.src = '';
+          e.target.alt = '❌ Image failed to load';
           e.target.style.display = 'none';
+          e.target.parentElement.innerHTML = '<span class="text-6xl">❌</span>';
         }}
       />
     );
