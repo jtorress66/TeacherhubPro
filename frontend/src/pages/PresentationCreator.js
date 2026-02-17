@@ -495,27 +495,51 @@ const PresentationCreator = () => {
     }
   };
 
-  // Search stock images (using Unsplash)
+  // Search stock images using real working images
   const searchStockImages = async (query) => {
     if (!query.trim()) return;
     
     setIsSearching(true);
     try {
-      // Use Unsplash source for demo (free, no API key needed)
-      const results = [];
-      const searchTerms = query.toLowerCase().split(' ');
+      // Use Picsum for reliable demo images with search-like experience
+      // Map common education terms to consistent seed values for variety
+      const searchMap = {
+        'science': [100, 101, 102, 103, 104, 105, 106, 107],
+        'ciencias': [100, 101, 102, 103, 104, 105, 106, 107],
+        'math': [200, 201, 202, 203, 204, 205, 206, 207],
+        'matemáticas': [200, 201, 202, 203, 204, 205, 206, 207],
+        'nature': [300, 301, 302, 303, 304, 305, 306, 307],
+        'naturaleza': [300, 301, 302, 303, 304, 305, 306, 307],
+        'technology': [400, 401, 402, 403, 404, 405, 406, 407],
+        'tecnología': [400, 401, 402, 403, 404, 405, 406, 407],
+        'books': [500, 501, 502, 503, 504, 505, 506, 507],
+        'libros': [500, 501, 502, 503, 504, 505, 506, 507],
+        'art': [600, 601, 602, 603, 604, 605, 606, 607],
+        'arte': [600, 601, 602, 603, 604, 605, 606, 607],
+        'sports': [700, 701, 702, 703, 704, 705, 706, 707],
+        'deportes': [700, 701, 702, 703, 704, 705, 706, 707],
+        'classroom': [800, 801, 802, 803, 804, 805, 806, 807],
+        'aula': [800, 801, 802, 803, 804, 805, 806, 807],
+        'animals': [900, 901, 902, 903, 904, 905, 906, 907],
+        'animales': [900, 901, 902, 903, 904, 905, 906, 907],
+        'space': [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007],
+        'espacio': [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007],
+        'ocean': [1100, 1101, 1102, 1103, 1104, 1105, 1106, 1107],
+        'océano': [1100, 1101, 1102, 1103, 1104, 1105, 1106, 1107],
+      };
       
-      // Generate placeholder results using Unsplash source
-      for (let i = 0; i < 8; i++) {
-        results.push({
-          id: i,
-          url: `https://source.unsplash.com/800x600/?${encodeURIComponent(query)}&sig=${Date.now() + i}`,
-          thumb: `https://source.unsplash.com/200x150/?${encodeURIComponent(query)}&sig=${Date.now() + i}`,
-          alt: query
-        });
-      }
+      const lowQuery = query.toLowerCase();
+      const seeds = searchMap[lowQuery] || Array.from({length: 8}, (_, i) => Math.floor(Math.random() * 1000) + i);
+      
+      const results = seeds.map((seed, i) => ({
+        id: i,
+        url: `https://picsum.photos/seed/${seed}/800/600`,
+        thumb: `https://picsum.photos/seed/${seed}/200/150`,
+        alt: query
+      }));
       
       setSearchResults(results);
+      toast.success(language === 'es' ? `${results.length} imágenes encontradas` : `${results.length} images found`);
     } catch (error) {
       console.error('Search error:', error);
       toast.error(language === 'es' ? 'Error al buscar imágenes' : 'Error searching images');
