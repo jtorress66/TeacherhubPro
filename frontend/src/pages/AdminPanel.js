@@ -720,7 +720,7 @@ const AdminPanel = () => {
                     <Input 
                       value={schoolForm.name} 
                       onChange={(e) => setSchoolForm({...schoolForm, name: e.target.value})}
-                      placeholder="Escuela Inmaculada Concepción"
+                      placeholder={language === 'es' ? 'Nombre de la escuela' : 'School name'}
                     />
                   </div>
                   <div className="col-span-2">

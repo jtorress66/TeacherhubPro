@@ -333,7 +333,7 @@ const Settings = () => {
               <Input 
                 value={schoolName}
                 onChange={(e) => setSchoolName(e.target.value)}
-                placeholder="Colegio De La Inmaculada Concepción"
+                placeholder={language === 'es' ? 'Nombre de tu escuela' : 'Your school name'}
                 data-testid="school-name-input"
               />
             </div>

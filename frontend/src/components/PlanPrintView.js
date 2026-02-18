@@ -148,10 +148,10 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           <img src={school.logo_url} alt="Logo" style={{ height: '50px', objectFit: 'contain' }} />
         )}
         <div>
-          <div style={{ fontWeight: 'bold', fontSize: '14pt' }}>{school?.name || 'Colegio De La Inmaculada Concepción'}</div>
-          <div style={{ fontSize: '9pt' }}>{school?.address || 'P.O. Box 3400, Manatí, Puerto Rico 00674'}</div>
+          <div style={{ fontWeight: 'bold', fontSize: '14pt' }}>{school?.name || 'My School'}</div>
+          <div style={{ fontSize: '9pt' }}>{school?.address || 'School Address'}</div>
           <div style={{ fontSize: '9pt' }}>
-            Tel. {school?.phone || '(787) 854-2079'} / {school?.phone || '(787)854-5265'} | {school?.email || 'Cicmanati@outlook.com'}
+            {school?.phone ? `Tel. ${school.phone}` : ''} {school?.email ? `| ${school.email}` : ''}
           </div>
         </div>
       </div>
