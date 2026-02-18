@@ -79,12 +79,12 @@ const Landing = () => {
   ];
 
   const partnerSchools = [
-    { name: 'Academia San José', icon: School },
-    { name: 'Colegio Santa María', icon: GraduationCap },
-    { name: 'Instituto Bilingüe', icon: Building2 },
-    { name: 'Escuela Montessori', icon: BookOpen },
-    { name: 'Colegio San Juan', icon: School },
-    { name: 'Academia del Valle', icon: GraduationCap },
+    { name: 'Valley High School', icon: School },
+    { name: 'Riverside Academy', icon: GraduationCap },
+    { name: 'Bilingual Institute', icon: Building2 },
+    { name: 'Montessori School', icon: BookOpen },
+    { name: 'Lincoln Elementary', icon: School },
+    { name: 'Westside Prep', icon: GraduationCap },
   ];
 
   const featureShowcase = [
@@ -127,7 +127,7 @@ const Landing = () => {
               <School className="h-6 w-6 text-white" />
             </div>
             <div>
-              <div className="font-semibold text-slate-800">Colegio San José</div>
+              <div className="font-semibold text-slate-800">{language === 'es' ? 'Tu Escuela' : 'Your School'}</div>
               <div className="text-xs text-slate-500">{language === 'es' ? 'Marca personalizada' : 'Custom branding'}</div>
             </div>
           </div>
@@ -825,7 +825,7 @@ const Landing = () => {
                     <School className="h-8 w-8 text-white" />
                   </div>
                   <div>
-                    <div className="text-xl font-bold">Colegio San José</div>
+                    <div className="text-xl font-bold">{language === 'es' ? 'Tu Escuela' : 'Your School'}</div>
                     <div className="text-sm text-slate-500">{language === 'es' ? 'Planificación del Maestro' : "Teacher's Planning"}</div>
                   </div>
                 </div>
