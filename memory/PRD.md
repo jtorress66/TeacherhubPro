@@ -1778,3 +1778,71 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 - Existing users who were assigned to `school_default` may still see whatever data was in that record
 - Those users should update their school info in Settings
 - Super Admin can reassign users to different schools if needed
+
+---
+## Update 2026-02-18 - User Onboarding System
+
+### Feature: New User Onboarding (Complete)
+
+**Description:** Comprehensive onboarding system to guide new users through initial setup.
+
+**Implementation:**
+
+1. **Backend - User Profile Fields:**
+   - `onboarding_status`: "not_started" | "in_progress" | "completed" | "dismissed"
+   - `first_login_at`: DateTime when user first logged in
+   - `settings_completed_at`: DateTime when setup was completed
+
+2. **Backend - New Endpoints:**
+   - `GET /api/auth/onboarding-status` - Returns onboarding progress with setup checklist
+   - `PUT /api/auth/onboarding-status` - Update onboarding status (dismiss, complete)
+
+3. **Setup Completion Detection (Option C):**
+   - Checks actual data, not just flags:
+     - `school_info`: School name is not "My School" (customized)
+     - `first_class`: At least 1 class created
+     - `first_planner`: At least 1 lesson plan created
+   - Auto-marks complete when all 3 items are done
+
+4. **Frontend - OnboardingBanner Component:**
+   - Welcome modal on first login with 3 setup steps
+   - Persistent progress banner on dashboard
+   - Clickable step buttons that navigate to correct pages
+   - Progress bar showing completion percentage
+   - Dismiss (X) button to hide banner
+
+**User Experience Flow:**
+1. New user registers → sees welcome modal
+2. Can click "Start Setup" → goes to Settings
+3. Or click "Later" → sees persistent banner on dashboard
+4. Banner shows progress: "0 / 3 completed"
+5. Click any incomplete step → navigates to that page
+6. When all 3 steps complete → banner disappears
+7. User can dismiss banner early if desired
+
+**Files Created:**
+- `/app/frontend/src/components/OnboardingBanner.js` (new component)
+
+**Files Modified:**
+- `/app/backend/server.py` - Added onboarding fields and endpoints
+- `/app/backend/routes/auth.py` - Added onboarding fields to registration
+- `/app/frontend/src/pages/Dashboard.js` - Added OnboardingBanner import/render
+
+**Bilingual Support:**
+- All labels in English and Spanish
+- Detects user's language preference automatically
+
+**API Response Example:**
+```json
+{
+  "onboarding_status": "not_started",
+  "setup_items": {
+    "school_info": {"completed": false, "label_en": "School Information"},
+    "first_class": {"completed": false, "label_en": "Create Your First Class"},
+    "first_planner": {"completed": false, "label_en": "Create Your First Planner"}
+  },
+  "completed_count": 0,
+  "total_count": 3,
+  "show_onboarding": true
+}
+```
