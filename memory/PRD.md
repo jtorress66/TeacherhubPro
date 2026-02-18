@@ -1967,3 +1967,60 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 **Bilingual Support:**
 - All narrations in English and Spanish
 - Voice changes based on user's language preference
+
+---
+## Update 2026-02-18 - Calendar Export & Mobile Responsiveness
+
+### Changes Made
+
+#### 1. One-Tap Calendar Export (.ics)
+- **Backend Endpoint:** `GET /api/plans/{plan_id}/calendar`
+- **Features:**
+  - Generates .ics file compatible with Google Calendar, Microsoft Outlook, Apple Calendar
+  - Full lesson details in event descriptions (objectives, skills, activities, materials)
+  - One event per day (Mon-Fri) for each week of the lesson plan
+  - School name as event location
+  - Works even when days array is empty (uses week_start/week_end dates)
+- **Frontend:**
+  - "Add to Calendar" / "Calendario" button in Lesson Planner action bar
+  - Downloads .ics file with success toast message
+
+#### 2. Mobile Responsiveness Improvements
+- **Landing Page Header:**
+  - Responsive logo size (smaller on mobile)
+  - Condensed button text on mobile ("Start" instead of "Get Started - Log In")
+  - Hidden tagline on small screens
+  - Adjusted padding and gaps
+- **Lesson Planner:**
+  - Action buttons show icons only on mobile (text hidden)
+  - Button titles for accessibility
+  - Responsive text sizes for headings
+
+### Files Modified
+- `/app/backend/server.py` - Added calendar export endpoint
+- `/app/frontend/src/pages/LessonPlanner.js` - Added CalendarPlus icon, export handler, mobile-responsive buttons
+- `/app/frontend/src/pages/Landing.js` - Mobile-responsive header
+
+### API Endpoints Added
+- `GET /api/plans/{plan_id}/calendar` - Returns .ics calendar file
+
+---
+## Pending Tasks (Prioritized)
+
+### P0 - Critical Bugs (User Verification Pending)
+1. ~~Onboarding Audio Skipping~~ - Fix implemented, needs verification
+2. ~~Onboarding Lesson Planner Detection~~ - Fix implemented, needs verification
+3. ~~"Template of the Week" Bug~~ - Fix implemented, needs verification
+
+### P1 - Important Tasks
+1. **Refactor server.py** - Break into domain-specific route files (recurring issue)
+2. Drag-and-Drop Seating Chart Editor
+3. Quick Week Copy button
+4. Super Admin Bulk Tools (CSV import)
+
+### P2 - Future Features
+- Audit Log for critical actions
+- Google Classroom Integration
+- Report Card Generation
+- Planner Style Customization
+- Community Templates
