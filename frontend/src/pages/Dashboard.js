@@ -28,6 +28,7 @@ import {
 import Layout from '../components/Layout';
 import WelcomeTour from '../components/WelcomeTour';
 import VideoStyleGuide from '../components/VideoStyleGuide';
+import OnboardingBanner from '../components/OnboardingBanner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
