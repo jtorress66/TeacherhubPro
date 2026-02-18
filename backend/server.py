@@ -133,6 +133,14 @@ class UserResponse(BaseModel):
     picture: Optional[str] = None
     language: str = "es"
     created_at: Optional[str] = None
+    # Onboarding fields
+    onboarding_status: Optional[str] = "not_started"  # not_started, in_progress, completed, dismissed
+    first_login_at: Optional[str] = None
+    settings_completed_at: Optional[str] = None
+
+class OnboardingUpdate(BaseModel):
+    onboarding_status: Optional[str] = None
+    onboarding_step: Optional[str] = None
 
 # School Models
 class SchoolCreate(BaseModel):
