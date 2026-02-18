@@ -378,8 +378,9 @@ const OnboardingVideo = ({ language = 'en', onClose, onStartSetup }) => {
       audioRef.current.currentTime = 0;
     }
     setCurrentStep(index);
+    // If currently playing, play the new step's audio
     if (isPlaying && !isPaused) {
-      setTimeout(() => playNarration(index), 100);
+      playNarration(index);
     }
   };
 
