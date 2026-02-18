@@ -1892,3 +1892,78 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 2. User can watch slideshow or switch to Checklist tab
 3. After dismissing modal, banner remains with "Ver tutorial" link
 4. User can reopen modal anytime to review tutorial
+
+---
+## Update 2026-02-18 - Video Tutorial with Voice Narration
+
+### Feature: Onboarding Video with TTS Voice (Complete)
+
+**Description:** Professional video walkthrough with AI-generated voice narration that guides new users through the complete setup process.
+
+**8 Scenes (following the provided script):**
+
+1. **Welcome Screen** (0:00–0:10)
+   - "Welcome to TeacherHubPro — your AI-powered lesson planning assistant"
+   
+2. **Step Overview** (0:10–0:20)
+   - Overview of the 3 setup steps with icons
+   
+3. **School Settings** (0:20–0:55)
+   - Fields: Logo URL, School Name, Address, Phone & Email
+   - Tip: "Your branding will appear on all exported lesson plans"
+   
+4. **Create First Class** (0:55–1:35)
+   - Fields: Class Name, Grade & Section, Subject, School Year
+   - Tip: "You can add unlimited classes anytime"
+   
+5. **Weekly Planner** (1:35–2:20)
+   - Fields: Select Class, Unit & Title, Date Range, Objectives
+   
+6. **AI Lesson Generation** (2:20–2:40)
+   - Highlight "Generate with AI" feature
+   - Tip: "AI generates content based on your class and topic"
+   
+7. **Templates & Export** (2:40–3:00)
+   - Features: Ready-made Templates, Duplicate Plans, Export to PDF
+   
+8. **Closing** (3:00–3:10)
+   - "You're ready to start planning smarter!"
+   - Call-to-action: "Start Setup" button
+
+**Technical Implementation:**
+
+1. **Voice Generation:**
+   - Uses OpenAI TTS via `/api/tts/generate` endpoint
+   - Spanish voice: "nova"
+   - English voice: "alloy"
+   - Audio caching to prevent re-generation
+
+2. **Playback Controls:**
+   - Play/Pause button
+   - Mute/Unmute
+   - Skip to end
+   - Scene dots for manual navigation
+   - Auto-advance when audio finishes
+
+3. **Visual Design:**
+   - Each scene has unique gradient color
+   - Background images from Unsplash (education-themed)
+   - Dynamic content (fields, tips, features) per scene
+   - Progress bar showing position
+
+**Files Created:**
+- `/app/frontend/src/components/OnboardingVideo.js` - Full video tutorial component
+
+**Files Modified:**
+- `/app/frontend/src/components/OnboardingBanner.js` - Integrated OnboardingVideo
+
+**User Flow:**
+1. New user logs in → Video tutorial opens automatically
+2. User can Play to hear narration or navigate manually
+3. Each scene narrates specific setup instructions
+4. "Comenzar" (Start Setup) navigates to Settings
+5. "Ver tutorial con audio" link in banner reopens video anytime
+
+**Bilingual Support:**
+- All narrations in English and Spanish
+- Voice changes based on user's language preference
