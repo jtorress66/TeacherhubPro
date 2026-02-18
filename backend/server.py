@@ -695,7 +695,11 @@ async def process_google_session(request: Request, response: Response):
             "role": role,
             "school_id": school_id,
             "language": language,
-            "created_at": now
+            "created_at": now,
+            # Onboarding fields
+            "onboarding_status": "not_started",
+            "first_login_at": now,
+            "settings_completed_at": None
         })
     
     # Store session
