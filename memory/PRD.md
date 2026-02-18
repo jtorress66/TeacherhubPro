@@ -1676,3 +1676,54 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 - Verified endpoint correctly identifies users in reminder window
 - Email template generates correctly in both languages
 - Resend API integration working (limited to verified emails in test mode)
+
+---
+## Update 2026-02-18 - Generic Default School Template
+
+### Issue Fixed: School-Specific Information Visible to New Users
+
+**Problem:** New users were seeing "Colegio Inmaculada" information (name, address, phone, logo) which is private school data that should not be the default for all users.
+
+**Solution:** Created a generic default template for new users with no pre-filled private school information.
+
+**Changes Made:**
+
+1. **Database Update:**
+   - Updated `school_default` in MongoDB to have generic values:
+     - name: "My School"
+     - address: "" (empty)
+     - phone: "" (empty)
+     - email: "" (empty)
+     - logo_url: "" (empty)
+
+2. **Frontend - PlanPrintView.js:**
+   - Changed default school name from "Colegio De La Inmaculada Concepción" to "My School"
+   - Removed hardcoded address, phone, and email fallbacks
+   - Now only displays contact info if user has configured it
+
+3. **Frontend - Settings.js:**
+   - Updated all placeholders to generic bilingual text:
+     - School name: "Your school name" / "Nombre de tu escuela"
+     - Address: "School address" / "Dirección de la escuela"
+     - Phone: "Phone number" / "Número de teléfono"
+   - Removed all Puerto Rico-specific references
+
+4. **Frontend - AdminPanel.js:**
+   - Updated school name placeholder to generic "School name"
+
+5. **Frontend - Landing.js:**
+   - Changed demo school names to generic examples (Valley High School, Riverside Academy, etc.)
+   - Changed branding preview from "Colegio San José" to "Tu Escuela" / "Your School"
+
+**Files Modified:**
+- `/app/frontend/src/components/PlanPrintView.js`
+- `/app/frontend/src/pages/Settings.js`
+- `/app/frontend/src/pages/AdminPanel.js`
+- `/app/frontend/src/pages/Landing.js`
+- MongoDB `schools` collection (school_default document)
+
+**User Experience:**
+- New users see generic "My School" as their default
+- All placeholders are now generic and bilingual
+- Users customize their school info in Settings
+- No private school data is exposed to other users
