@@ -743,8 +743,103 @@ async def get_me(user: dict = Depends(get_current_user)):
         school_id=user.get("school_id"),
         picture=user.get("picture"),
         language=user.get("language", "es"),
-        created_at=user.get("created_at")
+        created_at=user.get("created_at"),
+        onboarding_status=user.get("onboarding_status", "not_started"),
+        first_login_at=user.get("first_login_at"),
+        settings_completed_at=user.get("settings_completed_at")
     )
+
+@api_router.get("/auth/onboarding-status")
+async def get_onboarding_status(user: dict = Depends(get_current_user)):
+    """Get user's onboarding status with setup completion check"""
+    user_id = user["user_id"]
+    school_id = user.get("school_id")
+    
+    # Check actual setup completion (Option C - detect "not configured yet")
+    school = await db.schools.find_one({"school_id": school_id}, {"_id": 0}) if school_id else None
+    classes = await db.classes.find({"teacher_id": user_id}, {"_id": 0}).to_list(10)
+    plans = await db.lesson_plans.find({"user_id": user_id}, {"_id": 0}).to_list(10)
+    
+    # Check what's configured
+    school_configured = bool(school and school.get("name") and school.get("name") != "My School")
+    classes_configured = len(classes) > 0
+    planners_configured = len(plans) > 0
+    
+    # Calculate overall completion
+    setup_items = {
+        "school_info": {
+            "completed": school_configured,
+            "label_en": "School Information",
+            "label_es": "Información de la Escuela",
+            "route": "/settings"
+        },
+        "first_class": {
+            "completed": classes_configured,
+            "label_en": "Create Your First Class",
+            "label_es": "Crear Tu Primera Clase",
+            "route": "/classes"
+        },
+        "first_planner": {
+            "completed": planners_configured,
+            "label_en": "Create Your First Planner",
+            "label_es": "Crear Tu Primer Plan",
+            "route": "/planner/new"
+        }
+    }
+    
+    completed_count = sum(1 for item in setup_items.values() if item["completed"])
+    total_count = len(setup_items)
+    all_completed = completed_count == total_count
+    
+    # Get stored onboarding status
+    stored_status = user.get("onboarding_status", "not_started")
+    
+    # If all items are completed but status isn't updated, mark as completed
+    if all_completed and stored_status not in ["completed", "dismissed"]:
+        await db.users.update_one(
+            {"user_id": user_id},
+            {"$set": {
+                "onboarding_status": "completed",
+                "settings_completed_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        stored_status = "completed"
+    
+    return {
+        "onboarding_status": stored_status,
+        "first_login_at": user.get("first_login_at"),
+        "settings_completed_at": user.get("settings_completed_at"),
+        "setup_items": setup_items,
+        "completed_count": completed_count,
+        "total_count": total_count,
+        "all_completed": all_completed,
+        "show_onboarding": stored_status in ["not_started", "in_progress"] and not all_completed
+    }
+
+@api_router.put("/auth/onboarding-status")
+async def update_onboarding_status(request: Request, user: dict = Depends(get_current_user)):
+    """Update user's onboarding status"""
+    body = await request.json()
+    update_fields = {}
+    
+    if "onboarding_status" in body:
+        status = body["onboarding_status"]
+        if status in ["not_started", "in_progress", "completed", "dismissed"]:
+            update_fields["onboarding_status"] = status
+            if status == "completed":
+                update_fields["settings_completed_at"] = datetime.now(timezone.utc).isoformat()
+    
+    if update_fields:
+        await db.users.update_one(
+            {"user_id": user["user_id"]},
+            {"$set": update_fields}
+        )
+    
+    updated_user = await db.users.find_one({"user_id": user["user_id"]}, {"_id": 0})
+    return {
+        "onboarding_status": updated_user.get("onboarding_status"),
+        "settings_completed_at": updated_user.get("settings_completed_at")
+    }
 
 @api_router.post("/auth/logout")
 async def logout(request: Request, response: Response):
