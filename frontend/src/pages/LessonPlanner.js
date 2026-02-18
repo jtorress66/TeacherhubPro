@@ -1155,21 +1155,22 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-heading font-bold text-slate-800">{t('weeklyPlan')}</h1>
+            <h1 className="text-2xl sm:text-3xl font-heading font-bold text-slate-800">{t('weeklyPlan')}</h1>
             {planId === 'new' && (
-              <p className="text-slate-500">{t('createPlan')}</p>
+              <p className="text-slate-500 text-sm">{t('createPlan')}</p>
             )}
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-1.5 sm:gap-2 flex-wrap">
             {/* Templates Button */}
             <Button 
               variant="outline" 
               onClick={openTemplatesModal}
-              className="border-amber-200 text-amber-700 hover:bg-amber-50"
+              className="border-amber-200 text-amber-700 hover:bg-amber-50 px-2 sm:px-4"
               data-testid="templates-btn"
+              title={language === 'es' ? 'Plantillas' : 'Templates'}
             >
-              <Layers className="h-4 w-4 mr-2" />
-              {language === 'es' ? 'Plantillas' : 'Templates'}
+              <Layers className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">{language === 'es' ? 'Plantillas' : 'Templates'}</span>
             </Button>
             
             {/* Save as Template Button (shown when there are AI suggestions) */}
@@ -1177,11 +1178,12 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
               <Button 
                 variant="outline" 
                 onClick={() => setShowSaveTemplateModal(true)}
-                className="border-green-200 text-green-700 hover:bg-green-50"
+                className="border-green-200 text-green-700 hover:bg-green-50 px-2 sm:px-4"
                 data-testid="save-template-btn"
+                title={language === 'es' ? 'Guardar plantilla' : 'Save Template'}
               >
-                <Star className="h-4 w-4 mr-2" />
-                {language === 'es' ? 'Guardar plantilla' : 'Save Template'}
+                <Star className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">{language === 'es' ? 'Guardar plantilla' : 'Save Template'}</span>
               </Button>
             )}
             
@@ -1189,41 +1191,44 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
             <Button 
               variant="outline" 
               onClick={() => setShowAIModal(true)}
-              className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 text-purple-700 hover:from-purple-100 hover:to-blue-100"
+              className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 text-purple-700 hover:from-purple-100 hover:to-blue-100 px-2 sm:px-4"
               data-testid="ai-generate-btn"
+              title={language === 'es' ? 'Generar con IA' : 'Generate with AI'}
             >
-              <Wand2 className="h-4 w-4 mr-2" />
-              {language === 'es' ? 'Generar con IA' : 'Generate with AI'}
+              <Wand2 className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">{language === 'es' ? 'Generar con IA' : 'Generate with AI'}</span>
             </Button>
             
             {planId !== 'new' && (
               <>
-                <Button variant="outline" onClick={() => setShowPrintView(true)} data-testid="print-plan-btn">
-                  <Printer className="h-4 w-4 mr-2" />
-                  {t('exportPdf')}
+                <Button variant="outline" onClick={() => setShowPrintView(true)} data-testid="print-plan-btn" className="px-2 sm:px-4" title={t('exportPdf')}>
+                  <Printer className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{t('exportPdf')}</span>
                 </Button>
                 <Button 
                   variant="outline" 
                   onClick={handleExportToCalendar}
-                  className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                  className="border-blue-200 text-blue-700 hover:bg-blue-50 px-2 sm:px-4"
                   data-testid="add-to-calendar-btn"
+                  title={language === 'es' ? 'Agregar al Calendario' : 'Add to Calendar'}
                 >
-                  <CalendarPlus className="h-4 w-4 mr-2" />
-                  {language === 'es' ? 'Agregar al Calendario' : 'Add to Calendar'}
+                  <CalendarPlus className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{language === 'es' ? 'Calendario' : 'Calendar'}</span>
                 </Button>
-                <Button variant="outline" onClick={handleDuplicate} data-testid="duplicate-plan-btn">
-                  <Copy className="h-4 w-4 mr-2" />
-                  {t('duplicateLastWeek')}
+                <Button variant="outline" onClick={handleDuplicate} data-testid="duplicate-plan-btn" className="px-2 sm:px-4" title={t('duplicateLastWeek')}>
+                  <Copy className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{t('duplicateLastWeek')}</span>
                 </Button>
-                <Button variant="outline" className="text-red-600" onClick={handleDelete} data-testid="delete-plan-btn">
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  {t('delete')}
+                <Button variant="outline" className="text-red-600 px-2 sm:px-4" onClick={handleDelete} data-testid="delete-plan-btn" title={t('delete')}>
+                  <Trash2 className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{t('delete')}</span>
                 </Button>
               </>
             )}
-            <Button onClick={handleSave} disabled={saving} data-testid="save-plan-btn">
-              <Save className="h-4 w-4 mr-2" />
-              {saving ? t('loading') : t('save')}
+            <Button onClick={handleSave} disabled={saving} data-testid="save-plan-btn" className="px-3 sm:px-4">
+              <Save className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">{saving ? t('loading') : t('save')}</span>
+              <span className="sm:hidden">{saving ? '...' : ''}</span>
             </Button>
           </div>
         </div>
