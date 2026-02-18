@@ -2395,6 +2395,253 @@ async def stripe_webhook(request: Request):
     
     return {"received": True}
 
+# ==================== TRIAL REMINDER EMAILS ====================
+
+def get_trial_reminder_email_html(user_name: str, days_left: int, language: str = "en") -> str:
+    """Generate HTML email for trial expiration reminder"""
+    
+    if language == "es":
+        subject_text = f"¡Tu prueba gratuita de TeacherHubPro termina en {days_left} días!"
+        greeting = f"Hola {user_name},"
+        message = f"""
+        <p>Tu período de prueba gratuita de <strong>TeacherHubPro</strong> terminará en <strong>{days_left} días</strong>.</p>
+        <p>No pierdas acceso a todas las herramientas que te ayudan a:</p>
+        <ul>
+            <li>📚 Planificar lecciones de manera eficiente</li>
+            <li>📊 Llevar control de asistencia y calificaciones</li>
+            <li>🎨 Crear presentaciones educativas con IA</li>
+            <li>📄 Generar paquetes para sustitutos</li>
+        </ul>
+        <p><strong>Suscríbete hoy</strong> y continúa disfrutando de todas las funcionalidades sin interrupción.</p>
+        """
+        cta_text = "Ver Planes de Suscripción"
+        footer = "Si tienes preguntas, no dudes en contactarnos."
+    else:
+        subject_text = f"Your TeacherHubPro free trial ends in {days_left} days!"
+        greeting = f"Hi {user_name},"
+        message = f"""
+        <p>Your free trial of <strong>TeacherHubPro</strong> will end in <strong>{days_left} days</strong>.</p>
+        <p>Don't lose access to all the tools that help you:</p>
+        <ul>
+            <li>📚 Plan lessons efficiently</li>
+            <li>📊 Track attendance and grades</li>
+            <li>🎨 Create AI-powered educational presentations</li>
+            <li>📄 Generate substitute packets</li>
+        </ul>
+        <p><strong>Subscribe today</strong> and continue enjoying all features without interruption.</p>
+        """
+        cta_text = "View Subscription Plans"
+        footer = "If you have any questions, don't hesitate to contact us."
+    
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f5;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f5; padding: 40px 20px;">
+            <tr>
+                <td align="center">
+                    <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                        <!-- Header -->
+                        <tr>
+                            <td style="background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+                                <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">TeacherHubPro</h1>
+                                <p style="color: #cffafe; margin: 10px 0 0 0; font-size: 14px;">Your Digital Teaching Assistant</p>
+                            </td>
+                        </tr>
+                        
+                        <!-- Alert Banner -->
+                        <tr>
+                            <td style="background-color: #fef3c7; padding: 15px 30px; border-left: 4px solid #f59e0b;">
+                                <p style="margin: 0; color: #92400e; font-weight: 600;">
+                                    ⏰ {days_left} {"días restantes" if language == "es" else "days remaining"} {"en tu prueba gratuita" if language == "es" else "in your free trial"}
+                                </p>
+                            </td>
+                        </tr>
+                        
+                        <!-- Content -->
+                        <tr>
+                            <td style="padding: 30px;">
+                                <h2 style="color: #1e293b; margin: 0 0 20px 0; font-size: 20px;">{greeting}</h2>
+                                <div style="color: #475569; font-size: 16px; line-height: 1.6;">
+                                    {message}
+                                </div>
+                                
+                                <!-- CTA Button -->
+                                <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
+                                    <tr>
+                                        <td align="center">
+                                            <a href="https://educationpro-1.preview.emergentagent.com/pricing" 
+                                               style="display: inline-block; background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                                                {cta_text}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                                <p style="color: #64748b; font-size: 14px; margin-top: 20px;">{footer}</p>
+                            </td>
+                        </tr>
+                        
+                        <!-- Footer -->
+                        <tr>
+                            <td style="background-color: #f8fafc; padding: 20px 30px; border-radius: 0 0 12px 12px; text-align: center;">
+                                <p style="color: #94a3b8; font-size: 12px; margin: 0;">
+                                    © 2026 TeacherHubPro. All rights reserved.
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
+    """
+    return html
+
+async def send_trial_reminder_email(user_email: str, user_name: str, days_left: int, language: str = "en"):
+    """Send trial expiration reminder email"""
+    if language == "es":
+        subject = f"⏰ Tu prueba gratuita termina en {days_left} días - TeacherHubPro"
+    else:
+        subject = f"⏰ Your free trial ends in {days_left} days - TeacherHubPro"
+    
+    html_content = get_trial_reminder_email_html(user_name, days_left, language)
+    
+    params = {
+        "from": SENDER_EMAIL,
+        "to": [user_email],
+        "subject": subject,
+        "html": html_content
+    }
+    
+    try:
+        email = await asyncio.to_thread(resend.Emails.send, params)
+        logger.info(f"Trial reminder email sent to {user_email}: {email.get('id')}")
+        return {"success": True, "email_id": email.get("id")}
+    except Exception as e:
+        logger.error(f"Failed to send trial reminder to {user_email}: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+@api_router.post("/subscription/send-trial-reminders")
+async def send_trial_reminders(request: Request):
+    """Send trial expiration reminder emails to users (admin/super_admin only or cron job)"""
+    # Check if this is an admin request or internal cron
+    api_key = request.headers.get("X-API-Key")
+    is_cron = api_key == os.environ.get("CRON_API_KEY", "internal-cron-key")
+    
+    if not is_cron:
+        user = await get_current_user(request)
+        if not user or user.get("role") not in ["admin", "super_admin"]:
+            raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Find users whose trial expires in 2-3 days
+    now = datetime.now(timezone.utc)
+    reminder_start = now + timedelta(days=2)  # 2 days from now
+    reminder_end = now + timedelta(days=4)    # Up to 3+ days from now
+    
+    # Get all teacher users
+    users = await db.users.find({"role": "teacher"}, {"_id": 0}).to_list(1000)
+    
+    emails_sent = []
+    emails_failed = []
+    already_reminded = []
+    
+    for user_data in users:
+        # Skip if user has active subscription
+        subscription = await db.subscriptions.find_one({
+            "user_id": user_data["user_id"],
+            "status": {"$in": ["active", "trialing"]}
+        })
+        if subscription:
+            continue
+        
+        # Calculate trial end date
+        created_at = datetime.fromisoformat(user_data["created_at"].replace('Z', '+00:00'))
+        trial_end = created_at + timedelta(days=FREE_TRIAL_DAYS)
+        
+        # Check if trial expires within reminder window (2-3 days)
+        if reminder_start <= trial_end <= reminder_end:
+            days_left = (trial_end - now).days
+            if days_left < 1:
+                days_left = 1
+            
+            # Check if we already sent a reminder recently (within 24 hours)
+            recent_reminder = await db.trial_reminders.find_one({
+                "user_id": user_data["user_id"],
+                "sent_at": {"$gte": (now - timedelta(hours=24)).isoformat()}
+            })
+            
+            if recent_reminder:
+                already_reminded.append(user_data["email"])
+                continue
+            
+            # Send reminder email
+            result = await send_trial_reminder_email(
+                user_data["email"],
+                user_data.get("name", "Teacher"),
+                days_left,
+                user_data.get("language", "en")
+            )
+            
+            if result["success"]:
+                # Record that we sent this reminder
+                await db.trial_reminders.insert_one({
+                    "user_id": user_data["user_id"],
+                    "email": user_data["email"],
+                    "days_left": days_left,
+                    "sent_at": now.isoformat(),
+                    "email_id": result.get("email_id")
+                })
+                emails_sent.append({"email": user_data["email"], "days_left": days_left})
+            else:
+                emails_failed.append({"email": user_data["email"], "error": result.get("error")})
+    
+    return {
+        "status": "completed",
+        "emails_sent": len(emails_sent),
+        "emails_failed": len(emails_failed),
+        "already_reminded": len(already_reminded),
+        "details": {
+            "sent": emails_sent,
+            "failed": emails_failed,
+            "skipped": already_reminded
+        }
+    }
+
+@api_router.post("/subscription/test-reminder-email")
+async def test_reminder_email(request: Request):
+    """Send a test trial reminder email to the current user (for testing)"""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    # Get user details
+    user_data = await db.users.find_one({"user_id": user["user_id"]}, {"_id": 0})
+    if not user_data:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Send test email with 3 days left
+    result = await send_trial_reminder_email(
+        user_data["email"],
+        user_data.get("name", "Teacher"),
+        3,  # Test with 3 days
+        user_data.get("language", "en")
+    )
+    
+    if result["success"]:
+        return {
+            "status": "success",
+            "message": f"Test reminder email sent to {user_data['email']}",
+            "email_id": result.get("email_id")
+        }
+    else:
+        raise HTTPException(status_code=500, detail=f"Failed to send email: {result.get('error')}")
+
 # ==================== ADMIN MANAGEMENT ENDPOINTS ====================
 
 class UpdateUserRoleRequest(BaseModel):
