@@ -1195,7 +1195,7 @@ const PresentationCreator = () => {
               
               <p className="text-xs text-slate-500 flex items-center gap-1">
                 <Globe className="h-3 w-3" />
-                {language === 'es' ? 'Imágenes de Unsplash - Gratis para uso educativo' : 'Images from Unsplash - Free for educational use'}
+                {language === 'es' ? 'Imágenes de Pexels - Gratis para uso educativo' : 'Images from Pexels - Free for educational use'}
               </p>
             </div>
           )}
