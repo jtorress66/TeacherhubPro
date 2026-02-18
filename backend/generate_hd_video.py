@@ -1,7 +1,5 @@
 """
-Generate Higher Resolution TeacherHubPro Tutorial Video using Sora 2
-Resolution: 1792x1024 (widescreen, higher than 1080p)
-Duration: 12 seconds (maximum)
+Generate Higher Quality TeacherHubPro Tutorial Video using Sora 2 Pro
 """
 import os
 from dotenv import load_dotenv
@@ -24,29 +22,29 @@ The video shows:
 - Clean, modern UI elements floating in the scene showing grades, attendance, and lesson plans
 - End with teacher smiling, satisfied with organized lesson planning
 
-Style: Modern, professional, warm educational atmosphere, cinematic quality, smooth transitions, high detail, sharp focus
+Style: Modern, professional, warm educational atmosphere, cinematic quality, smooth transitions, high detail, sharp focus, 4K quality rendering
 Mood: Inspiring, efficient, organized, empowering for teachers
 """
 
-print('🎬 Generating higher resolution video (1792x1024)...')
+print('🎬 Generating video with Sora 2 Pro (higher quality)...')
 print('⏳ This may take 5-10 minutes...')
 
 video_gen = OpenAIVideoGeneration(api_key=os.environ['EMERGENT_LLM_KEY'])
 
+# Try sora-2-pro for potentially better quality
 video_bytes = video_gen.text_to_video(
     prompt=prompt,
-    model='sora-2',
-    size='1792x1024',  # Higher resolution widescreen
+    model='sora-2-pro',
+    size='1280x720',
     duration=12,
     max_wait_time=900
 )
 
 if video_bytes:
-    output_path = '/app/TeacherHubPro_Tutorial_HD.mp4'
+    output_path = '/app/TeacherHubPro_Tutorial_Pro.mp4'
     video_gen.save_video(video_bytes, output_path)
-    # Also copy to public folder
     import shutil
-    shutil.copy(output_path, '/app/frontend/public/TeacherHubPro_Tutorial_HD.mp4')
+    shutil.copy(output_path, '/app/frontend/public/TeacherHubPro_Tutorial_Pro.mp4')
     print(f'✅ Video saved to: {output_path}')
     print(f'📊 File size: {os.path.getsize(output_path) / (1024*1024):.2f} MB')
     print('GENERATION_COMPLETE')
