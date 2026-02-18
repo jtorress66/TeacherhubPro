@@ -1358,21 +1358,136 @@ async def delete_presentation(presentation_id: str, current_user: dict = Depends
 
 # ==================== IMAGE SEARCH & UPLOAD ====================
 
+# Curated educational images from Unsplash (direct URLs that work reliably)
+CURATED_IMAGES = {
+    "planet": [
+        {"id": "planet_1", "url": "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=400&h=300&fit=crop", "alt": "Planet Earth from space"},
+        {"id": "planet_2", "url": "https://images.unsplash.com/photo-1630839437035-dac17da580d0?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1630839437035-dac17da580d0?w=400&h=300&fit=crop", "alt": "Saturn with rings"},
+        {"id": "planet_3", "url": "https://images.unsplash.com/photo-1545156521-77bd85671d30?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1545156521-77bd85671d30?w=400&h=300&fit=crop", "alt": "Mars surface"},
+        {"id": "planet_4", "url": "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=400&h=300&fit=crop", "alt": "Earth from ISS"},
+        {"id": "planet_5", "url": "https://images.unsplash.com/photo-1657063756791-4376708a4554?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1657063756791-4376708a4554?w=400&h=300&fit=crop", "alt": "Saturn crescent"},
+        {"id": "planet_6", "url": "https://images.unsplash.com/photo-1639921884918-8d28ab2e39a4?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1639921884918-8d28ab2e39a4?w=400&h=300&fit=crop", "alt": "Jupiter closeup"},
+        {"id": "planet_7", "url": "https://images.unsplash.com/photo-1630358276435-1a11cae9c5d1?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1630358276435-1a11cae9c5d1?w=400&h=300&fit=crop", "alt": "Jupiter and Saturn conjunction"},
+        {"id": "planet_8", "url": "https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=400&h=300&fit=crop", "alt": "Solar system illustration"},
+    ],
+    "dinosaur": [
+        {"id": "dino_1", "url": "https://images.unsplash.com/photo-1525877442103-5ddb2089b2bb?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1525877442103-5ddb2089b2bb?w=400&h=300&fit=crop", "alt": "T-Rex skeleton"},
+        {"id": "dino_2", "url": "https://images.unsplash.com/photo-1519575706483-221027bfbb31?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1519575706483-221027bfbb31?w=400&h=300&fit=crop", "alt": "Dinosaur fossil"},
+        {"id": "dino_3", "url": "https://images.unsplash.com/photo-1606567595334-d39972c85dfd?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1606567595334-d39972c85dfd?w=400&h=300&fit=crop", "alt": "Dinosaur museum"},
+        {"id": "dino_4", "url": "https://images.unsplash.com/photo-1615243029542-4fcced64c70e?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1615243029542-4fcced64c70e?w=400&h=300&fit=crop", "alt": "Dinosaur figure"},
+        {"id": "dino_5", "url": "https://images.unsplash.com/photo-1569180880150-df4eed93c90b?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1569180880150-df4eed93c90b?w=400&h=300&fit=crop", "alt": "Dinosaur bones"},
+        {"id": "dino_6", "url": "https://images.unsplash.com/photo-1601459427108-47e20d579a35?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1601459427108-47e20d579a35?w=400&h=300&fit=crop", "alt": "Raptor model"},
+    ],
+    "ocean": [
+        {"id": "ocean_1", "url": "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=300&fit=crop", "alt": "Ocean waves"},
+        {"id": "ocean_2", "url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=300&fit=crop", "alt": "Tropical beach"},
+        {"id": "ocean_3", "url": "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=400&h=300&fit=crop", "alt": "Underwater coral"},
+        {"id": "ocean_4", "url": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300&fit=crop", "alt": "Sea turtle"},
+        {"id": "ocean_5", "url": "https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=400&h=300&fit=crop", "alt": "Jellyfish"},
+        {"id": "ocean_6", "url": "https://images.unsplash.com/photo-1559825481-12a05cc00344?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1559825481-12a05cc00344?w=400&h=300&fit=crop", "alt": "Clownfish"},
+    ],
+    "animal": [
+        {"id": "animal_1", "url": "https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=400&h=300&fit=crop", "alt": "Lion"},
+        {"id": "animal_2", "url": "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=400&h=300&fit=crop", "alt": "Giraffe"},
+        {"id": "animal_3", "url": "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=400&h=300&fit=crop", "alt": "Elephant"},
+        {"id": "animal_4", "url": "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=400&h=300&fit=crop", "alt": "Hamster"},
+        {"id": "animal_5", "url": "https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=400&h=300&fit=crop", "alt": "Sea turtle"},
+        {"id": "animal_6", "url": "https://images.unsplash.com/photo-1484406566174-9da000fda645?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1484406566174-9da000fda645?w=400&h=300&fit=crop", "alt": "Panda"},
+    ],
+    "science": [
+        {"id": "sci_1", "url": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=300&fit=crop", "alt": "Lab equipment"},
+        {"id": "sci_2", "url": "https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=400&h=300&fit=crop", "alt": "DNA model"},
+        {"id": "sci_3", "url": "https://images.unsplash.com/photo-1576086213369-97a306d36557?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1576086213369-97a306d36557?w=400&h=300&fit=crop", "alt": "Microscope"},
+        {"id": "sci_4", "url": "https://images.unsplash.com/photo-1628595351029-c2bf17511435?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1628595351029-c2bf17511435?w=400&h=300&fit=crop", "alt": "Chemistry flasks"},
+        {"id": "sci_5", "url": "https://images.unsplash.com/photo-1614935151651-0bea6508db6b?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1614935151651-0bea6508db6b?w=400&h=300&fit=crop", "alt": "Atom model"},
+        {"id": "sci_6", "url": "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=400&h=300&fit=crop", "alt": "Laboratory"},
+    ],
+    "math": [
+        {"id": "math_1", "url": "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=300&fit=crop", "alt": "Math equations"},
+        {"id": "math_2", "url": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=300&fit=crop", "alt": "Geometry shapes"},
+        {"id": "math_3", "url": "https://images.unsplash.com/photo-1596495577886-d920f1fb7238?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1596495577886-d920f1fb7238?w=400&h=300&fit=crop", "alt": "Calculator"},
+        {"id": "math_4", "url": "https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?w=400&h=300&fit=crop", "alt": "Pi symbol"},
+        {"id": "math_5", "url": "https://images.unsplash.com/photo-1453733190371-0a9bedd82893?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1453733190371-0a9bedd82893?w=400&h=300&fit=crop", "alt": "Numbers"},
+        {"id": "math_6", "url": "https://images.unsplash.com/photo-1580894894513-541e068a3e2b?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1580894894513-541e068a3e2b?w=400&h=300&fit=crop", "alt": "Chalkboard math"},
+    ],
+    "nature": [
+        {"id": "nat_1", "url": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop", "alt": "Forest sunlight"},
+        {"id": "nat_2", "url": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=300&fit=crop", "alt": "Mountain valley"},
+        {"id": "nat_3", "url": "https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=400&h=300&fit=crop", "alt": "Waterfall"},
+        {"id": "nat_4", "url": "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=400&h=300&fit=crop", "alt": "Green hills"},
+        {"id": "nat_5", "url": "https://images.unsplash.com/photo-1518173946687-a4c036bc0f83?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1518173946687-a4c036bc0f83?w=400&h=300&fit=crop", "alt": "Autumn forest"},
+        {"id": "nat_6", "url": "https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?w=400&h=300&fit=crop", "alt": "Lake reflection"},
+    ],
+    "volcano": [
+        {"id": "vol_1", "url": "https://images.unsplash.com/photo-1462332420958-a05d1e002413?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1462332420958-a05d1e002413?w=400&h=300&fit=crop", "alt": "Volcano eruption"},
+        {"id": "vol_2", "url": "https://images.unsplash.com/photo-1584553421349-3557471bed79?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1584553421349-3557471bed79?w=400&h=300&fit=crop", "alt": "Lava flow"},
+        {"id": "vol_3", "url": "https://images.unsplash.com/photo-1576842546480-91a825555dea?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1576842546480-91a825555dea?w=400&h=300&fit=crop", "alt": "Volcanic landscape"},
+        {"id": "vol_4", "url": "https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1551632811-561732d1e306?w=400&h=300&fit=crop", "alt": "Mountain volcano"},
+        {"id": "vol_5", "url": "https://images.unsplash.com/photo-1475113548554-5a36f1f523d6?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1475113548554-5a36f1f523d6?w=400&h=300&fit=crop", "alt": "Volcanic crater"},
+    ],
+    "space": [
+        {"id": "space_1", "url": "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=400&h=300&fit=crop", "alt": "Earth from space"},
+        {"id": "space_2", "url": "https://images.unsplash.com/photo-1454789548928-9efd52dc4031?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1454789548928-9efd52dc4031?w=400&h=300&fit=crop", "alt": "Astronaut"},
+        {"id": "space_3", "url": "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=400&h=300&fit=crop", "alt": "Nebula"},
+        {"id": "space_4", "url": "https://images.unsplash.com/photo-1520034475321-cbe63696469a?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1520034475321-cbe63696469a?w=400&h=300&fit=crop", "alt": "Galaxy"},
+        {"id": "space_5", "url": "https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?w=400&h=300&fit=crop", "alt": "Stars"},
+        {"id": "space_6", "url": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=300&fit=crop", "alt": "Earth night lights"},
+    ],
+    "book": [
+        {"id": "book_1", "url": "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=400&h=300&fit=crop", "alt": "Open books"},
+        {"id": "book_2", "url": "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400&h=300&fit=crop", "alt": "Library shelves"},
+        {"id": "book_3", "url": "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=300&fit=crop", "alt": "Stacked books"},
+        {"id": "book_4", "url": "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=400&h=300&fit=crop", "alt": "Old books"},
+        {"id": "book_5", "url": "https://images.unsplash.com/photo-1550399105-c4db5fb85c18?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1550399105-c4db5fb85c18?w=400&h=300&fit=crop", "alt": "Reading book"},
+    ],
+    "music": [
+        {"id": "music_1", "url": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=300&fit=crop", "alt": "Piano keys"},
+        {"id": "music_2", "url": "https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=400&h=300&fit=crop", "alt": "Musical notes"},
+        {"id": "music_3", "url": "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400&h=300&fit=crop", "alt": "Guitar"},
+        {"id": "music_4", "url": "https://images.unsplash.com/photo-1458560871784-56d23406c091?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1458560871784-56d23406c091?w=400&h=300&fit=crop", "alt": "Headphones"},
+        {"id": "music_5", "url": "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=400&h=300&fit=crop", "alt": "Concert"},
+    ],
+    "sport": [
+        {"id": "sport_1", "url": "https://images.unsplash.com/photo-1461896836934- voices-of-strength?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1461896836934-eff56896c-01?w=400&h=300&fit=crop", "alt": "Basketball"},
+        {"id": "sport_2", "url": "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&h=300&fit=crop", "alt": "Soccer ball"},
+        {"id": "sport_3", "url": "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop", "alt": "Swimming"},
+        {"id": "sport_4", "url": "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400&h=300&fit=crop", "alt": "Gym workout"},
+        {"id": "sport_5", "url": "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=400&h=300&fit=crop", "alt": "Running"},
+    ],
+    "art": [
+        {"id": "art_1", "url": "https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=400&h=300&fit=crop", "alt": "Paint palette"},
+        {"id": "art_2", "url": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=300&fit=crop", "alt": "Colorful paint"},
+        {"id": "art_3", "url": "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&h=300&fit=crop", "alt": "Art supplies"},
+        {"id": "art_4", "url": "https://images.unsplash.com/photo-1579762715118-a6f1d4b934f1?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1579762715118-a6f1d4b934f1?w=400&h=300&fit=crop", "alt": "Museum gallery"},
+        {"id": "art_5", "url": "https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=400&h=300&fit=crop", "alt": "Abstract art"},
+    ],
+    "technology": [
+        {"id": "tech_1", "url": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop", "alt": "Circuit board"},
+        {"id": "tech_2", "url": "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=300&fit=crop", "alt": "Laptop"},
+        {"id": "tech_3", "url": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=300&fit=crop", "alt": "Cybersecurity"},
+        {"id": "tech_4", "url": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=300&fit=crop", "alt": "Robot"},
+        {"id": "tech_5", "url": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&h=300&fit=crop", "alt": "Code"},
+    ],
+    "classroom": [
+        {"id": "class_1", "url": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400&h=300&fit=crop", "alt": "Classroom desks"},
+        {"id": "class_2", "url": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=300&fit=crop", "alt": "Students studying"},
+        {"id": "class_3", "url": "https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1577896851231-70ef18881754?w=400&h=300&fit=crop", "alt": "Chalkboard"},
+        {"id": "class_4", "url": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&h=300&fit=crop", "alt": "School supplies"},
+        {"id": "class_5", "url": "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop", "thumb": "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=400&h=300&fit=crop", "alt": "Teacher helping"},
+    ],
+}
+
 @router.get("/images/search")
 async def search_images(query: str, count: int = 12, current_user: dict = Depends(get_current_user)):
-    """Search for stock images using Pexels API for relevant results"""
+    """Search for stock images using curated Unsplash images or Pexels API"""
     import httpx
     import os
     
-    # Clean the query
-    clean_query = query.strip()
-    
-    # Pexels API key (free tier - 200 requests/hour)
-    PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "")
-    
+    clean_query = query.strip().lower()
     images = []
     
-    # Try Pexels API first (most reliable for keyword search)
+    # First try Pexels API if key is available
+    PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "")
     if PEXELS_API_KEY:
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
@@ -1391,30 +1506,39 @@ async def search_images(query: str, count: int = 12, current_user: dict = Depend
                             "alt": photo.get("alt", clean_query)
                         })
                     if images:
-                        return {"images": images, "query": clean_query, "source": "pexels"}
+                        return {"images": images[:count], "query": clean_query, "source": "pexels"}
         except Exception as e:
             logger.warning(f"Pexels API error: {e}")
     
-    # Fallback: Use Unsplash Source URLs (simpler, no API key needed)
-    # These URLs redirect to actual images matching the query
-    import time
-    timestamp = int(time.time())
+    # Use curated images based on keyword matching
+    matched_images = []
+    for keyword, keyword_images in CURATED_IMAGES.items():
+        if keyword in clean_query or clean_query in keyword:
+            matched_images.extend(keyword_images)
     
-    for i in range(count):
-        # Unsplash source URLs that return real images based on keywords
-        img_id = f"unsplash_{timestamp}_{i}"
-        # Use featured endpoint for better quality images
-        url = f"https://source.unsplash.com/featured/800x600/?{clean_query.replace(' ', ',')}&sig={timestamp}_{i}"
-        thumb = f"https://source.unsplash.com/featured/400x300/?{clean_query.replace(' ', ',')}&sig={timestamp}_{i}"
-        
-        images.append({
-            "id": img_id,
-            "url": url,
-            "thumb": thumb,
-            "alt": clean_query
-        })
+    # If no exact match, try partial matching
+    if not matched_images:
+        query_words = clean_query.split()
+        for keyword, keyword_images in CURATED_IMAGES.items():
+            for word in query_words:
+                if word in keyword or keyword in word:
+                    matched_images.extend(keyword_images)
+                    break
     
-    return {"images": images, "query": clean_query, "source": "unsplash"}
+    # If still no matches, return a mix of general educational images
+    if not matched_images:
+        for category in ["nature", "science", "classroom", "book"]:
+            matched_images.extend(CURATED_IMAGES.get(category, [])[:3])
+    
+    # Remove duplicates while preserving order
+    seen_ids = set()
+    unique_images = []
+    for img in matched_images:
+        if img["id"] not in seen_ids:
+            seen_ids.add(img["id"])
+            unique_images.append(img)
+    
+    return {"images": unique_images[:count], "query": clean_query, "source": "curated"}
 
 
 @router.post("/images/upload")
