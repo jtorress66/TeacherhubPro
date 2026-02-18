@@ -85,6 +85,9 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="space-y-8 animate-fade-in">
+        {/* Onboarding Banner for New Users */}
+        <OnboardingBanner />
+        
         {/* Welcome Header with School Info */}
         <div 
           className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 p-6 rounded-2xl border shadow-sm"
