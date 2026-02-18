@@ -636,23 +636,44 @@ async def process_google_session(request: Request, response: Response):
             {"user_id": user_id},
             {"$set": {"name": name, "picture": picture}}
         )
-        school_id = existing_user.get("school_id", "school_default")
+        school_id = existing_user.get("school_id")
+        # If user has no school, create one for them
+        if not school_id:
+            school_id = f"school_{user_id.replace('user_', '')}"
+            await db.schools.insert_one({
+                "school_id": school_id,
+                "name": "My School",
+                "address": "",
+                "phone": "",
+                "email": "",
+                "logo_url": "",
+                "created_at": now,
+                "owner_user_id": user_id
+            })
+            await db.users.update_one(
+                {"user_id": user_id},
+                {"$set": {"school_id": school_id}}
+            )
         role = existing_user.get("role", "teacher")
         language = existing_user.get("language", "es")
     else:
         user_id = generate_user_id()
-        school_id = "school_default"
+        # Create a UNIQUE school for this new user
+        school_id = f"school_{user_id.replace('user_', '')}"
         role = "teacher"
         language = "es"
         
-        # Create default school if needed
-        existing_school = await db.schools.find_one({"school_id": school_id}, {"_id": 0})
-        if not existing_school:
-            await db.schools.insert_one({
-                "school_id": school_id,
-                "name": "Default School",
-                "created_at": now
-            })
+        # Create unique school for this user
+        await db.schools.insert_one({
+            "school_id": school_id,
+            "name": "My School",
+            "address": "",
+            "phone": "",
+            "email": "",
+            "logo_url": "",
+            "created_at": now,
+            "owner_user_id": user_id
+        })
         
         await db.users.insert_one({
             "user_id": user_id,
