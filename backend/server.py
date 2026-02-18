@@ -1538,86 +1538,87 @@ async def export_plan_to_calendar(plan_id: str, user: dict = Depends(get_current
                 ])
     else:
         # Process actual days array
+        day_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         for i, day in enumerate(days):
-        day_date = day.get("date")
-        if not day_date:
-            continue
-        
-        ics_date = format_ics_date(day_date)
-        if not ics_date:
-            continue
-        
-        # Determine week number for title
-        week_num = day.get("week_index", 1)
-        day_name = day.get("day_name", day_names[i % 5] if i < 10 else "Day").capitalize()
-        
-        # Build event title
-        unit_title = plan.get("unit") or plan.get("story") or "Lesson"
-        event_title = f"{class_name}: {unit_title}"
-        if subject:
-            event_title = f"[{subject}] {event_title}"
-        
-        # Build event description with full lesson details
-        description_parts = []
-        
-        # Add objective
-        objective = plan.get("objective") if week_num == 1 else plan.get("objective_week2")
-        if objective:
-            description_parts.append(f"📎 OBJECTIVE: {objective}")
-        
-        # Add theme for the day
-        if day.get("theme"):
-            description_parts.append(f"📌 THEME: {day.get('theme')}")
-        
-        # Add activities
-        activities = day.get("activities", [])
-        checked_activities = [a for a in activities if a.get("checked")]
-        if checked_activities:
+            day_date = day.get("date")
+            if not day_date:
+                continue
+            
+            ics_date = format_ics_date(day_date)
+            if not ics_date:
+                continue
+            
+            # Determine week number for title
+            week_num = day.get("week_index", 1)
+            day_name = day.get("day_name", day_names[i % 5] if i < 10 else "Day").capitalize()
+            
+            # Build event title
+            unit_title = plan.get("unit") or plan.get("story") or "Lesson"
+            event_title = f"{class_name}: {unit_title}"
+            if subject:
+                event_title = f"[{subject}] {event_title}"
+            
+            # Build event description with full lesson details
+            description_parts = []
+            
+            # Add objective
+            objective = plan.get("objective") if week_num == 1 else plan.get("objective_week2")
+            if objective:
+                description_parts.append(f"📎 OBJECTIVE: {objective}")
+            
+            # Add theme for the day
+            if day.get("theme"):
+                description_parts.append(f"📌 THEME: {day.get('theme')}")
+            
+            # Add activities
+            activities = day.get("activities", [])
+            checked_activities = [a for a in activities if a.get("checked")]
+            if checked_activities:
+                description_parts.append("")
+                description_parts.append("📋 ACTIVITIES:")
+                for act in checked_activities:
+                    act_type = act.get("activity_type", "").replace("_", " ").title()
+                    notes = f" - {act.get('notes')}" if act.get("notes") else ""
+                    description_parts.append(f"  • {act_type}{notes}")
+            
+            # Add materials
+            materials = day.get("materials", [])
+            checked_materials = [m for m in materials if m.get("checked")]
+            if checked_materials:
+                description_parts.append("")
+                description_parts.append("📚 MATERIALS:")
+                for mat in checked_materials:
+                    mat_type = mat.get("material_type", "").replace("_", " ").title()
+                    description_parts.append(f"  • {mat_type}")
+            
+            # Add DOK levels
+            dok_levels = day.get("dok_levels", [])
+            if dok_levels:
+                dok_labels = {1: "Recall", 2: "Skill/Concept", 3: "Strategic Thinking", 4: "Extended Thinking"}
+                dok_str = ", ".join([f"DOK {d}: {dok_labels.get(d, '')}" for d in dok_levels])
+                description_parts.append(f"🎯 DOK LEVELS: {dok_str}")
+            
+            # Add notes
+            if day.get("notes"):
+                description_parts.append("")
+                description_parts.append(f"📝 NOTES: {day.get('notes')[:500]}")
+            
+            # Add skills for the week
+            skills = plan.get("skills") if week_num == 1 else plan.get("skills_week2")
+            if skills and any(s.strip() for s in skills if s):
+                description_parts.append("")
+                description_parts.append("🎓 SKILLS:")
+                for skill in skills:
+                    if skill and skill.strip():
+                        description_parts.append(f"  • {skill}")
+            
             description_parts.append("")
-            description_parts.append("📋 ACTIVITIES:")
-            for act in checked_activities:
-                act_type = act.get("activity_type", "").replace("_", " ").title()
-                notes = f" - {act.get('notes')}" if act.get("notes") else ""
-                description_parts.append(f"  • {act_type}{notes}")
-        
-        # Add materials
-        materials = day.get("materials", [])
-        checked_materials = [m for m in materials if m.get("checked")]
-        if checked_materials:
-            description_parts.append("")
-            description_parts.append("📚 MATERIALS:")
-            for mat in checked_materials:
-                mat_type = mat.get("material_type", "").replace("_", " ").title()
-                description_parts.append(f"  • {mat_type}")
-        
-        # Add DOK levels
-        dok_levels = day.get("dok_levels", [])
-        if dok_levels:
-            dok_labels = {1: "Recall", 2: "Skill/Concept", 3: "Strategic Thinking", 4: "Extended Thinking"}
-            dok_str = ", ".join([f"DOK {d}: {dok_labels.get(d, '')}" for d in dok_levels])
-            description_parts.append(f"🎯 DOK LEVELS: {dok_str}")
-        
-        # Add notes
-        if day.get("notes"):
-            description_parts.append("")
-            description_parts.append(f"📝 NOTES: {day.get('notes')[:500]}")
-        
-        # Add skills for the week
-        skills = plan.get("skills") if week_num == 1 else plan.get("skills_week2")
-        if skills and any(s.strip() for s in skills):
-            description_parts.append("")
-            description_parts.append("🎓 SKILLS:")
-            for skill in skills:
-                if skill.strip():
-                    description_parts.append(f"  • {skill}")
-        
-        description_parts.append("")
-        description_parts.append(f"📍 {school_name}")
-        description_parts.append(f"Week {week_num} - {day_name}")
-        description_parts.append("---")
-        description_parts.append("Generated by TeacherHubPro")
-        
-        full_description = "\\n".join(description_parts)
+            description_parts.append(f"📍 {school_name}")
+            description_parts.append(f"Week {week_num} - {day_name}")
+            description_parts.append("---")
+            description_parts.append("Generated by TeacherHubPro")
+            
+            full_description = "\\n".join(description_parts)
         
         # Create the event
         now_stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
