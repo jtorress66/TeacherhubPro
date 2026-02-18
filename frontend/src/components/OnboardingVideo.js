@@ -257,6 +257,9 @@ const OnboardingVideo = ({ language = 'en', onClose, onStartSetup }) => {
     currentStepRef.current = currentStep;
   }, [currentStep]);
 
+  // Track if we're in the middle of a play action to prevent double-trigger
+  const isPlayingActionRef = useRef(false);
+
   // Handle audio playback
   const playNarration = async (stepIndex) => {
     if (isMuted) return;
@@ -265,11 +268,15 @@ const OnboardingVideo = ({ language = 'en', onClose, onStartSetup }) => {
     const text = scene.narration[language];
     const cacheKey = `${stepIndex}-${language}`;
 
+    // Stop any current audio first
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+
     // Check cache first
     if (audioCacheRef.current[cacheKey]) {
       if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
         audioRef.current.src = audioCacheRef.current[cacheKey];
         try {
           await audioRef.current.play();
@@ -294,8 +301,6 @@ const OnboardingVideo = ({ language = 'en', onClose, onStartSetup }) => {
         
         // Only play if we're still on the same step and playing
         if (currentStepRef.current === stepIndex && audioRef.current && !isPaused) {
-          audioRef.current.pause();
-          audioRef.current.currentTime = 0;
           audioRef.current.src = response.data.audio_url;
           try {
             await audioRef.current.play();
@@ -319,6 +324,8 @@ const OnboardingVideo = ({ language = 'en', onClose, onStartSetup }) => {
         if (isPlayingRef.current && !isPaused) {
           const nextStep = currentStepRef.current + 1;
           setCurrentStep(nextStep);
+          // Play narration for next step
+          playNarration(nextStep);
         }
       }, 1000);
     } else if (currentStepRef.current >= scenes.length - 1) {
@@ -326,14 +333,19 @@ const OnboardingVideo = ({ language = 'en', onClose, onStartSetup }) => {
     }
   };
 
-  // Play narration when step changes during playback
+  // Only play narration when step changes AND we're already playing (not on initial play)
   useEffect(() => {
-    if (isPlaying && !isPaused) {
-      playNarration(currentStep);
+    // Skip if this is triggered by the initial play action
+    if (isPlayingActionRef.current) {
+      isPlayingActionRef.current = false;
+      return;
     }
-  }, [currentStep, isPlaying, isPaused]);
+    // This handles manual step navigation while playing
+    // (Note: audio ended auto-advance now handles its own playback)
+  }, [currentStep]);
 
   const handlePlay = () => {
+    isPlayingActionRef.current = true;
     setIsPlaying(true);
     setIsPaused(false);
     playNarration(currentStep);
