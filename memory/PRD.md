@@ -1626,3 +1626,53 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 
 **Test Credentials:**
 - Expired user: `expired@test.com` / `expired123`
+
+---
+## Update 2026-02-18 - Trial Expiration Email Reminders
+
+### Feature: Automated Trial Reminder Emails (Complete)
+
+**Description:** Sends email reminders to users 2-3 days before their free trial expires to encourage subscription conversions.
+
+**Implementation:**
+
+1. **Email Template** (`get_trial_reminder_email_html`):
+   - Professional HTML email with TeacherHubPro branding
+   - Bilingual support (English/Spanish) based on user language preference
+   - Yellow alert banner showing days remaining
+   - Feature highlights (lesson planning, attendance, presentations, etc.)
+   - Call-to-action button linking to /pricing page
+
+2. **API Endpoints:**
+   - `POST /api/subscription/send-trial-reminders` - Batch send reminders (admin only)
+   - `POST /api/subscription/test-reminder-email` - Send test email to current user
+   
+3. **Reminder Logic:**
+   - Checks all teacher accounts
+   - Finds users whose trial expires in 2-3 days
+   - Skips users with active subscriptions
+   - Prevents duplicate emails (24-hour cooldown via `trial_reminders` collection)
+   - Records sent reminders for tracking
+
+**Database Collections:**
+- `trial_reminders`: Tracks sent reminder emails
+  - `user_id`, `email`, `days_left`, `sent_at`, `email_id`
+
+**Email Service:**
+- Uses Resend API for transactional emails
+- SENDER_EMAIL: onboarding@resend.dev (test mode)
+- Note: To send to any address, verify a domain at resend.com/domains
+
+**Scheduling:**
+- Endpoint can be called by external cron job daily
+- Supports `X-API-Key` header for automated invocation
+
+**Files Modified:**
+- `/app/backend/server.py` - Added trial reminder functions and endpoints (~200 lines)
+- `/app/backend/.env` - Added RESEND_API_KEY and SENDER_EMAIL
+
+**Testing:**
+- Created test user `reminder_test@test.com` with 2 days trial left
+- Verified endpoint correctly identifies users in reminder window
+- Email template generates correctly in both languages
+- Resend API integration working (limited to verified emails in test mode)
