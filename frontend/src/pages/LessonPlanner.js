@@ -388,6 +388,38 @@ const LessonPlanner = () => {
     }
   };
 
+  // Export plan to calendar (.ics file download)
+  const handleExportToCalendar = async () => {
+    if (!planId || planId === 'new') return;
+    
+    try {
+      const response = await axios.get(`${API}/plans/${planId}/calendar`, {
+        withCredentials: true,
+        responseType: 'blob'
+      });
+      
+      // Create download link
+      const blob = new Blob([response.data], { type: 'text/calendar' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `lesson_plan_${planId}.ics`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success(
+        language === 'es' 
+          ? '📅 Archivo de calendario descargado. Ábrelo para agregar a Google Calendar, Outlook o Apple Calendar.'
+          : '📅 Calendar file downloaded. Open it to add to Google Calendar, Outlook, or Apple Calendar.'
+      );
+    } catch (error) {
+      console.error('Calendar export error:', error);
+      toast.error(language === 'es' ? 'Error al exportar calendario' : 'Error exporting calendar');
+    }
+  };
+
   const updateSkill = (index, value, week = 1) => {
     if (week === 1) {
       setFormData(prev => ({
