@@ -1408,6 +1408,175 @@ async def duplicate_plan(plan_id: str, request: Request, user: dict = Depends(ge
     await db.lesson_plans.insert_one(new_plan)
     return LessonPlanResponse(**new_plan)
 
+@api_router.get("/plans/{plan_id}/calendar")
+async def export_plan_to_calendar(plan_id: str, user: dict = Depends(get_current_user)):
+    """Export a lesson plan to .ics calendar format (compatible with Google, Microsoft, Apple)"""
+    plan = await db.lesson_plans.find_one({"plan_id": plan_id}, {"_id": 0})
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    
+    if plan["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    # Get class info for better event titles
+    class_info = await db.classes.find_one({"class_id": plan.get("class_id")}, {"_id": 0})
+    class_name = class_info.get("name", "Class") if class_info else "Class"
+    subject = class_info.get("subject", "") if class_info else ""
+    
+    # Get school info
+    school = await db.schools.find_one({"school_id": plan.get("school_id")}, {"_id": 0})
+    school_name = school.get("name", "School") if school else "School"
+    
+    # Build ICS content
+    ics_lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//TeacherHubPro//Lesson Planner//EN",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        f"X-WR-CALNAME:{class_name} - Lesson Plan"
+    ]
+    
+    # Helper function to format date for ICS (YYYYMMDD)
+    def format_ics_date(date_str):
+        if not date_str:
+            return None
+        try:
+            # Handle various date formats
+            if "T" in date_str:
+                date_str = date_str.split("T")[0]
+            return date_str.replace("-", "")
+        except:
+            return None
+    
+    # Helper to escape text for ICS
+    def escape_ics(text):
+        if not text:
+            return ""
+        return text.replace("\\", "\\\\").replace(",", "\\,").replace(";", "\\;").replace("\n", "\\n")
+    
+    # Generate unique ID for events
+    def generate_uid(plan_id, day_index):
+        return f"{plan_id}-day{day_index}@teacherhubpro.com"
+    
+    # Process days from the plan
+    days = plan.get("days", [])
+    day_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    
+    for i, day in enumerate(days):
+        day_date = day.get("date")
+        if not day_date:
+            continue
+        
+        ics_date = format_ics_date(day_date)
+        if not ics_date:
+            continue
+        
+        # Determine week number for title
+        week_num = day.get("week_index", 1)
+        day_name = day.get("day_name", day_names[i % 5] if i < 10 else "Day").capitalize()
+        
+        # Build event title
+        unit_title = plan.get("unit") or plan.get("story") or "Lesson"
+        event_title = f"{class_name}: {unit_title}"
+        if subject:
+            event_title = f"[{subject}] {event_title}"
+        
+        # Build event description with full lesson details
+        description_parts = []
+        
+        # Add objective
+        objective = plan.get("objective") if week_num == 1 else plan.get("objective_week2")
+        if objective:
+            description_parts.append(f"📎 OBJECTIVE: {objective}")
+        
+        # Add theme for the day
+        if day.get("theme"):
+            description_parts.append(f"📌 THEME: {day.get('theme')}")
+        
+        # Add activities
+        activities = day.get("activities", [])
+        checked_activities = [a for a in activities if a.get("checked")]
+        if checked_activities:
+            description_parts.append("")
+            description_parts.append("📋 ACTIVITIES:")
+            for act in checked_activities:
+                act_type = act.get("activity_type", "").replace("_", " ").title()
+                notes = f" - {act.get('notes')}" if act.get("notes") else ""
+                description_parts.append(f"  • {act_type}{notes}")
+        
+        # Add materials
+        materials = day.get("materials", [])
+        checked_materials = [m for m in materials if m.get("checked")]
+        if checked_materials:
+            description_parts.append("")
+            description_parts.append("📚 MATERIALS:")
+            for mat in checked_materials:
+                mat_type = mat.get("material_type", "").replace("_", " ").title()
+                description_parts.append(f"  • {mat_type}")
+        
+        # Add DOK levels
+        dok_levels = day.get("dok_levels", [])
+        if dok_levels:
+            dok_labels = {1: "Recall", 2: "Skill/Concept", 3: "Strategic Thinking", 4: "Extended Thinking"}
+            dok_str = ", ".join([f"DOK {d}: {dok_labels.get(d, '')}" for d in dok_levels])
+            description_parts.append(f"🎯 DOK LEVELS: {dok_str}")
+        
+        # Add notes
+        if day.get("notes"):
+            description_parts.append("")
+            description_parts.append(f"📝 NOTES: {day.get('notes')[:500]}")
+        
+        # Add skills for the week
+        skills = plan.get("skills") if week_num == 1 else plan.get("skills_week2")
+        if skills and any(s.strip() for s in skills):
+            description_parts.append("")
+            description_parts.append("🎓 SKILLS:")
+            for skill in skills:
+                if skill.strip():
+                    description_parts.append(f"  • {skill}")
+        
+        description_parts.append("")
+        description_parts.append(f"📍 {school_name}")
+        description_parts.append(f"Week {week_num} - {day_name}")
+        description_parts.append("---")
+        description_parts.append("Generated by TeacherHubPro")
+        
+        full_description = "\\n".join(description_parts)
+        
+        # Create the event
+        now_stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        
+        ics_lines.extend([
+            "BEGIN:VEVENT",
+            f"UID:{generate_uid(plan_id, i)}",
+            f"DTSTAMP:{now_stamp}",
+            f"DTSTART;VALUE=DATE:{ics_date}",
+            f"DTEND;VALUE=DATE:{ics_date}",
+            f"SUMMARY:{escape_ics(event_title)}",
+            f"DESCRIPTION:{escape_ics(full_description)}",
+            f"LOCATION:{escape_ics(school_name)}",
+            "STATUS:CONFIRMED",
+            "TRANSP:TRANSPARENT",
+            "END:VEVENT"
+        ])
+    
+    ics_lines.append("END:VCALENDAR")
+    
+    # Join with CRLF as per ICS spec
+    ics_content = "\r\n".join(ics_lines)
+    
+    # Return as downloadable file
+    filename = f"lesson_plan_{plan_id}.ics"
+    return Response(
+        content=ics_content,
+        media_type="text/calendar",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Content-Type": "text/calendar; charset=utf-8"
+        }
+    )
+
 # ==================== ATTENDANCE ENDPOINTS ====================
 
 @api_router.get("/attendance", response_model=List[AttendanceSessionResponse])
