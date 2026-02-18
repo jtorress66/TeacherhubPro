@@ -27,17 +27,21 @@ async def register(user_data: UserCreate, response: Response):
     user_id = generate_user_id()
     now = datetime.now(timezone.utc).isoformat()
     
-    # Create default school if needed
+    # Create a UNIQUE school for each new user (not shared default)
     school_id = user_data.school_id
     if not school_id:
-        school_id = "school_default"
-        existing_school = await db.schools.find_one({"school_id": school_id}, {"_id": 0})
-        if not existing_school:
-            await db.schools.insert_one({
-                "school_id": school_id,
-                "name": "Default School",
-                "created_at": now
-            })
+        # Generate unique school ID for this user
+        school_id = f"school_{user_id.replace('user_', '')}"
+        await db.schools.insert_one({
+            "school_id": school_id,
+            "name": "My School",  # Generic name - user will customize
+            "address": "",
+            "phone": "",
+            "email": "",
+            "logo_url": "",
+            "created_at": now,
+            "owner_user_id": user_id  # Track who owns this school
+        })
     
     user_doc = {
         "user_id": user_id,
