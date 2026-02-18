@@ -758,7 +758,8 @@ async def get_onboarding_status(user: dict = Depends(get_current_user)):
     # Check actual setup completion (Option C - detect "not configured yet")
     school = await db.schools.find_one({"school_id": school_id}, {"_id": 0}) if school_id else None
     classes = await db.classes.find({"teacher_id": user_id}, {"_id": 0}).to_list(10)
-    plans = await db.lesson_plans.find({"user_id": user_id}, {"_id": 0}).to_list(10)
+    # Note: lesson_plans uses teacher_id, not user_id
+    plans = await db.lesson_plans.find({"teacher_id": user_id}, {"_id": 0}).to_list(10)
     
     # Check what's configured
     school_configured = bool(school and school.get("name") and school.get("name") != "My School")
