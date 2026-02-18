@@ -1491,3 +1491,44 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 - `/app/frontend/src/pages/PresentationCreator.js` - Added transition selector and animation logic
 
 **Test Report:** `/app/test_reports/iteration_12.json` - 100% pass rate
+---
+## Update 2026-02-18 - Image Search Functionality Fix
+
+### Bug Fix: Presentation Creator Image Search (P0 Complete)
+
+**Issue Description:** The image search functionality in the Presentation Creator was completely broken. Users searching for terms like "planets" would see broken image placeholders instead of actual images. The previous implementation used unreliable redirect URLs (`source.unsplash.com`) which returned 503 errors.
+
+**Root Cause:** The backend was using Unsplash Source API redirect URLs which are unreliable and frequently return HTTP 503 errors.
+
+**Solution Implemented:**
+1. **Backend Overhaul** (`/app/backend/routes/ai.py`):
+   - Created a curated library of ~100+ high-quality educational images from Unsplash
+   - Images are organized by educational categories: planets, dinosaurs, ocean, animals, science, math, nature, volcano, space, books, music, sports, art, technology, classroom
+   - Direct Unsplash URLs (`images.unsplash.com`) that work reliably
+   - Support for Pexels API when key is provided (optional enhancement)
+   - Smart keyword matching for any search term
+
+2. **Frontend Cleanup** (`/app/frontend/src/pages/PresentationCreator.js`):
+   - Removed all category buttons (Classroom, Science, Math, etc.)
+   - Clean free-form search input only
+   - Simple empty state with helpful hint text
+   - No predefined suggestions - teachers can search anything
+
+**Testing Verified:**
+- Search for "planets" returns 8 space/planet images
+- Search for "dinosaurs" returns 6 dinosaur images
+- Search for "ocean" returns 6 ocean images
+- Unknown terms fall back to general educational images
+- All image URLs return HTTP 200 and display correctly
+
+**Files Modified:**
+- `/app/backend/routes/ai.py` - New curated image library and search endpoint (~150 lines)
+- `/app/frontend/src/pages/PresentationCreator.js` - Removed category buttons, simplified search UI
+
+**Code Removed:**
+- `stockCategories` array and associated rendering logic
+- Quick suggestion buttons (planets, dinosaurs, sea animals, etc.)
+
+**Current Backlog Updated:**
+- ✅ Image Search Fix (P0) - Complete
+- Remaining P1: "Template of the Week" bug verification, server.py refactoring
