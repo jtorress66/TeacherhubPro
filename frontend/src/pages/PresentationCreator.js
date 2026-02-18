@@ -73,8 +73,6 @@ const themes = [
   { id: 'nature', name: 'Nature', bg: 'from-amber-500 to-green-500', text: 'text-white', accent: 'bg-white' },
 ];
 
- 
-
 const PresentationCreator = () => {
   const { language } = useLanguage();
   const [slides, setSlides] = useState([
