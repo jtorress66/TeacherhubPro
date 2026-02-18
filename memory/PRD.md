@@ -1846,3 +1846,49 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
   "show_onboarding": true
 }
 ```
+
+---
+## Update 2026-02-18 - Video Walkthrough in Welcome Modal
+
+### Feature: Animated Video Tutorial (Complete)
+
+**Description:** Added an animated slideshow tutorial to the welcome modal with 5 steps that guide new users through the setup process.
+
+**Implementation:**
+
+1. **Two-Tab Interface:**
+   - **"Ver Tutorial"** (Watch Tutorial) - Animated slideshow
+   - **"Lista de Pasos"** (Setup Checklist) - Interactive checklist
+
+2. **Video Slideshow (5 slides):**
+   - Slide 1: "Welcome to TeacherHubPro" - Introduction
+   - Slide 2: "Step 1: School Settings" - Configure school info
+   - Slide 3: "Step 2: Create Classes" - Set up classes
+   - Slide 4: "Step 3: Plan Your Lessons" - Create lesson plans
+   - Slide 5: "You're Ready!" - Completion message
+
+3. **Slideshow Features:**
+   - Auto-play with "Reproducir" (Play) button
+   - Manual navigation with prev/next arrows
+   - Dot indicators to jump between slides
+   - Duration estimate (~1 min)
+   - Beautiful gradient backgrounds with relevant images
+
+4. **Persistent Access:**
+   - "Ver tutorial" link in the banner to reopen modal anytime
+   - Users can switch between video and checklist tabs
+
+**Visual Design:**
+- Each slide has unique gradient color scheme
+- Background images from Unsplash (education-themed)
+- Large icons for each step
+- Bilingual content (English/Spanish)
+
+**Files Modified:**
+- `/app/frontend/src/components/OnboardingBanner.js` - Complete rewrite with video slideshow
+
+**User Flow:**
+1. New user logs in → Modal opens with Video tab active
+2. User can watch slideshow or switch to Checklist tab
+3. After dismissing modal, banner remains with "Ver tutorial" link
+4. User can reopen modal anytime to review tutorial
