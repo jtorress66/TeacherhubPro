@@ -2640,7 +2640,16 @@ async def test_reminder_email(request: Request):
             "email_id": result.get("email_id")
         }
     else:
-        raise HTTPException(status_code=500, detail=f"Failed to send email: {result.get('error')}")
+        # Return error info but don't crash - Resend test mode restriction
+        error_msg = result.get("error", "Unknown error")
+        if "only send testing emails to your own email" in error_msg:
+            return {
+                "status": "test_mode_restriction",
+                "message": "Resend is in test mode. To send to other addresses, verify a domain at resend.com/domains",
+                "attempted_recipient": user_data["email"],
+                "note": "The email template is ready. Once domain is verified, emails will send successfully."
+            }
+        raise HTTPException(status_code=500, detail=f"Failed to send email: {error_msg}")
 
 # ==================== ADMIN MANAGEMENT ENDPOINTS ====================
 
