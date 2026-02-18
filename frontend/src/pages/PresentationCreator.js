@@ -73,17 +73,7 @@ const themes = [
   { id: 'nature', name: 'Nature', bg: 'from-amber-500 to-green-500', text: 'text-white', accent: 'bg-white' },
 ];
 
-// Stock image categories for education
-const stockCategories = [
-  { id: 'classroom', name: 'Classroom', nameEs: 'Aula' },
-  { id: 'science', name: 'Science', nameEs: 'Ciencias' },
-  { id: 'math', name: 'Math', nameEs: 'Matemáticas' },
-  { id: 'nature', name: 'Nature', nameEs: 'Naturaleza' },
-  { id: 'technology', name: 'Technology', nameEs: 'Tecnología' },
-  { id: 'books', name: 'Books', nameEs: 'Libros' },
-  { id: 'art', name: 'Art', nameEs: 'Arte' },
-  { id: 'sports', name: 'Sports', nameEs: 'Deportes' },
-];
+ 
 
 const PresentationCreator = () => {
   const { language } = useLanguage();
