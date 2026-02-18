@@ -1727,3 +1727,54 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 - All placeholders are now generic and bilingual
 - Users customize their school info in Settings
 - No private school data is exposed to other users
+
+---
+## Update 2026-02-18 - Unique Schools Per User (Critical Fix)
+
+### Issue Fixed: New Users Seeing Other School's Private Information
+
+**Problem:** All new users were assigned to a shared `school_default` record. If any user customized that school with their info (like "Colegio Inmaculada"), ALL new users would see that private data.
+
+**Root Cause:** The registration logic assigned all new users to a single shared `school_default` school ID.
+
+**Solution:** Each new user now gets their OWN unique school record upon registration.
+
+**Implementation:**
+
+1. **Email/Password Registration** (`server.py` + `routes/auth.py`):
+   - New users get unique school ID: `school_{user_id_suffix}`
+   - School created with generic data: "My School", empty address/phone/logo
+   - `owner_user_id` field tracks school ownership
+
+2. **Google OAuth Registration** (`server.py` + `routes/auth.py`):
+   - Same unique school creation logic
+   - Existing users without schools get one created on next login
+
+**Database Schema - New School Record:**
+```json
+{
+  "school_id": "school_abc123def456",
+  "name": "My School",
+  "address": "",
+  "phone": "",
+  "email": "",
+  "logo_url": "",
+  "created_at": "2026-02-18T...",
+  "owner_user_id": "user_abc123def456"
+}
+```
+
+**Files Modified:**
+- `/app/backend/server.py` - Updated register and google_callback functions
+- `/app/backend/routes/auth.py` - Updated register and google_callback functions
+
+**Testing Verified:**
+- New user `newschool@test.com` registered
+- Got unique school `school_dbc85bbfdd4f`
+- Dashboard shows "My School" (generic)
+- No Inmaculada data visible
+
+**Important Note:**
+- Existing users who were assigned to `school_default` may still see whatever data was in that record
+- Those users should update their school info in Settings
+- Super Admin can reassign users to different schools if needed
