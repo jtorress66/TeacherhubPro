@@ -1582,3 +1582,47 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 
 **Third-Party Integration Added:**
 - **Pexels API** - Free stock photo API with 200 req/hour limit
+
+---
+## Update 2026-02-18 - Trial Expiration Enforcement
+
+### Feature: Block Access for Expired Trial Users (Complete)
+
+**Description:** Users whose 7-day free trial has expired are now blocked from accessing the app until they subscribe to a paying plan.
+
+**User Flow After Trial Expiration:**
+1. User logs in with expired trial
+2. Automatically redirected to Pricing page
+3. Yellow alert banner shows: "Your trial period has expired. Select a plan to continue using TeacherHubPro."
+4. All protected routes redirect back to Pricing
+5. User data is preserved - nothing is deleted
+6. User can choose any subscription plan to regain access
+
+**Bypass Conditions:**
+- Users with `role: admin` have full access
+- Users with `role: super_admin` have full access
+- Users with active paid subscriptions have full access
+
+**Backend Changes** (`/app/backend/server.py`):
+- Updated `/subscription/status` endpoint to return `has_access: false` when trial expired
+- Status changes to `trial_expired` after 7 days
+- Message: "Your free trial has expired. Please subscribe to continue using TeacherHubPro."
+- Fixed edge case where `days_left: 0` but trial not technically expired
+
+**Frontend Behavior** (`/app/frontend/src/App.js`):
+- `ProtectedRoute` component checks subscription status
+- Redirects to `/pricing` when `has_access: false`
+- Passes `trialExpired: true` state for alert message
+
+**Testing Verified:**
+- Created test user with 10-day-old account (expired trial)
+- Login successful (account preserved)
+- Dashboard access → Redirected to /pricing ✓
+- Presentations access → Redirected to /pricing ✓
+- Alert banner displayed correctly ✓
+
+**Files Modified:**
+- `/app/backend/server.py` - Updated subscription status logic
+
+**Test Credentials:**
+- Expired user: `expired@test.com` / `expired123`
