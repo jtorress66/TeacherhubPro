@@ -2163,21 +2163,29 @@ async def get_subscription_status(user: dict = Depends(get_current_user)):
         now = datetime.now(timezone.utc)
         
         if now < trial_end:
-            days_left = (trial_end - now).days
+            # Calculate days left (round up to show at least 1 if any time remains)
+            time_left = trial_end - now
+            days_left = time_left.days
+            # If less than 1 day but still time left, show 1 day
+            if days_left == 0 and time_left.total_seconds() > 0:
+                days_left = 1
+            
             return {
                 "has_access": True,
                 "status": "trialing",
                 "plan": "free_trial",
                 "trial_ends": trial_end.isoformat(),
                 "days_left": days_left,
-                "message": f"Free trial: {days_left} days remaining"
+                "message": f"Free trial: {days_left} day{'s' if days_left != 1 else ''} remaining"
             }
     
+    # Trial has expired - block access
     return {
         "has_access": False,
-        "status": "none",
+        "status": "trial_expired",
         "plan": None,
-        "message": "No active subscription. Please subscribe to access all features."
+        "trial_ends": trial_end.isoformat() if user_data else None,
+        "message": "Your free trial has expired. Please subscribe to continue using TeacherHubPro."
     }
 
 @api_router.post("/subscription/checkout")
