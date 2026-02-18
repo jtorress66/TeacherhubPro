@@ -201,16 +201,16 @@ const Landing = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Minimal Header with Gradient */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-cyan-50/95 via-blue-50/90 to-white/95 backdrop-blur-lg border-b border-cyan-100/50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
-          <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+          <div className="flex items-center gap-2 sm:gap-4">
             <img 
               src="https://customer-assets.emergentagent.com/job_teachersuite/artifacts/swlef12w_ChatGPT%20Image%20Feb%2015%2C%202026%2C%2009_08_36%20PM.png"
               alt="TeacherHubPro Logo"
-              className="h-24 w-24 object-contain"
+              className="h-12 w-12 sm:h-24 sm:w-24 object-contain"
             />
             <div className="flex flex-col">
-              <span className="text-2xl font-bold text-slate-800">TeacherHubPro</span>
-              <span className="text-xs font-medium text-cyan-600">{language === 'es' ? 'Tu aula digital' : 'Your digital classroom'}</span>
+              <span className="text-base sm:text-2xl font-bold text-slate-800">TeacherHubPro</span>
+              <span className="text-[10px] sm:text-xs font-medium text-cyan-600 hidden sm:block">{language === 'es' ? 'Tu aula digital' : 'Your digital classroom'}</span>
             </div>
           </div>
           
@@ -232,23 +232,24 @@ const Landing = () => {
             </Link>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={toggleLanguage}
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 px-2"
               data-testid="language-toggle"
             >
               <Globe className="h-4 w-4" />
-              {language === 'es' ? 'EN' : 'ES'}
+              <span className="hidden sm:inline">{language === 'es' ? 'EN' : 'ES'}</span>
             </Button>
             <Button 
               size="sm" 
-              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-md"
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-md text-xs sm:text-sm px-3 sm:px-4"
               onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
             >
-              {language === 'es' ? 'Comenzar - Iniciar sesión' : 'Get Started - Log In'}
+              <span className="hidden sm:inline">{language === 'es' ? 'Comenzar - Iniciar sesión' : 'Get Started - Log In'}</span>
+              <span className="sm:hidden">{language === 'es' ? 'Comenzar' : 'Start'}</span>
             </Button>
           </div>
         </div>
