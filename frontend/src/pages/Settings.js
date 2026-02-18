@@ -343,7 +343,7 @@ const Settings = () => {
               <Input 
                 value={schoolAddress}
                 onChange={(e) => setSchoolAddress(e.target.value)}
-                placeholder="P.O. Box 3400, Manatí, Puerto Rico 00674"
+                placeholder={language === 'es' ? 'Dirección de la escuela' : 'School address'}
                 data-testid="school-address-input"
               />
             </div>
@@ -354,7 +354,7 @@ const Settings = () => {
                 <Input 
                   value={schoolPhone}
                   onChange={(e) => setSchoolPhone(e.target.value)}
-                  placeholder="(787) 854-2079"
+                  placeholder={language === 'es' ? 'Número de teléfono' : 'Phone number'}
                   data-testid="school-phone-input"
                 />
               </div>
@@ -363,7 +363,7 @@ const Settings = () => {
                 <Input 
                   value={schoolEmail}
                   onChange={(e) => setSchoolEmail(e.target.value)}
-                  placeholder="school@example.com"
+                  placeholder={language === 'es' ? 'correo@escuela.com' : 'school@example.com'}
                   data-testid="school-email-input"
                 />
               </div>
