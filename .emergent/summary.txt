@@ -14,182 +14,194 @@ The user wants to build a comprehensive, teacher-focused web application called 
 7.  **AI Teaching Assistant:** An AI-powered assistant (using Claude Sonnet 4.5) to generate lesson plans, quizzes, summaries, and other teaching materials based on National Standards (Common Core & PR CORE). This is a paid feature.
 8.  **Educational Presentations:** A new feature for teachers to create fun, captivating educational presentations for class subjects, with AI assistance and rich media support (images, GIFs).
 9.  **UX/UI:** A professional, modern, bilingual (English/Spanish) interface with Dark Mode. The landing page should be visually appealing and clearly communicate the app's customization features, matching the user-provided logo's color scheme.
+10. **Onboarding:** A guided setup for new users to configure their account.
 
 **User's preferred language**: English. The next agent must respond in **English**.
 
 **what currently exists?**
-A full-stack FastAPI/React application, TeacherHubPro. The backend remains partially refactored, with significant logic still in the monolithic . The frontend is feature-rich, with a working AI Assistant for content generation, a new Presentation Creator, comprehensive dark mode, and a highly customized landing page. The application's UI/UX has been significantly enhanced with new color schemes, a new logo, and improved component styling based on iterative user feedback.
+The TeacherHubPro application has seen significant feature development and bug fixing. The critical P0 issue with broken image search in the Presentation Creator has been resolved by integrating the Pexels API, providing unlimited, real-time image search. A full-featured user onboarding system has been built from scratch, including a welcome modal, a progress banner/checklist, and an animated video tutorial with voice narration (using OpenAI TTS). A trial expiration system is now in place, blocking users with expired trials and redirecting them to a pricing page. An accompanying email reminder system using Resend has also been implemented (currently in test mode). A major architectural flaw was fixed where new users are now created with their own unique, customizable school instead of sharing a generic default school. The monolithic  file, however, remains largely un-refactored.
 
 **Last working item**:
--   **Last item agent was working:** The user requested image support (upload, URL, stock photos) and a comprehensive instructions modal for the newly created Presentation Creator feature. The agent implemented these enhancements in the  component.
+-   **Last item agent was working:** Fixing two bugs reported by the user in the newly created onboarding system:
+    1.  The onboarding checklist incorrectly showed the Create a planner step as incomplete for users who already had lesson plans.
+    2.  The audio narration in the onboarding video tutorial was skipping and repeating at the beginning.
 -   **Status:** USER VERIFICATION PENDING
 -   **Agent Testing Done:** Y
--   **Which testing method agent to use?** screenshot tool. The agent should navigate to the Presentaciones page and verify the new Añadir Imagen (Add Image) button on slides with image layouts and the Ayuda (Help) button in the header.
+-   **Which testing method agent to use?** Frontend testing agent. The agent should test both fixes. First, log in as  to confirm the onboarding banner correctly shows 2/3 completed. Second, reset the onboarding status for , log in, and play the video tutorial to verify the audio plays smoothly without skipping.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Complete the Refactoring of  (P1)**
-    -   **Description:** The backend  file is a 2900+ line monolith. While AI and Auth routes have been moved to separate files, the vast majority of endpoints (schools, classes, students, lesson plans, grades, etc.) remain in . This creates technical debt, makes maintenance difficult, and risks route conflicts.
-    -   **Attempted fixes:** The previous agent fixed a critical P0 bug and then planned to continue the refactoring but was diverted by user feature requests. The structure (, ) exists but is underutilized.
+-   **Issue 1: Onboarding Audio Skipping/Repeating (P0)**
+-   **Issue 2: Onboarding Lesson Planner Detection Bug (P0)**
+-   **Issue 3: Template of the Week Bug (P1)**
+-   **Issue 4: Complete the Refactoring of  (P1)**
+
+**Issues Detail:**
+-   **Issue 1: Onboarding Audio Skipping/Repeating (P0)**
+    -   **Attempted fixes:** The agent identified a race condition in  where the  function was being called twice in quick succession. A  was added to prevent this double execution.
     -   **Next debug checklist:**
-        1.  Create new route files in  for each remaining domain (e.g., , , , ).
-        2.  Systematically move the corresponding Pydantic models from  to .
-        3.  Move the FastAPI endpoints (, , etc.) from  to their respective new route files.
-        4.  Update the main  to import and include these new routers using .
-        5.  Delete the now-redundant code from , shrinking it to mainly app setup and router inclusions.
-    -   **Why fix this issue and what will be achieved with the fix?** Completing the refactor will stabilize the backend, improve code maintainability, prevent future bugs, and make the architecture scalable for future development.
-    -   **Status:** IN PROGRESS
+        1.  Log in as a user whose onboarding status is  (e.g., reset ).
+        2.  The welcome modal with the video tutorial will appear.
+        3.  Click Play and listen carefully to the audio for the first few scenes.
+        4.  Confirm the audio plays smoothly without any skips, stutters, or repeats.
+    -   **Why fix this issue and what will be achieved with the fix?** A smooth audio experience is critical for a professional and polished onboarding tutorial.
+    -   **Status:** USER VERIFICATION PENDING
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend.
+    -   **Blocked on other issue:** None.
+
+-   **Issue 2: Onboarding Lesson Planner Detection Bug (P0)**
+    -   **Attempted fixes:** The agent found that the backend status check endpoint ( in ) was querying the  collection by , but the collection uses . The query was corrected to use the correct field name.
+    -   **Next debug checklist:**
+        1.  Log in as  (a user with existing lesson plans).
+        2.  Observe the onboarding banner on the Dashboard.
+        3.  Verify the progress bar shows 2 / 3 completado (67%) and that the Crear Tu Primer Plan step has a green checkmark, indicating it's complete.
+    -   **Why fix this issue and what will be achieved with the fix?** Ensures the onboarding system accurately reflects user progress and is not a source of user frustration.
+    -   **Status:** USER VERIFICATION PENDING
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend.
+    -   **Blocked on other issue:** None.
+
+-   **Issue 3: Template of the Week Bug (P1)**
+    -   **Attempted fixes:** A previous agent implemented a fix to pass the template ID via URL state, but it was never tested or verified by the user.
+    -   **Next debug checklist:**
+        1.  Navigate to the Dashboard.
+        2.  Click the Usar esta plantilla button on the Template of the Week card.
+        3.  Confirm that the Lesson Planner page loads and is pre-populated with the correct template data.
+    -   **Why fix this issue and what will be achieved with the fix?** Fixes a broken feature on the main dashboard.
+    -   **Status:** USER VERIFICATION PENDING
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend.
+    -   **Blocked on other issue:** None.
+
+-   **Issue 4: Complete the Refactoring of  (P1)**
+    -   **Attempted fixes:** None in this session. The structure (, ) exists but is underutilized.
+    -   **Next debug checklist:**
+        1.  Create new route files in  for each domain (e.g., , , , ).
+        2.  Systematically move the corresponding Pydantic models and FastAPI endpoints from  to their respective new files.
+        3.  Update the main  to import and include these new routers.
+    -   **Why fix this issue and what will be achieved with the fix?** Stabilize the backend, improve maintainability, prevent future bugs, and make the architecture scalable.
+    -   **Status:** NOT STARTED
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Backend (requires extensive regression testing using the testing agent).
+    -   **Should Test frontend/backend/both after fix?** Backend (requires extensive regression testing).
     -   **Blocked on other issue:** None.
 
 **In progress Task List**:
--   **Task 1: Implement Backend for AI Presentation Generation (P0)**
-    -   **Where to resume:** The frontend for the Presentation Creator () is complete, including a UI for AI generation. However, there is no backend endpoint to handle this request.
-    -   **What will be achieved with this?** This will make the Generar con IA (Generate with AI) button in the Presentation Creator functional, allowing users to auto-generate presentation slides based on a topic, subject, and grade.
-    -   **Next Steps:**
-        1.  Create a new endpoint in , such as .
-        2.  Define a Pydantic model for the request body (topic, subject, grade, number_of_slides, theme).
-        3.  Implement the logic to call the  LLM with a carefully crafted prompt to generate presentation content (title, bullet points, image search queries) in a structured JSON format.
-        4.  Connect the frontend Generar con IA button in  to this new endpoint.
-    -   **Status:** NOT STARTED
-    -   **Should Test frontend/backend/both after fix?** Both.
-    -   **Blocked on something:** No.
+None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks (P1):**
-    *   **Drag-and-Drop Seating Chart Editor:** A visual tool for creating seating charts.
-    *   **Quick Week Copy:** A button in the Lesson Planner to duplicate an entire week's plan.
-    *   **Super Admin Bulk Tools:** A CSV import for adding multiple teachers at once.
+    *   Drag-and-Drop Seating Chart Editor
+    *   Quick Week Copy: A button in the Lesson Planner to duplicate an entire week's plan.
+    *   Super Admin Bulk Tools: A CSV import for adding multiple teachers at once.
 -   **Future Tasks (P2):**
-    *   **Audit Log:** Implement logging for critical actions (e.g., grade changes).
-    *   **Google Classroom Integration:** Integrate with Google Classroom APIs.
-    *   **Report Card Generation:** Create a feature to generate and export student report cards.
-    *   **Planner Style Customization:** Allow Super Admin to select different planner layouts/styles per school.
-    *   **Community Templates:** Allow teachers to share their saved templates.
+    *   Audit Log: Implement logging for critical actions (e.g., grade changes).
+    *   Google Classroom Integration
+    *   Report Card Generation
+    *   Planner Style Customization
+    *   Community Templates for sharing.
 
 **Completed work in this session**
--   **P0 Bug Fix: AI Network Error Resolved:**
-    -   Diagnosed that the  library was misidentifying the provider for Claude.
-    -   Identified the root cause as an incorrect model name ().
-    -   Corrected the model name to the available  in , restoring all AI features.
-    -   Verified the fix with the backend testing agent.
--   **Frontend Bug Fix: Markdown Rendering:**
-    -   Fixed an issue where AI-generated content displayed raw markdown symbols (, ).
-    -   Installed  and configured it in  to correctly style the  class used by .
--   **Feature: Print/Save PDF for AI Content:**
-    -   Added a Print button to the AI Assistant page for generated content and history items, which triggers the browser's print dialog.
--   **Feature: Quick Tour & Audio Guide Enhancement:**
-    -   Updated both guides to include newly added features (AI Assistant, Templates, etc.).
-    -   Reworked the Audio Guide to auto-play audio and auto-advance between steps.
-    -   Fixed a critical bug causing the audio to skip and repeat by refactoring the component to use  and better state management.
--   **Feature: Dark Mode:**
-    -   Implemented a full dark mode across the application using CSS variables and a React Theme Context.
-    -   Added a toggle in the sidebar that persists the user's preference in .
--   **UI/UX Overhaul:**
-    -   **Logo:** Went through multiple iterations to generate and implement a user-provided logo with a transparent background, fixing sizing and alignment issues on the landing and pricing pages.
-    -   **Color Scheme:** Re-themed the entire landing page from green to a blue/cyan palette to match the new logo.
-    -   **Header Enhancement:** Redesigned the main app header with a gradient background, a larger logo, and improved typography for both light and dark modes.
--   **Feature: Presentation Creator:**
-    -   Created a new page () for building educational presentations.
-    -   Implemented a feature-rich UI with AI generation inputs, 8 visual themes, 6 slide templates, slide management (add/delete), and a full-screen presentation mode.
-    -   Added robust image support: local file upload, image URL input, and a stock photo search modal.
-    -   Added a comprehensive Help/Instructions modal.
--   **General Fixes:**
-    -   Corrected logo and color inconsistencies on the Pricing page and Landing page footer.
+-   **Bug Fix: Presentation Creator Image Search (P0 Resolved):** Replaced the unreliable Unsplash Source API with a robust Pexels API integration, providing unlimited real-time image search via a user-provided API key.
+-   **Feature: Trial Expiration Enforcement:** Implemented logic to block users with expired trials from accessing protected routes, redirecting them to the pricing page.
+-   **Feature: Trial Expiration Email Reminders:** Created a backend endpoint and email templates (EN/ES) to send reminders to users 2-3 days before their trial expires, using the Resend API.
+-   **Bug Fix: Generic & Unique Default Schools:** Fixed a critical bug where new users saw another school's private data. The backend now creates a unique, generic school record for each new user upon registration.
+-   **Feature: Comprehensive User Onboarding System:**
+    -   Built a backend system to track onboarding status (, ).
+    -   Created a frontend  component showing a progress checklist.
+    -   Developed an animated, multi-scene video tutorial with OpenAI TTS-powered voice narration (EN/ES) based on a user-provided script.
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Monolithic  file refactoring is incomplete.**
-    -   **Debug checklist:** See **Issue 1** in **All Pending/In progress Issue list**.
-    -   **Why to solve this issue and what will be achieved with this?** To improve maintainability, reduce complexity, and prevent bugs.
-    -   **Should Test frontend/backend/both after fix:** Backend.
-    -   **Is recurring issue?** Y
+-   **Issue 1: Monolithic  file refactoring is incomplete.** See **Issue 4** in **All Pending/In progress Issue list**.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** Monolithic  file.
--   **Recurrence count:** 6
--   **Status:** IN PROGRESS
+-   **Recurrence count:** 8
+-   **Status:** NOT STARTED
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **LLM Debugging:** Diagnosed an API failure by inspecting logs, identifying an incorrect model name being passed to the  library, and verifying the fix with  and the testing agent.
--   **Dark Mode Implementation:** Used TailwindCSS's class-based strategy (), CSS variables for theming, and a React Context () to manage and persist the theme state via .
--   **Advanced Frontend State Management:** Built the complex  component, managing state for slides, themes, templates, AI inputs, and modals.
--   **React Component Refactoring:** Reworked the  component to fix race conditions and re-render loops by using  for state that doesn't trigger UI updates.
--   **Iterative UI/UX Development:** Responded to frequent, specific user feedback on visual elements like logos, colors, and layout, demonstrating a tight feedback loop.
--   **CSS Blending:** Used  as a technique to remove unwanted white backgrounds from user-provided images.
+-   **Third-Party API Integration:** Integrated the Pexels API for image search and the Resend API for transactional emails.
+-   **Stateful Onboarding System:** Managed user onboarding state (, , ) in the database to drive a dynamic frontend UI (modals, banners, checklists).
+-   **Dynamic User/School Creation:** The backend now creates a unique, new school record for each user upon registration, ensuring data isolation.
+-   **Scheduled Task Emulation:** Implemented a backend endpoint () intended to be called by a cron job to perform periodic checks.
+-   **Complex Frontend Components:** Built a multi-scene, animated, voice-narrated tutorial in React using , , , and CSS transitions.
+-   **Text-to-Speech (TTS):** Leveraged the existing OpenAI TTS backend integration to generate audio narration dynamically for the onboarding tutorial.
+-   **Debugging Race Conditions:** Resolved an audio playback bug in the frontend by identifying and fixing a race condition in a React  hook.
 
 **key DB schema**
--   **ai_templates:** 
+-   **users:** 
+-   **presentations:** 
+-   **schools:** 
 
 **changes in tech stack**
--   **Added:**  to handle markdown rendering.
--   **Upgraded:**  from 0.1.0 to 0.1.1 during debugging.
+-   **Added:**  for backend email functionality.
 
 **All files of reference**
--   **/app/backend/routes/ai.py**: The Claude model name was corrected here to fix the P0 bug.
--   **/app/backend/server.py**: Remains the primary file for backend refactoring work.
--   **/app/frontend/src/pages/AIAssistant.js**: Fixed markdown rendering and added a Print button.
--   **/app/frontend/src/pages/Landing.js**: Heavily modified with a new logo, new blue color scheme, and enhanced layout.
--   **/app/frontend/src/pages/PresentationCreator.js**: New file for the presentation creation feature.
--   **/app/frontend/src/components/Layout.js**: Heavily modified to implement dark mode and a new header design.
--   **/app/frontend/src/components/VideoStyleGuide.js**: Refactored to fix audio playback bugs.
--   **/app/frontend/src/contexts/ThemeContext.js**: New file created to manage the application's theme (light/dark).
--   **/app/frontend/tailwind.config.js**: Modified to include the  plugin.
+-   **/app/backend/server.py**: Contains the core logic for trial enforcement, email reminders, and onboarding status.
+-   **/app/frontend/src/components/OnboardingBanner.js**: Contains the logic for the entire onboarding UI, including the modal and progress banner.
+-   **/app/frontend/src/components/OnboardingVideo.js**: Contains the script, scenes, and audio playback logic for the onboarding video tutorial.
+-   **/app/backend/routes/ai.py**: Contains the updated Pexels API image search endpoint.
+-   **/app/backend/routes/auth.py**: Contains the updated logic for creating a unique school for each new user.
+-   **/app/backend/.env**: Contains the new  and .
 
 **Areas that need refactoring**:
--   **/app/backend/server.py**: This remains the highest priority for refactoring. The file is still over 2900 lines long and contains the majority of the application's business logic, making it difficult and risky to modify.
+-   **/app/backend/server.py**: Remains a high-priority monolith that needs to be broken down into domain-specific route files.
+-   **/app/frontend/src/components/OnboardingVideo.js**: This component is over 450 lines and contains the entire video script. The script could be moved to a separate JSON or constant file to clean up the component logic.
 
 **key api endpoints**
--   : (Fixed) Endpoint for general AI content generation. Now works correctly.
--   : (Fixed) Endpoint for the AI chat feature. Now works correctly.
+-   : (Modified) Searches for images using the Pexels API.
+-   : (Modified) Checks user's trial/subscription status. Now correctly identifies expired trials.
+-   : (New) Admin-only endpoint to trigger trial expiration email reminders.
+-   : (New) Checks a user's progress through the onboarding checklist.
+-   : (New) Allows a user to dismiss onboarding steps or the welcome modal.
 
 **Critical Info for New Agent**
--   **Prioritize Backend Tasks:** The next agent should prioritize implementing the backend for the **Presentation Creator** (Task 1 in In progress Task List) as the UI is complete but non-functional. After that, the long-pending refactoring of  (Issue 1) should be addressed to improve backend stability.
--   **User is Visually Focused:** The user provides very specific feedback on UI/UX, often with screenshots. Pay close attention to details like colors, sizing, and alignment. Always verify visual changes with screenshots in both light and dark modes.
--   **Presentation Creator is Frontend-Only:** The new Presentation Creator is a significant feature, but the AI generation and saving capabilities are not yet implemented on the backend. This is a critical piece of missing functionality.
+-   **User is highly attentive:** The user provides detailed feedback and notices small bugs like audio skipping and data inconsistencies. All fixes and features require thorough testing before completion.
+-   **Onboarding Logic is Data-Driven:** The onboarding system checks for the existence of real data (e.g., classes, planners) and specific values (e.g., school name is not My School) to determine completion. Be aware of this when testing.
+-   **API Keys are in use:** The Pexels and Resend integrations depend on keys now present in . Resend is in test mode, so emails will only send to verified addresses, which is expected behavior during development.
 
 **documents and test reports created in this job**
--    (updated multiple times with completed features)
--    (from verifying the P0 bug fix)
+-    (updated multiple times)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Requests image upload/search capabilities and instructions for the new Presentation Creator. (Status: COMPLETED)
-2.  **User:** Reports the pricing page and landing page footer have the old logo and color scheme. (Status: COMPLETED)
-3.  **User:** Requests a new feature to create fun educational presentations. (Status: COMPLETED)
-4.  **User:** Requests the landing page colors be updated to match the new blue logo. (Status: COMPLETED)
-5.  **User:** Asks for the logo on the landing page to be made larger. (Status: COMPLETED)
-6.  **User:** Provides the final desired logo image. (Status: COMPLETED)
-7.  **User:** Reports the new logo still has a box background and requests a new one. (Status: COMPLETED)
-8.  **User:** Requests a new, transparent background logo, asking not to touch the app name. (Status: COMPLETED)
-9.  **User:** Reports the logo has a white background box and needs to be larger. (Status: COMPLETED)
-10. **User:** Requests a landing page gradient background similar to the sidebar. (Status: COMPLETED)
+1.  **User:** Reports the onboarding checklist incorrectly detects lesson plans and that the tutorial audio skips/repeats. (Status: IN PROGRESS, fixes implemented but pending user verification)
+2.  **User:** Requests an animated video walkthrough with voice narration for the onboarding modal, providing a detailed script. (Status: COMPLETED)
+3.  **User:** Requests a user onboarding system with a checklist and welcome banner/modal. (Status: COMPLETED)
+4.  **User:** Reports that new accounts are still defaulting to Inmaculada School data. States each new user should be a new school. (Status: COMPLETED)
+5.  **User:** Reports new users are seeing another school's private info (Inmaculada School) by default and this should not happen. (Status: COMPLETED)
+6.  **User:** Requests an email reminder to be sent 2-3 days before a user's trial expires. (Status: COMPLETED)
+7.  **User:** Provides their Resend API key. (Status: COMPLETED)
+8.  **User:** Reports that accounts with expired 7-day trials remain active and should be blocked until they subscribe. (Status: COMPLETED)
+9.  **User:** Provides their Pexels API key. (Status: COMPLETED)
+10. **User:** Agrees with the agent's suggestion to integrate Pexels API for better image search. (Status: COMPLETED)
 
 **Project Health Check:**
--   **Broken:** The AI generation feature within the new **Presentation Creator** is not functional as the backend endpoint does not exist.
--   **Mocked:** None.
+-   **Broken:** None.
+-   **Mocked:** Resend API is in test mode. Emails will not deliver to end-users until the domain is verified, but the integration itself is functional.
 
 **3rd Party Integrations**
--   **Emergent-managed Google Auth:** For social login.
--   **Stripe:** For subscriptions (requires User API Key).
--   **Resend:** For sending emails (requires User API Key).
--   **Anthropic Claude Sonnet 4.5:** Used via  library for the AI Teaching Assistant (uses Emergent LLM Key).
--   **OpenAI TTS:** For the Audio Guide feature (uses Emergent LLM Key).
--   **react-markdown:** For rendering markdown in the frontend.
--   **@tailwindcss/typography:** For styling markdown content.
+-   **Emergent-managed Google Auth**
+-   **Stripe** (Payments)
+-   **Resend** (Emails, via API key)
+-   **Pexels** (Image Search, via API key)
+-   **Anthropic Claude Sonnet 4.5** (AI Assistant, via )
+-   **OpenAI TTS** (Audio narration)
+-   **Pillow** (Backend image processing)
 
 **Testing status**
--   **Testing agent used after significant changes:** YES, to verify the P0 backend fix for AI generation.
+-   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** None.
+-   **Test files created:** []
 -   **Known regressions:** None.
 
 **Credentials to test flow:**
--   **Super Admin Email:** 
--   **Password:** 
+-   **Super Admin / Has Plans:**  / 
+-   **Expired Trial User:**  / 
+-   **Onboarding Test User:**  / 
 
 **What agent forgot to execute**
--   The agent successfully built the entire frontend for the Presentation Creator but did not implement the corresponding backend endpoint for the AI generation part (). The Generar con IA button in the new feature does nothing.
--   The agent did not make any progress on the P1 task of refactoring the monolithic  file, which remains a significant source of technical debt.</analysis>
+-   The agent did not address the Template of the Week bug, which has been pending user verification since the start of the job.
+-   The critical task of refactoring the monolithic  file was once again deferred.</analysis>
