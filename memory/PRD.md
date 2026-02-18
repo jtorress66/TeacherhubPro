@@ -1532,3 +1532,53 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 **Current Backlog Updated:**
 - ✅ Image Search Fix (P0) - Complete
 - Remaining P1: "Template of the Week" bug verification, server.py refactoring
+
+---
+## Update 2026-02-18 - Pexels API Integration
+
+### Feature: Unlimited Real-Time Image Search (Complete)
+
+**Description:** Integrated Pexels API for unlimited real-time image search, replacing the limited curated library with access to millions of stock photos.
+
+**Implementation:**
+1. **Backend** (`/app/backend/routes/ai.py`):
+   - Pexels API integration with httpx async client
+   - Returns large (800px) and medium (400px) image URLs
+   - Falls back to curated library if Pexels API fails
+   - Rate limit: 200 requests/hour, 20,000/month (free tier)
+
+2. **Environment Configuration** (`/app/backend/.env`):
+   - Added `PEXELS_API_KEY` environment variable
+
+3. **Frontend** (`/app/frontend/src/pages/PresentationCreator.js`):
+   - Updated footer text to credit Pexels
+   - No other changes needed - backend handles API switching
+
+**API Response Format:**
+```json
+{
+  "images": [
+    {
+      "id": "pexels_672142",
+      "url": "https://images.pexels.com/photos/672142/...",
+      "thumb": "https://images.pexels.com/photos/672142/...",
+      "alt": "Macro photo of a butterfly..."
+    }
+  ],
+  "query": "butterflies",
+  "source": "pexels"
+}
+```
+
+**Testing Verified:**
+- Search "butterflies" → 12 real butterfly images from Pexels
+- Search "solar system planets" → 8 space images
+- Search "ancient pyramids" → 8 pyramid images
+- Any search term now returns relevant real-time results
+
+**Files Modified:**
+- `/app/backend/.env` - Added PEXELS_API_KEY
+- `/app/frontend/src/pages/PresentationCreator.js` - Updated credit text
+
+**Third-Party Integration Added:**
+- **Pexels API** - Free stock photo API with 200 req/hour limit
