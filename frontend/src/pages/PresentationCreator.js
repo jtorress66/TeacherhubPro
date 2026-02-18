@@ -1170,33 +1170,13 @@ const PresentationCreator = () => {
                 </div>
               </div>
               
-              {/* Quick suggestions (not categories, just helpful examples) */}
-              {searchResults.length === 0 && (
-                <div className="text-sm text-slate-500">
-                  <p className="mb-2">{language === 'es' ? 'Ideas de búsqueda:' : 'Search ideas:'}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      language === 'es' ? 'planetas' : 'planets',
-                      language === 'es' ? 'dinosaurios' : 'dinosaurs', 
-                      language === 'es' ? 'animales marinos' : 'sea animals',
-                      language === 'es' ? 'volcán' : 'volcano',
-                      language === 'es' ? 'mapas' : 'maps',
-                      language === 'es' ? 'matemáticas' : 'math',
-                      language === 'es' ? 'música' : 'music',
-                      language === 'es' ? 'deportes' : 'sports'
-                    ].map((suggestion) => (
-                      <button
-                        key={suggestion}
-                        onClick={() => {
-                          setImageSearch(suggestion);
-                          searchStockImages(suggestion);
-                        }}
-                        className="px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-full text-xs hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
-                  </div>
+              {/* Empty state hint */}
+              {searchResults.length === 0 && !isSearching && (
+                <div className="text-sm text-slate-500 text-center py-4">
+                  <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p>{language === 'es' 
+                    ? 'Escribe cualquier término para buscar imágenes' 
+                    : 'Type any term to search for images'}</p>
                 </div>
               )}
 
