@@ -1170,6 +1170,15 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
                   <Printer className="h-4 w-4 mr-2" />
                   {t('exportPdf')}
                 </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleExportToCalendar}
+                  className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                  data-testid="add-to-calendar-btn"
+                >
+                  <CalendarPlus className="h-4 w-4 mr-2" />
+                  {language === 'es' ? 'Agregar al Calendario' : 'Add to Calendar'}
+                </Button>
                 <Button variant="outline" onClick={handleDuplicate} data-testid="duplicate-plan-btn">
                   <Copy className="h-4 w-4 mr-2" />
                   {t('duplicateLastWeek')}
