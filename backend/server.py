@@ -546,7 +546,11 @@ async def register(user_data: UserCreate, response: Response):
         "school_id": school_id,
         "language": user_data.language,
         "picture": None,
-        "created_at": now
+        "created_at": now,
+        # Onboarding fields
+        "onboarding_status": "not_started",
+        "first_login_at": now,
+        "settings_completed_at": None
     }
     
     await db.users.insert_one(user_doc)
