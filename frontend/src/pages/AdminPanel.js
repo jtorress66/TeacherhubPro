@@ -1366,6 +1366,7 @@ const AdminPanel = () => {
                   <SelectContent>
                     <SelectItem value="teacher">{language === 'es' ? 'Maestro' : 'Teacher'}</SelectItem>
                     <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="super_admin">{language === 'es' ? 'Super Admin (Plataforma)' : 'Super Admin (Platform)'}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
