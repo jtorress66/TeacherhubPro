@@ -132,6 +132,13 @@ const GamesCreator = () => {
   const [playerName, setPlayerName] = useState('');
   const [showNameInput, setShowNameInput] = useState(false);
   const [gameStartTime, setGameStartTime] = useState(null);
+  
+  // Game-specific state (must be at top level, not after conditional returns)
+  const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+  const [fillBlankAnswer, setFillBlankAnswer] = useState('');
+  const [matchingSelected, setMatchingSelected] = useState({ left: null, right: null });
+  const [matchedPairs, setMatchedPairs] = useState([]);
+  const [shuffledRight, setShuffledRight] = useState([]);
 
   const fetchAnalytics = async () => {
     try {
