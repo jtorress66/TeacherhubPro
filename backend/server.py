@@ -4291,6 +4291,198 @@ async def get_student_progress_dashboard(
     }
 
 
+# ==================== HOMESCHOOL PARENT PORTAL ====================
+
+@api_router.post("/students/{student_id}/homeschool-portal-token")
+async def generate_homeschool_portal_token(
+    student_id: str, 
+    expires_days: int = 30, 
+    user: dict = Depends(get_current_user)
+):
+    """Generate a portal access token for a student's adaptive learning progress (for parents)"""
+    
+    # Verify student exists and belongs to teacher
+    student = await db.students.find_one({"student_id": student_id}, {"_id": 0})
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    # Check if token already exists
+    existing = await db.homeschool_portal_tokens.find_one({"student_id": student_id}, {"_id": 0})
+    
+    if existing:
+        expires_at = existing.get("expires_at", "")
+        if expires_at:
+            try:
+                exp_date = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+                if exp_date > datetime.now(timezone.utc):
+                    return {
+                        "token": existing["token"],
+                        "portal_url": f"/homeschool-portal/{existing['token']}",
+                        "expires_at": expires_at,
+                        "student_id": student_id,
+                        "message": "Existing token still valid"
+                    }
+            except ValueError:
+                pass
+        # Delete expired token
+        await db.homeschool_portal_tokens.delete_one({"token": existing["token"]})
+    
+    # Generate new token
+    token = f"hsp_{uuid.uuid4().hex}"
+    expires_at = (datetime.now(timezone.utc) + timedelta(days=expires_days)).isoformat()
+    
+    await db.homeschool_portal_tokens.insert_one({
+        "token": token,
+        "student_id": student_id,
+        "teacher_id": user.get("user_id"),
+        "expires_at": expires_at,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {
+        "token": token,
+        "portal_url": f"/homeschool-portal/{token}",
+        "expires_at": expires_at,
+        "student_id": student_id,
+        "message": "New token generated"
+    }
+
+
+@api_router.get("/homeschool-portal/{token}")
+async def get_homeschool_portal_data(token: str):
+    """Get adaptive learning progress data for parent portal (no auth required, token-based)"""
+    
+    # Validate token
+    token_doc = await db.homeschool_portal_tokens.find_one({"token": token}, {"_id": 0})
+    if not token_doc:
+        raise HTTPException(status_code=404, detail="Invalid or expired access link")
+    
+    # Check expiration
+    expires_at = token_doc.get("expires_at", "")
+    if expires_at:
+        try:
+            exp_date = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+            if exp_date < datetime.now(timezone.utc):
+                raise HTTPException(status_code=404, detail="Access link has expired")
+        except ValueError:
+            pass
+    
+    student_id = token_doc.get("student_id")
+    
+    # Get student info
+    student = await db.students.find_one({"student_id": student_id}, {"_id": 0})
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    student_name = student.get("name") or f"{student.get('first_name', '')} {student.get('last_name', '')}".strip()
+    
+    # Get school info
+    class_doc = await db.classes.find_one({"class_id": student.get("class_id")}, {"_id": 0})
+    school = None
+    if class_doc:
+        school = await db.schools.find_one({"school_id": class_doc.get("school_id")}, {"_id": 0})
+    
+    # Get all progress records for this student
+    progress_records = await db.adaptive_learning_progress.find(
+        {"student_id": student_id},
+        {"_id": 0}
+    ).to_list(10)
+    
+    # Get all learning paths for this student
+    learning_paths = await db.adaptive_learning_paths.find(
+        {"student_id": student_id},
+        {"_id": 0}
+    ).to_list(10)
+    
+    # Calculate totals
+    total_lessons_completed = 0
+    total_time_spent = 0
+    subjects_data = []
+    recent_activity = []
+    
+    for progress in progress_records:
+        completed_lessons = progress.get("completed_lessons", [])
+        total_lessons_completed += len(completed_lessons)
+        
+        path = next(
+            (p for p in learning_paths if p.get("subject") == progress.get("subject")),
+            None
+        )
+        
+        total_lessons = len(path.get("lessons", [])) if path else 0
+        time_spent = len(completed_lessons) * 15
+        total_time_spent += time_spent
+        
+        subjects_data.append({
+            "subject": progress.get("subject"),
+            "current_level": progress.get("current_level", 1),
+            "completed_lessons": len(completed_lessons),
+            "total_lessons": total_lessons,
+            "time_spent": time_spent,
+            "last_activity": progress.get("last_completed_at")
+        })
+        
+        if path:
+            for lesson in path.get("lessons", []):
+                if lesson.get("completed") or lesson.get("id") in completed_lessons:
+                    recent_activity.append({
+                        "lesson_title": lesson.get("title"),
+                        "subject": progress.get("subject"),
+                        "completed_at": progress.get("last_completed_at", "")[:10] if progress.get("last_completed_at") else ""
+                    })
+    
+    recent_activity = sorted(recent_activity, key=lambda x: x.get("completed_at", ""), reverse=True)[:10]
+    
+    # Calculate streak
+    current_streak = 0
+    if progress_records:
+        last_activities = [p.get("last_completed_at") for p in progress_records if p.get("last_completed_at")]
+        if last_activities:
+            last_activity = max(last_activities)
+            if last_activity:
+                try:
+                    last_date = datetime.fromisoformat(last_activity.replace('Z', '+00:00'))
+                    today = datetime.now(timezone.utc)
+                    days_diff = (today - last_date).days
+                    if days_diff <= 1:
+                        current_streak = min(total_lessons_completed, 7)
+                except ValueError:
+                    pass
+    
+    # Generate achievements
+    achievements = []
+    if total_lessons_completed >= 1:
+        achievements.append({"title": "First Lesson", "earned_at": "Completed"})
+    if total_lessons_completed >= 5:
+        achievements.append({"title": "5 Lessons Complete", "earned_at": "Completed"})
+    if total_lessons_completed >= 10:
+        achievements.append({"title": "Learning Champion", "earned_at": "Completed"})
+    if len(subjects_data) >= 2:
+        achievements.append({"title": "Multi-Subject Learner", "earned_at": "Completed"})
+    if any(s.get("current_level", 1) >= 2 for s in subjects_data):
+        achievements.append({"title": "Level Up!", "earned_at": "Completed"})
+    
+    return {
+        "student": {
+            "student_id": student_id,
+            "name": student_name
+        },
+        "school": {
+            "name": school.get("name") if school else "Homeschool",
+            "logo_url": school.get("logo_url") if school else None
+        } if school else None,
+        "progress": {
+            "subjects": subjects_data,
+            "total_lessons_completed": total_lessons_completed,
+            "total_time_spent": total_time_spent,
+            "current_streak": current_streak,
+            "achievements": achievements,
+            "recent_activity": recent_activity
+        },
+        "language": "es"  # Default to Spanish
+    }
+
+
 # ==================== AI ENDPOINTS MOVED TO routes/ai.py ====================
 # The AI Teaching Assistant endpoints have been refactored to routes/ai.py
 
