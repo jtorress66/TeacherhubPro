@@ -209,11 +209,30 @@ const GamesCreator = () => {
     }
   };
 
-  const startGame = (game) => {
-    setPlayingGame(game);
+  const startGame = (game, isPreview = false) => {
+    if (!isPreview && game.game_id) {
+      // For saved games, show name input first
+      setShowNameInput(true);
+      setPlayingGame(game);
+    } else {
+      // For preview, start immediately
+      setPlayingGame(game);
+      setGameProgress({ current: 0, score: 0, answers: [] });
+      setSelectedAnswer(null);
+      setShowResult(false);
+      setGameStartTime(Date.now());
+    }
+  };
+
+  const startGameWithName = () => {
+    setShowNameInput(false);
     setGameProgress({ current: 0, score: 0, answers: [] });
     setSelectedAnswer(null);
     setShowResult(false);
+    setGameStartTime(Date.now());
+    if (playingGame?.game_id) {
+      fetchLeaderboard(playingGame.game_id);
+    }
   };
 
   const handleAnswer = (answer, correctAnswer) => {
