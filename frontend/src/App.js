@@ -196,6 +196,9 @@ const AppRouter = () => {
       <Route path="/gradebook/reports" element={
         <ProtectedRoute><GradebookReports /></ProtectedRoute>
       } />
+      <Route path="/report-cards" element={
+        <ProtectedRoute><ReportCards /></ProtectedRoute>
+      } />
       <Route path="/classes" element={
         <ProtectedRoute><Classes /></ProtectedRoute>
       } />
