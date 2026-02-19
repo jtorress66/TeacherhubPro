@@ -79,10 +79,11 @@ const ReportCards = () => {
 
   const fetchStudents = async (classId) => {
     try {
-      const res = await axios.get(`${API}/students?class_id=${classId}`, { withCredentials: true });
+      const res = await axios.get(`${API}/classes/${classId}/students`, { withCredentials: true });
       setStudents(res.data || []);
     } catch (error) {
       console.error('Error fetching students:', error);
+      setStudents([]);
     }
   };
 
