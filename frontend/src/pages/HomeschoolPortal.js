@@ -27,10 +27,10 @@ const HomeschoolPortal = () => {
   const [language, setLanguage] = useState('es');
 
   const subjects = [
-    { id: 'math', name: { en: 'Mathematics', es: 'Matemáticas' }, icon: Calculator, color: 'blue' },
-    { id: 'language', name: { en: 'Language Arts', es: 'Lenguaje' }, icon: FileText, color: 'purple' },
-    { id: 'science', name: { en: 'Science', es: 'Ciencias' }, icon: TreePine, color: 'green' },
-    { id: 'reading', name: { en: 'Reading', es: 'Lectura' }, icon: BookOpen, color: 'amber' },
+    { id: 'math', name: { en: 'Mathematics', es: 'Matemáticas', fr: 'Mathématiques', pt: 'Matemática' }, icon: Calculator, color: 'blue' },
+    { id: 'language', name: { en: 'Language Arts', es: 'Lenguaje', fr: 'Arts du Langage', pt: 'Linguagem' }, icon: FileText, color: 'purple' },
+    { id: 'science', name: { en: 'Science', es: 'Ciencias', fr: 'Sciences', pt: 'Ciências' }, icon: TreePine, color: 'green' },
+    { id: 'reading', name: { en: 'Reading', es: 'Lectura', fr: 'Lecture', pt: 'Leitura' }, icon: BookOpen, color: 'amber' },
   ];
 
   useEffect(() => {
