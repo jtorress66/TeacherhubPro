@@ -208,7 +208,7 @@ const Pricing = () => {
   );
 
   const pricingContent = (
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         {/* Trial Expired Alert */}
         {trialExpired && (
           <Alert className="bg-amber-50 border-amber-200 max-w-2xl mx-auto">
@@ -223,10 +223,10 @@ const Pricing = () => {
         
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto">
-          <h1 className="text-4xl font-heading font-bold text-slate-800 mb-4">
+          <h1 className="text-2xl sm:text-4xl font-heading font-bold text-slate-800 mb-3 sm:mb-4">
             {language === 'es' ? 'Elige tu Plan' : 'Choose Your Plan'}
           </h1>
-          <p className="text-lg text-slate-600">
+          <p className="text-base sm:text-lg text-slate-600">
             {language === 'es' 
               ? 'Comienza con 7 días gratis. Cancela en cualquier momento.' 
               : 'Start with a 7-day free trial. Cancel anytime.'}
