@@ -134,7 +134,14 @@ const Layout = ({ children }) => {
           )}>
             <div className="flex items-center justify-between">
               <Link to="/dashboard" className="flex items-center gap-4 group">
-                {school?.logo_url ? (
+                {/* Show TeacherHubPro logo for Platform Admin (super_admin with no school) */}
+                {user?.role === 'super_admin' && !school?.school_id ? (
+                  <img 
+                    src="https://customer-assets.emergentagent.com/job_teachersuite/artifacts/swlef12w_ChatGPT%20Image%20Feb%2015%2C%202026%2C%2009_08_36%20PM.png"
+                    alt="TeacherHubPro" 
+                    className="h-14 w-14 object-contain rounded-xl border-2 border-white/80 bg-white p-1.5 shadow-lg group-hover:shadow-xl transition-all duration-200"
+                  />
+                ) : school?.logo_url ? (
                   <img 
                     src={school.logo_url} 
                     alt={school.name} 
@@ -153,9 +160,16 @@ const Layout = ({ children }) => {
                     className="text-xl font-heading font-bold leading-tight tracking-tight"
                     style={{ color: isDarkMode ? '#f8fafc' : branding.secondary_color }}
                   >
-                    {school?.name || 'TeacherHubPro'}
+                    {user?.role === 'super_admin' && !school?.school_id ? 'TeacherHubPro' : (school?.name || 'TeacherHubPro')}
                   </span>
-                  {school?.name ? (
+                  {user?.role === 'super_admin' && !school?.school_id ? (
+                    <span className={cn(
+                      "text-xs font-medium mt-0.5",
+                      isDarkMode ? "text-purple-400" : "text-purple-600"
+                    )}>
+                      Platform Admin
+                    </span>
+                  ) : school?.name ? (
                     <span className="text-xs font-medium text-muted-foreground mt-0.5">TeacherHubPro</span>
                   ) : (
                     <span className={cn(
@@ -163,6 +177,8 @@ const Layout = ({ children }) => {
                       isDarkMode ? "text-emerald-400" : "text-lime-600"
                     )}>
                       {language === 'es' ? 'Tu aula digital' : 'Your digital classroom'}
+                    </span>
+                  )}
                     </span>
                   )}
                 </div>
