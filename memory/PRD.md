@@ -2005,6 +2005,65 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 - `GET /api/plans/{plan_id}/calendar` - Returns .ics calendar file
 
 ---
+## Update 2026-02-19 - Major Feature Release
+
+### 1. Super Admin Bulk Import Tools ✅
+- **CSV Import for Teachers:** Upload teacher accounts in bulk for schools
+  - Endpoint: `POST /api/super-admin/bulk-import/teachers`
+  - Columns: name, email, password
+  - Auto-validates, previews data, reports errors
+- **CSV Import for Students:** Upload student rosters in bulk for classes
+  - Endpoint: `POST /api/super-admin/bulk-import/students`
+  - Columns: first_name, last_name, student_number, email, date_of_birth, gender
+- **Download Template:** CSV templates available for both import types
+- **UI Location:** Admin Panel → "Importar CSV" tab
+
+### 2. Google Classroom Integration (Visible Option) ✅
+- Added "Integraciones" tab in Admin Panel
+- Shows Google Classroom as available integration
+- Features listed: Import classes, sync grades, OAuth authentication
+- Note: Customer provides their own Google Cloud credentials
+- Placeholder for future integrations (Canvas, Schoology, Microsoft Teams)
+
+### 3. Report Card Generation ✅
+- **New Page:** `/report-cards`
+- **Features:**
+  - Select class, student, and semester
+  - Auto-calculates GPA (4.0 scale) from grades
+  - Displays attendance summary (present, absent, tardy, rate)
+  - Teacher comments field
+  - Professional printable format with:
+    - School branding (logo, name, address)
+    - Student information
+    - Grades by category with letter grades
+    - Attendance stats
+    - Signature lines (teacher, principal, parent)
+  - Print-ready PDF output
+- **Backend Endpoint:** `GET /api/report-cards/generate`
+
+### 4. Pricing Page Mobile Fix ✅
+- Fixed invisible text on mobile (white text on light background)
+- Added explicit text colors: `text-slate-800`, `text-slate-700`, etc.
+- Made header responsive for mobile
+
+### Files Created/Modified
+- `/app/frontend/src/pages/ReportCards.js` - NEW: Full report card generation page
+- `/app/frontend/src/pages/AdminPanel.js` - Added Bulk Import and Integrations tabs
+- `/app/frontend/src/pages/Pricing.js` - Fixed mobile text visibility
+- `/app/frontend/src/components/Layout.js` - Added Report Cards nav item
+- `/app/frontend/src/App.js` - Added Report Cards route
+- `/app/backend/server.py` - Added bulk import endpoints, report card endpoint
+
+### New API Endpoints
+- `POST /api/super-admin/bulk-import/teachers` - Bulk import teachers from CSV
+- `POST /api/super-admin/bulk-import/students` - Bulk import students from CSV
+- `GET /api/super-admin/schools/{school_id}/classes` - Get classes for a school
+- `GET /api/report-cards/generate` - Generate report card data
+
+### Test Credentials
+- **Super Admin:** admin@teacherhubpro.com / admin123
+
+---
 ## Pending Tasks (Prioritized)
 
 ### P0 - Critical Bugs (User Verification Pending)
@@ -2013,14 +2072,11 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 3. ~~"Template of the Week" Bug~~ - Fix implemented, needs verification
 
 ### P1 - Important Tasks
-1. **Refactor server.py** - Break into domain-specific route files (recurring issue)
+1. **Refactor server.py** - Break into domain-specific route files (recurring issue x8)
 2. Drag-and-Drop Seating Chart Editor
 3. Quick Week Copy button
-4. Super Admin Bulk Tools (CSV import)
 
 ### P2 - Future Features
 - Audit Log for critical actions
-- Google Classroom Integration
-- Report Card Generation
 - Planner Style Customization
 - Community Templates
