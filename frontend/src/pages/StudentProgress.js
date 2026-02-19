@@ -34,6 +34,9 @@ const StudentProgress = () => {
   const [progressData, setProgressData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(false);
+  const [sharingLink, setSharingLink] = useState(false);
+  const [portalLink, setPortalLink] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const subjects = [
     { id: 'math', name: language === 'es' ? 'Matemáticas' : 'Mathematics', icon: Calculator, color: 'blue' },
