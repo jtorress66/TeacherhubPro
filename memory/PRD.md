@@ -1,5 +1,67 @@
 # TeacherHub - Product Requirements Document
 
+---
+## Update 2026-02-19 - Bug Fixes: Report Cards & Educational Games
+
+### 1. Report Card Grades Not Showing - FIXED ✅
+**Problem:** Report Cards page showed "No grades recorded" even though grades existed in the Gradebook.
+
+**Root Cause:** The `/api/report-cards/generate` endpoint was querying the `grades` collection using `class_id`, but grades are linked through `assignment_id`. The query was wrong:
+```python
+# OLD (Wrong)
+db.grades.find({"student_id": student_id, "class_id": class_id})
+
+# NEW (Correct)
+assignments = db.assignments.find({"class_id": class_id})
+assignment_ids = [a["assignment_id"] for a in assignments]
+db.grades.find({"student_id": student_id, "assignment_id": {"$in": assignment_ids}})
+```
+
+**Fix Applied:** 
+- Modified `server.py` report-cards/generate endpoint (line ~3690)
+- Now properly fetches assignments for the class first, then gets grades via assignment_ids
+- Also fixed attendance lookup to check both `records` and `students` fields
+- Fixed `grade_level` vs `grade` field mismatch in class response
+
+### 2. Educational Games Not Rendering Properly - FIXED ✅
+**Problem:** The Games Creator only rendered quiz-style games. Other game types (Flashcards, Matching, etc.) showed broken or missing UI.
+
+**Root Cause:** The game player component only had rendering logic for multiple-choice questions with `options`. Games like Flashcards, Fill-in-Blanks, and Matching use different data structures.
+
+**Fix Applied:**
+- Added `renderGameContent()` function with UI for all 8 game types:
+  - **Quiz / True-False:** Multiple choice buttons
+  - **Flashcards:** Flip card animation with front/back
+  - **Fill-in-Blanks:** Text input with validation
+  - **Matching:** Two-column selection for pairing
+  - **Word Search:** Grid display with word list
+  - **Crossword:** Clue list with Across/Down
+  - **Drag-Drop:** Sortable item list
+
+### 3. React Hooks Violation - FIXED ✅
+**Problem:** GamesCreator.js crashed with "Rendered fewer hooks than expected" error.
+
+**Root Cause:** useState and useEffect hooks were defined after conditional early returns, violating React's Rules of Hooks.
+
+**Fix Applied:** Moved all hook declarations to the top of the component before any conditional returns.
+
+### Files Modified
+- `/app/backend/server.py` - Report card grade fetching logic
+- `/app/frontend/src/pages/GamesCreator.js` - Game rendering for all types + hooks restructure
+
+### Test Results
+- **Backend:** 95% (19/20 tests passed)
+- **Frontend:** 100%
+- **Test Report:** `/app/test_reports/iteration_19.json`
+
+### Verified Working
+- Report Cards now show grades from Gradebook ✅
+- All 8 game types generate and render correctly ✅
+- GPA calculation works (4.00 for 92% score) ✅
+- Game leaderboards and analytics functional ✅
+
+
+
 ## Original Problem Statement
 Build a teacher-focused web app that replaces paper planners with a digital solution. The app handles lesson planning (weekly with objectives, skills, taxonomy levels, activities/materials, standards), grades, attendance, and common teacher workflows.
 
