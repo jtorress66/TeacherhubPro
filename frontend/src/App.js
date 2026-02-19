@@ -234,6 +234,9 @@ const AppRouter = () => {
       <Route path="/student-progress/:studentId" element={
         <ProtectedRoute><StudentProgress /></ProtectedRoute>
       } />
+      <Route path="/games" element={
+        <ProtectedRoute><GamesCreator /></ProtectedRoute>
+      } />
       <Route path="/admin" element={
         <ProtectedRoute requireSubscription={false}><AdminPanel /></ProtectedRoute>
       } />
