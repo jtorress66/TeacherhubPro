@@ -92,6 +92,36 @@ const StudentProgress = () => {
     }
   };
 
+  const generateParentLink = async () => {
+    if (!selectedStudent) return;
+    
+    setSharingLink(true);
+    try {
+      const response = await axios.post(
+        `${API}/students/${selectedStudent}/homeschool-portal-token`,
+        {},
+        { withCredentials: true }
+      );
+      
+      const baseUrl = window.location.origin;
+      const fullLink = `${baseUrl}${response.data.portal_url}`;
+      setPortalLink(fullLink);
+      toast.success(language === 'es' ? 'Enlace generado' : 'Link generated');
+    } catch (error) {
+      console.error('Error generating link:', error);
+      toast.error(language === 'es' ? 'Error al generar enlace' : 'Error generating link');
+    } finally {
+      setSharingLink(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(portalLink);
+    setCopied(true);
+    toast.success(language === 'es' ? 'Enlace copiado' : 'Link copied');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const getSubjectInfo = (subjectId) => {
     return subjects.find(s => s.id === subjectId) || subjects[0];
   };
