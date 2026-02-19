@@ -37,6 +37,15 @@ const StudentProgress = () => {
   const [sharingLink, setSharingLink] = useState(false);
   const [portalLink, setPortalLink] = useState('');
   const [copied, setCopied] = useState(false);
+  const [portalLanguage, setPortalLanguage] = useState('es');
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+
+  const portalLanguages = [
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    { code: 'pt', name: 'Português', flag: '🇧🇷' },
+  ];
 
   const subjects = [
     { id: 'math', name: language === 'es' ? 'Matemáticas' : 'Mathematics', icon: Calculator, color: 'blue' },
