@@ -754,6 +754,18 @@ async def get_onboarding_status(user: dict = Depends(get_current_user)):
     """Get user's onboarding status with setup completion check"""
     user_id = user["user_id"]
     school_id = user.get("school_id")
+    user_role = user.get("role")
+    
+    # Super Admin skips onboarding entirely - they manage the platform
+    if user_role == "super_admin":
+        return {
+            "onboarding_status": "completed",
+            "setup_items": {},
+            "completed_count": 0,
+            "total_count": 0,
+            "show_welcome": False,
+            "is_super_admin": True
+        }
     
     # Check actual setup completion (Option C - detect "not configured yet")
     school = await db.schools.find_one({"school_id": school_id}, {"_id": 0}) if school_id else None
