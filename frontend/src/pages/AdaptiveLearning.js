@@ -677,9 +677,21 @@ const AdaptiveLearning = () => {
                   <CardTitle className="text-xl">{currentLesson.title}</CardTitle>
                   <CardDescription>{currentLesson.objective}</CardDescription>
                 </div>
-                <Button variant="outline" onClick={() => setCurrentLesson(null)}>
-                  {language === 'es' ? 'Volver' : 'Back'}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => downloadLessonPDF(currentLesson)}
+                    className="border-purple-300 text-purple-700 hover:bg-purple-50"
+                    data-testid="download-lesson-pdf"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    {language === 'es' ? 'PDF' : 'PDF'}
+                  </Button>
+                  <Button variant="outline" onClick={() => setCurrentLesson(null)}>
+                    {language === 'es' ? 'Volver' : 'Back'}
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
