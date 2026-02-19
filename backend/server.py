@@ -3812,7 +3812,8 @@ async def generate_report_card(
     excused_count = 0
     
     for session in attendance_records:
-        students_attendance = session.get("students", [])
+        # Check both 'records' (actual schema) and 'students' (for backwards compat)
+        students_attendance = session.get("records", session.get("students", []))
         for sa in students_attendance:
             if sa.get("student_id") == student_id:
                 status = sa.get("status", "")
