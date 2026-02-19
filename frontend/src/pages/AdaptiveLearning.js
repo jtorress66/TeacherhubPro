@@ -510,10 +510,21 @@ const AdaptiveLearning = () => {
                 : 'AI that adapts to each student\'s learning pace'}
             </p>
           </div>
-          <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2">
-            <Sparkles className="h-4 w-4 mr-2" />
-            {language === 'es' ? 'Impulsado por IA' : 'AI-Powered'}
-          </Badge>
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="outline"
+              onClick={() => navigate('/student-progress')}
+              className="border-purple-200 text-purple-700 hover:bg-purple-50"
+              data-testid="view-progress-dashboard"
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              {language === 'es' ? 'Ver Progreso' : 'View Progress'}
+            </Button>
+            <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2">
+              <Sparkles className="h-4 w-4 mr-2" />
+              {language === 'es' ? 'Impulsado por IA' : 'AI-Powered'}
+            </Badge>
+          </div>
         </div>
 
         {/* Selection Panel */}
