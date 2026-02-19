@@ -386,20 +386,43 @@ const StudentProgress = () => {
               {language === 'es' ? 'Volver a Aprendizaje' : 'Back to Learning'}
             </Button>
             {selectedStudent && (
-              <Button
-                variant="outline"
-                onClick={generateParentLink}
-                disabled={sharingLink}
-                className="border-green-200 text-green-700 hover:bg-green-50"
-                data-testid="share-with-parent-btn"
-              >
-                {sharingLink ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Share2 className="h-4 w-4 mr-2" />
+              <div className="relative">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowLanguageSelector(!showLanguageSelector)}
+                  disabled={sharingLink}
+                  className="border-green-200 text-green-700 hover:bg-green-50"
+                  data-testid="share-with-parent-btn"
+                >
+                  {sharingLink ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Share2 className="h-4 w-4 mr-2" />
+                  )}
+                  {language === 'es' ? 'Compartir con Padre' : 'Share with Parent'}
+                  <ChevronDown className="h-4 w-4 ml-2" />
+                </Button>
+                {showLanguageSelector && (
+                  <div className="absolute top-full left-0 mt-2 bg-white rounded-lg shadow-lg border p-2 z-50 min-w-[200px]">
+                    <p className="text-xs text-slate-500 px-2 py-1 font-medium">
+                      {language === 'es' ? 'Idioma del Portal:' : 'Portal Language:'}
+                    </p>
+                    {portalLanguages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => generateParentLink(lang.code)}
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded hover:bg-green-50 text-left"
+                      >
+                        <span className="text-lg">{lang.flag}</span>
+                        <span className="text-sm text-slate-700">{lang.name}</span>
+                        {portalLanguage === lang.code && portalLink && (
+                          <Check className="h-4 w-4 text-green-600 ml-auto" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
                 )}
-                {language === 'es' ? 'Compartir con Padre' : 'Share with Parent'}
-              </Button>
+              </div>
             )}
             {progressData && (
               <Button
@@ -423,9 +446,14 @@ const StudentProgress = () => {
                   <Share2 className="h-5 w-5 text-green-600" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-slate-700">
-                    {language === 'es' ? 'Enlace del Portal para Padres' : 'Parent Portal Link'}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-slate-700">
+                      {language === 'es' ? 'Enlace del Portal para Padres' : 'Parent Portal Link'}
+                    </p>
+                    <Badge variant="outline" className="text-xs">
+                      {portalLanguages.find(l => l.code === portalLanguage)?.flag} {portalLanguages.find(l => l.code === portalLanguage)?.name}
+                    </Badge>
+                  </div>
                   <p className="text-xs text-slate-500 truncate max-w-md">{portalLink}</p>
                 </div>
                 <Button
