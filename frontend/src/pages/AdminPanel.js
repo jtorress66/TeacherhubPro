@@ -17,7 +17,8 @@ import { toast } from 'sonner';
 import { 
   Building2, Users, BookOpen, GraduationCap, Calendar, 
   Plus, Edit, Trash2, Key, Loader2, Search, Upload,
-  Palette, Shield, ChevronRight, BarChart3, School, CalendarDays
+  Palette, Shield, ChevronRight, BarChart3, School, CalendarDays,
+  FileSpreadsheet, Download, AlertCircle, CheckCircle2, Link2, ExternalLink
 } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
