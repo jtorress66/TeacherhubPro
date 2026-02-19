@@ -13,7 +13,8 @@ import { toast } from 'sonner';
 import { 
   Brain, Sparkles, Target, TrendingUp, BookOpen, Calculator, 
   FileText, TreePine, Loader2, Play, CheckCircle2, Clock, 
-  Award, Zap, ChevronRight, RefreshCw, Volume2, Download, Printer
+  Award, Zap, ChevronRight, RefreshCw, Volume2, Download, Printer,
+  BarChart3
 } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
