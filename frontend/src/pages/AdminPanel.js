@@ -716,6 +716,428 @@ const AdminPanel = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Bulk Import Tab */}
+          <TabsContent value="bulk-import" className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold">{language === 'es' ? 'Importación Masiva CSV' : 'Bulk CSV Import'}</h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  {language === 'es' 
+                    ? 'Importe maestros o estudiantes usando un archivo CSV' 
+                    : 'Import teachers or students using a CSV file'}
+                </p>
+              </div>
+            </div>
+
+            {/* Import Type Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">{language === 'es' ? 'Tipo de Importación' : 'Import Type'}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    className={`p-4 rounded-xl border-2 text-left transition-all ${
+                      bulkImportType === 'teachers' 
+                        ? 'border-purple-500 bg-purple-50' 
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                    onClick={() => setBulkImportType('teachers')}
+                  >
+                    <Users className={`h-8 w-8 mb-2 ${bulkImportType === 'teachers' ? 'text-purple-600' : 'text-slate-400'}`} />
+                    <p className="font-medium">{language === 'es' ? 'Maestros' : 'Teachers'}</p>
+                    <p className="text-sm text-slate-500">
+                      {language === 'es' ? 'Crear cuentas de maestros para una escuela' : 'Create teacher accounts for a school'}
+                    </p>
+                  </button>
+                  <button
+                    className={`p-4 rounded-xl border-2 text-left transition-all ${
+                      bulkImportType === 'students' 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                    onClick={() => setBulkImportType('students')}
+                  >
+                    <GraduationCap className={`h-8 w-8 mb-2 ${bulkImportType === 'students' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    <p className="font-medium">{language === 'es' ? 'Estudiantes' : 'Students'}</p>
+                    <p className="text-sm text-slate-500">
+                      {language === 'es' ? 'Agregar estudiantes a una clase' : 'Add students to a class'}
+                    </p>
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* School/Class Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">{language === 'es' ? 'Destino' : 'Destination'}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label>{language === 'es' ? 'Escuela' : 'School'} *</Label>
+                  <Select 
+                    value={selectedSchoolForImport} 
+                    onValueChange={async (v) => {
+                      setSelectedSchoolForImport(v);
+                      setSelectedClassForImport('');
+                      if (bulkImportType === 'students' && v) {
+                        try {
+                          const res = await axios.get(`${API}/super-admin/schools/${v}/classes`, { withCredentials: true });
+                          setClassesForSchool(res.data.classes || []);
+                        } catch (e) {
+                          setClassesForSchool([]);
+                        }
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={language === 'es' ? 'Seleccionar escuela' : 'Select school'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {schools.map(s => (
+                        <SelectItem key={s.school_id} value={s.school_id}>{s.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {bulkImportType === 'students' && (
+                  <div>
+                    <Label>{language === 'es' ? 'Clase' : 'Class'} *</Label>
+                    <Select 
+                      value={selectedClassForImport} 
+                      onValueChange={setSelectedClassForImport}
+                      disabled={!selectedSchoolForImport}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={language === 'es' ? 'Seleccionar clase' : 'Select class'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {classesForSchool.map(c => (
+                          <SelectItem key={c.class_id} value={c.class_id}>{c.name} - {c.grade_level}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* CSV Upload */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center justify-between">
+                  <span>{language === 'es' ? 'Archivo CSV' : 'CSV File'}</span>
+                  <Button variant="outline" size="sm" onClick={() => {
+                    const template = bulkImportType === 'teachers'
+                      ? 'name,email,password\nJohn Doe,john@school.edu,temp123\nJane Smith,jane@school.edu,temp456'
+                      : 'first_name,last_name,student_number,email,date_of_birth,gender\nJohn,Doe,STU001,john@students.edu,2015-05-15,M\nJane,Smith,STU002,jane@students.edu,2015-08-20,F';
+                    const blob = new Blob([template], { type: 'text/csv' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${bulkImportType}_template.csv`;
+                    a.click();
+                  }}>
+                    <Download className="h-4 w-4 mr-2" />
+                    {language === 'es' ? 'Descargar Plantilla' : 'Download Template'}
+                  </Button>
+                </CardTitle>
+                <CardDescription>
+                  {bulkImportType === 'teachers' 
+                    ? (language === 'es' ? 'Columnas requeridas: name, email, password' : 'Required columns: name, email, password')
+                    : (language === 'es' ? 'Columnas requeridas: first_name, last_name, student_number' : 'Required columns: first_name, last_name, student_number')
+                  }
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div 
+                  className="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer hover:border-slate-400 transition-colors"
+                  onClick={() => document.getElementById('csv-file-input').click()}
+                >
+                  <input
+                    id="csv-file-input"
+                    type="file"
+                    accept=".csv"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        setCsvFile(file);
+                        setCsvErrors([]);
+                        setImportResults(null);
+                        // Parse CSV
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                          const text = event.target.result;
+                          const lines = text.split('\n').filter(line => line.trim());
+                          const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+                          const data = [];
+                          const errors = [];
+                          
+                          for (let i = 1; i < lines.length; i++) {
+                            const values = lines[i].split(',').map(v => v.trim());
+                            const row = {};
+                            headers.forEach((h, idx) => row[h] = values[idx] || '');
+                            
+                            // Validate required fields
+                            if (bulkImportType === 'teachers') {
+                              if (!row.name || !row.email) {
+                                errors.push(`Row ${i}: Missing name or email`);
+                              }
+                            } else {
+                              if (!row.first_name || !row.last_name) {
+                                errors.push(`Row ${i}: Missing first_name or last_name`);
+                              }
+                            }
+                            data.push(row);
+                          }
+                          setCsvData(data);
+                          setCsvErrors(errors);
+                        };
+                        reader.readAsText(file);
+                      }
+                    }}
+                  />
+                  <Upload className="h-10 w-10 text-slate-400 mx-auto mb-3" />
+                  <p className="text-slate-600 font-medium">
+                    {csvFile ? csvFile.name : (language === 'es' ? 'Haga clic para seleccionar archivo CSV' : 'Click to select CSV file')}
+                  </p>
+                  <p className="text-sm text-slate-500 mt-1">
+                    {language === 'es' ? 'o arrastre y suelte aquí' : 'or drag and drop here'}
+                  </p>
+                </div>
+
+                {/* CSV Preview */}
+                {csvData.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium text-slate-700">
+                        {language === 'es' ? 'Vista Previa' : 'Preview'}: {csvData.length} {language === 'es' ? 'registros' : 'records'}
+                      </p>
+                      {csvErrors.length > 0 && (
+                        <Badge variant="destructive" className="gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {csvErrors.length} {language === 'es' ? 'errores' : 'errors'}
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    {csvErrors.length > 0 && (
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                        <p className="text-sm font-medium text-red-800 mb-2">{language === 'es' ? 'Errores encontrados:' : 'Errors found:'}</p>
+                        <ul className="text-sm text-red-600 space-y-1">
+                          {csvErrors.slice(0, 5).map((err, i) => <li key={i}>• {err}</li>)}
+                          {csvErrors.length > 5 && <li>... {language === 'es' ? `y ${csvErrors.length - 5} más` : `and ${csvErrors.length - 5} more`}</li>}
+                        </ul>
+                      </div>
+                    )}
+
+                    <div className="border rounded-lg overflow-x-auto max-h-64 overflow-y-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-slate-50 sticky top-0">
+                          <tr>
+                            {Object.keys(csvData[0] || {}).map(key => (
+                              <th key={key} className="p-2 text-left font-medium text-slate-600 border-b">{key}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {csvData.slice(0, 10).map((row, i) => (
+                            <tr key={i} className="border-b hover:bg-slate-50">
+                              {Object.values(row).map((val, j) => (
+                                <td key={j} className="p-2 text-slate-700">{val || '-'}</td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {csvData.length > 10 && (
+                      <p className="text-sm text-slate-500 text-center">
+                        {language === 'es' ? `Mostrando 10 de ${csvData.length} registros` : `Showing 10 of ${csvData.length} records`}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Import Results */}
+                {importResults && (
+                  <div className={`p-4 rounded-lg ${importResults.success ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      {importResults.success ? (
+                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                      ) : (
+                        <AlertCircle className="h-5 w-5 text-red-600" />
+                      )}
+                      <p className={`font-medium ${importResults.success ? 'text-green-800' : 'text-red-800'}`}>
+                        {importResults.message}
+                      </p>
+                    </div>
+                    {importResults.details && (
+                      <p className="text-sm text-slate-600">{importResults.details}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Import Button */}
+                <Button 
+                  className="w-full"
+                  disabled={
+                    importing || 
+                    csvData.length === 0 || 
+                    csvErrors.length > 0 || 
+                    !selectedSchoolForImport ||
+                    (bulkImportType === 'students' && !selectedClassForImport)
+                  }
+                  onClick={async () => {
+                    setImporting(true);
+                    try {
+                      const endpoint = bulkImportType === 'teachers' 
+                        ? `${API}/super-admin/bulk-import/teachers`
+                        : `${API}/super-admin/bulk-import/students`;
+                      
+                      const payload = {
+                        school_id: selectedSchoolForImport,
+                        class_id: bulkImportType === 'students' ? selectedClassForImport : undefined,
+                        data: csvData
+                      };
+                      
+                      const res = await axios.post(endpoint, payload, { withCredentials: true });
+                      setImportResults({
+                        success: true,
+                        message: language === 'es' ? '¡Importación exitosa!' : 'Import successful!',
+                        details: `${res.data.imported_count} ${bulkImportType} ${language === 'es' ? 'importados' : 'imported'}`
+                      });
+                      setCsvFile(null);
+                      setCsvData([]);
+                      fetchData();
+                    } catch (error) {
+                      setImportResults({
+                        success: false,
+                        message: language === 'es' ? 'Error en la importación' : 'Import failed',
+                        details: error.response?.data?.detail || error.message
+                      });
+                    } finally {
+                      setImporting(false);
+                    }
+                  }}
+                >
+                  {importing ? (
+                    <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {language === 'es' ? 'Importando...' : 'Importing...'}</>
+                  ) : (
+                    <><Upload className="h-4 w-4 mr-2" /> {language === 'es' ? 'Importar Datos' : 'Import Data'}</>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Integrations Tab */}
+          <TabsContent value="integrations" className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold">{language === 'es' ? 'Integraciones Disponibles' : 'Available Integrations'}</h2>
+              <p className="text-sm text-slate-500 mt-1">
+                {language === 'es' 
+                  ? 'Conecte servicios externos para mejorar la experiencia de sus clientes' 
+                  : 'Connect external services to enhance your customers\' experience'}
+              </p>
+            </div>
+
+            <div className="grid gap-4">
+              {/* Google Classroom Integration */}
+              <Card className="border-2 border-blue-100 bg-gradient-to-br from-blue-50/50 to-white">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 rounded-xl bg-white shadow-sm border">
+                      <svg className="h-10 w-10" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold text-slate-800 text-lg">Google Classroom</h3>
+                        <Badge className="bg-green-100 text-green-800">
+                          {language === 'es' ? 'Disponible' : 'Available'}
+                        </Badge>
+                      </div>
+                      <p className="text-slate-600 mb-4">
+                        {language === 'es' 
+                          ? 'Sincronice clases, estudiantes y calificaciones con Google Classroom. Los clientes pueden conectar su propia cuenta de Google Classroom.'
+                          : 'Sync classes, students, and grades with Google Classroom. Customers can connect their own Google Classroom account.'}
+                      </p>
+                      <div className="bg-white rounded-lg p-4 border mb-4">
+                        <p className="font-medium text-slate-700 mb-2">{language === 'es' ? 'Características:' : 'Features:'}</p>
+                        <ul className="text-sm text-slate-600 space-y-1">
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 text-green-600" />
+                            {language === 'es' ? 'Importar clases y listas de estudiantes' : 'Import classes and student rosters'}
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 text-green-600" />
+                            {language === 'es' ? 'Sincronizar tareas y calificaciones' : 'Sync assignments and grades'}
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 text-green-600" />
+                            {language === 'es' ? 'Autenticación OAuth segura' : 'Secure OAuth authentication'}
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Button variant="outline" className="gap-2">
+                          <ExternalLink className="h-4 w-4" />
+                          {language === 'es' ? 'Ver Documentación' : 'View Documentation'}
+                        </Button>
+                        <p className="text-sm text-slate-500">
+                          {language === 'es' 
+                            ? 'El cliente debe proporcionar sus credenciales de Google Cloud'
+                            : 'Customer must provide their Google Cloud credentials'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Future Integrations Placeholder */}
+              <Card className="border-dashed border-2 bg-slate-50/50">
+                <CardContent className="p-6 text-center">
+                  <Link2 className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+                  <h3 className="font-medium text-slate-600">
+                    {language === 'es' ? 'Más Integraciones Próximamente' : 'More Integrations Coming Soon'}
+                  </h3>
+                  <p className="text-sm text-slate-500 mt-1">
+                    {language === 'es' 
+                      ? 'Canvas, Schoology, Microsoft Teams, y más'
+                      : 'Canvas, Schoology, Microsoft Teams, and more'}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Integration Request */}
+            <Card className="bg-purple-50 border-purple-100">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-purple-100">
+                    <Link2 className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-purple-800">
+                      {language === 'es' ? '¿Necesita una integración específica?' : 'Need a specific integration?'}
+                    </p>
+                    <p className="text-sm text-purple-700 mt-1">
+                      {language === 'es' 
+                        ? 'Contáctenos para solicitar integraciones personalizadas para sus clientes.'
+                        : 'Contact us to request custom integrations for your customers.'}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
 
         {/* School Dialog */}
