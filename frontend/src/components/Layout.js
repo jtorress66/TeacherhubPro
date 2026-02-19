@@ -27,7 +27,8 @@ import {
   Sun,
   Presentation,
   GraduationCap,
-  Brain
+  Brain,
+  TrendingUp
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
