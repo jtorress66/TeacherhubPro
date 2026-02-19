@@ -4323,21 +4323,30 @@ async def get_student_progress_dashboard(
 
 # ==================== HOMESCHOOL PARENT PORTAL ====================
 
+class PortalTokenRequest(BaseModel):
+    language: str = "es"
+
 @api_router.post("/students/{student_id}/homeschool-portal-token")
 async def generate_homeschool_portal_token(
     student_id: str, 
-    expires_days: int = 30, 
+    request: PortalTokenRequest = None,
     user: dict = Depends(get_current_user)
 ):
     """Generate a portal access token for a student's adaptive learning progress (for parents)"""
+    
+    portal_language = request.language if request else "es"
+    expires_days = 30
     
     # Verify student exists and belongs to teacher
     student = await db.students.find_one({"student_id": student_id}, {"_id": 0})
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
     
-    # Check if token already exists
-    existing = await db.homeschool_portal_tokens.find_one({"student_id": student_id}, {"_id": 0})
+    # Check if token already exists for same language
+    existing = await db.homeschool_portal_tokens.find_one({
+        "student_id": student_id,
+        "language": portal_language
+    }, {"_id": 0})
     
     if existing:
         expires_at = existing.get("expires_at", "")
@@ -4350,6 +4359,7 @@ async def generate_homeschool_portal_token(
                         "portal_url": f"/homeschool-portal/{existing['token']}",
                         "expires_at": expires_at,
                         "student_id": student_id,
+                        "language": portal_language,
                         "message": "Existing token still valid"
                     }
             except ValueError:
@@ -4365,6 +4375,7 @@ async def generate_homeschool_portal_token(
         "token": token,
         "student_id": student_id,
         "teacher_id": user.get("user_id"),
+        "language": portal_language,
         "expires_at": expires_at,
         "created_at": datetime.now(timezone.utc).isoformat()
     })
@@ -4374,6 +4385,7 @@ async def generate_homeschool_portal_token(
         "portal_url": f"/homeschool-portal/{token}",
         "expires_at": expires_at,
         "student_id": student_id,
+        "language": portal_language,
         "message": "New token generated"
     }
 
