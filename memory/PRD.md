@@ -1128,6 +1128,66 @@ Parent-facing dashboard showing comprehensive overview of child's adaptive learn
 ### Files Created/Modified
 - **NEW:** `/app/frontend/src/pages/StudentProgress.js` - Complete progress dashboard page
 - **MODIFIED:** `/app/frontend/src/pages/AdaptiveLearning.js` - Added "View Progress" button
+
+
+---
+## Update 2026-02-19 - Parent Portal & Report Cards
+
+### 1. Homeschool Parent Portal ✅
+Token-based access for parents to view their child's adaptive learning progress without creating an account.
+
+**Features:**
+- Generate shareable portal link (30-day expiration)
+- Public page accessible via token - no login required
+- Shows student stats: lessons completed, study time, streak, achievements
+- Subject-by-subject progress with level tracking
+- Recent activity feed
+- Bilingual support (English/Spanish auto-detected)
+
+**API Endpoints:**
+- `POST /api/students/{student_id}/homeschool-portal-token` - Generate portal token
+- `GET /api/homeschool-portal/{token}` - Get student progress (no auth)
+
+**Database Collection:**
+- `homeschool_portal_tokens` - Stores tokens with expiration
+
+**Files Created/Modified:**
+- **NEW:** `/app/frontend/src/pages/HomeschoolPortal.js` - Public portal page
+- **MODIFIED:** `/app/frontend/src/pages/StudentProgress.js` - Added "Share with Parent" button
+- **MODIFIED:** `/app/frontend/src/App.js` - Added `/homeschool-portal/:token` route
+- **MODIFIED:** `/app/backend/server.py` - Added portal endpoints
+
+### 2. Report Card Generation Fix ✅
+Fixed the class/student selection functionality.
+
+**Bug Fixed:**
+- `ReportCards.js` was calling wrong endpoint `/api/students?class_id=...`
+- Changed to correct endpoint `/api/classes/{class_id}/students`
+- Fixed school endpoint from `/api/school` to `/api/schools`
+
+**Working Flow:**
+1. Select class from dropdown
+2. Students populate automatically
+3. Generate Report Card shows preview with grades and attendance
+
+### 3. Template of the Week Verification ✅
+Verified the Template of the Week feature is working correctly.
+
+**Flow Tested:**
+1. Dashboard displays "Plantilla de la Semana" card with template info
+2. Click "Usar esta plantilla" button
+3. Navigates to `/planner/new` with `{ templateId, isStarter: true }`
+4. LessonPlanner fetches and applies template
+5. Template content appears in AI suggestions
+
+**Test Results:**
+- **Backend:** 100% (15/15 tests passed)
+- **Frontend:** 100% (all features verified)
+- **Test Report:** `/app/test_reports/iteration_16.json`
+
+### Test Credentials
+- **Portal Token:** `hsp_f203a47563f94f85958b588ff45e2840` (for Maria Garcia)
+
 - **MODIFIED:** `/app/frontend/src/App.js` - Added `/student-progress` and `/student-progress/:studentId` routes
 - **MODIFIED:** `/app/frontend/src/components/Layout.js` - Added nav link with TrendingUp icon and NEW badge
 - **MODIFIED:** `/app/backend/server.py` - Added dashboard endpoint
