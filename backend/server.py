@@ -3839,7 +3839,7 @@ async def generate_report_card(
         "class": {
             "class_id": class_doc["class_id"],
             "name": class_doc.get("name"),
-            "grade_level": class_doc.get("grade_level"),
+            "grade_level": class_doc.get("grade") or class_doc.get("grade_level"),
             "subject": class_doc.get("subject")
         },
         "grades": grades_list,
