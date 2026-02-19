@@ -3524,6 +3524,155 @@ async def bulk_create_users(data: BulkUserCreate, request: Request):
         "errors": errors
     }
 
+# Bulk Import Models
+class BulkTeacherImport(BaseModel):
+    school_id: str
+    data: List[dict]
+
+class BulkStudentImport(BaseModel):
+    school_id: str
+    class_id: str
+    data: List[dict]
+
+@api_router.post("/super-admin/bulk-import/teachers")
+async def bulk_import_teachers(payload: BulkTeacherImport, request: Request):
+    """Bulk import teachers from CSV data"""
+    await require_super_admin(request)
+    
+    # Verify school exists
+    school = await db.schools.find_one({"school_id": payload.school_id})
+    if not school:
+        raise HTTPException(status_code=404, detail="School not found")
+    
+    imported_count = 0
+    errors = []
+    created_users = []
+    
+    for row in payload.data:
+        try:
+            email = row.get('email', '').strip()
+            name = row.get('name', '').strip()
+            password = row.get('password', f"Welcome{uuid.uuid4().hex[:6]}!")
+            
+            if not email or not name:
+                errors.append(f"Missing name or email: {row}")
+                continue
+            
+            # Check if email exists
+            existing = await db.users.find_one({"email": email})
+            if existing:
+                errors.append(f"Email already exists: {email}")
+                continue
+            
+            user_id = f"user_{uuid.uuid4().hex[:12]}"
+            password_hash = pwd_context.hash(password)
+            
+            user_doc = {
+                "user_id": user_id,
+                "email": email,
+                "name": name,
+                "password_hash": password_hash,
+                "school_id": payload.school_id,
+                "role": "teacher",
+                "language": "es",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            await db.users.insert_one(user_doc)
+            created_users.append({"email": email, "name": name, "temp_password": password})
+            imported_count += 1
+            
+        except Exception as e:
+            errors.append(f"Error importing {row.get('email', 'unknown')}: {str(e)}")
+    
+    return {
+        "imported_count": imported_count,
+        "created_users": created_users,
+        "errors": errors,
+        "message": f"Successfully imported {imported_count} teachers"
+    }
+
+@api_router.post("/super-admin/bulk-import/students")
+async def bulk_import_students(payload: BulkStudentImport, request: Request):
+    """Bulk import students from CSV data"""
+    await require_super_admin(request)
+    
+    # Verify school exists
+    school = await db.schools.find_one({"school_id": payload.school_id})
+    if not school:
+        raise HTTPException(status_code=404, detail="School not found")
+    
+    # Verify class exists
+    class_doc = await db.classes.find_one({"class_id": payload.class_id})
+    if not class_doc:
+        raise HTTPException(status_code=404, detail="Class not found")
+    
+    imported_count = 0
+    errors = []
+    
+    for row in payload.data:
+        try:
+            first_name = row.get('first_name', '').strip()
+            last_name = row.get('last_name', '').strip()
+            student_number = row.get('student_number', row.get('student_id', '')).strip()
+            email = row.get('email', '').strip()
+            date_of_birth = row.get('date_of_birth', row.get('dob', '')).strip()
+            gender = row.get('gender', '').strip().upper()
+            
+            if not first_name or not last_name:
+                errors.append(f"Missing first_name or last_name: {row}")
+                continue
+            
+            # Generate student_id if not provided
+            if not student_number:
+                student_number = f"STU{uuid.uuid4().hex[:8].upper()}"
+            
+            # Check if student with same number exists in this school
+            existing = await db.students.find_one({
+                "student_number": student_number,
+                "school_id": payload.school_id
+            })
+            if existing:
+                errors.append(f"Student number already exists: {student_number}")
+                continue
+            
+            student_id = f"student_{uuid.uuid4().hex[:12]}"
+            
+            student_doc = {
+                "student_id": student_id,
+                "first_name": first_name,
+                "last_name": last_name,
+                "name": f"{first_name} {last_name}",
+                "student_number": student_number,
+                "email": email or None,
+                "date_of_birth": date_of_birth or None,
+                "gender": gender if gender in ['M', 'F', 'O'] else None,
+                "school_id": payload.school_id,
+                "class_ids": [payload.class_id],
+                "teacher_id": class_doc.get("teacher_id"),
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            await db.students.insert_one(student_doc)
+            imported_count += 1
+            
+        except Exception as e:
+            errors.append(f"Error importing {row.get('first_name', 'unknown')}: {str(e)}")
+    
+    return {
+        "imported_count": imported_count,
+        "errors": errors,
+        "message": f"Successfully imported {imported_count} students"
+    }
+
+@api_router.get("/super-admin/schools/{school_id}/classes")
+async def get_school_classes(school_id: str, request: Request):
+    """Get all classes for a specific school"""
+    await require_super_admin(request)
+    
+    classes = await db.classes.find({"school_id": school_id}, {"_id": 0}).to_list(100)
+    return {"classes": classes}
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/health")
