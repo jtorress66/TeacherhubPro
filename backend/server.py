@@ -3673,6 +3673,147 @@ async def get_school_classes(school_id: str, request: Request):
     classes = await db.classes.find({"school_id": school_id}, {"_id": 0}).to_list(100)
     return {"classes": classes}
 
+# ==================== REPORT CARD ENDPOINTS ====================
+
+@api_router.get("/report-cards/generate")
+async def generate_report_card(
+    student_id: str,
+    class_id: str,
+    semester_id: Optional[str] = None,
+    user: dict = Depends(get_current_user)
+):
+    """Generate a report card for a student"""
+    
+    # Get student info
+    student = await db.students.find_one({"student_id": student_id}, {"_id": 0})
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    # Get class info
+    class_doc = await db.classes.find_one({"class_id": class_id}, {"_id": 0})
+    if not class_doc:
+        raise HTTPException(status_code=404, detail="Class not found")
+    
+    # Get all grades for this student in this class
+    grades_cursor = db.grades.find({
+        "student_id": student_id,
+        "class_id": class_id
+    }, {"_id": 0})
+    all_grades = await grades_cursor.to_list(500)
+    
+    # Calculate grade statistics by category
+    grade_summary = {}
+    total_points_earned = 0
+    total_points_possible = 0
+    
+    for grade in all_grades:
+        category = grade.get("category", "General")
+        if category not in grade_summary:
+            grade_summary[category] = {
+                "category": category,
+                "points_earned": 0,
+                "points_possible": 0,
+                "assignments": []
+            }
+        
+        points = grade.get("grade", 0)
+        max_points = grade.get("max_points", 100)
+        
+        grade_summary[category]["points_earned"] += points
+        grade_summary[category]["points_possible"] += max_points
+        grade_summary[category]["assignments"].append(grade)
+        
+        total_points_earned += points
+        total_points_possible += max_points
+    
+    # Calculate percentages for each category
+    grades_list = []
+    for cat, data in grade_summary.items():
+        if data["points_possible"] > 0:
+            percentage = (data["points_earned"] / data["points_possible"]) * 100
+        else:
+            percentage = 0
+        
+        grades_list.append({
+            "category": cat,
+            "points_earned": data["points_earned"],
+            "points_possible": data["points_possible"],
+            "percentage": percentage,
+            "assignment_count": len(data["assignments"])
+        })
+    
+    # Calculate overall GPA (on 4.0 scale)
+    if total_points_possible > 0:
+        overall_percentage = (total_points_earned / total_points_possible) * 100
+        # Convert to 4.0 GPA scale
+        if overall_percentage >= 90:
+            gpa = 4.0
+        elif overall_percentage >= 80:
+            gpa = 3.0 + ((overall_percentage - 80) / 10)
+        elif overall_percentage >= 70:
+            gpa = 2.0 + ((overall_percentage - 70) / 10)
+        elif overall_percentage >= 60:
+            gpa = 1.0 + ((overall_percentage - 60) / 10)
+        else:
+            gpa = overall_percentage / 60
+    else:
+        gpa = 0.0
+        overall_percentage = 0
+    
+    # Get attendance data
+    attendance_records = await db.attendance_sessions.find({
+        "class_id": class_id
+    }, {"_id": 0}).to_list(500)
+    
+    present_count = 0
+    absent_count = 0
+    tardy_count = 0
+    excused_count = 0
+    
+    for session in attendance_records:
+        students_attendance = session.get("students", [])
+        for sa in students_attendance:
+            if sa.get("student_id") == student_id:
+                status = sa.get("status", "")
+                if status == "present":
+                    present_count += 1
+                elif status == "absent":
+                    absent_count += 1
+                elif status == "tardy":
+                    tardy_count += 1
+                elif status == "excused":
+                    excused_count += 1
+    
+    total_days = present_count + absent_count + tardy_count + excused_count
+    attendance_rate = (present_count + tardy_count) / total_days * 100 if total_days > 0 else 0
+    
+    return {
+        "student": {
+            "student_id": student["student_id"],
+            "name": student.get("name") or f"{student.get('first_name', '')} {student.get('last_name', '')}",
+            "student_number": student.get("student_number"),
+            "email": student.get("email")
+        },
+        "class": {
+            "class_id": class_doc["class_id"],
+            "name": class_doc.get("name"),
+            "grade_level": class_doc.get("grade_level"),
+            "subject": class_doc.get("subject")
+        },
+        "grades": grades_list,
+        "overall_percentage": overall_percentage,
+        "gpa": gpa,
+        "attendance": {
+            "present": present_count,
+            "absent": absent_count,
+            "tardy": tardy_count,
+            "excused": excused_count,
+            "total_days": total_days,
+            "rate": attendance_rate
+        },
+        "generated_at": datetime.now(timezone.utc).isoformat()
+    }
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/health")
