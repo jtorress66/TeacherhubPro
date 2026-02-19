@@ -567,37 +567,6 @@ const GamesCreator = () => {
         }
       };
 
-      // Check for match when both selected
-      useEffect(() => {
-        if (matchingSelected.left && matchingSelected.right) {
-          const leftQ = playingGame.questions.find(q => 
-            (q.question || q.term || q.left) === matchingSelected.left.text
-          );
-          const correctAnswer = leftQ?.correct_answer || leftQ?.match || leftQ?.right;
-          
-          if (matchingSelected.right.text === correctAnswer) {
-            // Correct match
-            setMatchedPairs([...matchedPairs, matchingSelected.left.text, matchingSelected.right.text]);
-            setGameProgress(prev => ({ ...prev, score: prev.score + 1 }));
-            toast.success(language === 'es' ? '¡Correcto!' : 'Correct!');
-          } else {
-            toast.error(language === 'es' ? 'Intenta de nuevo' : 'Try again');
-          }
-          
-          setTimeout(() => setMatchingSelected({ left: null, right: null }), 300);
-        }
-      }, [matchingSelected]);
-
-      // Check if game complete
-      useEffect(() => {
-        if (matchedPairs.length === playingGame.questions.length * 2) {
-          setShowResult(true);
-          if (playingGame.game_id && playerName) {
-            submitScore(playingGame, gameProgress.score, playingGame.questions.length);
-          }
-        }
-      }, [matchedPairs]);
-
       return (
         <div className="grid grid-cols-2 gap-6">
           {/* Left Column */}
