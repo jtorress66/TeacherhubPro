@@ -343,6 +343,7 @@ const GamesCreator = () => {
                   {language === 'es' ? '¡Juego Completado!' : 'Game Complete!'}
                 </h2>
                 <p className="text-xl text-slate-600 mb-6">
+                  {playerName && <span className="font-semibold">{playerName}, </span>}
                   {language === 'es' ? 'Tu puntuación:' : 'Your score:'} {gameProgress.score}/{playingGame.questions.length}
                 </p>
                 <div className="w-full bg-slate-200 rounded-full h-4 mb-6">
@@ -358,6 +359,38 @@ const GamesCreator = () => {
                     ? (language === 'es' ? '¡Buen trabajo!' : 'Good job!')
                     : (language === 'es' ? '¡Sigue practicando!' : 'Keep practicing!')}
                 </p>
+                
+                {/* Leaderboard in Results */}
+                {leaderboard.length > 0 && (
+                  <div className="mb-6 text-left">
+                    <h3 className="font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                      <Trophy className="h-5 w-5 text-amber-500" />
+                      {language === 'es' ? 'Ranking' : 'Leaderboard'}
+                    </h3>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {leaderboard.slice(0, 5).map((entry, idx) => (
+                        <div 
+                          key={idx}
+                          className={`flex items-center gap-3 p-2 rounded-lg ${
+                            entry.player_name === playerName ? 'bg-purple-100 border border-purple-300' : 'bg-slate-50'
+                          }`}
+                        >
+                          <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                            idx === 0 ? 'bg-amber-400 text-white' : 
+                            idx === 1 ? 'bg-slate-400 text-white' : 
+                            idx === 2 ? 'bg-amber-600 text-white' : 'bg-slate-200'
+                          }`}>
+                            {idx + 1}
+                          </span>
+                          <span className="flex-1 font-medium text-sm">{entry.player_name}</span>
+                          <span className="text-sm text-slate-600">{entry.score}/{entry.total_questions}</span>
+                          <span className="text-xs text-slate-400">{entry.time_taken}s</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
                 <div className="flex justify-center gap-4">
                   <Button onClick={resetGame} variant="outline">
                     <RefreshCw className="h-4 w-4 mr-2" />
