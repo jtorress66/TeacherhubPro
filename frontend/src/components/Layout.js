@@ -25,7 +25,8 @@ import {
   Sparkles,
   Moon,
   Sun,
-  Presentation
+  Presentation,
+  GraduationCap
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
