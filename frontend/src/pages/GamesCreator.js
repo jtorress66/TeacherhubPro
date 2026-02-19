@@ -520,7 +520,7 @@ const GamesCreator = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsList className="grid w-full grid-cols-3 max-w-xl">
             <TabsTrigger value="create" className="flex items-center gap-2">
               <Sparkles className="h-4 w-4" />
               {language === 'es' ? 'Crear Juego' : 'Create Game'}
@@ -531,6 +531,10 @@ const GamesCreator = () => {
               {savedGames.length > 0 && (
                 <Badge variant="secondary" className="ml-1">{savedGames.length}</Badge>
               )}
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              {language === 'es' ? 'Analíticas' : 'Analytics'}
             </TabsTrigger>
           </TabsList>
 
