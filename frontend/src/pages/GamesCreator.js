@@ -115,6 +115,15 @@ const GamesCreator = () => {
     fetchAnalytics();
   }, []);
 
+  // Initialize shuffled items for matching games (must be at top level)
+  useEffect(() => {
+    if (playingGame?.game_type === 'matching' && playingGame?.questions) {
+      const rightItems = playingGame.questions.map(q => q.match || q.correct_answer);
+      setShuffledRight([...rightItems].sort(() => Math.random() - 0.5));
+      setMatchedPairs([]);
+    }
+  }, [playingGame]);
+
   const fetchSavedGames = async () => {
     try {
       const res = await axios.get(`${API}/games`, { withCredentials: true });
