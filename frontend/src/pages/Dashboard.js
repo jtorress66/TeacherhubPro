@@ -85,8 +85,8 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="space-y-8 animate-fade-in">
-        {/* Onboarding Banner for New Users */}
-        <OnboardingBanner />
+        {/* Onboarding Banner for New Users - Skip for Super Admin */}
+        {user?.role !== 'super_admin' && <OnboardingBanner />}
         
         {/* Welcome Header with School Info */}
         <div 
@@ -97,7 +97,14 @@ const Dashboard = () => {
           }}
         >
           <div className="flex items-center gap-5">
-            {dashboardSchool?.logo_url && (
+            {/* Show TeacherHubPro logo for Super Admin */}
+            {user?.role === 'super_admin' ? (
+              <img 
+                src="https://customer-assets.emergentagent.com/job_teachersuite/artifacts/swlef12w_ChatGPT%20Image%20Feb%2015%2C%202026%2C%2009_08_36%20PM.png"
+                alt="TeacherHubPro" 
+                className="h-16 w-16 rounded-xl shadow-md object-contain bg-white p-1"
+              />
+            ) : dashboardSchool?.logo_url && (
               <img 
                 src={dashboardSchool.logo_url} 
                 alt={dashboardSchool.name} 
