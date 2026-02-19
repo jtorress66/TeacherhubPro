@@ -82,35 +82,39 @@ const HomeschoolPortal = () => {
     const labels = {
       1: { en: 'Beginner', es: 'Principiante' },
       2: { en: 'Basic', es: 'Básico' },
-      3: { en: 'Intermediate', es: 'Intermedio' },
-      4: { en: 'Advanced', es: 'Avanzado' },
-      5: { en: 'Expert', es: 'Experto' },
+      3: { en: 'Intermediate', es: 'Intermedio', fr: 'Intermédiaire', pt: 'Intermediário' },
+      4: { en: 'Advanced', es: 'Avanzado', fr: 'Avancé', pt: 'Avançado' },
+      5: { en: 'Expert', es: 'Experto', fr: 'Expert', pt: 'Especialista' },
     };
-    return labels[level]?.[language] || labels[1][language];
+    return labels[level]?.[language] || labels[level]?.en || labels[1].en;
   };
 
   const t = (key) => {
     const translations = {
-      overview: { en: 'Overview', es: 'Resumen' },
-      subjects: { en: 'Subjects', es: 'Materias' },
-      achievements: { en: 'Achievements', es: 'Logros' },
-      activity: { en: 'Activity', es: 'Actividad' },
-      lessonsCompleted: { en: 'Lessons Completed', es: 'Lecciones Completadas' },
-      studyTime: { en: 'Study Time', es: 'Tiempo de Estudio' },
-      dayStreak: { en: 'Day Streak', es: 'Racha de Días' },
-      currentLevel: { en: 'Current Level', es: 'Nivel Actual' },
-      progress: { en: 'Progress', es: 'Progreso' },
-      completed: { en: 'Completed', es: 'Completado' },
-      remaining: { en: 'Remaining', es: 'Pendientes' },
-      noData: { en: 'No data available', es: 'Sin datos disponibles' },
-      readOnly: { en: 'Read-Only Portal', es: 'Portal de Solo Lectura' },
-      parentPortal: { en: 'Parent Portal', es: 'Portal de Padres' },
-      adaptiveLearning: { en: 'Adaptive Learning Progress', es: 'Progreso de Aprendizaje Adaptativo' },
-      recentActivity: { en: 'Recent Activity', es: 'Actividad Reciente' },
-      noProgress: { en: 'No learning progress yet', es: 'Sin progreso de aprendizaje aún' },
-      startLearning: { en: 'Student hasn\'t started adaptive learning yet.', es: 'El estudiante aún no ha comenzado el aprendizaje adaptativo.' }
+      overview: { en: 'Overview', es: 'Resumen', fr: 'Aperçu', pt: 'Visão Geral' },
+      subjects: { en: 'Subjects', es: 'Materias', fr: 'Matières', pt: 'Matérias' },
+      achievements: { en: 'Achievements', es: 'Logros', fr: 'Réussites', pt: 'Conquistas' },
+      activity: { en: 'Activity', es: 'Actividad', fr: 'Activité', pt: 'Atividade' },
+      lessonsCompleted: { en: 'Lessons Completed', es: 'Lecciones Completadas', fr: 'Leçons Complétées', pt: 'Lições Concluídas' },
+      studyTime: { en: 'Study Time', es: 'Tiempo de Estudio', fr: 'Temps d\'Étude', pt: 'Tempo de Estudo' },
+      dayStreak: { en: 'Day Streak', es: 'Racha de Días', fr: 'Série de Jours', pt: 'Sequência de Dias' },
+      currentLevel: { en: 'Current Level', es: 'Nivel Actual', fr: 'Niveau Actuel', pt: 'Nível Atual' },
+      progress: { en: 'Progress', es: 'Progreso', fr: 'Progrès', pt: 'Progresso' },
+      completed: { en: 'Completed', es: 'Completado', fr: 'Terminé', pt: 'Concluído' },
+      remaining: { en: 'Remaining', es: 'Pendientes', fr: 'Restant', pt: 'Restante' },
+      noData: { en: 'No data available', es: 'Sin datos disponibles', fr: 'Aucune donnée disponible', pt: 'Sem dados disponíveis' },
+      readOnly: { en: 'Read-Only Portal', es: 'Portal de Solo Lectura', fr: 'Portail en Lecture Seule', pt: 'Portal Somente Leitura' },
+      parentPortal: { en: 'Parent Portal', es: 'Portal de Padres', fr: 'Portail Parents', pt: 'Portal dos Pais' },
+      adaptiveLearning: { en: 'Adaptive Learning Progress', es: 'Progreso de Aprendizaje Adaptativo', fr: 'Progrès d\'Apprentissage Adaptatif', pt: 'Progresso de Aprendizado Adaptativo' },
+      recentActivity: { en: 'Recent Activity', es: 'Actividad Reciente', fr: 'Activité Récente', pt: 'Atividade Recente' },
+      noProgress: { en: 'No learning progress yet', es: 'Sin progreso de aprendizaje aún', fr: 'Pas encore de progrès d\'apprentissage', pt: 'Nenhum progresso de aprendizado ainda' },
+      startLearning: { en: 'Student hasn\'t started adaptive learning yet.', es: 'El estudiante aún no ha comenzado el aprendizaje adaptativo.', fr: 'L\'élève n\'a pas encore commencé l\'apprentissage adaptatif.', pt: 'O aluno ainda não iniciou a aprendizagem adaptativa.' },
+      noAchievements: { en: 'No achievements yet', es: 'Sin logros aún', fr: 'Pas encore de réussites', pt: 'Nenhuma conquista ainda' },
+      completeToUnlock: { en: 'Complete lessons to unlock achievements.', es: 'Completa lecciones para desbloquear logros.', fr: 'Complétez des leçons pour débloquer des réussites.', pt: 'Conclua lições para desbloquear conquistas.' },
+      contactTeacher: { en: 'Contact the teacher for any questions.', es: 'Contacte al maestro para cualquier pregunta.', fr: 'Contactez l\'enseignant pour toute question.', pt: 'Entre em contato com o professor para qualquer dúvida.' },
+      readOnlyPortal: { en: 'This portal is read-only.', es: 'Este portal es de solo lectura.', fr: 'Ce portail est en lecture seule.', pt: 'Este portal é somente leitura.' }
     };
-    return translations[key]?.[language] || key;
+    return translations[key]?.[language] || translations[key]?.en || key;
   };
 
   if (loading) {
