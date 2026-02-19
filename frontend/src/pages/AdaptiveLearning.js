@@ -139,6 +139,350 @@ const AdaptiveLearning = () => {
     return colors[subject] || colors.math;
   };
 
+  // PDF Download function for entire learning path
+  const downloadLearningPathPDF = () => {
+    if (!learningPath) return;
+    
+    const student = students.find(s => s.student_id === selectedStudent);
+    const studentName = student?.name || `${student?.first_name || ''} ${student?.last_name || ''}`.trim() || 'Student';
+    const subjectInfo = subjects.find(s => s.id === selectedSubject);
+    const subjectName = subjectInfo?.name || selectedSubject;
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${learningPath.title} - ${studentName}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 40px; 
+            color: #1e293b;
+            line-height: 1.6;
+          }
+          .header { 
+            text-align: center; 
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #a855f7;
+          }
+          .header h1 { 
+            color: #7c3aed; 
+            font-size: 28px; 
+            margin-bottom: 8px;
+          }
+          .header p { color: #64748b; font-size: 14px; }
+          .meta-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+          }
+          .meta-item { text-align: center; }
+          .meta-item .label { font-size: 12px; color: #64748b; text-transform: uppercase; }
+          .meta-item .value { font-size: 16px; font-weight: 600; color: #1e293b; }
+          .lesson {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            page-break-inside: avoid;
+          }
+          .lesson-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+          }
+          .lesson-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+          }
+          .lesson-title { font-size: 18px; font-weight: 600; color: #1e293b; }
+          .lesson-objective { 
+            color: #64748b; 
+            font-size: 14px; 
+            margin-bottom: 15px;
+            padding-left: 44px;
+          }
+          .lesson-content {
+            background: #faf5ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+          }
+          .lesson-content h4 { font-size: 14px; color: #7c3aed; margin-bottom: 8px; }
+          .lesson-content p { font-size: 14px; color: #374151; }
+          .questions {
+            background: #eff6ff;
+            padding: 15px;
+            border-radius: 8px;
+          }
+          .questions h4 { font-size: 14px; color: #2563eb; margin-bottom: 10px; }
+          .question { margin-bottom: 12px; }
+          .question p { font-weight: 500; margin-bottom: 6px; }
+          .options { padding-left: 20px; }
+          .options li { font-size: 13px; color: #475569; margin-bottom: 4px; }
+          .footer {
+            margin-top: 40px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #94a3b8;
+            font-size: 12px;
+          }
+          .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+          }
+          .print-btn:hover { background: #6d28d9; }
+          @media print {
+            .print-btn { display: none; }
+            body { padding: 20px; }
+          }
+        </style>
+      </head>
+      <body>
+        <button class="print-btn" onclick="window.print()">🖨️ ${language === 'es' ? 'Imprimir / Guardar PDF' : 'Print / Save PDF'}</button>
+        
+        <div class="header">
+          <h1>🧠 ${learningPath.title}</h1>
+          <p>${learningPath.description || ''}</p>
+        </div>
+        
+        <div class="meta-info">
+          <div class="meta-item">
+            <div class="label">${language === 'es' ? 'Estudiante' : 'Student'}</div>
+            <div class="value">${studentName}</div>
+          </div>
+          <div class="meta-item">
+            <div class="label">${language === 'es' ? 'Materia' : 'Subject'}</div>
+            <div class="value">${subjectName}</div>
+          </div>
+          <div class="meta-item">
+            <div class="label">${language === 'es' ? 'Nivel' : 'Level'}</div>
+            <div class="value">${learningPath.level || 1}</div>
+          </div>
+        </div>
+        
+        ${learningPath.lessons?.map((lesson, idx) => `
+          <div class="lesson">
+            <div class="lesson-header">
+              <div class="lesson-number">${idx + 1}</div>
+              <div class="lesson-title">${lesson.title}</div>
+            </div>
+            <div class="lesson-objective">📎 ${lesson.objective || ''}</div>
+            
+            ${lesson.content ? `
+              <div class="lesson-content">
+                <h4>${language === 'es' ? 'Contenido' : 'Content'}</h4>
+                <p>${lesson.content.replace(/\n/g, '<br>')}</p>
+              </div>
+            ` : ''}
+            
+            ${lesson.questions?.length ? `
+              <div class="questions">
+                <h4>✏️ ${language === 'es' ? 'Práctica' : 'Practice'}</h4>
+                ${lesson.questions.map((q, qIdx) => `
+                  <div class="question">
+                    <p>${qIdx + 1}. ${q.question}</p>
+                    ${q.options ? `
+                      <ul class="options">
+                        ${q.options.map((opt, oIdx) => `<li>${String.fromCharCode(65 + oIdx)}) ${opt}</li>`).join('')}
+                      </ul>
+                    ` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `).join('')}
+        
+        <div class="footer">
+          <p>📚 ${language === 'es' ? 'Generado por' : 'Generated by'} TeacherHubPro - ${language === 'es' ? 'Aprendizaje Adaptativo' : 'Adaptive Learning'}</p>
+          <p>${new Date().toLocaleDateString()}</p>
+        </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
+  // PDF Download for single lesson (offline access)
+  const downloadLessonPDF = (lesson) => {
+    const student = students.find(s => s.student_id === selectedStudent);
+    const studentName = student?.name || `${student?.first_name || ''} ${student?.last_name || ''}`.trim() || 'Student';
+    const subjectInfo = subjects.find(s => s.id === selectedSubject);
+    const subjectName = subjectInfo?.name || selectedSubject;
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${lesson.title} - ${studentName}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 40px; 
+            color: #1e293b;
+            line-height: 1.7;
+          }
+          .header { 
+            text-align: center; 
+            margin-bottom: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            border-radius: 16px;
+            color: white;
+          }
+          .header h1 { font-size: 28px; margin-bottom: 8px; }
+          .header p { opacity: 0.9; font-size: 16px; }
+          .meta {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+          }
+          .meta-item { text-align: center; }
+          .meta-item .label { font-size: 12px; color: #64748b; text-transform: uppercase; }
+          .meta-item .value { font-size: 16px; font-weight: 600; color: #1e293b; }
+          .content-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+          }
+          .content-section h2 {
+            font-size: 18px;
+            color: #7c3aed;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9d5ff;
+          }
+          .content-section p { font-size: 15px; color: #374151; }
+          .questions-section {
+            background: #eff6ff;
+            padding: 25px;
+            border-radius: 12px;
+          }
+          .questions-section h2 { color: #2563eb; margin-bottom: 20px; }
+          .question {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+          }
+          .question p { font-weight: 500; margin-bottom: 10px; }
+          .options { padding-left: 20px; list-style: none; }
+          .options li { 
+            padding: 8px 0; 
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+          }
+          .options li:last-child { border-bottom: none; }
+          .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 12px;
+          }
+          .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+          }
+          @media print {
+            .print-btn { display: none; }
+            body { padding: 20px; }
+          }
+        </style>
+      </head>
+      <body>
+        <button class="print-btn" onclick="window.print()">🖨️ ${language === 'es' ? 'Imprimir / Guardar PDF' : 'Print / Save PDF'}</button>
+        
+        <div class="header">
+          <h1>📖 ${lesson.title}</h1>
+          <p>${lesson.objective || ''}</p>
+        </div>
+        
+        <div class="meta">
+          <div class="meta-item">
+            <div class="label">${language === 'es' ? 'Estudiante' : 'Student'}</div>
+            <div class="value">${studentName}</div>
+          </div>
+          <div class="meta-item">
+            <div class="label">${language === 'es' ? 'Materia' : 'Subject'}</div>
+            <div class="value">${subjectName}</div>
+          </div>
+          <div class="meta-item">
+            <div class="label">${language === 'es' ? 'Duración' : 'Duration'}</div>
+            <div class="value">${lesson.duration || '15 min'}</div>
+          </div>
+        </div>
+        
+        <div class="content-section">
+          <h2>📚 ${language === 'es' ? 'Contenido de la Lección' : 'Lesson Content'}</h2>
+          <p>${lesson.content?.replace(/\n/g, '<br>') || ''}</p>
+        </div>
+        
+        ${lesson.questions?.length ? `
+          <div class="questions-section">
+            <h2>✏️ ${language === 'es' ? 'Preguntas de Práctica' : 'Practice Questions'}</h2>
+            ${lesson.questions.map((q, idx) => `
+              <div class="question">
+                <p>${idx + 1}. ${q.question}</p>
+                ${q.options ? `
+                  <ul class="options">
+                    ${q.options.map((opt, oIdx) => `<li>○ ${String.fromCharCode(65 + oIdx)}) ${opt}</li>`).join('')}
+                  </ul>
+                ` : ''}
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+        
+        <div class="footer">
+          <p>📚 ${language === 'es' ? 'Material generado por' : 'Material generated by'} TeacherHubPro</p>
+          <p>${language === 'es' ? 'Para uso sin conexión' : 'For offline use'} - ${new Date().toLocaleDateString()}</p>
+        </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
   if (loading) {
     return (
       <Layout>
