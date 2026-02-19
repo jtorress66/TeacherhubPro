@@ -58,6 +58,17 @@ const AdminPanel = () => {
   
   // Search
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Bulk Import states
+  const [bulkImportType, setBulkImportType] = useState('teachers'); // 'teachers' or 'students'
+  const [csvFile, setCsvFile] = useState(null);
+  const [csvData, setCsvData] = useState([]);
+  const [csvErrors, setCsvErrors] = useState([]);
+  const [importing, setImporting] = useState(false);
+  const [importResults, setImportResults] = useState(null);
+  const [selectedSchoolForImport, setSelectedSchoolForImport] = useState('');
+  const [selectedClassForImport, setSelectedClassForImport] = useState('');
+  const [classesForSchool, setClassesForSchool] = useState([]);
 
   useEffect(() => {
     if (user?.role !== 'super_admin') {
