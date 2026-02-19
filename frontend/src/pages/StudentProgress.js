@@ -365,7 +365,7 @@ const StudentProgress = () => {
                 : 'Adaptive learning progress dashboard'}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <Button
               variant="outline"
               onClick={() => navigate('/adaptive-learning')}
@@ -374,6 +374,22 @@ const StudentProgress = () => {
               <ArrowLeft className="h-4 w-4 mr-2" />
               {language === 'es' ? 'Volver a Aprendizaje' : 'Back to Learning'}
             </Button>
+            {selectedStudent && (
+              <Button
+                variant="outline"
+                onClick={generateParentLink}
+                disabled={sharingLink}
+                className="border-green-200 text-green-700 hover:bg-green-50"
+                data-testid="share-with-parent-btn"
+              >
+                {sharingLink ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Share2 className="h-4 w-4 mr-2" />
+                )}
+                {language === 'es' ? 'Compartir con Padre' : 'Share with Parent'}
+              </Button>
+            )}
             {progressData && (
               <Button
                 onClick={downloadProgressReport}
@@ -386,6 +402,42 @@ const StudentProgress = () => {
             )}
           </div>
         </div>
+
+        {/* Parent Portal Link */}
+        {portalLink && (
+          <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-4">
+                <div className="p-2 rounded-lg bg-green-100">
+                  <Share2 className="h-5 w-5 text-green-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-slate-700">
+                    {language === 'es' ? 'Enlace del Portal para Padres' : 'Parent Portal Link'}
+                  </p>
+                  <p className="text-xs text-slate-500 truncate max-w-md">{portalLink}</p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={copyToClipboard}
+                  className="border-green-300"
+                >
+                  {copied ? (
+                    <><Check className="h-4 w-4 mr-1 text-green-600" /> {language === 'es' ? 'Copiado' : 'Copied'}</>
+                  ) : (
+                    <><Copy className="h-4 w-4 mr-1" /> {language === 'es' ? 'Copiar' : 'Copy'}</>
+                  )}
+                </Button>
+              </div>
+              <p className="text-xs text-slate-500 mt-2">
+                {language === 'es' 
+                  ? 'Los padres pueden usar este enlace para ver el progreso sin necesidad de crear una cuenta.' 
+                  : 'Parents can use this link to view progress without creating an account.'}
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Student Selector */}
         <Card>
