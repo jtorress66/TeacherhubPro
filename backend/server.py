@@ -4598,33 +4598,134 @@ async def generate_educational_game(
 {lang_instruction}
 Return ONLY valid JSON with no additional text."""
 
+    # Different prompts for different game types
+    game_specific_instructions = {
+        "quiz": """Return JSON with multiple choice questions:
+{{
+  "title": "Game title",
+  "game_type": "quiz",
+  "difficulty": "{difficulty}",
+  "questions": [
+    {{
+      "question": "The question text",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correct_answer": "The correct option text (must match one of the options exactly)"
+    }}
+  ]
+}}""",
+        "true_false": """Return JSON with true/false questions:
+{{
+  "title": "Game title",
+  "game_type": "true_false",
+  "difficulty": "{difficulty}",
+  "questions": [
+    {{
+      "question": "Statement that is either true or false",
+      "options": ["True", "False"],
+      "correct_answer": "True" or "False"
+    }}
+  ]
+}}""",
+        "fill_blanks": """Return JSON with fill-in-the-blank sentences:
+{{
+  "title": "Game title",
+  "game_type": "fill_blanks",
+  "difficulty": "{difficulty}",
+  "questions": [
+    {{
+      "question": "Complete sentence with ___ where word should go",
+      "options": ["correct word", "wrong1", "wrong2", "wrong3"],
+      "correct_answer": "correct word"
+    }}
+  ]
+}}""",
+        "matching": """Return JSON with matching pairs:
+{{
+  "title": "Game title",
+  "game_type": "matching",
+  "difficulty": "{difficulty}",
+  "questions": [
+    {{
+      "question": "Match the following items",
+      "left": ["Term 1", "Term 2", "Term 3"],
+      "right": ["Definition 1", "Definition 2", "Definition 3"],
+      "matches": {{"Term 1": "Definition 1", "Term 2": "Definition 2", "Term 3": "Definition 3"}}
+    }}
+  ]
+}}""",
+        "flashcards": """Return JSON with flashcard pairs:
+{{
+  "title": "Game title",
+  "game_type": "flashcards",
+  "difficulty": "{difficulty}",
+  "questions": [
+    {{
+      "question": "Front of card (term or question)",
+      "correct_answer": "Back of card (definition or answer)"
+    }}
+  ]
+}}""",
+        "word_search": """Return JSON with words to find:
+{{
+  "title": "Game title",
+  "game_type": "word_search",
+  "difficulty": "{difficulty}",
+  "words": ["WORD1", "WORD2", "WORD3", "WORD4", "WORD5"],
+  "hints": ["Hint for word 1", "Hint for word 2", "Hint for word 3", "Hint for word 4", "Hint for word 5"],
+  "questions": [
+    {{
+      "question": "Find the word: Hint for word",
+      "correct_answer": "WORD"
+    }}
+  ]
+}}""",
+        "crossword": """Return JSON with crossword clues:
+{{
+  "title": "Game title",
+  "game_type": "crossword",
+  "difficulty": "{difficulty}",
+  "questions": [
+    {{
+      "question": "Across 1: Clue text",
+      "correct_answer": "ANSWER",
+      "direction": "across",
+      "number": 1
+    }},
+    {{
+      "question": "Down 1: Clue text",
+      "correct_answer": "ANSWER",
+      "direction": "down",
+      "number": 1
+    }}
+  ]
+}}""",
+        "drag_drop": """Return JSON with categorization items:
+{{
+  "title": "Game title",
+  "game_type": "drag_drop",
+  "difficulty": "{difficulty}",
+  "categories": ["Category A", "Category B"],
+  "questions": [
+    {{
+      "question": "Sort these items into the correct categories",
+      "items": ["Item 1", "Item 2", "Item 3", "Item 4"],
+      "correct_categories": {{"Item 1": "Category A", "Item 2": "Category B", "Item 3": "Category A", "Item 4": "Category B"}}
+    }}
+  ]
+}}"""
+    }
+
     user_prompt = f"""Create a {game_prompts.get(request.game_type, 'quiz')} based on this lesson content:
 
 {request.content}
 
 Requirements:
-- Create exactly {request.question_count} questions
+- Create exactly {request.question_count} questions/items
 - Difficulty level: {difficulty_hints.get(request.difficulty, 'medium')}
 - Make it educational and engaging
-- Each question should test understanding of the material
+- Each item should test understanding of the material
 
-Return JSON in this exact format:
-{{
-  "title": "Game title based on the content",
-  "game_type": "{request.game_type}",
-  "difficulty": "{request.difficulty}",
-  "questions": [
-    {{
-      "question": "The question text",
-      "options": ["Option A", "Option B", "Option C", "Option D"],
-      "correct_answer": "The correct option text"
-    }}
-  ]
-}}
-
-For true_false type, options should be ["True", "False"] or ["Verdadero", "Falso"].
-For fill_blanks type, use "___" in the question and correct_answer is the word to fill.
-For matching type, use "left" and "right" arrays instead of options."""
+{game_specific_instructions.get(request.game_type, game_specific_instructions['quiz']).format(difficulty=request.difficulty)}"""
 
     try:
         chat = LlmChat(
