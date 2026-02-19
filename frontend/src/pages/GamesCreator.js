@@ -112,6 +112,7 @@ const GamesCreator = () => {
 
   useEffect(() => {
     fetchSavedGames();
+    fetchAnalytics();
   }, []);
 
   const fetchSavedGames = async () => {
@@ -122,6 +123,48 @@ const GamesCreator = () => {
       console.error('Error fetching games:', error);
     } finally {
       setLoadingGames(false);
+    }
+  };
+
+  const [analytics, setAnalytics] = useState(null);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [selectedGameForLeaderboard, setSelectedGameForLeaderboard] = useState(null);
+  const [playerName, setPlayerName] = useState('');
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [gameStartTime, setGameStartTime] = useState(null);
+
+  const fetchAnalytics = async () => {
+    try {
+      const res = await axios.get(`${API}/games/analytics`, { withCredentials: true });
+      setAnalytics(res.data);
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
+    }
+  };
+
+  const fetchLeaderboard = async (gameId) => {
+    try {
+      const res = await axios.get(`${API}/games/${gameId}/leaderboard`);
+      setLeaderboard(res.data || []);
+      setSelectedGameForLeaderboard(gameId);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+    }
+  };
+
+  const submitScore = async (game, score, totalQuestions) => {
+    const timeTaken = gameStartTime ? Math.floor((Date.now() - gameStartTime) / 1000) : 0;
+    try {
+      await axios.post(`${API}/games/${game.game_id}/score`, {
+        player_name: playerName || 'Anonymous',
+        score: score,
+        total_questions: totalQuestions,
+        time_taken: timeTaken
+      });
+      fetchLeaderboard(game.game_id);
+      fetchAnalytics();
+    } catch (error) {
+      console.error('Error submitting score:', error);
     }
   };
 
