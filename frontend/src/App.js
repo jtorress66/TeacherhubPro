@@ -38,6 +38,7 @@ import AIAssistant from "./pages/AIAssistant";
 import PresentationCreator from "./pages/PresentationCreator";
 import ReportCards from "./pages/ReportCards";
 import AdaptiveLearning from "./pages/AdaptiveLearning";
+import StudentProgress from "./pages/StudentProgress";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
