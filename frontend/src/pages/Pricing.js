@@ -294,14 +294,14 @@ const Pricing = () => {
                 <div className="mx-auto mb-2 p-3 rounded-full bg-white shadow-sm">
                   <plan.icon className="h-6 w-6 text-slate-700" />
                 </div>
-                <CardTitle className="text-xl font-heading">{plan.name}</CardTitle>
-                <CardDescription className="text-sm">{plan.description}</CardDescription>
+                <CardTitle className="text-xl font-heading text-slate-800">{plan.name}</CardTitle>
+                <CardDescription className="text-sm text-slate-600">{plan.description}</CardDescription>
               </CardHeader>
               
               <CardContent className="text-center">
                 <div className="mb-4">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  <span className="text-slate-500">{plan.period}</span>
+                  <span className="text-4xl font-bold text-slate-900">{plan.price}</span>
+                  <span className="text-slate-600">{plan.period}</span>
                 </div>
                 
                 {plan.savings && (
@@ -311,10 +311,10 @@ const Pricing = () => {
                 )}
                 
                 {plan.billedYearly && (
-                  <div className="text-sm text-slate-500 mb-4">
+                  <div className="text-sm text-slate-600 mb-4">
                     {language === 'es' ? 'Facturado anualmente' : 'Billed yearly'}
                     {['school', 'district'].includes(plan.id) && (
-                      <div className="font-semibold text-slate-700 mt-1">
+                      <div className="font-semibold text-slate-800 mt-1">
                         {teacherCount >= plan.minTeachers ? (
                           <>
                             {teacherCount} {language === 'es' ? 'maestros' : 'teachers'}: ${calculateSchoolPrice(plan.id, teacherCount)}/year
@@ -333,7 +333,7 @@ const Pricing = () => {
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                      <span>{feature}</span>
+                      <span className="text-slate-700">{feature}</span>
                     </li>
                   ))}
                 </ul>
