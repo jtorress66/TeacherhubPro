@@ -4157,6 +4157,140 @@ async def get_student_adaptive_progress(
     return progress_records
 
 
+@api_router.get("/adaptive-learning/dashboard/{student_id}")
+async def get_student_progress_dashboard(
+    student_id: str,
+    user: dict = Depends(get_current_user)
+):
+    """Get comprehensive progress dashboard data for a student (for parents view)"""
+    
+    # Get student info
+    student = await db.students.find_one({"student_id": student_id}, {"_id": 0})
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    # Get all progress records for this student
+    progress_records = await db.adaptive_learning_progress.find(
+        {"student_id": student_id},
+        {"_id": 0}
+    ).to_list(10)
+    
+    # Get all learning paths for this student
+    learning_paths = await db.adaptive_learning_paths.find(
+        {"student_id": student_id},
+        {"_id": 0}
+    ).to_list(10)
+    
+    # Calculate total lessons completed and time spent
+    total_lessons_completed = 0
+    total_time_spent = 0
+    subjects_data = []
+    recent_activity = []
+    
+    for progress in progress_records:
+        completed_lessons = progress.get("completed_lessons", [])
+        total_lessons_completed += len(completed_lessons)
+        
+        # Find corresponding learning path
+        path = next(
+            (p for p in learning_paths if p.get("subject") == progress.get("subject")),
+            None
+        )
+        
+        total_lessons = len(path.get("lessons", [])) if path else 0
+        
+        # Estimate time spent (15 min per lesson average)
+        time_spent = len(completed_lessons) * 15
+        total_time_spent += time_spent
+        
+        subjects_data.append({
+            "subject": progress.get("subject"),
+            "current_level": progress.get("current_level", 1),
+            "completed_lessons": len(completed_lessons),
+            "total_lessons": total_lessons,
+            "time_spent": time_spent,
+            "last_activity": progress.get("last_completed_at")
+        })
+        
+        # Build recent activity from path lessons
+        if path:
+            for lesson in path.get("lessons", []):
+                if lesson.get("completed") or lesson.get("id") in completed_lessons:
+                    recent_activity.append({
+                        "lesson_title": lesson.get("title"),
+                        "subject": progress.get("subject"),
+                        "completed_at": progress.get("last_completed_at", "")[:10] if progress.get("last_completed_at") else ""
+                    })
+    
+    # Sort recent activity by date (most recent first) and limit to 10
+    recent_activity = sorted(
+        recent_activity, 
+        key=lambda x: x.get("completed_at", ""), 
+        reverse=True
+    )[:10]
+    
+    # Calculate streak (simplified - count consecutive days with activity)
+    current_streak = 0
+    if progress_records:
+        # Get the most recent activity date
+        last_activities = [p.get("last_completed_at") for p in progress_records if p.get("last_completed_at")]
+        if last_activities:
+            last_activity = max(last_activities)
+            if last_activity:
+                try:
+                    last_date = datetime.fromisoformat(last_activity.replace('Z', '+00:00'))
+                    today = datetime.now(timezone.utc)
+                    days_diff = (today - last_date).days
+                    if days_diff <= 1:
+                        current_streak = min(total_lessons_completed, 7)  # Simple streak calculation
+                except ValueError:
+                    pass
+    
+    # Generate achievements based on progress
+    achievements = []
+    if total_lessons_completed >= 1:
+        achievements.append({
+            "title": "First Lesson" if total_lessons_completed >= 1 else "",
+            "earned_at": "Completed"
+        })
+    if total_lessons_completed >= 5:
+        achievements.append({
+            "title": "5 Lessons Complete",
+            "earned_at": "Completed"
+        })
+    if total_lessons_completed >= 10:
+        achievements.append({
+            "title": "Learning Champion",
+            "earned_at": "Completed"
+        })
+    if len(subjects_data) >= 2:
+        achievements.append({
+            "title": "Multi-Subject Learner",
+            "earned_at": "Completed"
+        })
+    if any(s.get("current_level", 1) >= 2 for s in subjects_data):
+        achievements.append({
+            "title": "Level Up!",
+            "earned_at": "Completed"
+        })
+    
+    # Filter out empty achievements
+    achievements = [a for a in achievements if a.get("title")]
+    
+    return {
+        "student": {
+            "student_id": student_id,
+            "name": student.get("name") or f"{student.get('first_name', '')} {student.get('last_name', '')}".strip()
+        },
+        "subjects": subjects_data,
+        "total_lessons_completed": total_lessons_completed,
+        "total_time_spent": total_time_spent,
+        "current_streak": current_streak,
+        "achievements": achievements,
+        "recent_activity": recent_activity
+    }
+
+
 # ==================== AI ENDPOINTS MOVED TO routes/ai.py ====================
 # The AI Teaching Assistant endpoints have been refactored to routes/ai.py
 
