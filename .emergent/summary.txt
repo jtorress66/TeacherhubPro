@@ -1,195 +1,232 @@
 <analysis>**original_problem_statement:**
-The user wants to build a comprehensive, teacher-focused web application called TeacherHubPro. This app aims to replace paper-based planners and consolidate various teacher workflows into a single digital platform. The user will operate as a Super Admin to manage multiple schools, each with its own teachers, students, and custom branding.
+The user wants to build a comprehensive, teacher-focused web application called TeacherHubPro. This app aims to replace paper-based planners and consolidate various teacher workflows into a single digital platform. The user will operate as a Super Admin to manage multiple schools, each with its own teachers, students, and custom branding. The application must also cater to homeschoolers with a dedicated set of features.
 
 **PRODUCT REQUIREMENTS:**
 1.  **Core Teacher Modules:** A digital lesson planner, attendance tracker, and gradebook with GPA calculation.
 2.  **PDF & Printing:** Export lesson plans to PDF and generate printable Substitute Packets.
 3.  **User & School Management:**
-    *   **Roles:** , , and a  (the user).
-    *   **Super Admin Panel:** A centralized dashboard to manage all schools, users, branding, and platform settings.
-    *   **Multi-School Customization:** The Super Admin must be able to customize branding (logo, colors, fonts) for each school.
+    *   **Roles:** , , and a  (the user/app owner).
+    *   **Super Admin Panel:** A centralized dashboard to manage all schools, users, branding, and platform settings, including bulk CSV import for teachers and students.
+    *   **Multi-School Customization:** The Super Admin must be able to customize branding for each school.
 4.  **Monetization:** A Stripe-based subscription model with a 7-day free trial.
 5.  **Authentication:** JWT-based custom auth and Emergent-managed Google Auth.
-6.  **Parent/Student Access:** A read-only portal for parents/students to view grades and attendance, accessible via secure links.
-7.  **AI Teaching Assistant:** An AI-powered assistant (using Claude Sonnet 4.5) to generate lesson plans, quizzes, summaries, and other teaching materials based on National Standards (Common Core & PR CORE). This is a paid feature.
-8.  **Educational Presentations:** A new feature for teachers to create fun, captivating educational presentations for class subjects, with AI assistance and rich media support (images, GIFs).
-9.  **UX/UI:** A professional, modern, bilingual (English/Spanish) interface with Dark Mode. The landing page should be visually appealing and clearly communicate the app's customization features, matching the user-provided logo's color scheme.
-10. **Onboarding:** A guided setup for new users to configure their account.
+6.  **Parent/Student Access:** A read-only portal for parents/students to view grades and attendance.
+7.  **AI Features:**
+    *   An AI Teaching Assistant (Claude Sonnet 4.5) for generating lesson plans and materials.
+    *   **Adaptive Learning Paths:** AI that adjusts to a child's pace for core subjects.
+8.  **Calendar Integration:** One-tap export of lesson plans to Google Calendar, Microsoft Outlook, etc.
+9.  **External Integrations:** Offer integration with platforms like Google Classroom, with a clear path for customers to request it.
+10. **UX/UI:** A professional, modern, bilingual (English/Spanish) interface that is fully mobile-responsive. The landing page must clearly showcase all features, including integrations and homeschooler-specific tools.
+11. **Homeschooler Features:** A suite of tools including adaptive learning, a comprehensive parent dashboard, curriculum customization, and offline access to materials via PDF downloads.
 
 **User's preferred language**: English. The next agent must respond in **English**.
 
 **what currently exists?**
-The TeacherHubPro application has seen significant feature development and bug fixing. The critical P0 issue with broken image search in the Presentation Creator has been resolved by integrating the Pexels API, providing unlimited, real-time image search. A full-featured user onboarding system has been built from scratch, including a welcome modal, a progress banner/checklist, and an animated video tutorial with voice narration (using OpenAI TTS). A trial expiration system is now in place, blocking users with expired trials and redirecting them to a pricing page. An accompanying email reminder system using Resend has also been implemented (currently in test mode). A major architectural flaw was fixed where new users are now created with their own unique, customizable school instead of sharing a generic default school. The monolithic  file, however, remains largely un-refactored.
+The application is feature-rich. It includes a lesson planner, gradebook, presentation creator, and an AI assistant. A full onboarding system with a video tutorial, a trial expiration system with email reminders, and unique school creation for new users are all implemented.
+
+In the last session, several new features were added:
+*   **Add to Calendar:** A one-tap  file export for lesson plans.
+*   **Super Admin Tools:** A Bulk Import tab was added to the Admin Panel for CSV uploads of teachers and students, with corresponding backend endpoints created.
+*   **Report Card Generation:** A new page () and a backend endpoint stub have been created.
+*   **Google Classroom Integration:** The integration is now advertised on the landing page and in the Admin Panel. The implementation playbook has been fetched.
+*   **Mobile Responsiveness:** Major fixes were applied to the Landing and Pricing pages to ensure text is visible and layouts are clean.
+*   **Super Admin Account:** A dedicated, platform-level  account () was created. This account is not tied to any school, does not see the onboarding tutorial, and displays platform-wide branding. The recurring and confusing login issue was finally resolved by identifying a mismatch between the preview and production environments.
 
 **Last working item**:
--   **Last item agent was working:** Fixing two bugs reported by the user in the newly created onboarding system:
-    1.  The onboarding checklist incorrectly showed the Create a planner step as incomplete for users who already had lesson plans.
-    2.  The audio narration in the onboarding video tutorial was skipping and repeating at the beginning.
--   **Status:** USER VERIFICATION PENDING
--   **Agent Testing Done:** Y
--   **Which testing method agent to use?** Frontend testing agent. The agent should test both fixes. First, log in as  to confirm the onboarding banner correctly shows 2/3 completed. Second, reset the onboarding status for , log in, and play the video tutorial to verify the audio plays smoothly without skipping.
+-   **Last item agent was working:** Implementing a suite of features for homeschoolers. The agent added a Homeschool section to the landing page, created a new frontend page , and was about to create the corresponding backend endpoint to support AI-powered adaptive learning paths.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** both. This is a complex new feature. Once the backend endpoint is created and the frontend is wired up, the backend testing agent should be used to validate the AI logic and data tracking, and the frontend testing agent should be used to verify the user experience.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Onboarding Audio Skipping/Repeating (P0)**
--   **Issue 2: Onboarding Lesson Planner Detection Bug (P0)**
+-   **Issue 1: Implement Adaptive Learning Paths (P0)**
+-   **Issue 2: Implement PDF Exports for Offline Access (P0)**
 -   **Issue 3: Template of the Week Bug (P1)**
 -   **Issue 4: Complete the Refactoring of  (P1)**
+-   **Issue 5: Super Admin Login Confusion (Recurring)**
 
 **Issues Detail:**
--   **Issue 1: Onboarding Audio Skipping/Repeating (P0)**
-    -   **Attempted fixes:** The agent identified a race condition in  where the  function was being called twice in quick succession. A  was added to prevent this double execution.
+-   **Issue 1: Implement Adaptive Learning Paths (P0)**
+    -   **Attempted fixes:** The agent created the frontend page  and was about to create the backend endpoint.
     -   **Next debug checklist:**
-        1.  Log in as a user whose onboarding status is  (e.g., reset ).
-        2.  The welcome modal with the video tutorial will appear.
-        3.  Click Play and listen carefully to the audio for the first few scenes.
-        4.  Confirm the audio plays smoothly without any skips, stutters, or repeats.
-    -   **Why fix this issue and what will be achieved with the fix?** A smooth audio experience is critical for a professional and polished onboarding tutorial.
-    -   **Status:** USER VERIFICATION PENDING
+        1.  Create the backend endpoint in  for generating and tracking adaptive learning paths. It should take student/subject info and return a personalized plan.
+        2.  Integrate an AI service (like Claude/OpenAI) within the new endpoint.
+        3.  Implement the frontend logic in  to call the new endpoint and display the learning path to the user.
+        4.  Add a link to the new Adaptive Learning page in the main navigation/sidebar.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a key feature for the new homeschooler vertical and a direct user request.
+    -   **Status:** IN PROGRESS
     -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend.
+    -   **Should Test frontend/backend/both after fix?** Both.
     -   **Blocked on other issue:** None.
 
--   **Issue 2: Onboarding Lesson Planner Detection Bug (P0)**
-    -   **Attempted fixes:** The agent found that the backend status check endpoint ( in ) was querying the  collection by , but the collection uses . The query was corrected to use the correct field name.
+-   **Issue 2: Implement PDF Exports for Offline Access (P0)**
+    -   **Attempted fixes:** None. This is part of the new homeschooler feature set.
     -   **Next debug checklist:**
-        1.  Log in as  (a user with existing lesson plans).
-        2.  Observe the onboarding banner on the Dashboard.
-        3.  Verify the progress bar shows 2 / 3 completado (67%) and that the Crear Tu Primer Plan step has a green checkmark, indicating it's complete.
-    -   **Why fix this issue and what will be achieved with the fix?** Ensures the onboarding system accurately reflects user progress and is not a source of user frustration.
-    -   **Status:** USER VERIFICATION PENDING
+        1.  Identify what content needs to be downloadable (e.g., lesson plans, learning materials, books).
+        2.  Create or enhance existing backend endpoints to generate downloadable PDFs for this content.
+        3.  Add Download PDF buttons to the relevant frontend pages.
+    -   **Why fix this issue and what will be achieved with the fix?** Fulfills the Offline Functionality requirement for homeschoolers.
+    -   **Status:** NOT STARTED
     -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend.
+    -   **Should Test frontend/backend/both after fix?** Both.
     -   **Blocked on other issue:** None.
 
 -   **Issue 3: Template of the Week Bug (P1)**
-    -   **Attempted fixes:** A previous agent implemented a fix to pass the template ID via URL state, but it was never tested or verified by the user.
+    -   **Attempted fixes:** None in this session. A previous fix exists but was never tested or verified.
     -   **Next debug checklist:**
-        1.  Navigate to the Dashboard.
-        2.  Click the Usar esta plantilla button on the Template of the Week card.
-        3.  Confirm that the Lesson Planner page loads and is pre-populated with the correct template data.
-    -   **Why fix this issue and what will be achieved with the fix?** Fixes a broken feature on the main dashboard.
+        1.  Log in as a teacher ().
+        2.  Navigate to the Dashboard and click the Usar esta plantilla button on the Template of the Week card.
+        3.  Confirm the Lesson Planner page loads and is pre-populated with the correct template data.
+    -   **Why fix this issue and what will be achieved with the fix?** Fixes a broken core feature on the main dashboard.
     -   **Status:** USER VERIFICATION PENDING
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Frontend.
     -   **Blocked on other issue:** None.
 
 -   **Issue 4: Complete the Refactoring of  (P1)**
-    -   **Attempted fixes:** None in this session. The structure (, ) exists but is underutilized.
+    -   **Attempted fixes:** None. This task continues to be deferred. The file has grown even larger with the addition of new endpoints.
     -   **Next debug checklist:**
-        1.  Create new route files in  for each domain (e.g., , , , ).
-        2.  Systematically move the corresponding Pydantic models and FastAPI endpoints from  to their respective new files.
-        3.  Update the main  to import and include these new routers.
-    -   **Why fix this issue and what will be achieved with the fix?** Stabilize the backend, improve maintainability, prevent future bugs, and make the architecture scalable.
+        1.  Create route files in  for , , .
+        2.  Systematically move endpoints from  to these new files.
+        3.  Update  to import and include the new routers.
+    -   **Why fix this issue and what will be achieved with the fix?** Crucial for backend stability, scalability, and maintainability.
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Backend (requires extensive regression testing).
+    -   **Should Test frontend/backend/both after fix?** Backend (extensive regression testing needed).
+    -   **Blocked on other issue:** None.
+
+-   **Issue 5: Super Admin Login Confusion (Recurring)**
+    -   **Attempted fixes:** The agent spent significant time debugging the super admin login. The root cause was identified as the user trying to log into the production environment () with credentials created in the preview environment's database ().
+    -   **Next debug checklist:** This is a user understanding issue, not a code bug. The next agent must be vigilant about this.
+        1.  When creating users or changing passwords, explicitly state that it applies ONLY to the preview environment.
+        2.  Remind the user they must redeploy code and manage production users separately (e.g., via the app's Admin Panel).
+    -   **Why fix this issue and what will be achieved with the fix?** Prevents significant wasted time and user frustration.
+    -   **Status:** RESOLVED (Root cause identified)
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** NA.
     -   **Blocked on other issue:** None.
 
 **In progress Task List**:
-None.
+-   **Task 1: Implement Homeschooler Features (P0)**
+    -   **Where to resume:** Continue with . The next step is to create the backend endpoint for it in .
+    -   **What will be achieved with this?** This will deliver the set of features requested for the homeschooler user persona, making the app more versatile.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** Both.
+    -   **Blocked on something:** None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks (P1):**
-    *   Drag-and-Drop Seating Chart Editor
-    *   Quick Week Copy: A button in the Lesson Planner to duplicate an entire week's plan.
-    *   Super Admin Bulk Tools: A CSV import for adding multiple teachers at once.
+    *   **Parent/Teacher Dashboard:** Enhance the dashboard with homeschooler-focused analytics.
+    *   **Flexible Curriculum Customization:** Allow parents to create/customize lesson plans.
+    *   **Drag-and-Drop Seating Chart Editor**
+    *   **Quick Week Copy:** A button in the Lesson Planner to duplicate an entire week's plan.
+    *   **Finish Bulk Import Tools:** The UI is done, but the functionality needs to be tested end-to-end.
+    *   **Finish Report Card Generation:** The page is created, but needs to be fully implemented to fetch student data and generate a printable report.
 -   **Future Tasks (P2):**
-    *   Audit Log: Implement logging for critical actions (e.g., grade changes).
-    *   Google Classroom Integration
-    *   Report Card Generation
+    *   Audit Log
+    *   Full Google Classroom Integration (data sync)
+    *   Diverse Learning Tools (audiobooks, TTS)
+    *   Content Curation for Parents (e.g., YouTube Kids style)
+    *   Subject-Specific Modules (e.g., Google Lens, Sky Map)
     *   Planner Style Customization
-    *   Community Templates for sharing.
+    *   Community Templates for sharing
 
 **Completed work in this session**
--   **Bug Fix: Presentation Creator Image Search (P0 Resolved):** Replaced the unreliable Unsplash Source API with a robust Pexels API integration, providing unlimited real-time image search via a user-provided API key.
--   **Feature: Trial Expiration Enforcement:** Implemented logic to block users with expired trials from accessing protected routes, redirecting them to the pricing page.
--   **Feature: Trial Expiration Email Reminders:** Created a backend endpoint and email templates (EN/ES) to send reminders to users 2-3 days before their trial expires, using the Resend API.
--   **Bug Fix: Generic & Unique Default Schools:** Fixed a critical bug where new users saw another school's private data. The backend now creates a unique, generic school record for each new user upon registration.
--   **Feature: Comprehensive User Onboarding System:**
-    -   Built a backend system to track onboarding status (, ).
-    -   Created a frontend  component showing a progress checklist.
-    -   Developed an animated, multi-scene video tutorial with OpenAI TTS-powered voice narration (EN/ES) based on a user-provided script.
+-   Generated downloadable MP4 video clips of the onboarding tutorial using Sora 2.
+-   Implemented **Add to Calendar** ( export) for lesson plans.
+-   Fixed **mobile responsiveness** on the Landing and Pricing pages.
+-   Created UI and backend endpoints for **Super Admin Bulk Import** (Teachers/Students).
+-   Created UI for an **Integrations tab** in the Admin Panel.
+-   Created a new page and backend stub for **Report Card Generation**.
+-   Resolved a critical and recurring **Super Admin login issue** by identifying the preview vs. production environment mismatch.
+-   Fixed the user role dropdown in the Admin Panel to include the **Super Admin** option.
+-   Configured the  account to **skip onboarding** and display platform-wide branding.
+-   Added **Integrations** and **Homeschool** sections to the landing page.
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Monolithic  file refactoring is incomplete.** See **Issue 4** in **All Pending/In progress Issue list**.
+-   **Issue 1: Template of the Week bug.** The fix implemented in a previous session has still not been verified by the user. Status remains **USER VERIFICATION PENDING**.
+-   **Issue 2: Monolithic  file refactoring.** This critical tech-debt item was not addressed and the file has grown even larger. Status remains **NOT STARTED**.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** Monolithic  file.
--   **Recurrence count:** 8
+-   **Recurrence count:** 9+
 -   **Status:** NOT STARTED
+-   **New Recurring Issue This Session:** User confusion between preview and production environments, leading to repeated failed login attempts for the super admin. This was a major time sink.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Third-Party API Integration:** Integrated the Pexels API for image search and the Resend API for transactional emails.
--   **Stateful Onboarding System:** Managed user onboarding state (, , ) in the database to drive a dynamic frontend UI (modals, banners, checklists).
--   **Dynamic User/School Creation:** The backend now creates a unique, new school record for each user upon registration, ensuring data isolation.
--   **Scheduled Task Emulation:** Implemented a backend endpoint () intended to be called by a cron job to perform periodic checks.
--   **Complex Frontend Components:** Built a multi-scene, animated, voice-narrated tutorial in React using , , , and CSS transitions.
--   **Text-to-Speech (TTS):** Leveraged the existing OpenAI TTS backend integration to generate audio narration dynamically for the onboarding tutorial.
--   **Debugging Race Conditions:** Resolved an audio playback bug in the frontend by identifying and fixing a race condition in a React  hook.
+-   **Video Generation:** Used Sora 2 via  to generate MP4 video clips from text prompts.
+-   **Calendar File Generation:** Implemented an endpoint to create and serve  files for calendar integration, dynamically populating event details from lesson plan data.
+-   **Environment Separation:** A critical lesson was learned in distinguishing between the preview/development environment and the production environment, especially regarding their separate databases.
+-   **Conditional Rendering (React):** Extensive use of conditional rendering based on user role () to customize the UI (e.g., skip onboarding, show platform branding, display admin panels).
+-   **Mobile-First CSS:** Applied responsive design principles (, , ) to fix UI issues on smaller screens, particularly for buttons and text visibility.
+-   **CSV Bulk Import:** Architected the UI and backend endpoints to support bulk creation of users (teachers, students) from a CSV file.
 
 **key DB schema**
--   **users:** 
--   **presentations:** 
--   **schools:** 
+-   **users:** The  field is critical. A user with  and  is considered the Platform Owner.
 
 **changes in tech stack**
--   **Added:**  for backend email functionality.
+-   **Added:**  library for Python to generate iCalendar files.
+-   **Used:**  for Sora 2 video generation.
 
 **All files of reference**
--   **/app/backend/server.py**: Contains the core logic for trial enforcement, email reminders, and onboarding status.
--   **/app/frontend/src/components/OnboardingBanner.js**: Contains the logic for the entire onboarding UI, including the modal and progress banner.
--   **/app/frontend/src/components/OnboardingVideo.js**: Contains the script, scenes, and audio playback logic for the onboarding video tutorial.
--   **/app/backend/routes/ai.py**: Contains the updated Pexels API image search endpoint.
--   **/app/backend/routes/auth.py**: Contains the updated logic for creating a unique school for each new user.
--   **/app/backend/.env**: Contains the new  and .
+-   **/app/backend/server.py**: Heavily modified. Contains new endpoints for calendar export, bulk import, and report cards. Needs refactoring.
+-   **/app/frontend/src/pages/Landing.js**: Heavily modified. Contains new, large sections for Integrations and Homeschoolers.
+-   **/app/frontend/src/pages/AdminPanel.js**: Heavily modified. Contains the new UI for Bulk Import and Integrations.
+-   **/app/frontend/src/pages/LessonPlanner.js**: Modified to add the Add to Calendar button and make action buttons responsive.
+-   **/app/frontend/src/pages/AdaptiveLearning.js**: New file, stubbed out for the next feature.
+-   **/app/frontend/src/pages/ReportCards.js**: New file, partially implemented.
+-   **/app/frontend/src/components/Layout.js**: Modified to handle branding for the un-schooled .
 
 **Areas that need refactoring**:
--   **/app/backend/server.py**: Remains a high-priority monolith that needs to be broken down into domain-specific route files.
--   **/app/frontend/src/components/OnboardingVideo.js**: This component is over 450 lines and contains the entire video script. The script could be moved to a separate JSON or constant file to clean up the component logic.
+-   **/app/backend/server.py**: Urgently needs to be broken down. It is now over 4000 lines long and is becoming unmanageable.
+-   **/app/frontend/src/pages/Landing.js**: Now over 1500 lines. The new sections should be broken into their own components.
+-   **/app/frontend/src/pages/LessonPlanner.js**: Remains a very large component that is difficult to maintain.
 
 **key api endpoints**
--   : (Modified) Searches for images using the Pexels API.
--   : (Modified) Checks user's trial/subscription status. Now correctly identifies expired trials.
--   : (New) Admin-only endpoint to trigger trial expiration email reminders.
--   : (New) Checks a user's progress through the onboarding checklist.
--   : (New) Allows a user to dismiss onboarding steps or the welcome modal.
+-   : Was the subject of extensive debugging. Works correctly.
+-   : (New) Generates and returns an  file for a given lesson plan.
+-   : (New) Endpoint for bulk importing teachers via CSV.
+-   : (New) Endpoint for bulk importing students via CSV.
+-   : (New) Stubbed endpoint for generating report cards.
+-   : (Modified) Now returns a  status for  users to skip the tutorial.
 
 **Critical Info for New Agent**
--   **User is highly attentive:** The user provides detailed feedback and notices small bugs like audio skipping and data inconsistencies. All fixes and features require thorough testing before completion.
--   **Onboarding Logic is Data-Driven:** The onboarding system checks for the existence of real data (e.g., classes, planners) and specific values (e.g., school name is not My School) to determine completion. Be aware of this when testing.
--   **API Keys are in use:** The Pexels and Resend integrations depend on keys now present in . Resend is in test mode, so emails will only send to verified addresses, which is expected behavior during development.
+-   **PREVIEW vs. PRODUCTION:** The user deploys the code to a separate production domain (). The production database is **COMPLETELY SEPARATE** from the preview database you have access to. Any user accounts or data you create exist **only in preview**. You must remind the user to redeploy and manage production data themselves. This was the source of a major, time-consuming login issue.
+-   **Super Admin Role:** The user  is the platform owner. This account has  and no . The UI must be coded to handle this special case (e.g., showing platform branding, skipping school-specific features).
+-   **Monolith Backend:** The  file is extremely large and fragile. Be cautious when adding new endpoints and strongly prioritize the refactoring task.
 
 **documents and test reports created in this job**
--    (updated multiple times)
+-   /app/memory/PRD.md (updated multiple times)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Reports the onboarding checklist incorrectly detects lesson plans and that the tutorial audio skips/repeats. (Status: IN PROGRESS, fixes implemented but pending user verification)
-2.  **User:** Requests an animated video walkthrough with voice narration for the onboarding modal, providing a detailed script. (Status: COMPLETED)
-3.  **User:** Requests a user onboarding system with a checklist and welcome banner/modal. (Status: COMPLETED)
-4.  **User:** Reports that new accounts are still defaulting to Inmaculada School data. States each new user should be a new school. (Status: COMPLETED)
-5.  **User:** Reports new users are seeing another school's private info (Inmaculada School) by default and this should not happen. (Status: COMPLETED)
-6.  **User:** Requests an email reminder to be sent 2-3 days before a user's trial expires. (Status: COMPLETED)
-7.  **User:** Provides their Resend API key. (Status: COMPLETED)
-8.  **User:** Reports that accounts with expired 7-day trials remain active and should be blocked until they subscribe. (Status: COMPLETED)
-9.  **User:** Provides their Pexels API key. (Status: COMPLETED)
-10. **User:** Agrees with the agent's suggestion to integrate Pexels API for better image search. (Status: COMPLETED)
+1.  **User:** Requests features for homeschoolers, including adaptive learning and offline content, and points out a mobile UI bug. (Status: IN PROGRESS, mobile bug fixed, homeschool section added to landing page).
+2.  **User:** Clarifies that the Platform Admin () should not see the onboarding tutorial or be associated with any school. (Status: COMPLETED).
+3.  **User:** Confirms login now works on production after redeploying with the  role fix. (Status: COMPLETED).
+4.  **User:** Reports the  role is not available in the Admin Panel dropdown on production. (Status: COMPLETED, agent fixed and advised user to redeploy).
+5.  **User:** Confirms  is their old super admin on production and asks how to create the new  there. (Status: COMPLETED, agent provided instructions).
+6.  **User:** Reports login still not working, revealing they are on the wrong domain ( vs. preview). (Status: COMPLETED, agent identified the root cause).
+7.  **User:** Repeatedly states login is not working with the provided complex password. (Status: RESOLVED, issue was environment mismatch).
+8.  **User:** Insists on using the complex password . (Status: COMPLETED, agent set and verified the password).
+9.  **User:** Provides email/password for the new dedicated Super Admin account. (Status: COMPLETED).
+10. **User:** Explains the Super Admin Juan H Torres is the app owner and should not be part of a school. (Status: COMPLETED, led to creating the new  account).
 
 **Project Health Check:**
 -   **Broken:** None.
--   **Mocked:** Resend API is in test mode. Emails will not deliver to end-users until the domain is verified, but the integration itself is functional.
+-   **Mocked:** Resend API remains in test mode.
 
 **3rd Party Integrations**
 -   **Emergent-managed Google Auth**
 -   **Stripe** (Payments)
--   **Resend** (Emails, via API key)
+-   **Resend** (Emails, via API key, in test mode)
 -   **Pexels** (Image Search, via API key)
 -   **Anthropic Claude Sonnet 4.5** (AI Assistant, via )
 -   **OpenAI TTS** (Audio narration)
--   **Pillow** (Backend image processing)
+-   **Sora 2** (Video Generation, via )
+-   **Google Classroom** (Integration playbook fetched, advertised on landing page, but not yet implemented).
 
 **Testing status**
 -   **Testing agent used after significant changes:** NO
@@ -198,10 +235,11 @@ None.
 -   **Known regressions:** None.
 
 **Credentials to test flow:**
--   **Super Admin / Has Plans:**  / 
+-   **Platform Super Admin:**  /  (Use this for all platform-wide testing).
+-   **School Teacher / Has Plans:**  / 
 -   **Expired Trial User:**  / 
--   **Onboarding Test User:**  / 
 
 **What agent forgot to execute**
--   The agent did not address the Template of the Week bug, which has been pending user verification since the start of the job.
--   The critical task of refactoring the monolithic  file was once again deferred.</analysis>
+-   The agent created stubs for the **Report Card Generation** and **Bulk Import** features but did not fully implement or test them.
+-   The agent did not verify the pending fix for the **Template of the Week** bug.
+-   The long-standing task to **refactor ** was once again deferred, despite the file growing significantly larger and more complex.</analysis>
