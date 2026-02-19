@@ -124,6 +124,38 @@ const GamesCreator = () => {
     }
   }, [playingGame]);
 
+  // Check for match when both selected (matching game)
+  useEffect(() => {
+    if (matchingSelected.left && matchingSelected.right && playingGame?.game_type === 'matching') {
+      const leftQ = playingGame.questions.find(q => 
+        (q.question || q.term || q.left) === matchingSelected.left.text
+      );
+      const correctAnswer = leftQ?.correct_answer || leftQ?.match || leftQ?.right;
+      
+      if (matchingSelected.right.text === correctAnswer) {
+        // Correct match
+        setMatchedPairs(prev => [...prev, matchingSelected.left.text, matchingSelected.right.text]);
+        setGameProgress(prev => ({ ...prev, score: prev.score + 1 }));
+        toast.success(language === 'es' ? '¡Correcto!' : 'Correct!');
+      } else {
+        toast.error(language === 'es' ? 'Intenta de nuevo' : 'Try again');
+      }
+      
+      setTimeout(() => setMatchingSelected({ left: null, right: null }), 300);
+    }
+  }, [matchingSelected, playingGame, language]);
+
+  // Check if matching game complete
+  useEffect(() => {
+    if (playingGame?.game_type === 'matching' && matchedPairs.length > 0 && 
+        matchedPairs.length === playingGame.questions.length * 2) {
+      setShowResult(true);
+      if (playingGame.game_id && playerName) {
+        submitScore(playingGame, gameProgress.score, playingGame.questions.length);
+      }
+    }
+  }, [matchedPairs, playingGame, playerName, gameProgress.score]);
+
   const fetchSavedGames = async () => {
     try {
       const res = await axios.get(`${API}/games`, { withCredentials: true });
