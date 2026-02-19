@@ -226,6 +226,12 @@ const AppRouter = () => {
       <Route path="/adaptive-learning" element={
         <ProtectedRoute><AdaptiveLearning /></ProtectedRoute>
       } />
+      <Route path="/student-progress" element={
+        <ProtectedRoute><StudentProgress /></ProtectedRoute>
+      } />
+      <Route path="/student-progress/:studentId" element={
+        <ProtectedRoute><StudentProgress /></ProtectedRoute>
+      } />
       <Route path="/admin" element={
         <ProtectedRoute requireSubscription={false}><AdminPanel /></ProtectedRoute>
       } />
