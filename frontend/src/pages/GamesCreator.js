@@ -325,12 +325,464 @@ const GamesCreator = () => {
   }
 
   // Render game player
-  if (playingGame && !showNameInput) {
+  // Game-specific state
+  const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+  const [fillBlankAnswer, setFillBlankAnswer] = useState('');
+  const [matchingSelected, setMatchingSelected] = useState({ left: null, right: null });
+  const [matchedPairs, setMatchedPairs] = useState([]);
+  const [shuffledRight, setShuffledRight] = useState([]);
+
+  // Initialize shuffled items for matching games
+  useEffect(() => {
+    if (playingGame?.game_type === 'matching' && playingGame?.questions) {
+      const rightItems = playingGame.questions.map(q => q.match || q.correct_answer);
+      setShuffledRight([...rightItems].sort(() => Math.random() - 0.5));
+      setMatchedPairs([]);
+    }
+  }, [playingGame]);
+
+  // Render different game types
+  const renderGameContent = () => {
     const currentQ = playingGame.questions[gameProgress.current];
-    const progress = ((gameProgress.current + 1) / playingGame.questions.length) * 100;
+    const gameType = playingGame.game_type;
+
+    // Quiz / Multiple Choice / True-False
+    if (gameType === 'quiz' || gameType === 'true_false') {
+      return (
+        <div className="grid gap-3">
+          {currentQ.options?.map((option, idx) => {
+            const isSelected = selectedAnswer === option;
+            const isCorrect = option === currentQ.correct_answer;
+            const showFeedback = selectedAnswer !== null;
+            
+            return (
+              <button
+                key={idx}
+                onClick={() => !selectedAnswer && handleAnswer(option, currentQ.correct_answer)}
+                disabled={selectedAnswer !== null}
+                data-testid={`option-${idx}`}
+                className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
+                  showFeedback
+                    ? isCorrect
+                      ? 'border-green-500 bg-green-50 text-green-700'
+                      : isSelected
+                      ? 'border-red-500 bg-red-50 text-red-700'
+                      : 'border-slate-200 opacity-50'
+                    : 'border-slate-200 hover:border-purple-400 hover:bg-purple-50'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    showFeedback
+                      ? isCorrect
+                        ? 'bg-green-200 text-green-700'
+                        : isSelected
+                        ? 'bg-red-200 text-red-700'
+                        : 'bg-slate-200 text-slate-600'
+                      : 'bg-slate-100 text-slate-600'
+                  }`}>
+                    {String.fromCharCode(65 + idx)}
+                  </span>
+                  <span className="flex-1 font-medium">{option}</span>
+                  {showFeedback && isCorrect && (
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      );
+    }
+
+    // Flashcards
+    if (gameType === 'flashcards') {
+      return (
+        <div className="flex flex-col items-center">
+          <div 
+            onClick={() => setFlashcardFlipped(!flashcardFlipped)}
+            className="w-full max-w-md h-64 cursor-pointer perspective-1000"
+            data-testid="flashcard"
+          >
+            <div className={`relative w-full h-full transition-all duration-500 transform-style-preserve-3d ${
+              flashcardFlipped ? 'rotate-y-180' : ''
+            }`}
+            style={{ transformStyle: 'preserve-3d', transform: flashcardFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
+            >
+              {/* Front - Question */}
+              <div 
+                className="absolute w-full h-full rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 p-6 flex flex-col items-center justify-center text-white shadow-lg"
+                style={{ backfaceVisibility: 'hidden' }}
+              >
+                <p className="text-sm uppercase tracking-wider mb-2 opacity-70">
+                  {language === 'es' ? 'Pregunta' : 'Question'}
+                </p>
+                <p className="text-xl font-bold text-center">{currentQ.question || currentQ.front || currentQ.term}</p>
+                <p className="text-sm mt-4 opacity-70">
+                  {language === 'es' ? '(Toca para voltear)' : '(Tap to flip)'}
+                </p>
+              </div>
+              
+              {/* Back - Answer */}
+              <div 
+                className="absolute w-full h-full rounded-2xl bg-gradient-to-br from-green-500 to-teal-500 p-6 flex flex-col items-center justify-center text-white shadow-lg"
+                style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+              >
+                <p className="text-sm uppercase tracking-wider mb-2 opacity-70">
+                  {language === 'es' ? 'Respuesta' : 'Answer'}
+                </p>
+                <p className="text-xl font-bold text-center">{currentQ.correct_answer || currentQ.back || currentQ.definition}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex gap-3 mt-6">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setFlashcardFlipped(false);
+                handleAnswer('incorrect', 'correct');
+              }}
+              className="border-red-300 text-red-600 hover:bg-red-50"
+              data-testid="flashcard-wrong"
+            >
+              {language === 'es' ? 'No lo sabía' : "Didn't know"}
+            </Button>
+            <Button 
+              onClick={() => {
+                setFlashcardFlipped(false);
+                handleAnswer('correct', 'correct');
+              }}
+              className="bg-green-600 hover:bg-green-700"
+              data-testid="flashcard-correct"
+            >
+              {language === 'es' ? '¡Lo sabía!' : 'Got it!'}
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // Fill in the Blanks
+    if (gameType === 'fill_blanks') {
+      const checkFillBlank = () => {
+        const userAnswer = fillBlankAnswer.trim().toLowerCase();
+        const correctAnswer = (currentQ.correct_answer || currentQ.answer || '').toLowerCase();
+        const isCorrect = userAnswer === correctAnswer || 
+                         correctAnswer.includes(userAnswer) || 
+                         userAnswer.includes(correctAnswer);
+        handleAnswer(isCorrect ? 'correct' : 'incorrect', 'correct');
+        setFillBlankAnswer('');
+      };
+
+      return (
+        <div className="space-y-6">
+          <div className="text-center p-6 bg-slate-50 rounded-xl">
+            <p className="text-xl text-slate-700">
+              {(currentQ.question || currentQ.sentence || '').replace(/___+|_blank_/gi, 
+                '<span class="inline-block min-w-[100px] border-b-2 border-purple-400 mx-1"></span>'
+              ).split('<span').map((part, idx) => 
+                idx === 0 ? part : <span key={idx} className="inline-block min-w-[100px] border-b-2 border-purple-400 mx-1 text-purple-600 font-bold">{fillBlankAnswer || '___'}</span>
+              )}
+            </p>
+          </div>
+          
+          <div className="flex gap-3">
+            <Input
+              value={fillBlankAnswer}
+              onChange={(e) => setFillBlankAnswer(e.target.value)}
+              placeholder={language === 'es' ? 'Escribe tu respuesta...' : 'Type your answer...'}
+              className="flex-1"
+              data-testid="fill-blank-input"
+              onKeyPress={(e) => e.key === 'Enter' && fillBlankAnswer.trim() && checkFillBlank()}
+            />
+            <Button 
+              onClick={checkFillBlank}
+              disabled={!fillBlankAnswer.trim()}
+              className="bg-purple-600 hover:bg-purple-700"
+              data-testid="fill-blank-submit"
+            >
+              {language === 'es' ? 'Verificar' : 'Check'}
+            </Button>
+          </div>
+          
+          {currentQ.hint && (
+            <p className="text-sm text-slate-500 text-center">
+              <span className="font-medium">{language === 'es' ? 'Pista:' : 'Hint:'}</span> {currentQ.hint}
+            </p>
+          )}
+        </div>
+      );
+    }
+
+    // Matching Game
+    if (gameType === 'matching') {
+      const leftItems = playingGame.questions.map(q => ({ 
+        id: q.question || q.term || q.left,
+        text: q.question || q.term || q.left 
+      }));
+      const rightItems = shuffledRight.map((item, idx) => ({ 
+        id: idx, 
+        text: item 
+      }));
+
+      const handleMatchClick = (side, item) => {
+        if (matchedPairs.includes(item.text)) return;
+        
+        if (side === 'left') {
+          setMatchingSelected({ ...matchingSelected, left: item });
+        } else {
+          setMatchingSelected({ ...matchingSelected, right: item });
+        }
+      };
+
+      // Check for match when both selected
+      useEffect(() => {
+        if (matchingSelected.left && matchingSelected.right) {
+          const leftQ = playingGame.questions.find(q => 
+            (q.question || q.term || q.left) === matchingSelected.left.text
+          );
+          const correctAnswer = leftQ?.correct_answer || leftQ?.match || leftQ?.right;
+          
+          if (matchingSelected.right.text === correctAnswer) {
+            // Correct match
+            setMatchedPairs([...matchedPairs, matchingSelected.left.text, matchingSelected.right.text]);
+            setGameProgress(prev => ({ ...prev, score: prev.score + 1 }));
+            toast.success(language === 'es' ? '¡Correcto!' : 'Correct!');
+          } else {
+            toast.error(language === 'es' ? 'Intenta de nuevo' : 'Try again');
+          }
+          
+          setTimeout(() => setMatchingSelected({ left: null, right: null }), 300);
+        }
+      }, [matchingSelected]);
+
+      // Check if game complete
+      useEffect(() => {
+        if (matchedPairs.length === playingGame.questions.length * 2) {
+          setShowResult(true);
+          if (playingGame.game_id && playerName) {
+            submitScore(playingGame, gameProgress.score, playingGame.questions.length);
+          }
+        }
+      }, [matchedPairs]);
+
+      return (
+        <div className="grid grid-cols-2 gap-6">
+          {/* Left Column */}
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-slate-500 text-center mb-2">
+              {language === 'es' ? 'Términos' : 'Terms'}
+            </p>
+            {leftItems.map((item, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleMatchClick('left', item)}
+                disabled={matchedPairs.includes(item.text)}
+                data-testid={`match-left-${idx}`}
+                className={`w-full p-3 rounded-lg border-2 text-sm transition-all ${
+                  matchedPairs.includes(item.text)
+                    ? 'bg-green-50 border-green-300 text-green-700 opacity-60'
+                    : matchingSelected.left?.text === item.text
+                    ? 'bg-purple-100 border-purple-400'
+                    : 'border-slate-200 hover:border-purple-300'
+                }`}
+              >
+                {item.text}
+              </button>
+            ))}
+          </div>
+          
+          {/* Right Column */}
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-slate-500 text-center mb-2">
+              {language === 'es' ? 'Definiciones' : 'Definitions'}
+            </p>
+            {rightItems.map((item, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleMatchClick('right', item)}
+                disabled={matchedPairs.includes(item.text)}
+                data-testid={`match-right-${idx}`}
+                className={`w-full p-3 rounded-lg border-2 text-sm transition-all ${
+                  matchedPairs.includes(item.text)
+                    ? 'bg-green-50 border-green-300 text-green-700 opacity-60'
+                    : matchingSelected.right?.text === item.text
+                    ? 'bg-pink-100 border-pink-400'
+                    : 'border-slate-200 hover:border-pink-300'
+                }`}
+              >
+                {item.text}
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Word Search (display clues and grid)
+    if (gameType === 'word_search') {
+      return (
+        <div className="space-y-6">
+          <div className="bg-slate-50 p-4 rounded-xl">
+            <p className="text-sm font-medium text-slate-600 mb-3">
+              {language === 'es' ? 'Encuentra estas palabras:' : 'Find these words:'}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {playingGame.questions.map((q, idx) => (
+                <Badge key={idx} variant="outline" className="px-3 py-1">
+                  {q.word || q.question || q.term}
+                </Badge>
+              ))}
+            </div>
+          </div>
+          
+          {/* Word Grid */}
+          {playingGame.grid ? (
+            <div className="flex justify-center">
+              <div className="inline-grid gap-1 p-4 bg-white rounded-xl border-2 border-slate-200" 
+                   style={{ gridTemplateColumns: `repeat(${playingGame.grid[0]?.length || 10}, 1fr)` }}>
+                {playingGame.grid.flat().map((letter, idx) => (
+                  <div 
+                    key={idx}
+                    className="w-8 h-8 flex items-center justify-center font-mono font-bold text-slate-700 bg-slate-50 rounded cursor-pointer hover:bg-purple-100"
+                  >
+                    {letter}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center p-8 bg-yellow-50 rounded-xl">
+              <p className="text-amber-700">
+                {language === 'es' 
+                  ? 'La cuadrícula de búsqueda de palabras se mostrará aquí. Busca las palabras listadas arriba.'
+                  : 'Word search grid will display here. Look for the words listed above.'}
+              </p>
+            </div>
+          )}
+          
+          <div className="flex justify-center">
+            <Button onClick={() => setShowResult(true)} className="bg-purple-600 hover:bg-purple-700">
+              {language === 'es' ? 'Terminé' : 'I\'m Done'}
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // Crossword
+    if (gameType === 'crossword') {
+      return (
+        <div className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Clues */}
+            <div className="space-y-4">
+              <div>
+                <p className="font-semibold text-slate-700 mb-2">{language === 'es' ? 'Horizontal' : 'Across'}</p>
+                <div className="space-y-2">
+                  {playingGame.questions.filter((_, i) => i % 2 === 0).map((q, idx) => (
+                    <p key={idx} className="text-sm text-slate-600">
+                      <span className="font-medium">{idx + 1}.</span> {q.clue || q.question}
+                    </p>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700 mb-2">{language === 'es' ? 'Vertical' : 'Down'}</p>
+                <div className="space-y-2">
+                  {playingGame.questions.filter((_, i) => i % 2 === 1).map((q, idx) => (
+                    <p key={idx} className="text-sm text-slate-600">
+                      <span className="font-medium">{idx + 1}.</span> {q.clue || q.question}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {/* Crossword Grid Placeholder */}
+            <div className="bg-slate-50 p-4 rounded-xl flex items-center justify-center min-h-[200px]">
+              <p className="text-slate-500 text-center">
+                {language === 'es' 
+                  ? 'Crucigrama interactivo - Usa las pistas para resolver'
+                  : 'Interactive crossword - Use the clues to solve'}
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex justify-center">
+            <Button onClick={() => setShowResult(true)} className="bg-purple-600 hover:bg-purple-700">
+              {language === 'es' ? 'Terminé' : 'I\'m Done'}
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // Drag and Drop (simplified as sorting)
+    if (gameType === 'drag_drop') {
+      return (
+        <div className="space-y-6">
+          <div className="bg-slate-50 p-4 rounded-xl">
+            <p className="text-slate-600 mb-4">{currentQ.instruction || currentQ.question}</p>
+            <div className="space-y-2">
+              {(currentQ.items || currentQ.options || []).map((item, idx) => (
+                <div 
+                  key={idx}
+                  className="p-3 bg-white rounded-lg border-2 border-slate-200 cursor-move hover:border-purple-300 hover:shadow-sm"
+                  data-testid={`drag-item-${idx}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <GripVertical className="h-4 w-4 text-slate-400" />
+                    <span>{item}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="flex justify-center gap-3">
+            <Button variant="outline" onClick={() => handleAnswer('incorrect', 'correct')}>
+              {language === 'es' ? 'Saltar' : 'Skip'}
+            </Button>
+            <Button onClick={() => handleAnswer('correct', 'correct')} className="bg-purple-600 hover:bg-purple-700">
+              {language === 'es' ? 'Verificar Orden' : 'Check Order'}
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // Default fallback - render as quiz
+    return (
+      <div className="grid gap-3">
+        {(currentQ.options || [currentQ.correct_answer, 'Other Option A', 'Other Option B']).map((option, idx) => (
+          <button
+            key={idx}
+            onClick={() => !selectedAnswer && handleAnswer(option, currentQ.correct_answer)}
+            disabled={selectedAnswer !== null}
+            className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
+              selectedAnswer === option
+                ? option === currentQ.correct_answer
+                  ? 'border-green-500 bg-green-50'
+                  : 'border-red-500 bg-red-50'
+                : 'border-slate-200 hover:border-purple-400'
+            }`}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  if (playingGame && !showNameInput) {
+    const currentQ = playingGame.questions?.[gameProgress.current];
+    const totalQuestions = playingGame.questions?.length || 1;
+    const progress = ((gameProgress.current + 1) / totalQuestions) * 100;
 
     if (showResult) {
-      const percentage = Math.round((gameProgress.score / playingGame.questions.length) * 100);
+      const percentage = Math.round((gameProgress.score / totalQuestions) * 100);
       return (
         <Layout>
           <div className="max-w-2xl mx-auto space-y-6">
@@ -344,7 +796,7 @@ const GamesCreator = () => {
                 </h2>
                 <p className="text-xl text-slate-600 mb-6">
                   {playerName && <span className="font-semibold">{playerName}, </span>}
-                  {language === 'es' ? 'Tu puntuación:' : 'Your score:'} {gameProgress.score}/{playingGame.questions.length}
+                  {language === 'es' ? 'Tu puntuación:' : 'Your score:'} {gameProgress.score}/{totalQuestions}
                 </p>
                 <div className="w-full bg-slate-200 rounded-full h-4 mb-6">
                   <div 
@@ -407,88 +859,78 @@ const GamesCreator = () => {
       );
     }
 
+    // Skip progress header for matching game (it has its own progress)
+    const showProgressHeader = playingGame.game_type !== 'matching';
+
     return (
       <Layout>
         <div className="max-w-3xl mx-auto space-y-6">
           {/* Progress Header */}
-          <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-medium">{playingGame.title}</span>
-                <span className="text-sm">
-                  {gameProgress.current + 1} / {playingGame.questions.length}
-                </span>
-              </div>
-              <div className="w-full bg-white/20 rounded-full h-2">
-                <div 
-                  className="bg-white rounded-full h-2 transition-all"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              <div className="flex items-center justify-between mt-2 text-sm">
-                <span>{language === 'es' ? 'Puntuación:' : 'Score:'} {gameProgress.score}</span>
-                <Button size="sm" variant="ghost" className="text-white hover:bg-white/20" onClick={exitGame}>
-                  {language === 'es' ? 'Salir' : 'Exit'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          {showProgressHeader && (
+            <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium">{playingGame.title}</span>
+                  <span className="text-sm">
+                    {gameProgress.current + 1} / {totalQuestions}
+                  </span>
+                </div>
+                <div className="w-full bg-white/20 rounded-full h-2">
+                  <div 
+                    className="bg-white rounded-full h-2 transition-all"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                <div className="flex items-center justify-between mt-2 text-sm">
+                  <span>{language === 'es' ? 'Puntuación:' : 'Score:'} {gameProgress.score}</span>
+                  <Button size="sm" variant="ghost" className="text-white hover:bg-white/20" onClick={exitGame}>
+                    {language === 'es' ? 'Salir' : 'Exit'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Question Card */}
+          {/* Game Card */}
           <Card className="border-2 border-purple-200">
             <CardContent className="p-8">
-              <div className="text-center mb-8">
-                <Badge className="mb-4 bg-purple-100 text-purple-700">
-                  {language === 'es' ? 'Pregunta' : 'Question'} {gameProgress.current + 1}
-                </Badge>
-                <h3 className="text-2xl font-semibold text-slate-800">
-                  {currentQ.question}
-                </h3>
-              </div>
+              {/* Question/Prompt - Skip for matching */}
+              {playingGame.game_type !== 'matching' && currentQ && (
+                <div className="text-center mb-8">
+                  <Badge className="mb-4 bg-purple-100 text-purple-700">
+                    {gameTypes.find(t => t.id === playingGame.game_type)?.name || 
+                     (language === 'es' ? 'Pregunta' : 'Question')} {gameProgress.current + 1}
+                  </Badge>
+                  {playingGame.game_type !== 'flashcards' && playingGame.game_type !== 'word_search' && playingGame.game_type !== 'crossword' && (
+                    <h3 className="text-2xl font-semibold text-slate-800">
+                      {currentQ.question || currentQ.prompt || currentQ.clue}
+                    </h3>
+                  )}
+                </div>
+              )}
 
-              {/* Answer Options */}
-              <div className="grid gap-3">
-                {currentQ.options?.map((option, idx) => {
-                  const isSelected = selectedAnswer === option;
-                  const isCorrect = option === currentQ.correct_answer;
-                  const showFeedback = selectedAnswer !== null;
-                  
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => !selectedAnswer && handleAnswer(option, currentQ.correct_answer)}
-                      disabled={selectedAnswer !== null}
-                      className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
-                        showFeedback
-                          ? isCorrect
-                            ? 'border-green-500 bg-green-50 text-green-700'
-                            : isSelected
-                            ? 'border-red-500 bg-red-50 text-red-700'
-                            : 'border-slate-200 opacity-50'
-                          : 'border-slate-200 hover:border-purple-400 hover:bg-purple-50'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                          showFeedback
-                            ? isCorrect
-                              ? 'bg-green-200 text-green-700'
-                              : isSelected
-                              ? 'bg-red-200 text-red-700'
-                              : 'bg-slate-200 text-slate-600'
-                            : 'bg-slate-100 text-slate-600'
-                        }`}>
-                          {String.fromCharCode(65 + idx)}
-                        </span>
-                        <span className="flex-1 font-medium">{option}</span>
-                        {showFeedback && isCorrect && (
-                          <CheckCircle2 className="h-5 w-5 text-green-600" />
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+              {/* Matching game header */}
+              {playingGame.game_type === 'matching' && (
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-800">{playingGame.title}</h3>
+                    <p className="text-slate-500">
+                      {language === 'es' ? 'Empareja los términos con sus definiciones' : 'Match the terms with their definitions'}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Badge className="bg-purple-100 text-purple-700">
+                      {matchedPairs.length / 2} / {playingGame.questions.length}
+                    </Badge>
+                    <Button size="sm" variant="outline" onClick={exitGame}>
+                      {language === 'es' ? 'Salir' : 'Exit'}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Render game-specific content */}
+              {renderGameContent()}
             </CardContent>
           </Card>
         </div>
