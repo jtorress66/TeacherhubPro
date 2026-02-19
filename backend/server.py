@@ -3706,12 +3706,27 @@ async def generate_report_card(
     if not class_doc:
         raise HTTPException(status_code=404, detail="Class not found")
     
-    # Get all grades for this student in this class
-    grades_cursor = db.grades.find({
-        "student_id": student_id,
-        "class_id": class_id
-    }, {"_id": 0})
-    all_grades = await grades_cursor.to_list(500)
+    # Get all assignments for this class
+    assignments = await db.assignments.find({"class_id": class_id}, {"_id": 0}).to_list(500)
+    assignment_ids = [a["assignment_id"] for a in assignments]
+    
+    # Build a map of assignment_id -> assignment info (including category)
+    assignment_map = {}
+    for a in assignments:
+        assignment_map[a["assignment_id"]] = a
+    
+    # Get categories for this class
+    categories = await db.grade_categories.find({"class_id": class_id}, {"_id": 0}).to_list(50)
+    category_map = {c["category_id"]: c for c in categories}
+    
+    # Get all grades for this student from assignments in this class
+    all_grades = []
+    if assignment_ids:
+        grades_cursor = db.grades.find({
+            "student_id": student_id,
+            "assignment_id": {"$in": assignment_ids}
+        }, {"_id": 0})
+        all_grades = await grades_cursor.to_list(500)
     
     # Calculate grade statistics by category
     grade_summary = {}
@@ -3719,23 +3734,37 @@ async def generate_report_card(
     total_points_possible = 0
     
     for grade in all_grades:
-        category = grade.get("category", "General")
-        if category not in grade_summary:
-            grade_summary[category] = {
-                "category": category,
+        # Get the assignment to find its category and max points
+        assignment = assignment_map.get(grade.get("assignment_id"))
+        if not assignment:
+            continue
+        
+        # Get category name from category_id
+        category_id = assignment.get("category_id", "")
+        category_info = category_map.get(category_id, {})
+        category_name = category_info.get("name", "General")
+        
+        if category_name not in grade_summary:
+            grade_summary[category_name] = {
+                "category": category_name,
                 "points_earned": 0,
                 "points_possible": 0,
                 "assignments": []
             }
         
-        points = grade.get("grade", 0)
-        max_points = grade.get("max_points", 100)
+        # Score is stored in 'score' field, max points comes from assignment
+        score = grade.get("score") or 0
+        max_points = assignment.get("points", 100)
         
-        grade_summary[category]["points_earned"] += points
-        grade_summary[category]["points_possible"] += max_points
-        grade_summary[category]["assignments"].append(grade)
+        grade_summary[category_name]["points_earned"] += score
+        grade_summary[category_name]["points_possible"] += max_points
+        grade_summary[category_name]["assignments"].append({
+            **grade,
+            "assignment_title": assignment.get("title", ""),
+            "max_points": max_points
+        })
         
-        total_points_earned += points
+        total_points_earned += score
         total_points_possible += max_points
     
     # Calculate percentages for each category
