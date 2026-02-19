@@ -4003,14 +4003,27 @@ Make the content engaging, age-appropriate, and educational. Start from the stud
 
     try:
         # Initialize AI chat
-        chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            session_id=f"adaptive_{request.student_id}_{uuid.uuid4().hex[:8]}",
-            system_message=system_prompt
-        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        try:
+            chat = LlmChat(
+                api_key=EMERGENT_LLM_KEY,
+                session_id=f"adaptive_{request.student_id}_{uuid.uuid4().hex[:8]}",
+                system_message=system_prompt
+            ).with_model("anthropic", "claude-sonnet-4-20250514")
+            
+            user_message = UserMessage(text=user_prompt)
+            response = await chat.send_message(user_message)
+        except Exception as ai_error:
+            logger.error(f"AI service error: {str(ai_error)}")
+            raise HTTPException(
+                status_code=503, 
+                detail=f"AI service temporarily unavailable. Please try again in a few moments."
+            )
         
-        user_message = UserMessage(text=user_prompt)
-        response = await chat.send_message(user_message)
+        if not response or len(response.strip()) < 10:
+            raise HTTPException(
+                status_code=500,
+                detail="AI returned empty response. Please try again."
+            )
         
         # Parse JSON response
         import json
