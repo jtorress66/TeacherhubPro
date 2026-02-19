@@ -1278,6 +1278,74 @@ Added contextual AI activity suggestions for each day of the week in the Lesson 
 
 **Pedagogical Day Phases:**
 - Day 1 (Monday): **Introduction** - Hook students, activate prior knowledge
+
+
+---
+## Update 2026-02-19 - Game Analytics, Leaderboards & New Game Types
+
+### 1. New Game Types Added ✅
+Expanded from 5 to 8 game types:
+
+| Game Type | Description |
+|-----------|-------------|
+| 🎯 Quiz | Multiple choice with 4 options |
+| 🧩 Matching | Connect related concepts |
+| ✏️ Fill in Blanks | Complete sentences |
+| ✅ True/False | Binary choice questions |
+| 📚 Flashcards | Memory cards for studying |
+| 🔍 Word Search | **NEW** - Find hidden words |
+| ⬛ Crossword | **NEW** - Solve clue-based puzzle |
+| 🔀 Drag & Drop | **NEW** - Categorize items |
+
+### 2. Game Analytics ✅
+Track student engagement and performance across all games.
+
+**Overview Stats:**
+- Total Games Created
+- Times Played (total plays)
+- Average Score (percentage)
+- Unique Players
+
+**Per-Game Stats:**
+- Play count
+- Unique players
+- Average score
+- Best score
+- Ranking button to view leaderboard
+
+**API Endpoint:**
+- `GET /api/games/analytics` - Returns comprehensive analytics
+
+### 3. Leaderboards ✅
+Competitive rankings for each game.
+
+**Features:**
+- Top 10 scores per game
+- Sorted by percentage (desc), then time (asc)
+- Shows player name, score, time taken
+- Medal icons for top 3 (🥇🥈🥉)
+- Displays in:
+  - Game results screen after completion
+  - Analytics tab (via Ranking button)
+
+**API Endpoints:**
+- `POST /api/games/{game_id}/score` - Submit player score
+- `GET /api/games/{game_id}/leaderboard` - Get top scores
+
+**Score Submission Flow:**
+1. Player enters name before starting saved game
+2. Game tracks start time
+3. Score auto-submitted on completion
+4. Leaderboard shown in results
+
+**Database Collection:**
+- `game_scores` - player_name, score, total_questions, time_taken, percentage, played_at
+
+### Test Results
+- **Backend:** 100% (16/16 tests passed)
+- **Frontend:** 100% (all features verified)
+- **Test Report:** `/app/test_reports/iteration_18.json`
+
 - Day 2 (Tuesday): **Guided Practice** - Model skills with teacher support
 - Day 3 (Wednesday): **Independent Practice** - Small groups, peer collaboration
 - Day 4 (Thursday): **Mastery** - Application, extension activities
