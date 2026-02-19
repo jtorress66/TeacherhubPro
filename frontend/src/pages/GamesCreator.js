@@ -801,6 +801,212 @@ const GamesCreator = () => {
               </Card>
             )}
           </TabsContent>
+
+          {/* Analytics Tab */}
+          <TabsContent value="analytics" className="space-y-6">
+            {/* Overview Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+                <CardContent className="p-5 text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-purple-200 mb-3">
+                    <Gamepad2 className="h-6 w-6 text-purple-700" />
+                  </div>
+                  <p className="text-3xl font-bold text-purple-700">
+                    {analytics?.total_games || savedGames.length}
+                  </p>
+                  <p className="text-sm text-purple-600">
+                    {language === 'es' ? 'Juegos Creados' : 'Games Created'}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+                <CardContent className="p-5 text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-200 mb-3">
+                    <Users className="h-6 w-6 text-blue-700" />
+                  </div>
+                  <p className="text-3xl font-bold text-blue-700">
+                    {analytics?.total_plays || 0}
+                  </p>
+                  <p className="text-sm text-blue-600">
+                    {language === 'es' ? 'Veces Jugado' : 'Times Played'}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+                <CardContent className="p-5 text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-200 mb-3">
+                    <Target className="h-6 w-6 text-green-700" />
+                  </div>
+                  <p className="text-3xl font-bold text-green-700">
+                    {analytics?.average_score || 0}%
+                  </p>
+                  <p className="text-sm text-green-600">
+                    {language === 'es' ? 'Promedio' : 'Average Score'}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
+                <CardContent className="p-5 text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-200 mb-3">
+                    <Trophy className="h-6 w-6 text-amber-700" />
+                  </div>
+                  <p className="text-3xl font-bold text-amber-700">
+                    {analytics?.unique_players || 0}
+                  </p>
+                  <p className="text-sm text-amber-600">
+                    {language === 'es' ? 'Jugadores Únicos' : 'Unique Players'}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Game Performance */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 text-purple-600" />
+                  {language === 'es' ? 'Rendimiento por Juego' : 'Game Performance'}
+                </CardTitle>
+                <CardDescription>
+                  {language === 'es' 
+                    ? 'Estadísticas detalladas de cada juego' 
+                    : 'Detailed statistics for each game'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {analytics?.game_stats?.length > 0 ? (
+                  <div className="space-y-4">
+                    {analytics.game_stats.map((game, idx) => (
+                      <div key={idx} className="p-4 rounded-xl bg-slate-50 border">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <h4 className="font-semibold text-slate-800">{game.title}</h4>
+                            <p className="text-sm text-slate-500">
+                              {gameTypes.find(t => t.id === game.game_type)?.name}
+                            </p>
+                          </div>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => fetchLeaderboard(game.game_id)}
+                          >
+                            <Trophy className="h-4 w-4 mr-1" />
+                            {language === 'es' ? 'Ranking' : 'Leaderboard'}
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-4 gap-4 text-center">
+                          <div>
+                            <p className="text-xl font-bold text-purple-600">{game.play_count || 0}</p>
+                            <p className="text-xs text-slate-500">{language === 'es' ? 'Partidas' : 'Plays'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xl font-bold text-blue-600">{game.unique_players || 0}</p>
+                            <p className="text-xs text-slate-500">{language === 'es' ? 'Jugadores' : 'Players'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xl font-bold text-green-600">{game.avg_score || 0}%</p>
+                            <p className="text-xs text-slate-500">{language === 'es' ? 'Promedio' : 'Avg Score'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xl font-bold text-amber-600">{game.best_score || 0}%</p>
+                            <p className="text-xs text-slate-500">{language === 'es' ? 'Mejor' : 'Best'}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : savedGames.length > 0 ? (
+                  <div className="text-center py-8">
+                    <BarChart3 className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                    <p className="text-slate-500">
+                      {language === 'es' 
+                        ? 'Las estadísticas aparecerán cuando los estudiantes jueguen' 
+                        : 'Statistics will appear when students play'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Gamepad2 className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                    <p className="text-slate-500">
+                      {language === 'es' 
+                        ? 'Crea tu primer juego para ver analíticas' 
+                        : 'Create your first game to see analytics'}
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Leaderboard Modal/Card */}
+            {selectedGameForLeaderboard && (
+              <Card className="border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2">
+                      <Trophy className="h-5 w-5 text-amber-500" />
+                      {language === 'es' ? 'Tabla de Clasificación' : 'Leaderboard'}
+                    </CardTitle>
+                    <Button 
+                      size="sm" 
+                      variant="ghost"
+                      onClick={() => setSelectedGameForLeaderboard(null)}
+                    >
+                      ✕
+                    </Button>
+                  </div>
+                  <CardDescription>
+                    {savedGames.find(g => g.game_id === selectedGameForLeaderboard)?.title}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {leaderboard.length > 0 ? (
+                    <div className="space-y-2">
+                      {leaderboard.map((entry, idx) => (
+                        <div 
+                          key={idx}
+                          className="flex items-center gap-4 p-3 rounded-lg bg-white border"
+                        >
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+                            idx === 0 ? 'bg-amber-400 text-white' : 
+                            idx === 1 ? 'bg-slate-400 text-white' : 
+                            idx === 2 ? 'bg-amber-600 text-white' : 'bg-slate-200 text-slate-600'
+                          }`}>
+                            {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-semibold text-slate-800">{entry.player_name}</p>
+                            <p className="text-xs text-slate-500">
+                              {new Date(entry.played_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-purple-600">
+                              {Math.round((entry.score / entry.total_questions) * 100)}%
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {entry.score}/{entry.total_questions} • {entry.time_taken}s
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Medal className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                      <p className="text-slate-500">
+                        {language === 'es' 
+                          ? 'Aún no hay puntuaciones' 
+                          : 'No scores yet'}
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
         </Tabs>
       </div>
     </Layout>
