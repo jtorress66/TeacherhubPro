@@ -36,6 +36,7 @@ import CookiesPolicy from "./pages/CookiesPolicy";
 import Accessibility from "./pages/Accessibility";
 import AIAssistant from "./pages/AIAssistant";
 import PresentationCreator from "./pages/PresentationCreator";
+import ReportCards from "./pages/ReportCards";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
