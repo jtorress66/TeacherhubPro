@@ -3865,6 +3865,300 @@ async def generate_tts(request: TTSRequest):
         logger.error(f"Error generating TTS: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating TTS: {str(e)}")
 
+# ==================== GLOBAL STUDENTS ENDPOINT (FOR ADAPTIVE LEARNING) ====================
+
+@api_router.get("/students")
+async def get_all_teacher_students(user: dict = Depends(get_current_user)):
+    """Get all students across all classes for the current teacher (for homeschool adaptive learning)"""
+    teacher_id = user["user_id"]
+    
+    # Get all classes for this teacher
+    classes = await db.classes.find({"teacher_id": teacher_id}, {"_id": 0}).to_list(100)
+    class_ids = [c["class_id"] for c in classes]
+    
+    # Get all students from these classes
+    students = await db.students.find(
+        {"class_id": {"$in": class_ids}},
+        {"_id": 0}
+    ).to_list(500)
+    
+    return students
+
+
+# ==================== ADAPTIVE LEARNING ENDPOINTS (HOMESCHOOL FEATURES) ====================
+
+class AdaptiveLearningRequest(BaseModel):
+    student_id: str
+    subject: str
+    language: str = "es"
+
+class CompleteLessonRequest(BaseModel):
+    student_id: str
+    lesson_id: str
+    subject: str
+
+@api_router.post("/adaptive-learning/generate-path")
+async def generate_adaptive_learning_path(
+    request: AdaptiveLearningRequest,
+    user: dict = Depends(get_current_user)
+):
+    """Generate a personalized adaptive learning path for a student using AI"""
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    
+    # Check if user has AI access (trial or subscription)
+    user_id = user.get("user_id")
+    subscription = await db.subscriptions.find_one({"user_id": user_id, "status": "active"})
+    
+    if not subscription:
+        # Check trial period
+        user_doc = await db.users.find_one({"user_id": user_id})
+        if user_doc:
+            created_at = user_doc.get("created_at", "")
+            if created_at:
+                try:
+                    created_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                    trial_end = created_date + timedelta(days=FREE_TRIAL_DAYS)
+                    if datetime.now(timezone.utc) >= trial_end:
+                        raise HTTPException(
+                            status_code=403,
+                            detail="AI features require an active subscription or trial period"
+                        )
+                except ValueError:
+                    pass
+    
+    # Get student info
+    student = await db.students.find_one({"student_id": request.student_id}, {"_id": 0})
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    student_name = student.get("name") or f"{student.get('first_name', '')} {student.get('last_name', '')}".strip()
+    
+    # Get prior learning data for this student/subject if any
+    prior_progress = await db.adaptive_learning_progress.find_one({
+        "student_id": request.student_id,
+        "subject": request.subject
+    }, {"_id": 0})
+    
+    completed_lessons = prior_progress.get("completed_lessons", []) if prior_progress else []
+    current_level = prior_progress.get("current_level", 1) if prior_progress else 1
+    
+    # Subject mapping for display
+    subject_names = {
+        "math": {"en": "Mathematics", "es": "Matemáticas"},
+        "language": {"en": "Language Arts", "es": "Lenguaje"},
+        "science": {"en": "Science", "es": "Ciencias"},
+        "reading": {"en": "Reading", "es": "Lectura"}
+    }
+    
+    subject_display = subject_names.get(request.subject, {"en": request.subject.title(), "es": request.subject.title()})
+    lang_key = "es" if request.language == "es" else "en"
+    
+    # Build AI prompt
+    language_instruction = "Responde completamente en español." if request.language == "es" else "Respond entirely in English."
+    
+    system_prompt = f"""You are an expert adaptive learning curriculum designer for homeschool education. 
+Your task is to create a personalized learning path that adapts to the student's pace and level.
+
+{language_instruction}
+
+Return ONLY a valid JSON object with no additional text."""
+
+    user_prompt = f"""Create an adaptive learning path for:
+- Student: {student_name}
+- Subject: {subject_display[lang_key]}
+- Current Level: {current_level}
+- Completed Lessons: {len(completed_lessons)}
+
+Generate a personalized learning path with 5-6 lessons that progress in difficulty.
+Each lesson should include:
+- A clear title
+- Learning objective
+- Estimated duration (10-20 minutes)
+- Lesson content (2-3 paragraphs of educational content)
+- 2-3 practice questions with options
+
+Return JSON in this exact format:
+{{
+  "title": "Learning path title",
+  "description": "Brief description of what the student will learn",
+  "level": {current_level},
+  "lessons": [
+    {{
+      "id": "lesson_1",
+      "title": "Lesson title",
+      "objective": "What the student will learn",
+      "duration": "15 min",
+      "level": 1,
+      "completed": false,
+      "content": "Educational content paragraphs...",
+      "questions": [
+        {{
+          "question": "Question text?",
+          "options": ["Option A", "Option B", "Option C", "Option D"]
+        }}
+      ]
+    }}
+  ]
+}}
+
+Make the content engaging, age-appropriate, and educational. Start from the student's current level and gradually increase difficulty."""
+
+    try:
+        # Initialize AI chat
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"adaptive_{request.student_id}_{uuid.uuid4().hex[:8]}",
+            system_message=system_prompt
+        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        
+        user_message = UserMessage(text=user_prompt)
+        response = await chat.send_message(user_message)
+        
+        # Parse JSON response
+        import json
+        
+        # Clean response
+        cleaned_response = response.strip()
+        if cleaned_response.startswith("```json"):
+            cleaned_response = cleaned_response[7:]
+        if cleaned_response.startswith("```"):
+            cleaned_response = cleaned_response[3:]
+        if cleaned_response.endswith("```"):
+            cleaned_response = cleaned_response[:-3]
+        cleaned_response = cleaned_response.strip()
+        
+        try:
+            learning_path = json.loads(cleaned_response)
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse AI response: {e}")
+            # Create a fallback learning path
+            learning_path = {
+                "title": f"{subject_display[lang_key]} - Level {current_level}",
+                "description": "Personalized learning path" if request.language != "es" else "Ruta de aprendizaje personalizada",
+                "level": current_level,
+                "lessons": [
+                    {
+                        "id": "lesson_1",
+                        "title": "Introduction" if request.language != "es" else "Introducción",
+                        "objective": "Get started with the basics" if request.language != "es" else "Comenzar con los conceptos básicos",
+                        "duration": "15 min",
+                        "level": 1,
+                        "completed": False,
+                        "content": response[:1000],
+                        "questions": []
+                    }
+                ]
+            }
+        
+        # Mark already completed lessons
+        for lesson in learning_path.get("lessons", []):
+            if lesson.get("id") in completed_lessons:
+                lesson["completed"] = True
+        
+        # Save the generated path to database for tracking
+        path_id = f"path_{uuid.uuid4().hex[:12]}"
+        now = datetime.now(timezone.utc).isoformat()
+        
+        await db.adaptive_learning_paths.update_one(
+            {"student_id": request.student_id, "subject": request.subject},
+            {"$set": {
+                "path_id": path_id,
+                "student_id": request.student_id,
+                "subject": request.subject,
+                "teacher_id": user_id,
+                "title": learning_path.get("title"),
+                "description": learning_path.get("description"),
+                "level": learning_path.get("level", current_level),
+                "lessons": learning_path.get("lessons", []),
+                "generated_at": now,
+                "updated_at": now
+            }},
+            upsert=True
+        )
+        
+        return learning_path
+        
+    except Exception as e:
+        logger.error(f"Error generating adaptive learning path: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating learning path: {str(e)}")
+
+
+@api_router.post("/adaptive-learning/complete-lesson")
+async def complete_adaptive_lesson(
+    request: CompleteLessonRequest,
+    user: dict = Depends(get_current_user)
+):
+    """Mark a lesson as completed and update student progress"""
+    user_id = user.get("user_id")
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Get or create progress record
+    progress = await db.adaptive_learning_progress.find_one({
+        "student_id": request.student_id,
+        "subject": request.subject
+    })
+    
+    if progress:
+        completed_lessons = progress.get("completed_lessons", [])
+        if request.lesson_id not in completed_lessons:
+            completed_lessons.append(request.lesson_id)
+        
+        # Increment level after every 3 completed lessons
+        new_level = max(1, (len(completed_lessons) // 3) + 1)
+        
+        await db.adaptive_learning_progress.update_one(
+            {"student_id": request.student_id, "subject": request.subject},
+            {"$set": {
+                "completed_lessons": completed_lessons,
+                "current_level": new_level,
+                "last_completed_at": now,
+                "updated_at": now
+            }}
+        )
+    else:
+        # Create new progress record
+        await db.adaptive_learning_progress.insert_one({
+            "progress_id": f"prog_{uuid.uuid4().hex[:12]}",
+            "student_id": request.student_id,
+            "subject": request.subject,
+            "teacher_id": user_id,
+            "completed_lessons": [request.lesson_id],
+            "current_level": 1,
+            "last_completed_at": now,
+            "created_at": now,
+            "updated_at": now
+        })
+    
+    # Also update the lesson in the saved path
+    await db.adaptive_learning_paths.update_one(
+        {
+            "student_id": request.student_id,
+            "subject": request.subject,
+            "lessons.id": request.lesson_id
+        },
+        {"$set": {
+            "lessons.$.completed": True,
+            "updated_at": now
+        }}
+    )
+    
+    return {"message": "Lesson completed successfully", "lesson_id": request.lesson_id}
+
+
+@api_router.get("/adaptive-learning/progress/{student_id}")
+async def get_student_adaptive_progress(
+    student_id: str,
+    user: dict = Depends(get_current_user)
+):
+    """Get adaptive learning progress for a student across all subjects"""
+    progress_records = await db.adaptive_learning_progress.find(
+        {"student_id": student_id},
+        {"_id": 0}
+    ).to_list(10)
+    
+    return progress_records
+
+
 # ==================== AI ENDPOINTS MOVED TO routes/ai.py ====================
 # The AI Teaching Assistant endpoints have been refactored to routes/ai.py
 
