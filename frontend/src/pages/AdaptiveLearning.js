@@ -77,7 +77,17 @@ const AdaptiveLearning = () => {
       toast.success(language === 'es' ? '¡Ruta de aprendizaje generada!' : 'Learning path generated!');
     } catch (error) {
       console.error('Error generating path:', error);
-      toast.error(language === 'es' ? 'Error al generar ruta' : 'Error generating path');
+      // Show more detailed error message
+      const errorMessage = error.response?.data?.detail || error.message || 'Unknown error';
+      if (error.response?.status === 404) {
+        toast.error(language === 'es' ? 'Estudiante no encontrado' : 'Student not found');
+      } else if (error.response?.status === 403) {
+        toast.error(language === 'es' ? 'Requiere suscripción activa' : 'Requires active subscription');
+      } else if (error.response?.status === 500) {
+        toast.error(language === 'es' ? `Error del servidor: ${errorMessage}` : `Server error: ${errorMessage}`);
+      } else {
+        toast.error(language === 'es' ? `Error al generar ruta: ${errorMessage}` : `Error generating path: ${errorMessage}`);
+      }
     } finally {
       setGenerating(false);
     }
