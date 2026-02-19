@@ -104,16 +104,23 @@ const Dashboard = () => {
                 alt="TeacherHubPro" 
                 className="h-16 w-16 rounded-xl shadow-md object-contain bg-white p-1"
               />
-            ) : dashboardSchool?.logo_url && (
+            ) : dashboardSchool?.logo_url ? (
               <img 
                 src={dashboardSchool.logo_url} 
                 alt={dashboardSchool.name} 
                 className="h-16 w-16 object-contain rounded-xl border border-slate-200 bg-white p-2 shadow-sm"
                 data-testid="school-logo"
               />
-            )}
+            ) : null}
             <div>
-              {dashboardSchool?.name && (
+              {user?.role === 'super_admin' ? (
+                <p 
+                  className="text-sm font-semibold mb-1 uppercase tracking-wide text-purple-600" 
+                  data-testid="platform-admin-label"
+                >
+                  Platform Admin
+                </p>
+              ) : dashboardSchool?.name && (
                 <p 
                   className="text-sm font-semibold mb-1 uppercase tracking-wide" 
                   style={{ color: branding.primary_color }}
