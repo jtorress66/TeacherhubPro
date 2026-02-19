@@ -26,7 +26,8 @@ import {
   Moon,
   Sun,
   Presentation,
-  GraduationCap
+  GraduationCap,
+  Brain
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
