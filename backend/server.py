@@ -4701,6 +4701,109 @@ async def get_teacher_games(user: dict = Depends(get_current_user)):
     return games
 
 
+@api_router.get("/games/analytics")
+async def get_games_analytics(user: dict = Depends(get_current_user)):
+    """Get analytics for all games created by the teacher"""
+    teacher_id = user.get("user_id")
+    
+    # Get all games by this teacher
+    games = await db.educational_games.find(
+        {"teacher_id": teacher_id},
+        {"_id": 0}
+    ).to_list(100)
+    
+    game_ids = [g.get("game_id") for g in games]
+    
+    # Get all scores for these games
+    scores = await db.game_scores.find(
+        {"game_id": {"$in": game_ids}},
+        {"_id": 0}
+    ).to_list(1000)
+    
+    # Calculate overall stats
+    total_plays = len(scores)
+    unique_players = len(set(s.get("player_name") for s in scores))
+    
+    avg_percentage = 0
+    if scores:
+        percentages = [(s.get("score", 0) / s.get("total_questions", 1)) * 100 for s in scores if s.get("total_questions", 0) > 0]
+        avg_percentage = round(sum(percentages) / len(percentages)) if percentages else 0
+    
+    # Calculate per-game stats
+    game_stats = []
+    for game in games:
+        game_id = game.get("game_id")
+        game_scores = [s for s in scores if s.get("game_id") == game_id]
+        
+        game_unique_players = len(set(s.get("player_name") for s in game_scores))
+        game_percentages = [(s.get("score", 0) / s.get("total_questions", 1)) * 100 for s in game_scores if s.get("total_questions", 0) > 0]
+        
+        game_stats.append({
+            "game_id": game_id,
+            "title": game.get("title"),
+            "game_type": game.get("game_type"),
+            "play_count": len(game_scores),
+            "unique_players": game_unique_players,
+            "avg_score": round(sum(game_percentages) / len(game_percentages)) if game_percentages else 0,
+            "best_score": round(max(game_percentages)) if game_percentages else 0
+        })
+    
+    return {
+        "total_games": len(games),
+        "total_plays": total_plays,
+        "unique_players": unique_players,
+        "average_score": avg_percentage,
+        "game_stats": game_stats
+    }
+
+
+class GameScoreRequest(BaseModel):
+    player_name: str
+    score: int
+    total_questions: int
+    time_taken: int = 0
+
+@api_router.post("/games/{game_id}/score")
+async def submit_game_score(game_id: str, request: GameScoreRequest):
+    """Submit a score for a game (public - for students)"""
+    
+    # Verify game exists
+    game = await db.educational_games.find_one({"game_id": game_id}, {"_id": 0})
+    if not game:
+        raise HTTPException(status_code=404, detail="Game not found")
+    
+    # Save score
+    score_id = f"score_{uuid.uuid4().hex[:12]}"
+    await db.game_scores.insert_one({
+        "score_id": score_id,
+        "game_id": game_id,
+        "player_name": request.player_name,
+        "score": request.score,
+        "total_questions": request.total_questions,
+        "time_taken": request.time_taken,
+        "percentage": round((request.score / request.total_questions) * 100) if request.total_questions > 0 else 0,
+        "played_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {"message": "Score submitted", "score_id": score_id}
+
+
+@api_router.get("/games/{game_id}/leaderboard")
+async def get_game_leaderboard(game_id: str, limit: int = 10):
+    """Get leaderboard for a specific game (public)"""
+    
+    # Get top scores sorted by percentage then by time
+    pipeline = [
+        {"$match": {"game_id": game_id}},
+        {"$sort": {"percentage": -1, "time_taken": 1}},
+        {"$limit": limit},
+        {"$project": {"_id": 0}}
+    ]
+    
+    scores = await db.game_scores.aggregate(pipeline).to_list(limit)
+    return scores
+
+
 @api_router.get("/games/{game_id}")
 async def get_game_by_id(game_id: str):
     """Get a specific game by ID (public - for students to play)"""
