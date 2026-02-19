@@ -4528,6 +4528,193 @@ async def get_homeschool_portal_data(token: str):
     }
 
 
+# ==================== EDUCATIONAL GAMES ====================
+
+class GameGenerateRequest(BaseModel):
+    content: str
+    game_type: str = "quiz"
+    difficulty: str = "medium"
+    question_count: int = 5
+    language: str = "es"
+
+@api_router.post("/games/generate")
+async def generate_educational_game(
+    request: GameGenerateRequest,
+    user: dict = Depends(get_current_user)
+):
+    """Generate an educational game from lesson content using AI"""
+    
+    # Check AI access
+    user_role = user.get("role", "teacher")
+    if user_role not in ["admin", "super_admin"]:
+        # Check subscription/trial
+        has_access = False
+        user_id = user.get("user_id")
+        
+        subscription = await db.subscriptions.find_one({"user_id": user_id, "status": "active"})
+        if subscription:
+            has_access = True
+        else:
+            user_doc = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+            if user_doc:
+                school_id = user_doc.get("school_id")
+                if school_id:
+                    school_sub = await db.subscriptions.find_one({"school_id": school_id, "status": "active"})
+                    if school_sub:
+                        has_access = True
+                
+                if not has_access:
+                    created_at = user_doc.get("created_at", "")
+                    if created_at:
+                        try:
+                            created_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                            trial_end = created_date + timedelta(days=FREE_TRIAL_DAYS)
+                            if datetime.now(timezone.utc) < trial_end:
+                                has_access = True
+                        except ValueError:
+                            pass
+        
+        if not has_access:
+            raise HTTPException(status_code=403, detail="AI features require an active subscription or trial period")
+    
+    # Game type specific prompts
+    game_prompts = {
+        "quiz": "multiple choice quiz with 4 options each",
+        "matching": "matching game where students connect related concepts",
+        "fill_blanks": "fill in the blanks exercise",
+        "true_false": "true or false questions",
+        "flashcards": "flashcards for memorization"
+    }
+    
+    difficulty_hints = {
+        "easy": "simple and straightforward for beginners",
+        "medium": "moderately challenging for intermediate learners",
+        "hard": "challenging questions that require deeper understanding"
+    }
+    
+    lang_instruction = "Responde completamente en español." if request.language == "es" else "Respond entirely in English."
+    
+    system_prompt = f"""You are an expert educational game designer. Create engaging, age-appropriate educational games from lesson content.
+{lang_instruction}
+Return ONLY valid JSON with no additional text."""
+
+    user_prompt = f"""Create a {game_prompts.get(request.game_type, 'quiz')} based on this lesson content:
+
+{request.content}
+
+Requirements:
+- Create exactly {request.question_count} questions
+- Difficulty level: {difficulty_hints.get(request.difficulty, 'medium')}
+- Make it educational and engaging
+- Each question should test understanding of the material
+
+Return JSON in this exact format:
+{{
+  "title": "Game title based on the content",
+  "game_type": "{request.game_type}",
+  "difficulty": "{request.difficulty}",
+  "questions": [
+    {{
+      "question": "The question text",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correct_answer": "The correct option text"
+    }}
+  ]
+}}
+
+For true_false type, options should be ["True", "False"] or ["Verdadero", "Falso"].
+For fill_blanks type, use "___" in the question and correct_answer is the word to fill.
+For matching type, use "left" and "right" arrays instead of options."""
+
+    try:
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"game_{uuid.uuid4().hex[:8]}",
+            system_message=system_prompt
+        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        
+        user_message = UserMessage(text=user_prompt)
+        response = await chat.send_message(user_message)
+        
+        # Parse response
+        cleaned = response.strip()
+        if cleaned.startswith("```json"):
+            cleaned = cleaned[7:]
+        if cleaned.startswith("```"):
+            cleaned = cleaned[3:]
+        if cleaned.endswith("```"):
+            cleaned = cleaned[:-3]
+        cleaned = cleaned.strip()
+        
+        import json
+        game_data = json.loads(cleaned)
+        
+        # Add metadata
+        game_data["game_id"] = f"game_{uuid.uuid4().hex[:12]}"
+        game_data["teacher_id"] = user.get("user_id")
+        game_data["created_at"] = datetime.now(timezone.utc).isoformat()
+        
+        return game_data
+        
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse game JSON: {e}")
+        raise HTTPException(status_code=500, detail="Error parsing AI response")
+    except Exception as e:
+        logger.error(f"Error generating game: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating game: {str(e)}")
+
+
+@api_router.post("/games/save")
+async def save_educational_game(
+    game: dict,
+    user: dict = Depends(get_current_user)
+):
+    """Save a generated educational game"""
+    game_id = game.get("game_id") or f"game_{uuid.uuid4().hex[:12]}"
+    
+    await db.educational_games.update_one(
+        {"game_id": game_id},
+        {"$set": {
+            "game_id": game_id,
+            "teacher_id": user.get("user_id"),
+            "title": game.get("title"),
+            "game_type": game.get("game_type"),
+            "difficulty": game.get("difficulty"),
+            "questions": game.get("questions", []),
+            "created_at": game.get("created_at") or datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    
+    return {"message": "Game saved", "game_id": game_id}
+
+
+@api_router.get("/games")
+async def get_teacher_games(user: dict = Depends(get_current_user)):
+    """Get all games created by the current teacher"""
+    games = await db.educational_games.find(
+        {"teacher_id": user.get("user_id")},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return games
+
+
+@api_router.get("/games/{game_id}")
+async def get_game_by_id(game_id: str):
+    """Get a specific game by ID (public - for students to play)"""
+    game = await db.educational_games.find_one(
+        {"game_id": game_id},
+        {"_id": 0}
+    )
+    
+    if not game:
+        raise HTTPException(status_code=404, detail="Game not found")
+    
+    return game
+
+
 # ==================== AI ENDPOINTS MOVED TO routes/ai.py ====================
 # The AI Teaching Assistant endpoints have been refactored to routes/ai.py
 
