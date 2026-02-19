@@ -251,6 +251,11 @@ const GamesCreator = () => {
         setSelectedAnswer(null);
       } else {
         setShowResult(true);
+        // Submit score if this is a saved game (has game_id)
+        if (playingGame.game_id && playerName) {
+          const finalScore = isCorrect ? gameProgress.score + 1 : gameProgress.score;
+          submitScore(playingGame, finalScore, playingGame.questions.length);
+        }
       }
     }, 1000);
   };
@@ -259,10 +264,13 @@ const GamesCreator = () => {
     setGameProgress({ current: 0, score: 0, answers: [] });
     setSelectedAnswer(null);
     setShowResult(false);
+    setGameStartTime(Date.now());
   };
 
   const exitGame = () => {
     setPlayingGame(null);
+    setShowNameInput(false);
+    setPlayerName('');
     resetGame();
   };
 
@@ -275,8 +283,49 @@ const GamesCreator = () => {
     toast.success(language === 'es' ? 'Enlace copiado' : 'Link copied');
   };
 
+  // Name input screen
+  if (showNameInput && playingGame) {
+    return (
+      <Layout>
+        <div className="max-w-md mx-auto mt-20">
+          <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+            <CardContent className="p-8 text-center">
+              <div className="text-5xl mb-4">🎮</div>
+              <h2 className="text-2xl font-bold text-slate-800 mb-2">
+                {playingGame.title}
+              </h2>
+              <p className="text-slate-600 mb-6">
+                {language === 'es' ? 'Ingresa tu nombre para el ranking' : 'Enter your name for the leaderboard'}
+              </p>
+              <Input
+                placeholder={language === 'es' ? 'Tu nombre' : 'Your name'}
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                className="mb-4 text-center"
+                data-testid="player-name-input"
+              />
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={exitGame} className="flex-1">
+                  {language === 'es' ? 'Cancelar' : 'Cancel'}
+                </Button>
+                <Button 
+                  onClick={startGameWithName}
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600"
+                  data-testid="start-game-btn"
+                >
+                  <Play className="h-4 w-4 mr-2" />
+                  {language === 'es' ? 'Jugar' : 'Play'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </Layout>
+    );
+  }
+
   // Render game player
-  if (playingGame) {
+  if (playingGame && !showNameInput) {
     const currentQ = playingGame.questions[gameProgress.current];
     const progress = ((gameProgress.current + 1) / playingGame.questions.length) * 100;
 
