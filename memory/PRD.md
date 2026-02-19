@@ -1198,6 +1198,74 @@ Verified the Template of the Week feature is working correctly.
 - **Test Report:** `/app/test_reports/iteration_15.json`
 
 6. Click "Apply All" to add suggestions to all days' notes
+
+
+---
+## Update 2026-02-19 - Portal Language Selection & Educational Games
+
+### 1. Parent Portal Multi-Language Support ✅
+Teachers can now select the language for the Parent Portal when generating a shareable link.
+
+**Supported Languages:**
+- 🇪🇸 Spanish (Español)
+- 🇺🇸 English
+- 🇫🇷 French (Français)
+- 🇧🇷 Portuguese (Português)
+
+**Features:**
+- Language selector dropdown in "Share with Parent" button
+- Selected language is stored with the portal token
+- HomeschoolPortal displays all text in the chosen language
+- Full translations for stats, subjects, achievements, buttons
+
+**API Changes:**
+- `POST /api/students/{id}/homeschool-portal-token` - accepts `language` parameter
+- `GET /api/homeschool-portal/{token}` - returns stored `language`
+
+### 2. Educational Games Creator ✅
+AI-powered tool that converts lessons and assignments into interactive educational games.
+
+**Game Types Available:**
+- 🎯 Multiple Choice Quiz - Questions with 4 answer options
+- 🧩 Matching Game - Connect related concepts
+- ✏️ Fill in the Blanks - Complete sentences
+- ✅ True or False - Binary choice questions
+- 📚 Flashcards - Memory cards for studying
+
+**Features:**
+- Paste lesson content and generate games automatically
+- Choose difficulty (Easy/Medium/Hard)
+- Select number of questions (3, 5, 10, 15)
+- Built-in game player with:
+  - Progress bar
+  - Score tracking
+  - Instant feedback (correct/incorrect)
+  - Final results with performance message
+- Save games to library
+- Share games with students via link
+
+**API Endpoints:**
+- `POST /api/games/generate` - Generate game from content using AI
+- `POST /api/games/save` - Save generated game
+- `GET /api/games` - List teacher's saved games
+- `GET /api/games/{game_id}` - Get game by ID (public - for students)
+
+**Database Collection:**
+- `educational_games` - Stores games with questions, answers, metadata
+
+**Files Created/Modified:**
+- **NEW:** `/app/frontend/src/pages/GamesCreator.js` - Full games creator page with player
+- **MODIFIED:** `/app/frontend/src/pages/StudentProgress.js` - Added language selector
+- **MODIFIED:** `/app/frontend/src/pages/HomeschoolPortal.js` - Multi-language translations
+- **MODIFIED:** `/app/frontend/src/App.js` - Added `/games` route
+- **MODIFIED:** `/app/frontend/src/components/Layout.js` - Added Games nav with Gamepad2 icon
+- **MODIFIED:** `/app/backend/server.py` - Added games endpoints
+
+### Test Results
+- **Backend:** 100% (12/12 tests passed)
+- **Frontend:** 100% (all features verified)
+- **Test Report:** `/app/test_reports/iteration_17.json`
+
 7. Or apply/dismiss individually per day
 
 ---
