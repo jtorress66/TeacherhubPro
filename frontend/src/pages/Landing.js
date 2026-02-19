@@ -989,7 +989,7 @@ const Landing = () => {
             </p>
             <Button 
               variant="outline" 
-              className="bg-white hover:bg-slate-50"
+              className="bg-white hover:bg-slate-50 text-slate-800"
               onClick={() => navigate('/contact')}
             >
               <Mail className="h-4 w-4 mr-2" />
