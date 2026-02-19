@@ -17,17 +17,32 @@ router = APIRouter(prefix="/ai", tags=["AI Assistant"])
 
 
 async def check_ai_access(user: dict) -> bool:
-    """Check if user has access to AI features (paid subscription or trial)"""
+    """Check if user has access to AI features (admin, paid subscription, school subscription, or trial)"""
     user_id = user.get("user_id")
+    user_role = user.get("role", "teacher")
     
-    # Check subscription status
+    # Admins and super_admins always have access
+    if user_role in ["admin", "super_admin"]:
+        return True
+    
+    # Check user subscription status
     subscription = await db.subscriptions.find_one({"user_id": user_id, "status": "active"})
     if subscription:
         return True
     
-    # Check if in trial period
-    user_doc = await db.users.find_one({"user_id": user_id})
+    # Check for school-wide subscription
+    user_doc = await db.users.find_one({"user_id": user_id}, {"_id": 0})
     if user_doc:
+        school_id = user_doc.get("school_id")
+        if school_id:
+            school_subscription = await db.subscriptions.find_one({
+                "school_id": school_id, 
+                "status": "active"
+            })
+            if school_subscription:
+                return True
+        
+        # Check if in trial period
         created_at = user_doc.get("created_at", "")
         if created_at:
             try:
