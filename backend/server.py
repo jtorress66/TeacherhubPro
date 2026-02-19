@@ -3903,26 +3903,43 @@ async def generate_adaptive_learning_path(
     user: dict = Depends(get_current_user)
 ):
     """Generate a personalized adaptive learning path for a student using AI"""
-    # Check if user has AI access (trial or subscription)
+    # Check if user has AI access (trial, subscription, or admin role)
     user_id = user.get("user_id")
-    subscription = await db.subscriptions.find_one({"user_id": user_id, "status": "active"})
+    user_role = user.get("role", "teacher")
     
-    if not subscription:
-        # Check trial period
-        user_doc = await db.users.find_one({"user_id": user_id})
-        if user_doc:
-            created_at = user_doc.get("created_at", "")
-            if created_at:
-                try:
-                    created_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
-                    trial_end = created_date + timedelta(days=FREE_TRIAL_DAYS)
-                    if datetime.now(timezone.utc) >= trial_end:
-                        raise HTTPException(
-                            status_code=403,
-                            detail="AI features require an active subscription or trial period"
-                        )
-                except ValueError:
-                    pass
+    # Super admins and admins have full access
+    if user_role not in ["super_admin", "admin"]:
+        subscription = await db.subscriptions.find_one({"user_id": user_id, "status": "active"})
+        
+        if not subscription:
+            # Check for school-wide subscription
+            user_doc = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+            school_id = user_doc.get("school_id") if user_doc else None
+            
+            if school_id:
+                school_subscription = await db.subscriptions.find_one({
+                    "school_id": school_id, 
+                    "status": "active"
+                })
+                if school_subscription:
+                    subscription = school_subscription
+        
+        if not subscription:
+            # Check trial period
+            user_doc = await db.users.find_one({"user_id": user_id})
+            if user_doc:
+                created_at = user_doc.get("created_at", "")
+                if created_at:
+                    try:
+                        created_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                        trial_end = created_date + timedelta(days=FREE_TRIAL_DAYS)
+                        if datetime.now(timezone.utc) >= trial_end:
+                            raise HTTPException(
+                                status_code=403,
+                                detail="AI features require an active subscription or trial period"
+                            )
+                    except ValueError:
+                        pass
     
     # Get student info
     student = await db.students.find_one({"student_id": request.student_id}, {"_id": 0})
