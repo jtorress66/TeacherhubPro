@@ -300,7 +300,7 @@ const Landing = () => {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Link to="/pricing">
-                  <Button size="lg" variant="outline" className="px-8 h-14 text-lg border-slate-300">
+                  <Button size="lg" variant="outline" className="px-8 h-14 text-lg border-slate-300 text-slate-800 hover:text-slate-900 hover:bg-slate-100">
                     {language === 'es' ? 'Ver precios' : 'View pricing'}
                   </Button>
                 </Link>
