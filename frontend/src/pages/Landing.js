@@ -863,6 +863,139 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* Integrations Section */}
+      <section id="integrations" className="py-24 px-6 bg-gradient-to-b from-blue-50 to-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-medium mb-4">
+              <Link2 className="h-4 w-4" />
+              {language === 'es' ? 'Integraciones' : 'Integrations'}
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+              {language === 'es' ? 'Conecta con tus plataformas favoritas' : 'Connect with your favorite platforms'}
+            </h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              {language === 'es' 
+                ? 'TeacherHubPro se integra con las herramientas educativas que ya usas' 
+                : 'TeacherHubPro integrates with the educational tools you already use'}
+            </p>
+          </div>
+
+          {/* Main Integration - Google Classroom */}
+          <div className="mb-12">
+            <div className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden">
+              <div className="p-8 md:p-12">
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-8">
+                  <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-50 to-green-50 border border-blue-100">
+                    <svg className="h-16 w-16" viewBox="0 0 48 48">
+                      <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                      <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+                      <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+                      <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-2xl md:text-3xl font-bold text-slate-900">Google Classroom</h3>
+                      <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
+                        {language === 'es' ? 'Disponible' : 'Available'}
+                      </span>
+                    </div>
+                    <p className="text-lg text-slate-600">
+                      {language === 'es' 
+                        ? 'Sincroniza tus clases, estudiantes y calificaciones directamente con Google Classroom' 
+                        : 'Sync your classes, students, and grades directly with Google Classroom'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-6 mb-8">
+                  {[
+                    {
+                      icon: Users,
+                      title: language === 'es' ? 'Importar Clases' : 'Import Classes',
+                      desc: language === 'es' ? 'Trae tus clases y listas de estudiantes automáticamente' : 'Bring your classes and student rosters automatically'
+                    },
+                    {
+                      icon: BarChart3,
+                      title: language === 'es' ? 'Sincronizar Calificaciones' : 'Sync Grades',
+                      desc: language === 'es' ? 'Envía calificaciones a Google Classroom con un clic' : 'Send grades to Google Classroom with one click'
+                    },
+                    {
+                      icon: Shield,
+                      title: language === 'es' ? 'Seguro y Privado' : 'Secure & Private',
+                      desc: language === 'es' ? 'Autenticación OAuth segura, tus datos protegidos' : 'Secure OAuth authentication, your data protected'
+                    }
+                  ].map((feature, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                      <feature.icon className="h-8 w-8 text-blue-600 mb-3" />
+                      <h4 className="font-semibold text-slate-800 mb-1">{feature.title}</h4>
+                      <p className="text-sm text-slate-600">{feature.desc}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-4 pt-6 border-t border-slate-100">
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <span className="text-sm">{language === 'es' ? 'Configuración en minutos' : 'Setup in minutes'}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <span className="text-sm">{language === 'es' ? 'Sin costo adicional' : 'No extra cost'}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <span className="text-sm">{language === 'es' ? 'Soporte incluido' : 'Support included'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Coming Soon Integrations */}
+          <div className="text-center mb-8">
+            <h3 className="text-xl font-semibold text-slate-700 mb-6">
+              {language === 'es' ? 'Próximamente' : 'Coming Soon'}
+            </h3>
+            <div className="flex flex-wrap justify-center gap-4">
+              {[
+                { name: 'Canvas LMS', color: 'bg-red-50 border-red-200 text-red-700' },
+                { name: 'Schoology', color: 'bg-blue-50 border-blue-200 text-blue-700' },
+                { name: 'Microsoft Teams', color: 'bg-purple-50 border-purple-200 text-purple-700' },
+                { name: 'Clever', color: 'bg-cyan-50 border-cyan-200 text-cyan-700' },
+                { name: 'ClassLink', color: 'bg-green-50 border-green-200 text-green-700' },
+              ].map((platform, idx) => (
+                <div key={idx} className={`px-4 py-2 rounded-full border ${platform.color} text-sm font-medium`}>
+                  {platform.name}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Integration Request CTA */}
+          <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-6 md:p-8 text-center">
+            <Link2 className="h-10 w-10 text-purple-600 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-slate-800 mb-2">
+              {language === 'es' ? '¿Necesitas otra integración?' : 'Need another integration?'}
+            </h3>
+            <p className="text-slate-600 mb-4">
+              {language === 'es' 
+                ? 'Contáctanos para solicitar integraciones con otras plataformas educativas' 
+                : 'Contact us to request integrations with other educational platforms'}
+            </p>
+            <Button 
+              variant="outline" 
+              className="bg-white hover:bg-slate-50"
+              onClick={() => navigate('/contact')}
+            >
+              <Mail className="h-4 w-4 mr-2" />
+              {language === 'es' ? 'Solicitar Integración' : 'Request Integration'}
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Get Started Section */}
       <section id="get-started" className="py-24 px-6 relative overflow-hidden">
         {/* Background decoration */}
