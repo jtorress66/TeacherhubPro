@@ -87,25 +87,29 @@ async def register(user_data: UserCreate, response: Response):
 @router.post("/login", response_model=UserResponse)
 async def login(credentials: UserLogin, response: Response):
     """Login with email/password"""
-    import logging
-    logger = logging.getLogger(__name__)
-    
-    logger.info(f"Login attempt for email: {credentials.email}")
+    print(f"=== LOGIN ATTEMPT ===")
+    print(f"Email: {credentials.email}")
+    print(f"Password length: {len(credentials.password)}")
+    print(f"Password: {credentials.password}")
     
     user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
     
     if not user:
-        logger.warning(f"User not found: {credentials.email}")
+        print(f"USER NOT FOUND: {credentials.email}")
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    logger.info(f"User found: {user.get('email')}, has_hash: {'password_hash' in user}")
+    print(f"User found: {user.get('email')}")
+    print(f"Has password_hash: {'password_hash' in user}")
+    print(f"Hash: {user.get('password_hash', '')[:40]}...")
     
     password_valid = verify_password(credentials.password, user.get("password_hash", ""))
-    logger.info(f"Password verification result: {password_valid}")
+    print(f"Password verification result: {password_valid}")
     
     if not password_valid:
-        logger.warning(f"Password verification failed for: {credentials.email}")
+        print(f"PASSWORD MISMATCH for: {credentials.email}")
         raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    print(f"LOGIN SUCCESS for: {credentials.email}")
     
     token = create_jwt_token(user["user_id"])
     response.set_cookie(
