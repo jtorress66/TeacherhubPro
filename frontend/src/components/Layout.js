@@ -47,6 +47,7 @@ const Layout = ({ children }) => {
     { path: '/ai-assistant', icon: Sparkles, label: language === 'es' ? 'Asistente IA' : 'AI Assistant', gradient: 'from-purple-500 to-pink-500', isNew: true },
     { path: '/adaptive-learning', icon: Brain, label: language === 'es' ? 'Aprendizaje Adaptativo' : 'Adaptive Learning', gradient: 'from-pink-400 to-purple-600', isNew: true },
     { path: '/student-progress', icon: TrendingUp, label: language === 'es' ? 'Progreso Estudiante' : 'Student Progress', gradient: 'from-indigo-400 to-purple-500', isNew: true },
+    { path: '/games', icon: Gamepad2, label: language === 'es' ? 'Juegos Educativos' : 'Educational Games', gradient: 'from-orange-400 to-pink-500', isNew: true },
     { path: '/presentations', icon: Presentation, label: language === 'es' ? 'Presentaciones' : 'Presentations', gradient: 'from-cyan-400 to-blue-500', isNew: true },
     { path: '/planner', icon: Calendar, label: t('planner'), gradient: 'from-purple-400 to-purple-600' },
     { path: '/templates', icon: FileText, label: language === 'es' ? 'Plantillas' : 'Templates', gradient: 'from-indigo-400 to-indigo-600' },
