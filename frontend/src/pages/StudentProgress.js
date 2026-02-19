@@ -101,20 +101,22 @@ const StudentProgress = () => {
     }
   };
 
-  const generateParentLink = async () => {
+  const generateParentLink = async (selectedLang = portalLanguage) => {
     if (!selectedStudent) return;
     
     setSharingLink(true);
+    setShowLanguageSelector(false);
     try {
       const response = await axios.post(
         `${API}/students/${selectedStudent}/homeschool-portal-token`,
-        {},
+        { language: selectedLang },
         { withCredentials: true }
       );
       
       const baseUrl = window.location.origin;
       const fullLink = `${baseUrl}${response.data.portal_url}`;
       setPortalLink(fullLink);
+      setPortalLanguage(selectedLang);
       toast.success(language === 'es' ? 'Enlace generado' : 'Link generated');
     } catch (error) {
       console.error('Error generating link:', error);
