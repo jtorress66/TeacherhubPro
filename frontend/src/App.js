@@ -238,6 +238,8 @@ const AppRouter = () => {
       } />
       {/* Parent Portal (Public - no auth required) */}
       <Route path="/portal/:token" element={<ParentPortal />} />
+      {/* Homeschool Parent Portal (Public - token-based) */}
+      <Route path="/homeschool-portal/:token" element={<HomeschoolPortal />} />
       {/* Setup Admin (Public - one-time use) */}
       <Route path="/setup-admin" element={<SetupAdmin />} />
       {/* Footer/Legal Pages (Public) */}
