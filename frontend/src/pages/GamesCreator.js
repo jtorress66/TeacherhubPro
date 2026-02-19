@@ -19,7 +19,8 @@ import {
   Gamepad2, Sparkles, Brain, Target, Puzzle, Trophy, 
   HelpCircle, CheckCircle2, Loader2, Play, Share2, Copy,
   Shuffle, Grid3X3, ListChecks, MessageSquare, Zap, Star,
-  BookOpen, GraduationCap, ChevronRight, RefreshCw, Download
+  BookOpen, GraduationCap, ChevronRight, RefreshCw, Download,
+  Search, LayoutGrid, GripVertical, BarChart3, Medal, Users, Clock
 } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
