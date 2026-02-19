@@ -164,43 +164,43 @@ const Pricing = () => {
     <div className="min-h-screen paper-bg">
       {/* Header */}
       <header className="border-b border-cyan-100/50 bg-gradient-to-r from-cyan-50/95 via-blue-50/90 to-white/95 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+          <Link to="/" className="flex items-center gap-2 sm:gap-4">
             <img 
               src="https://customer-assets.emergentagent.com/job_teachersuite/artifacts/swlef12w_ChatGPT%20Image%20Feb%2015%2C%202026%2C%2009_08_36%20PM.png"
               alt="TeacherHubPro Logo"
-              className="h-20 w-20 object-contain"
+              className="h-12 w-12 sm:h-20 sm:w-20 object-contain"
             />
             <div className="flex flex-col">
-              <span className="text-2xl font-bold text-slate-800">TeacherHubPro</span>
-              <span className="text-xs font-medium text-cyan-600">{language === 'es' ? 'Tu aula digital' : 'Your digital classroom'}</span>
+              <span className="text-lg sm:text-2xl font-bold text-slate-800">TeacherHubPro</span>
+              <span className="text-xs font-medium text-cyan-600 hidden sm:block">{language === 'es' ? 'Tu aula digital' : 'Your digital classroom'}</span>
             </div>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link to="/">
-              <Button variant="ghost" size="sm" className="gap-2">
+              <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
                 <ArrowLeft className="h-4 w-4" />
-                {language === 'es' ? 'Volver' : 'Back'}
+                <span className="hidden sm:inline">{language === 'es' ? 'Volver' : 'Back'}</span>
               </Button>
             </Link>
             <Button
               variant="ghost"
               size="sm"
               onClick={toggleLanguage}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1 sm:gap-2 px-2"
             >
               <Globe className="h-4 w-4" />
-              {language === 'es' ? 'EN' : 'ES'}
+              <span className="hidden sm:inline">{language === 'es' ? 'EN' : 'ES'}</span>
             </Button>
           </div>
         </div>
       </header>
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {children}
       </main>
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white mt-16">
-        <div className="max-w-7xl mx-auto px-6 py-8 text-center text-slate-500 text-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-center text-slate-500 text-sm">
           <p>© 2026 TeacherHubPro. {language === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p>
         </div>
       </footer>
