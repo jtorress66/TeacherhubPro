@@ -340,23 +340,6 @@ const GamesCreator = () => {
     );
   }
 
-  // Render game player
-  // Game-specific state
-  const [flashcardFlipped, setFlashcardFlipped] = useState(false);
-  const [fillBlankAnswer, setFillBlankAnswer] = useState('');
-  const [matchingSelected, setMatchingSelected] = useState({ left: null, right: null });
-  const [matchedPairs, setMatchedPairs] = useState([]);
-  const [shuffledRight, setShuffledRight] = useState([]);
-
-  // Initialize shuffled items for matching games
-  useEffect(() => {
-    if (playingGame?.game_type === 'matching' && playingGame?.questions) {
-      const rightItems = playingGame.questions.map(q => q.match || q.correct_answer);
-      setShuffledRight([...rightItems].sort(() => Math.random() - 0.5));
-      setMatchedPairs([]);
-    }
-  }, [playingGame]);
-
   // Render different game types
   const renderGameContent = () => {
     const currentQ = playingGame.questions[gameProgress.current];
