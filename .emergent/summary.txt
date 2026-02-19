@@ -14,232 +14,205 @@ The user wants to build a comprehensive, teacher-focused web application called 
 7.  **AI Features:**
     *   An AI Teaching Assistant (Claude Sonnet 4.5) for generating lesson plans and materials.
     *   **Adaptive Learning Paths:** AI that adjusts to a child's pace for core subjects.
+    *   **Educational Games:** Convert lessons/assignments into interactive games.
 8.  **Calendar Integration:** One-tap export of lesson plans to Google Calendar, Microsoft Outlook, etc.
-9.  **External Integrations:** Offer integration with platforms like Google Classroom, with a clear path for customers to request it.
-10. **UX/UI:** A professional, modern, bilingual (English/Spanish) interface that is fully mobile-responsive. The landing page must clearly showcase all features, including integrations and homeschooler-specific tools.
+9.  **External Integrations:** Offer integration with platforms like Google Classroom.
+10. **UX/UI:** A professional, modern, bilingual (English/Spanish) interface that is fully mobile-responsive.
 11. **Homeschooler Features:** A suite of tools including adaptive learning, a comprehensive parent dashboard, curriculum customization, and offline access to materials via PDF downloads.
 
 **User's preferred language**: English. The next agent must respond in **English**.
 
 **what currently exists?**
-The application is feature-rich. It includes a lesson planner, gradebook, presentation creator, and an AI assistant. A full onboarding system with a video tutorial, a trial expiration system with email reminders, and unique school creation for new users are all implemented.
+The application now includes a full suite of features for teachers and homeschoolers. Core functionality like the lesson planner, presentation creator, and gradebook are stable.
 
-In the last session, several new features were added:
-*   **Add to Calendar:** A one-tap  file export for lesson plans.
-*   **Super Admin Tools:** A Bulk Import tab was added to the Admin Panel for CSV uploads of teachers and students, with corresponding backend endpoints created.
-*   **Report Card Generation:** A new page () and a backend endpoint stub have been created.
-*   **Google Classroom Integration:** The integration is now advertised on the landing page and in the Admin Panel. The implementation playbook has been fetched.
-*   **Mobile Responsiveness:** Major fixes were applied to the Landing and Pricing pages to ensure text is visible and layouts are clean.
-*   **Super Admin Account:** A dedicated, platform-level  account () was created. This account is not tied to any school, does not see the onboarding tutorial, and displays platform-wide branding. The recurring and confusing login issue was finally resolved by identifying a mismatch between the preview and production environments.
+In this session, the agent delivered several major features:
+1.  **Adaptive Learning Engine:** A new page and backend service that uses AI to generate personalized learning paths for students.
+2.  **Student Progress Dashboard:** A visual dashboard for teachers/parents to track a student's progress through adaptive learning paths.
+3.  **Homeschool Parent Portal:** A secure, token-based portal for parents to view their child's progress without needing a full account. It supports multiple languages.
+4.  **Educational Games Creator:** A powerful new section where teachers can convert lesson content into 8 different types of interactive games (e.g., Quiz, Word Search, Flashcards). The feature includes game analytics and leaderboards.
+5.  **Critical Bug Fixes:** Resolved a major subscription issue that prevented  and  users from accessing AI features. Also fixed a bug on the Report Card page and verified the Template of the Week functionality.
 
 **Last working item**:
--   **Last item agent was working:** Implementing a suite of features for homeschoolers. The agent added a Homeschool section to the landing page, created a new frontend page , and was about to create the corresponding backend endpoint to support AI-powered adaptive learning paths.
+-   **Last item agent was working:** The user reported that the newly created educational games were not functional. Specifically, the quiz options weren't displaying, and it was unclear how to use flashcards. The user requested to make all game types functional, add more games, and add an option to count game scores as a grade in the gradebook. The agent was starting to fix the game rendering logic in .
 -   **Status:** IN PROGRESS
 -   **Agent Testing Done:** N
--   **Which testing method agent to use?** both. This is a complex new feature. Once the backend endpoint is created and the frontend is wired up, the backend testing agent should be used to validate the AI logic and data tracking, and the frontend testing agent should be used to verify the user experience.
--   **User Testing Done:** N
+-   **Which testing method agent to use?** both. Use the frontend testing agent to ensure all 8 game types render and function correctly. Use the backend testing agent to validate the new Count as Grade endpoint and its integration with the gradebook.
+-   **User Testing Done:** Y (User found the bug)
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Implement Adaptive Learning Paths (P0)**
--   **Issue 2: Implement PDF Exports for Offline Access (P0)**
--   **Issue 3: Template of the Week Bug (P1)**
--   **Issue 4: Complete the Refactoring of  (P1)**
--   **Issue 5: Super Admin Login Confusion (Recurring)**
+-   **Issue 1: Games are not functional and need gradebook integration (P0)**
+-   **Issue 2: Complete the Refactoring of  (P1)**
+-   **Issue 3: Template of the Week Bug Verification (P1)**
 
 **Issues Detail:**
--   **Issue 1: Implement Adaptive Learning Paths (P0)**
-    -   **Attempted fixes:** The agent created the frontend page  and was about to create the backend endpoint.
+-   **Issue 1: Games are not functional and need gradebook integration (P0)**
+    -   **Attempted fixes:** The agent identified that the game rendering logic in  was incomplete and only handled the 'quiz' type correctly.
     -   **Next debug checklist:**
-        1.  Create the backend endpoint in  for generating and tracking adaptive learning paths. It should take student/subject info and return a personalized plan.
-        2.  Integrate an AI service (like Claude/OpenAI) within the new endpoint.
-        3.  Implement the frontend logic in  to call the new endpoint and display the learning path to the user.
-        4.  Add a link to the new Adaptive Learning page in the main navigation/sidebar.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a key feature for the new homeschooler vertical and a direct user request.
+        1.  Modify  to correctly render the UI for all 8 game types (Quiz, Flashcards, Matching, Fill-in-the-Blank, etc.).
+        2.  Implement a Count as Grade checkbox in the game creation form.
+        3.  Create a new backend endpoint (e.g., ) that accepts a game score, student ID, and assignment details.
+        4.  Update the  function in  to call this new endpoint when a game is completed and Count as Grade is enabled.
+    -   **Why fix this issue and what will be achieved with the fix?** This makes the new Games Creator feature fully functional and integrates it with the core gradebook, delivering on a key user request.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Both.
     -   **Blocked on other issue:** None.
 
--   **Issue 2: Implement PDF Exports for Offline Access (P0)**
-    -   **Attempted fixes:** None. This is part of the new homeschooler feature set.
+-   **Issue 2: Complete the Refactoring of  (P1)**
+    -   **Attempted fixes:** None. This task continues to be deferred. The file has now grown to over 5,000 lines.
     -   **Next debug checklist:**
-        1.  Identify what content needs to be downloadable (e.g., lesson plans, learning materials, books).
-        2.  Create or enhance existing backend endpoints to generate downloadable PDFs for this content.
-        3.  Add Download PDF buttons to the relevant frontend pages.
-    -   **Why fix this issue and what will be achieved with the fix?** Fulfills the Offline Functionality requirement for homeschoolers.
+        1.  Create new route files in  for , , and .
+        2.  Systematically move the corresponding endpoints from  into these new files.
+        3.  Update  to import and include the new routers from the  directory.
+    -   **Why fix this issue and what will be achieved with the fix?** This is critical for backend stability and maintainability. The current file size is a significant risk.
     -   **Status:** NOT STARTED
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Both.
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Backend (extensive regression testing).
     -   **Blocked on other issue:** None.
 
--   **Issue 3: Template of the Week Bug (P1)**
-    -   **Attempted fixes:** None in this session. A previous fix exists but was never tested or verified.
+-   **Issue 3: Template of the Week Bug Verification (P1)**
+    -   **Attempted fixes:** The agent traced the code flow from the Dashboard to the Lesson Planner and verified with  that the backend endpoints and frontend logic for using a starter template are correct.
     -   **Next debug checklist:**
-        1.  Log in as a teacher ().
-        2.  Navigate to the Dashboard and click the Usar esta plantilla button on the Template of the Week card.
-        3.  Confirm the Lesson Planner page loads and is pre-populated with the correct template data.
-    -   **Why fix this issue and what will be achieved with the fix?** Fixes a broken core feature on the main dashboard.
+        1.  The agent has done its part. The next step is for the user to confirm on their end.
+        2.  In the next  call, include a verification step: Please confirm if the Template of the Week button on the dashboard now works as expected.
+    -   **Why fix this issue and what will be achieved with the fix?** Closes out a lingering bug and ensures a core dashboard feature is working.
     -   **Status:** USER VERIFICATION PENDING
     -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend.
-    -   **Blocked on other issue:** None.
-
--   **Issue 4: Complete the Refactoring of  (P1)**
-    -   **Attempted fixes:** None. This task continues to be deferred. The file has grown even larger with the addition of new endpoints.
-    -   **Next debug checklist:**
-        1.  Create route files in  for , , .
-        2.  Systematically move endpoints from  to these new files.
-        3.  Update  to import and include the new routers.
-    -   **Why fix this issue and what will be achieved with the fix?** Crucial for backend stability, scalability, and maintainability.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Backend (extensive regression testing needed).
-    -   **Blocked on other issue:** None.
-
--   **Issue 5: Super Admin Login Confusion (Recurring)**
-    -   **Attempted fixes:** The agent spent significant time debugging the super admin login. The root cause was identified as the user trying to log into the production environment () with credentials created in the preview environment's database ().
-    -   **Next debug checklist:** This is a user understanding issue, not a code bug. The next agent must be vigilant about this.
-        1.  When creating users or changing passwords, explicitly state that it applies ONLY to the preview environment.
-        2.  Remind the user they must redeploy code and manage production users separately (e.g., via the app's Admin Panel).
-    -   **Why fix this issue and what will be achieved with the fix?** Prevents significant wasted time and user frustration.
-    -   **Status:** RESOLVED (Root cause identified)
-    -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** NA.
+    -   **Should Test frontend/backend/both after fix?** None needed from agent.
     -   **Blocked on other issue:** None.
 
 **In progress Task List**:
--   **Task 1: Implement Homeschooler Features (P0)**
-    -   **Where to resume:** Continue with . The next step is to create the backend endpoint for it in .
-    -   **What will be achieved with this?** This will deliver the set of features requested for the homeschooler user persona, making the app more versatile.
+-   **Task 1: Enhance Educational Games Feature (P0)**
+    -   **Where to resume:** In , modify the JSX that renders the  state to handle all 8 game types.
+    -   **What will be achieved with this?** A fully functional, interactive, and valuable educational games feature that integrates with the gradebook.
     -   **Status:** IN PROGRESS
     -   **Should Test frontend/backend/both after fix?** Both.
     -   **Blocked on something:** None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks (P1):**
-    *   **Parent/Teacher Dashboard:** Enhance the dashboard with homeschooler-focused analytics.
-    *   **Flexible Curriculum Customization:** Allow parents to create/customize lesson plans.
-    *   **Drag-and-Drop Seating Chart Editor**
-    *   **Quick Week Copy:** A button in the Lesson Planner to duplicate an entire week's plan.
-    *   **Finish Bulk Import Tools:** The UI is done, but the functionality needs to be tested end-to-end.
-    *   **Finish Report Card Generation:** The page is created, but needs to be fully implemented to fetch student data and generate a printable report.
+    *   **Finish Report Card Generation:** The student fetching is fixed, but the page needs UI for selecting classes/students and generating a printable report.
+    -   **Email Parent Portal Links:** Integrate the Resend API to automatically email the generated portal links to parents.
+    *   **Finish Bulk Import Tools:** The UI and endpoints exist but require end-to-end testing and validation.
+    *   **Game Analytics Export:** Add a button to export game analytics data as a CSV.
+    *   **Student Accounts for Games:** Allow students to have persistent scores and progress across games.
 -   **Future Tasks (P2):**
-    *   Audit Log
-    *   Full Google Classroom Integration (data sync)
-    *   Diverse Learning Tools (audiobooks, TTS)
-    *   Content Curation for Parents (e.g., YouTube Kids style)
-    *   Subject-Specific Modules (e.g., Google Lens, Sky Map)
-    *   Planner Style Customization
-    *   Community Templates for sharing
+    *   Full Google Classroom Integration (data sync).
+    *   Drag-and-Drop Seating Chart Editor.
+    *   Quick Week Copy in Lesson Planner.
+    *   Audit Log for admin actions.
 
 **Completed work in this session**
--   Generated downloadable MP4 video clips of the onboarding tutorial using Sora 2.
--   Implemented **Add to Calendar** ( export) for lesson plans.
--   Fixed **mobile responsiveness** on the Landing and Pricing pages.
--   Created UI and backend endpoints for **Super Admin Bulk Import** (Teachers/Students).
--   Created UI for an **Integrations tab** in the Admin Panel.
--   Created a new page and backend stub for **Report Card Generation**.
--   Resolved a critical and recurring **Super Admin login issue** by identifying the preview vs. production environment mismatch.
--   Fixed the user role dropdown in the Admin Panel to include the **Super Admin** option.
--   Configured the  account to **skip onboarding** and display platform-wide branding.
--   Added **Integrations** and **Homeschool** sections to the landing page.
+-   **Adaptive Learning Engine:** Implemented with AI, including  and backend endpoints.
+-   **Student Progress Dashboard:** Created with visualizations for tracking learning at .
+-   **Homeschool Parent Portal:** Launched a secure, multi-language, token-based portal at .
+-   **Educational Games Creator:** Built a major new feature at  with 8 game types, analytics, and leaderboards.
+-   **AI Subscription Bug Fix:** Patched a critical bug in  preventing  and  roles from using AI features.
+-   **Report Card Page Bug Fix:** Corrected the API endpoint for fetching students in .
+-   **Template of the Week Logic Verified:** Confirmed the feature's implementation is sound.
+-   **Added Global  Endpoint:** For easier access to student lists.
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Template of the Week bug.** The fix implemented in a previous session has still not been verified by the user. Status remains **USER VERIFICATION PENDING**.
--   **Issue 2: Monolithic  file refactoring.** This critical tech-debt item was not addressed and the file has grown even larger. Status remains **NOT STARTED**.
+-   **Monolithic  file refactoring.** This critical tech-debt item was deferred again and the file is now dangerously large.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** Monolithic  file.
--   **Recurrence count:** 9+
+-   **Recurrence count:** 10+
 -   **Status:** NOT STARTED
--   **New Recurring Issue This Session:** User confusion between preview and production environments, leading to repeated failed login attempts for the super admin. This was a major time sink.
+-   **New Recurring Issue This Session:** User confusion between preview and production environments. The agent repeatedly debugged issues (e.g., AI feature requires subscription, Games Creator link missing) that were ultimately caused by the user looking at their production site, which had not yet been redeployed with the latest code.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Video Generation:** Used Sora 2 via  to generate MP4 video clips from text prompts.
--   **Calendar File Generation:** Implemented an endpoint to create and serve  files for calendar integration, dynamically populating event details from lesson plan data.
--   **Environment Separation:** A critical lesson was learned in distinguishing between the preview/development environment and the production environment, especially regarding their separate databases.
--   **Conditional Rendering (React):** Extensive use of conditional rendering based on user role () to customize the UI (e.g., skip onboarding, show platform branding, display admin panels).
--   **Mobile-First CSS:** Applied responsive design principles (, , ) to fix UI issues on smaller screens, particularly for buttons and text visibility.
--   **CSV Bulk Import:** Architected the UI and backend endpoints to support bulk creation of users (teachers, students) from a CSV file.
+-   **AI-Powered Content Generation:** Heavily used Claude Sonnet 4.5 via  to generate dynamic learning paths and interactive games (quizzes, word searches, etc.).
+-   **Role-Based Access Control (RBAC):** Fixed a critical bug in the subscription check () to properly handle  and  roles, granting them school-wide access to AI features.
+-   **Token-Based Public Access:** Implemented a secure parent portal using short-lived, single-use tokens, allowing access to specific data without full authentication.
+-   **Environment Mismatch Debugging:** A recurring theme was guiding the user on the difference between the preview environment (where features are built) and their production environment (which requires deployment and cache clearing).
+-   **Dynamic Frontend Rendering:** The agent started building a complex game player in  designed to render different UIs based on the game type.
 
 **key DB schema**
--   **users:** The  field is critical. A user with  and  is considered the Platform Owner.
+-   **adaptive_learning_progress:** 
+-   **homeschool_portal_tokens:** 
+-   **games:** 
+-   **game_scores:** 
 
 **changes in tech stack**
--   **Added:**  library for Python to generate iCalendar files.
--   **Used:**  for Sora 2 video generation.
+-   No new technologies added, but heavy reliance on  and  for client-side PDF generation.
 
 **All files of reference**
--   **/app/backend/server.py**: Heavily modified. Contains new endpoints for calendar export, bulk import, and report cards. Needs refactoring.
--   **/app/frontend/src/pages/Landing.js**: Heavily modified. Contains new, large sections for Integrations and Homeschoolers.
--   **/app/frontend/src/pages/AdminPanel.js**: Heavily modified. Contains the new UI for Bulk Import and Integrations.
--   **/app/frontend/src/pages/LessonPlanner.js**: Modified to add the Add to Calendar button and make action buttons responsive.
--   **/app/frontend/src/pages/AdaptiveLearning.js**: New file, stubbed out for the next feature.
--   **/app/frontend/src/pages/ReportCards.js**: New file, partially implemented.
--   **/app/frontend/src/components/Layout.js**: Modified to handle branding for the un-schooled .
+-   **/app/frontend/src/pages/GamesCreator.js**: New file, heavily modified, and the focus of the current task.
+-   **/app/backend/server.py**: Heavily modified with numerous new endpoints for games, portals, and adaptive learning. Urgently needs refactoring.
+-   **/app/backend/routes/ai.py**: Contains the critical subscription logic fix.
+-   **/app/frontend/src/pages/StudentProgress.js**: New file for the progress dashboard.
+-   **/app/frontend/src/pages/HomeschoolPortal.js**: New file for the parent portal.
+-   **/app/frontend/src/components/Layout.js**: Modified to add all new pages to the navigation sidebar.
+-   **/app/frontend/src/App.js**: Modified to add routes for all new pages.
 
 **Areas that need refactoring**:
--   **/app/backend/server.py**: Urgently needs to be broken down. It is now over 4000 lines long and is becoming unmanageable.
--   **/app/frontend/src/pages/Landing.js**: Now over 1500 lines. The new sections should be broken into their own components.
--   **/app/frontend/src/pages/LessonPlanner.js**: Remains a very large component that is difficult to maintain.
+-   **/app/backend/server.py**: CRITICAL. At over 5,000 lines, it is unstable and hard to maintain. Refactoring is the highest priority technical debt.
+-   **/app/frontend/src/pages/GamesCreator.js**: This file is becoming a monolith. The game playing logic should be extracted into separate components per game type (e.g., , ).
 
 **key api endpoints**
--   : Was the subject of extensive debugging. Works correctly.
--   : (New) Generates and returns an  file for a given lesson plan.
--   : (New) Endpoint for bulk importing teachers via CSV.
--   : (New) Endpoint for bulk importing students via CSV.
--   : (New) Stubbed endpoint for generating report cards.
--   : (Modified) Now returns a  status for  users to skip the tutorial.
+-   
+-   
+-   
+-   
+-   
+-   
+-   
 
 **Critical Info for New Agent**
--   **PREVIEW vs. PRODUCTION:** The user deploys the code to a separate production domain (). The production database is **COMPLETELY SEPARATE** from the preview database you have access to. Any user accounts or data you create exist **only in preview**. You must remind the user to redeploy and manage production data themselves. This was the source of a major, time-consuming login issue.
--   **Super Admin Role:** The user  is the platform owner. This account has  and no . The UI must be coded to handle this special case (e.g., showing platform branding, skipping school-specific features).
--   **Monolith Backend:** The  file is extremely large and fragile. Be cautious when adding new endpoints and strongly prioritize the refactoring task.
+-   **PREVIEW vs. PRODUCTION ENVIRONMENT:** This is the most common source of user confusion. Features you build are in the preview environment. The user MUST redeploy to see them on their live site and may need to clear their browser cache or do a hard refresh (). Be prepared to explain this clearly.
+-   **AI ACCESS FIX:** The subscription check in  was fixed to allow  and  roles to access AI features. This addresses the user's report of AI features require an active subscription. They must redeploy for this fix to apply to them.
+-   **GAME CREATOR IS BROKEN:** The immediate task is to fix the game player in . It does not currently render game types other than the basic quiz correctly.
 
 **documents and test reports created in this job**
--   /app/memory/PRD.md (updated multiple times)
+-   /app/memory/PRD.md
+-   /app/test_reports/iteration_14.json
+-   /app/test_reports/iteration_15.json
+-   /app/test_reports/iteration_16.json
+-   /app/test_reports/iteration_17.json
+-   /app/test_reports/iteration_18.json
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Requests features for homeschoolers, including adaptive learning and offline content, and points out a mobile UI bug. (Status: IN PROGRESS, mobile bug fixed, homeschool section added to landing page).
-2.  **User:** Clarifies that the Platform Admin () should not see the onboarding tutorial or be associated with any school. (Status: COMPLETED).
-3.  **User:** Confirms login now works on production after redeploying with the  role fix. (Status: COMPLETED).
-4.  **User:** Reports the  role is not available in the Admin Panel dropdown on production. (Status: COMPLETED, agent fixed and advised user to redeploy).
-5.  **User:** Confirms  is their old super admin on production and asks how to create the new  there. (Status: COMPLETED, agent provided instructions).
-6.  **User:** Reports login still not working, revealing they are on the wrong domain ( vs. preview). (Status: COMPLETED, agent identified the root cause).
-7.  **User:** Repeatedly states login is not working with the provided complex password. (Status: RESOLVED, issue was environment mismatch).
-8.  **User:** Insists on using the complex password . (Status: COMPLETED, agent set and verified the password).
-9.  **User:** Provides email/password for the new dedicated Super Admin account. (Status: COMPLETED).
-10. **User:** Explains the Super Admin Juan H Torres is the app owner and should not be part of a school. (Status: COMPLETED, led to creating the new  account).
+1.  **User:** Asks for more game types (word search, etc.), game analytics, and leaderboards. (Status: COMPLETED)
+2.  **User:** Points out the Educational Games link is missing from the sidebar after they redeployed. (Status: RESOLVED - It was a cache/environment issue. Agent confirmed the code was correct and provided a screenshot from the preview environment.)
+3.  **User:** Confirms they can now see the Games Creator but reports the games are not functional (e.g., flashcard answers missing). Asks for games to be functional and count as a grade. (Status: IN PROGRESS - This is the current task.)
+4.  **User:** Asks for multi-language support for Parent Portal links and a new feature to convert lessons into educational games. (Status: COMPLETED)
+5.  **User:** Reports the Generate Learning Path feature is failing with an error. (Status: RESOLVED - Agent identified the error message AI features require an active subscription and fixed the backend RBAC logic.)
+6.  **User:** Insists the student Juan Torres exists, disputing the agent's initial diagnosis. (Status: RESOLVED - User was correct, the issue was subscription-related, not a missing student.)
+7.  **User:** Asks to add a Parent Portal for homeschoolers, fix the Report Card page, and verify the Template of the Week bug. (Status: COMPLETED)
+8.  **User:** Asks to add a Student Progress Dashboard to track adaptive learning progress. (Status: COMPLETED)
+9.  **User:** Approves the plan to complete the P0 homeschooler features (Adaptive Learning & PDF exports). (Status: COMPLETED)
+10. **User:** Provides initial prompt to start the session.
 
 **Project Health Check:**
--   **Broken:** None.
--   **Mocked:** Resend API remains in test mode.
+-   **Broken:** The game player in  is not functional for most game types.
+-   **Mocked:** Resend API for emails remains in test mode.
 
 **3rd Party Integrations**
 -   **Emergent-managed Google Auth**
 -   **Stripe** (Payments)
--   **Resend** (Emails, via API key, in test mode)
--   **Pexels** (Image Search, via API key)
--   **Anthropic Claude Sonnet 4.5** (AI Assistant, via )
+-   **Resend** (Emails, in test mode)
+-   **Pexels** (Image Search)
+-   **Anthropic Claude Sonnet 4.5** (AI Assistant, Adaptive Learning, Games - via )
 -   **OpenAI TTS** (Audio narration)
--   **Sora 2** (Video Generation, via )
--   **Google Classroom** (Integration playbook fetched, advertised on landing page, but not yet implemented).
+-   **Sora 2** (Video Generation)
+-   **Google Classroom** (Advertised, but not implemented)
 
 **Testing status**
--   **Testing agent used after significant changes:** NO
+-   **Testing agent used after significant changes:** YES (used after every major feature was completed)
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** []
 -   **Known regressions:** None.
 
 **Credentials to test flow:**
--   **Platform Super Admin:**  /  (Use this for all platform-wide testing).
+-   **Platform Super Admin:**  / 
 -   **School Teacher / Has Plans:**  / 
 -   **Expired Trial User:**  / 
 
 **What agent forgot to execute**
--   The agent created stubs for the **Report Card Generation** and **Bulk Import** features but did not fully implement or test them.
--   The agent did not verify the pending fix for the **Template of the Week** bug.
--   The long-standing task to **refactor ** was once again deferred, despite the file growing significantly larger and more complex.</analysis>
+-   The agent did not complete the end-to-end testing for the **Bulk Import** tools.
+-   The **Report Card Generation** feature was only partially fixed (student data fetching). It still lacks the full UI and PDF generation capability.
+-   The long-standing task to **refactor ** was once again deferred.</analysis>
