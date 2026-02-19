@@ -3903,8 +3903,6 @@ async def generate_adaptive_learning_path(
     user: dict = Depends(get_current_user)
 ):
     """Generate a personalized adaptive learning path for a student using AI"""
-    from emergentintegrations.llm.chat import LlmChat, UserMessage
-    
     # Check if user has AI access (trial or subscription)
     user_id = user.get("user_id")
     subscription = await db.subscriptions.find_one({"user_id": user_id, "status": "active"})
