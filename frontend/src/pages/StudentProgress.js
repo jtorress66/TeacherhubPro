@@ -17,7 +17,7 @@ import {
   Brain, TrendingUp, Clock, Award, Target, BookOpen, 
   Calculator, FileText, TreePine, ChevronRight, Loader2,
   BarChart3, Calendar, Star, Trophy, Sparkles, ArrowLeft,
-  CheckCircle2, Circle, Flame, Zap, Download, Printer, Share2, Copy, Check
+  CheckCircle2, Circle, Flame, Zap, Download, Printer, Share2, Copy, Check, Globe, ChevronDown
 } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
