@@ -320,22 +320,30 @@ const AdminPanel = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-white border">
+          <TabsList className="bg-white border flex-wrap">
             <TabsTrigger value="overview" className="gap-2">
               <BarChart3 className="h-4 w-4" />
-              {language === 'es' ? 'Resumen' : 'Overview'}
+              <span className="hidden sm:inline">{language === 'es' ? 'Resumen' : 'Overview'}</span>
             </TabsTrigger>
             <TabsTrigger value="schools" className="gap-2">
               <Building2 className="h-4 w-4" />
-              {language === 'es' ? 'Escuelas' : 'Schools'}
+              <span className="hidden sm:inline">{language === 'es' ? 'Escuelas' : 'Schools'}</span>
             </TabsTrigger>
             <TabsTrigger value="semesters" className="gap-2">
               <CalendarDays className="h-4 w-4" />
-              {language === 'es' ? 'Semestres' : 'Semesters'}
+              <span className="hidden sm:inline">{language === 'es' ? 'Semestres' : 'Semesters'}</span>
             </TabsTrigger>
             <TabsTrigger value="users" className="gap-2">
               <Users className="h-4 w-4" />
-              {language === 'es' ? 'Usuarios' : 'Users'}
+              <span className="hidden sm:inline">{language === 'es' ? 'Usuarios' : 'Users'}</span>
+            </TabsTrigger>
+            <TabsTrigger value="bulk-import" className="gap-2">
+              <FileSpreadsheet className="h-4 w-4" />
+              <span className="hidden sm:inline">{language === 'es' ? 'Importar CSV' : 'Bulk Import'}</span>
+            </TabsTrigger>
+            <TabsTrigger value="integrations" className="gap-2">
+              <Link2 className="h-4 w-4" />
+              <span className="hidden sm:inline">{language === 'es' ? 'Integraciones' : 'Integrations'}</span>
             </TabsTrigger>
           </TabsList>
 
