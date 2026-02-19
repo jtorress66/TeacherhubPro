@@ -31,6 +31,7 @@ const GamesCreator = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   
+  // All state declarations must be at the top, before any useEffect
   const [activeTab, setActiveTab] = useState('create');
   const [generating, setGenerating] = useState(false);
   const [lessonContent, setLessonContent] = useState('');
@@ -44,6 +45,19 @@ const GamesCreator = () => {
   const [gameProgress, setGameProgress] = useState({ current: 0, score: 0, answers: [] });
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
+  const [analytics, setAnalytics] = useState(null);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [selectedGameForLeaderboard, setSelectedGameForLeaderboard] = useState(null);
+  const [playerName, setPlayerName] = useState('');
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [gameStartTime, setGameStartTime] = useState(null);
+  
+  // Game-specific state (must be at top level, not after conditional returns)
+  const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+  const [fillBlankAnswer, setFillBlankAnswer] = useState('');
+  const [matchingSelected, setMatchingSelected] = useState({ left: null, right: null });
+  const [matchedPairs, setMatchedPairs] = useState([]);
+  const [shuffledRight, setShuffledRight] = useState([]);
 
   const gameTypes = [
     { 
