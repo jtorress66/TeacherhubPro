@@ -81,6 +81,27 @@ const GamesCreator = () => {
       description: language === 'es' ? 'Tarjetas para memorizar' : 'Cards for memorization',
       color: 'pink'
     },
+    { 
+      id: 'word_search', 
+      name: language === 'es' ? 'Sopa de Letras' : 'Word Search',
+      icon: Search,
+      description: language === 'es' ? 'Encuentra palabras escondidas' : 'Find hidden words in the grid',
+      color: 'cyan'
+    },
+    { 
+      id: 'crossword', 
+      name: language === 'es' ? 'Crucigrama' : 'Crossword',
+      icon: LayoutGrid,
+      description: language === 'es' ? 'Resuelve el crucigrama' : 'Solve the crossword puzzle',
+      color: 'indigo'
+    },
+    { 
+      id: 'drag_drop', 
+      name: language === 'es' ? 'Arrastrar y Soltar' : 'Drag and Drop',
+      icon: GripVertical,
+      description: language === 'es' ? 'Ordena o clasifica elementos' : 'Sort or categorize items',
+      color: 'rose'
+    },
   ];
 
   const difficulties = [
