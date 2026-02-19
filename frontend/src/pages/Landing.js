@@ -999,6 +999,180 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* Homeschool Section */}
+      <section id="homeschool" className="py-24 px-6 bg-gradient-to-b from-amber-50 via-orange-50/30 to-white">
+        <div className="max-w-6xl mx-auto">
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-100 text-amber-700 text-sm font-medium mb-4">
+              <Home className="h-4 w-4" />
+              {language === 'es' ? 'Educación en Casa' : 'Homeschool'}
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+              {language === 'es' ? 'Perfecto para Educadores en Casa' : 'Perfect for Homeschool Educators'}
+            </h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              {language === 'es' 
+                ? 'Todo lo que necesitas para la educación de tus hijos en un solo lugar. Sin necesidad de ir a ningún otro lado.' 
+                : 'Everything you need for your children\'s education in one place. No need to go anywhere else.'}
+            </p>
+          </div>
+
+          {/* Feature Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {/* Adaptive Learning */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-amber-100 hover:shadow-xl transition-all">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 w-fit mb-4">
+                <Brain className="h-8 w-8 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-2">
+                {language === 'es' ? 'Aprendizaje Adaptativo' : 'Adaptive Learning'}
+              </h3>
+              <p className="text-slate-600 mb-3">
+                {language === 'es' 
+                  ? 'IA que se adapta al ritmo de tu hijo, asegurando dominio de conceptos en matemáticas, lenguaje y ciencias.' 
+                  : 'AI that adapts to your child\'s pace, ensuring mastery of concepts in math, language arts, and science.'}
+              </p>
+              <div className="flex items-center gap-2 text-purple-600 text-sm font-medium">
+                <Sparkles className="h-4 w-4" />
+                {language === 'es' ? 'Impulsado por IA' : 'AI-Powered'}
+              </div>
+            </div>
+
+            {/* Parent Dashboard */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-amber-100 hover:shadow-xl transition-all">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100 w-fit mb-4">
+                <BarChart3 className="h-8 w-8 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-2">
+                {language === 'es' ? 'Panel de Padres' : 'Parent Dashboard'}
+              </h3>
+              <p className="text-slate-600 mb-3">
+                {language === 'es' 
+                  ? 'Análisis completo, seguimiento de asistencia e informes detallados para gestionar el progreso.' 
+                  : 'Comprehensive analytics, attendance tracking, and detailed reports to manage progress.'}
+              </p>
+              <div className="flex items-center gap-2 text-blue-600 text-sm font-medium">
+                <Eye className="h-4 w-4" />
+                {language === 'es' ? 'Visibilidad Total' : 'Full Visibility'}
+              </div>
+            </div>
+
+            {/* Flexible Curriculum */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-amber-100 hover:shadow-xl transition-all">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 w-fit mb-4">
+                <Layers className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-2">
+                {language === 'es' ? 'Currículo Flexible' : 'Flexible Curriculum'}
+              </h3>
+              <p className="text-slate-600 mb-3">
+                {language === 'es' 
+                  ? 'Crea o personaliza planes de lección, tarjetas de estudio e integra recursos externos.' 
+                  : 'Create or customize lesson plans, flashcards, and integrate external resources.'}
+              </p>
+              <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
+                <Wand2 className="h-4 w-4" />
+                {language === 'es' ? '100% Personalizable' : '100% Customizable'}
+              </div>
+            </div>
+
+            {/* Offline Downloads */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-amber-100 hover:shadow-xl transition-all">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 w-fit mb-4">
+                <Download className="h-8 w-8 text-orange-600" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-2">
+                {language === 'es' ? 'Descarga y Aprende' : 'Download & Learn'}
+              </h3>
+              <p className="text-slate-600 mb-3">
+                {language === 'es' 
+                  ? 'Descarga lecciones y materiales en PDF para aprender en cualquier lugar, sin conexión.' 
+                  : 'Download lessons and materials as PDFs to learn anywhere, without internet.'}
+              </p>
+              <div className="flex items-center gap-2 text-orange-600 text-sm font-medium">
+                <FileText className="h-4 w-4" />
+                {language === 'es' ? 'Exportar PDF' : 'PDF Export'}
+              </div>
+            </div>
+
+            {/* Text-to-Speech */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-amber-100 hover:shadow-xl transition-all">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-rose-100 to-pink-100 w-fit mb-4">
+                <Volume2 className="h-8 w-8 text-rose-600" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-2">
+                {language === 'es' ? 'Texto a Voz' : 'Text-to-Speech'}
+              </h3>
+              <p className="text-slate-600 mb-3">
+                {language === 'es' 
+                  ? 'Herramientas de lectura en voz alta para diferentes estilos de aprendizaje y accesibilidad.' 
+                  : 'Read-aloud tools for different learning styles and accessibility needs.'}
+              </p>
+              <div className="flex items-center gap-2 text-rose-600 text-sm font-medium">
+                <Headphones className="h-4 w-4" />
+                {language === 'es' ? 'Aprendizaje Auditivo' : 'Audio Learning'}
+              </div>
+            </div>
+
+            {/* Safe Content */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-amber-100 hover:shadow-xl transition-all">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-slate-100 to-gray-100 w-fit mb-4">
+                <Lock className="h-8 w-8 text-slate-600" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-2">
+                {language === 'es' ? 'Contenido Seguro' : 'Safe Content'}
+              </h3>
+              <p className="text-slate-600 mb-3">
+                {language === 'es' 
+                  ? 'Curación de contenido educativo seguro, aprobado por padres para tranquilidad.' 
+                  : 'Parent-approved educational content curation for peace of mind.'}
+              </p>
+              <div className="flex items-center gap-2 text-slate-600 text-sm font-medium">
+                <Shield className="h-4 w-4" />
+                {language === 'es' ? 'Control Parental' : 'Parental Control'}
+              </div>
+            </div>
+          </div>
+
+          {/* Subject Modules */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-amber-100">
+            <h3 className="text-2xl font-bold text-slate-800 mb-6 text-center">
+              {language === 'es' ? 'Módulos por Materia' : 'Subject-Specific Modules'}
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { icon: BookOpen, name: language === 'es' ? 'Matemáticas' : 'Mathematics', color: 'text-blue-600 bg-blue-50' },
+                { icon: FileText, name: language === 'es' ? 'Lenguaje' : 'Language Arts', color: 'text-purple-600 bg-purple-50' },
+                { icon: TreePine, name: language === 'es' ? 'Ciencias' : 'Science', color: 'text-green-600 bg-green-50' },
+                { icon: Telescope, name: language === 'es' ? 'Astronomía' : 'Astronomy', color: 'text-indigo-600 bg-indigo-50' },
+                { icon: Globe, name: language === 'es' ? 'Geografía' : 'Geography', color: 'text-teal-600 bg-teal-50' },
+                { icon: Compass, name: language === 'es' ? 'Historia' : 'History', color: 'text-amber-600 bg-amber-50' },
+                { icon: Palette, name: language === 'es' ? 'Arte' : 'Art', color: 'text-pink-600 bg-pink-50' },
+                { icon: Heart, name: language === 'es' ? 'Educación Física' : 'Physical Ed', color: 'text-red-600 bg-red-50' },
+              ].map((subject, idx) => (
+                <div key={idx} className={`flex items-center gap-3 p-4 rounded-xl ${subject.color.split(' ')[1]}`}>
+                  <subject.icon className={`h-6 w-6 ${subject.color.split(' ')[0]}`} />
+                  <span className="font-medium text-slate-700">{subject.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center mt-12">
+            <Button 
+              size="lg"
+              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8 h-14 text-lg shadow-lg"
+              onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
+            >
+              <Home className="h-5 w-5 mr-2" />
+              {language === 'es' ? 'Comenzar Educación en Casa' : 'Start Homeschooling'}
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Get Started Section */}
       <section id="get-started" className="py-24 px-6 relative overflow-hidden">
         {/* Background decoration */}
