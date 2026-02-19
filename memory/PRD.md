@@ -2085,3 +2085,64 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 - Audit Log for critical actions
 - Planner Style Customization
 - Community Templates
+
+---
+## Update 2026-02-19 - Homeschooler Features (Adaptive Learning & PDF Exports)
+
+### 1. Adaptive Learning Paths ✅
+AI-powered learning system that adapts to each student's pace for core subjects.
+
+**Features:**
+- Student selector dropdown (all students across teacher's classes)
+- Subject selector: Math, Language, Science, Reading
+- AI generates personalized 5-6 lesson learning paths using Claude Sonnet 4.5
+- Each lesson includes:
+  - Title and learning objective
+  - Duration estimate (10-20 min)
+  - Educational content (2-3 paragraphs)
+  - 2-3 practice questions with multiple choice options
+- Progress tracking (completed lessons, current level)
+- Level progression (auto-increases every 3 completed lessons)
+- Text-to-speech for lesson content
+
+**API Endpoints:**
+- `GET /api/students` - Returns all students across teacher's classes
+- `POST /api/adaptive-learning/generate-path` - Generates AI learning path
+- `POST /api/adaptive-learning/complete-lesson` - Marks lesson complete
+- `GET /api/adaptive-learning/progress/{student_id}` - Gets student progress
+
+**Database Collections:**
+- `adaptive_learning_paths` - Stores generated learning paths
+- `adaptive_learning_progress` - Tracks completed lessons and level
+
+### 2. PDF Exports for Offline Access ✅
+Downloadable PDF materials for offline homeschool use.
+
+**Features:**
+- **Download Entire Learning Path:** Exports complete path with all lessons to print-ready PDF
+- **Download Individual Lessons:** Each lesson can be saved as standalone PDF
+- Professional formatting with:
+  - Student name, subject, level info
+  - Lesson content and practice questions
+  - TeacherHubPro branding
+- Uses browser's native Print dialog for PDF save
+
+**UI Components:**
+- "Descargar PDF" / "Download PDF" button on learning path overview
+- "PDF" button in lesson detail view
+
+### Files Created/Modified
+- **NEW:** `/app/frontend/src/pages/AdaptiveLearning.js` - Full adaptive learning page
+- **MODIFIED:** `/app/frontend/src/App.js` - Added `/adaptive-learning` route
+- **MODIFIED:** `/app/frontend/src/components/Layout.js` - Added nav link with Brain icon and NEW badge
+- **MODIFIED:** `/app/backend/server.py` - Added adaptive learning endpoints (lines 3870-4100)
+
+### Test Results
+- **Backend:** 100% (14/14 tests passed)
+- **Frontend:** 100% (all features verified)
+- **AI Integration:** Claude Sonnet 4.5 via emergentintegrations, ~45 seconds generation time
+- **Test Report:** `/app/test_reports/iteration_14.json`
+
+### Test Credentials
+- **Test Teacher:** test@school.edu / testpassword
+- **Test Student:** student_40da2916 (Maria Garcia)
