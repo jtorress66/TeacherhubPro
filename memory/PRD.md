@@ -1072,6 +1072,71 @@ Added a "Generate Full Week" button that creates a coherent 5-day lesson plan wi
 3. AI generates a coherent 5-day plan
 4. Purple dots appear on all day tabs indicating suggestions
 5. Teacher can review each day's suggestions
+
+
+---
+## Update 2026-02-19 - Student Progress Dashboard
+
+### Feature Overview
+Parent-facing dashboard showing comprehensive overview of child's adaptive learning progress across all subjects.
+
+**Features:**
+- **Stats Overview:** 4 stat cards showing:
+  - Total Lessons Completed
+  - Total Study Time (calculated as 15 min per lesson)
+  - Day Streak (consecutive days of activity)
+  - Achievements Earned
+- **Per-Subject Progress:**
+  - Current level (Beginner → Expert)
+  - Completion percentage with progress bar
+  - Completed/remaining lesson count
+  - Time spent per subject
+- **Achievements System:**
+  - "First Lesson" - Complete 1 lesson
+  - "5 Lessons Complete" - Complete 5 lessons
+  - "Learning Champion" - Complete 10 lessons
+  - "Multi-Subject Learner" - Study 2+ subjects
+  - "Level Up!" - Reach Level 2 in any subject
+- **Recent Activity:** Shows last 10 completed lessons with subject and date
+- **Download Progress Report:** PDF export of entire progress data
+
+### API Endpoint
+- `GET /api/adaptive-learning/dashboard/{student_id}` - Returns comprehensive progress data
+
+### Response Structure
+```json
+{
+  "student": { "student_id": "...", "name": "..." },
+  "subjects": [
+    {
+      "subject": "math",
+      "current_level": 1,
+      "completed_lessons": 1,
+      "total_lessons": 6,
+      "time_spent": 15,
+      "last_activity": "2026-02-19T..."
+    }
+  ],
+  "total_lessons_completed": 1,
+  "total_time_spent": 15,
+  "current_streak": 1,
+  "achievements": [{ "title": "First Lesson", "earned_at": "Completed" }],
+  "recent_activity": [{ "lesson_title": "...", "subject": "...", "completed_at": "..." }]
+}
+```
+
+### Files Created/Modified
+- **NEW:** `/app/frontend/src/pages/StudentProgress.js` - Complete progress dashboard page
+- **MODIFIED:** `/app/frontend/src/pages/AdaptiveLearning.js` - Added "View Progress" button
+- **MODIFIED:** `/app/frontend/src/App.js` - Added `/student-progress` and `/student-progress/:studentId` routes
+- **MODIFIED:** `/app/frontend/src/components/Layout.js` - Added nav link with TrendingUp icon and NEW badge
+- **MODIFIED:** `/app/backend/server.py` - Added dashboard endpoint
+
+### Test Results
+- **Backend:** 100% (11/11 tests passed)
+- **Frontend:** 100% (all features verified)
+- **Test Report:** `/app/test_reports/iteration_15.json`
+
 6. Click "Apply All" to add suggestions to all days' notes
 7. Or apply/dismiss individually per day
 
