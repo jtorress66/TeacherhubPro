@@ -4504,6 +4504,9 @@ async def get_homeschool_portal_data(token: str):
     if any(s.get("current_level", 1) >= 2 for s in subjects_data):
         achievements.append({"title": "Level Up!", "earned_at": "Completed"})
     
+    # Get stored language from token
+    portal_language = token_doc.get("language", "es")
+    
     return {
         "student": {
             "student_id": student_id,
@@ -4521,7 +4524,7 @@ async def get_homeschool_portal_data(token: str):
             "achievements": achievements,
             "recent_activity": recent_activity
         },
-        "language": "es"  # Default to Spanish
+        "language": portal_language
     }
 
 
