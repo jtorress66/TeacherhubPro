@@ -599,11 +599,23 @@ const AdaptiveLearning = () => {
                     </h3>
                     <p className="text-slate-600 text-sm">{learningPath.description}</p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-purple-600">
-                      {learningPath.lessons?.filter(l => l.completed).length || 0}/{learningPath.lessons?.length || 0}
-                    </p>
-                    <p className="text-sm text-slate-500">{language === 'es' ? 'Completado' : 'Completed'}</p>
+                  <div className="flex items-center gap-4">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={downloadLearningPathPDF}
+                      className="border-purple-300 text-purple-700 hover:bg-purple-50"
+                      data-testid="download-learning-path-pdf"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      {language === 'es' ? 'Descargar PDF' : 'Download PDF'}
+                    </Button>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-purple-600">
+                        {learningPath.lessons?.filter(l => l.completed).length || 0}/{learningPath.lessons?.length || 0}
+                      </p>
+                      <p className="text-sm text-slate-500">{language === 'es' ? 'Completado' : 'Completed'}</p>
+                    </div>
                   </div>
                 </div>
                 <Progress 
