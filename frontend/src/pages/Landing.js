@@ -221,8 +221,8 @@ const Landing = () => {
             <a href="#ai-assistant" className="text-sm font-medium text-slate-700 hover:text-cyan-600 transition-colors">
               {language === 'es' ? 'Asistente IA' : 'AI Assistant'}
             </a>
-            <a href="#ai-features" className="text-sm font-medium text-slate-700 hover:text-cyan-600 transition-colors">
-              {language === 'es' ? 'IA Avanzada' : 'Advanced AI'}
+            <a href="#homeschool" className="text-sm font-medium text-slate-700 hover:text-amber-600 transition-colors">
+              {language === 'es' ? 'Educación en Casa' : 'Homeschool'}
             </a>
             <a href="#integrations" className="text-sm font-medium text-slate-700 hover:text-cyan-600 transition-colors">
               {language === 'es' ? 'Integraciones' : 'Integrations'}
