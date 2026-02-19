@@ -179,8 +179,6 @@ const Layout = ({ children }) => {
                       {language === 'es' ? 'Tu aula digital' : 'Your digital classroom'}
                     </span>
                   )}
-                    </span>
-                  )}
                 </div>
               </Link>
               <Button 
