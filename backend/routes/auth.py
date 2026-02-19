@@ -87,9 +87,24 @@ async def register(user_data: UserCreate, response: Response):
 @router.post("/login", response_model=UserResponse)
 async def login(credentials: UserLogin, response: Response):
     """Login with email/password"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    logger.info(f"Login attempt for email: {credentials.email}")
+    
     user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
     
-    if not user or not verify_password(credentials.password, user.get("password_hash", "")):
+    if not user:
+        logger.warning(f"User not found: {credentials.email}")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    logger.info(f"User found: {user.get('email')}, has_hash: {'password_hash' in user}")
+    
+    password_valid = verify_password(credentials.password, user.get("password_hash", ""))
+    logger.info(f"Password verification result: {password_valid}")
+    
+    if not password_valid:
+        logger.warning(f"Password verification failed for: {credentials.email}")
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     token = create_jwt_token(user["user_id"])
