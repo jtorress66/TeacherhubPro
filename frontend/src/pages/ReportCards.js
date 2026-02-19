@@ -55,13 +55,17 @@ const ReportCards = () => {
   const fetchInitialData = async () => {
     setLoading(true);
     try {
-      const [classesRes, schoolRes, semestersRes] = await Promise.all([
+      const [classesRes, schoolsRes, semestersRes] = await Promise.all([
         axios.get(`${API}/classes`, { withCredentials: true }),
-        axios.get(`${API}/school`, { withCredentials: true }),
+        axios.get(`${API}/schools`, { withCredentials: true }),
         axios.get(`${API}/semesters`, { withCredentials: true })
       ]);
       setClasses(classesRes.data || []);
-      setSchool(schoolRes.data);
+      // Schools endpoint returns array, get first one (user's school)
+      const schoolsData = schoolsRes.data || [];
+      if (schoolsData.length > 0) {
+        setSchool(schoolsData[0]);
+      }
       setSemesters(semestersRes.data || []);
       
       // Set default semester to active one
