@@ -2024,6 +2024,11 @@ openai._base_client - INFO - Retrying request to /chat/completions in 0.390793 s
 - Features listed: Import classes, sync grades, OAuth authentication
 - Note: Customer provides their own Google Cloud credentials
 - Placeholder for future integrations (Canvas, Schoology, Microsoft Teams)
+- **NEW: Landing Page Integrations Section**
+  - Added prominent section on landing page showcasing Google Classroom
+  - "Coming Soon" badges for Canvas LMS, Schoology, Microsoft Teams, Clever, ClassLink
+  - "Request Integration" CTA for custom integration requests
+  - Added "Integraciones" link in navigation header
 
 ### 3. Report Card Generation ✅
 - **New Page:** `/report-cards`
