@@ -3996,7 +3996,16 @@ async def generate_adaptive_learning_path(
         "reading": {"en": "Reading", "es": "Lectura"}
     }
     
+    # Grade level descriptions
+    grade_level_descriptions = {
+        "k-2": {"en": "Kindergarten to 2nd Grade (ages 5-7)", "es": "Kínder a 2do Grado (5-7 años)"},
+        "3-5": {"en": "3rd to 5th Grade (ages 8-10)", "es": "3ro a 5to Grado (8-10 años)"},
+        "6-8": {"en": "6th to 8th Grade (ages 11-13)", "es": "6to a 8vo Grado (11-13 años)"},
+        "9-12": {"en": "9th to 12th Grade (ages 14-18)", "es": "9no a 12vo Grado (14-18 años)"}
+    }
+    
     subject_display = subject_names.get(request.subject, {"en": request.subject.title(), "es": request.subject.title()})
+    grade_display = grade_level_descriptions.get(request.grade_level, grade_level_descriptions["3-5"])
     lang_key = "es" if request.language == "es" else "en"
     
     # Build AI prompt
@@ -4012,22 +4021,24 @@ Return ONLY a valid JSON object with no additional text."""
     user_prompt = f"""Create an adaptive learning path for:
 - Student: {student_name}
 - Subject: {subject_display[lang_key]}
+- Grade Level: {grade_display[lang_key]}
 - Current Level: {current_level}
 - Completed Lessons: {len(completed_lessons)}
 
-Generate a personalized learning path with 5-6 lessons that progress in difficulty.
+Generate a personalized learning path with 5-6 lessons that are APPROPRIATE FOR THE GRADE LEVEL.
 Each lesson should include:
 - A clear title
-- Learning objective
+- Learning objective appropriate for the grade level
 - Estimated duration (10-20 minutes)
-- Lesson content (2-3 paragraphs of educational content)
-- 2-3 practice questions with options
+- Lesson content (2-3 paragraphs of educational content - USE AGE-APPROPRIATE LANGUAGE)
+- 2-3 practice questions with options (difficulty based on grade level)
 
 Return JSON in this exact format:
 {{
   "title": "Learning path title",
   "description": "Brief description of what the student will learn",
   "level": {current_level},
+  "grade_level": "{request.grade_level}",
   "lessons": [
     {{
       "id": "lesson_1",
@@ -4048,7 +4059,10 @@ Return JSON in this exact format:
   ]
 }}
 
-IMPORTANT: Each question MUST include a "correct_answer" field that matches exactly one of the options.
+IMPORTANT: 
+- Each question MUST include a "correct_answer" field that matches exactly one of the options.
+- Content MUST be appropriate for {grade_display[lang_key]}
+- Use vocabulary and concepts suitable for the grade level
 
 Make the content engaging, age-appropriate, and educational. Start from the student's current level and gradually increase difficulty."""
 
