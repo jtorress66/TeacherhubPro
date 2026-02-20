@@ -680,7 +680,17 @@ const AdaptiveLearning = () => {
                     </h3>
                     <p className="text-slate-600 text-sm">{learningPath.description}</p>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={generateShareLink}
+                      className="border-green-300 text-green-700 hover:bg-green-50"
+                      data-testid="share-learning-path"
+                    >
+                      <Link2 className="h-4 w-4 mr-2" />
+                      {language === 'es' ? 'Compartir con Estudiante' : 'Share with Student'}
+                    </Button>
                     <Button 
                       variant="outline" 
                       size="sm"
@@ -689,9 +699,9 @@ const AdaptiveLearning = () => {
                       data-testid="download-learning-path-pdf"
                     >
                       <Download className="h-4 w-4 mr-2" />
-                      {language === 'es' ? 'Descargar PDF' : 'Download PDF'}
+                      {language === 'es' ? 'PDF' : 'PDF'}
                     </Button>
-                    <div className="text-right">
+                    <div className="text-right ml-2">
                       <p className="text-2xl font-bold text-purple-600">
                         {learningPath.lessons?.filter(l => l.completed).length || 0}/{learningPath.lessons?.length || 0}
                       </p>
@@ -699,9 +709,39 @@ const AdaptiveLearning = () => {
                     </div>
                   </div>
                 </div>
+                
+                {/* Share Link Display */}
+                {shareLink && (
+                  <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <Share2 className="h-4 w-4 text-green-600 flex-shrink-0" />
+                      <span className="text-sm text-green-700 truncate">{shareLink}</span>
+                    </div>
+                    <div className="flex items-center gap-2 ml-2">
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => {
+                          navigator.clipboard.writeText(shareLink);
+                          toast.success(language === 'es' ? '¡Copiado!' : 'Copied!');
+                        }}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => setShareLink('')}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                
                 <Progress 
                   value={(learningPath.lessons?.filter(l => l.completed).length / learningPath.lessons?.length) * 100 || 0} 
-                  className="h-3"
+                  className="h-3 mt-4"
                 />
               </CardContent>
             </Card>
