@@ -5030,8 +5030,12 @@ async def save_educational_game(
             "teacher_id": user.get("user_id"),
             "title": game.get("title"),
             "game_type": game.get("game_type"),
-            "difficulty": game.get("difficulty"),
+            "grade_level": game.get("grade_level"),
+            "subject": game.get("subject"),
             "questions": game.get("questions", []),
+            "words": game.get("words", []),
+            "hints": game.get("hints", []),
+            "categories": game.get("categories", []),
             "created_at": game.get("created_at") or datetime.now(timezone.utc).isoformat(),
             "updated_at": datetime.now(timezone.utc).isoformat()
         }},
