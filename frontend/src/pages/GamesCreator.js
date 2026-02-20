@@ -58,6 +58,11 @@ const GamesCreator = () => {
   const [matchingSelected, setMatchingSelected] = useState({ left: null, right: null });
   const [matchedPairs, setMatchedPairs] = useState([]);
   const [shuffledRight, setShuffledRight] = useState([]);
+  const [wordSearchFound, setWordSearchFound] = useState([]);
+  const [crosswordAnswers, setCrosswordAnswers] = useState({});
+  const [dragDropOrder, setDragDropOrder] = useState([]);
+  const [draggingItem, setDraggingItem] = useState(null);
+  const [shareLink, setShareLink] = useState('');
 
   const gameTypes = [
     { 
