@@ -642,10 +642,7 @@ const GamesCreator = () => {
 
   const startGameWithName = () => {
     setShowNameInput(false);
-    setGameProgress({ current: 0, score: 0, answers: [] });
-    setSelectedAnswer(null);
-    setShowResult(false);
-    setGameStartTime(Date.now());
+    initializeGameState(playingGame);
     if (playingGame?.game_id) {
       fetchLeaderboard(playingGame.game_id);
     }
