@@ -4351,6 +4351,204 @@ async def get_student_progress_dashboard(
     }
 
 
+# ==================== STUDENT LEARNING LINK ====================
+
+class StudentLearningLinkRequest(BaseModel):
+    student_id: str
+    subject: str
+    path_id: Optional[str] = None
+
+@api_router.post("/adaptive-learning/generate-student-link")
+async def generate_student_learning_link(
+    request: StudentLearningLinkRequest,
+    user: dict = Depends(get_current_user)
+):
+    """Generate a shareable link for students to access their learning path"""
+    
+    # Verify student exists
+    student = await db.students.find_one({"student_id": request.student_id}, {"_id": 0})
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    # Check if token already exists for this student/subject
+    existing = await db.student_learning_tokens.find_one({
+        "student_id": request.student_id,
+        "subject": request.subject
+    }, {"_id": 0})
+    
+    if existing:
+        expires_at = existing.get("expires_at", "")
+        if expires_at:
+            try:
+                exp_date = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+                if exp_date > datetime.now(timezone.utc):
+                    return {
+                        "token": existing["token"],
+                        "student_id": request.student_id,
+                        "subject": request.subject,
+                        "expires_at": expires_at,
+                        "message": "Existing token still valid"
+                    }
+            except ValueError:
+                pass
+        # Delete expired token
+        await db.student_learning_tokens.delete_one({"token": existing["token"]})
+    
+    # Generate new token
+    token = f"slt_{uuid.uuid4().hex}"
+    expires_at = (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
+    
+    await db.student_learning_tokens.insert_one({
+        "token": token,
+        "student_id": request.student_id,
+        "subject": request.subject,
+        "path_id": request.path_id,
+        "teacher_id": user.get("user_id"),
+        "expires_at": expires_at,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {
+        "token": token,
+        "student_id": request.student_id,
+        "subject": request.subject,
+        "expires_at": expires_at
+    }
+
+
+@api_router.get("/student-learning/{token}")
+async def get_student_learning_by_token(token: str):
+    """Public endpoint - Get student learning path by token (no auth required)"""
+    
+    # Find and validate token
+    token_doc = await db.student_learning_tokens.find_one({"token": token}, {"_id": 0})
+    if not token_doc:
+        raise HTTPException(status_code=404, detail="Invalid or expired token")
+    
+    # Check expiration
+    expires_at = token_doc.get("expires_at", "")
+    if expires_at:
+        try:
+            exp_date = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+            if exp_date <= datetime.now(timezone.utc):
+                raise HTTPException(status_code=410, detail="Token has expired")
+        except ValueError:
+            pass
+    
+    student_id = token_doc.get("student_id")
+    subject = token_doc.get("subject")
+    
+    # Get student info
+    student = await db.students.find_one({"student_id": student_id}, {"_id": 0})
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    # Get learning path
+    learning_path = await db.adaptive_learning_paths.find_one({
+        "student_id": student_id,
+        "subject": subject
+    }, {"_id": 0})
+    
+    # Get progress
+    progress = await db.adaptive_learning_progress.find_one({
+        "student_id": student_id,
+        "subject": subject
+    }, {"_id": 0})
+    
+    return {
+        "student": {
+            "name": student.get("name") or f"{student.get('first_name', '')} {student.get('last_name', '')}".strip(),
+            "student_id": student_id
+        },
+        "subject": subject,
+        "learning_path": learning_path,
+        "progress": progress,
+        "token": token
+    }
+
+
+@api_router.post("/student-learning/{token}/complete-lesson")
+async def student_complete_lesson(token: str, lesson_id: str = Body(..., embed=True)):
+    """Public endpoint - Mark a lesson as complete via token (no auth required)"""
+    
+    # Find and validate token
+    token_doc = await db.student_learning_tokens.find_one({"token": token}, {"_id": 0})
+    if not token_doc:
+        raise HTTPException(status_code=404, detail="Invalid or expired token")
+    
+    # Check expiration
+    expires_at = token_doc.get("expires_at", "")
+    if expires_at:
+        try:
+            exp_date = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+            if exp_date <= datetime.now(timezone.utc):
+                raise HTTPException(status_code=410, detail="Token has expired")
+        except ValueError:
+            pass
+    
+    student_id = token_doc.get("student_id")
+    subject = token_doc.get("subject")
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Get or create progress record
+    progress = await db.adaptive_learning_progress.find_one({
+        "student_id": student_id,
+        "subject": subject
+    })
+    
+    if progress:
+        completed_lessons = progress.get("completed_lessons", [])
+        if lesson_id not in completed_lessons:
+            completed_lessons.append(lesson_id)
+            
+            await db.adaptive_learning_progress.update_one(
+                {"student_id": student_id, "subject": subject},
+                {"$set": {
+                    "completed_lessons": completed_lessons,
+                    "last_completed_at": now
+                }}
+            )
+    else:
+        await db.adaptive_learning_progress.insert_one({
+            "student_id": student_id,
+            "subject": subject,
+            "current_level": 1,
+            "completed_lessons": [lesson_id],
+            "last_completed_at": now,
+            "created_at": now
+        })
+    
+    # Also update the learning path
+    await db.adaptive_learning_paths.update_one(
+        {"student_id": student_id, "subject": subject, "lessons.id": lesson_id},
+        {"$set": {"lessons.$.completed": True}}
+    )
+    
+    return {"success": True, "lesson_id": lesson_id, "completed_at": now}
+
+
+# ==================== PUBLIC GAME ACCESS ====================
+
+@api_router.get("/play-game/{game_id}")
+async def get_game_for_play(game_id: str):
+    """Public endpoint - Get game by ID for students to play (no auth required)"""
+    
+    game = await db.games.find_one({"game_id": game_id}, {"_id": 0})
+    if not game:
+        raise HTTPException(status_code=404, detail="Game not found")
+    
+    # Return game without sensitive teacher info
+    return {
+        "game_id": game["game_id"],
+        "title": game.get("title", ""),
+        "game_type": game.get("game_type", "quiz"),
+        "difficulty": game.get("difficulty", "medium"),
+        "questions": game.get("questions", []),
+        "grid": game.get("grid"),  # For word search
+        "created_at": game.get("created_at")
+    }
+
+
 # ==================== HOMESCHOOL PARENT PORTAL ====================
 
 class PortalTokenRequest(BaseModel):
