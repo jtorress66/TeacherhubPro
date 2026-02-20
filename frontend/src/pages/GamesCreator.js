@@ -247,7 +247,8 @@ const GamesCreator = () => {
       const res = await axios.post(`${API}/games/generate`, {
         content: lessonContent,
         game_type: gameType,
-        difficulty: difficulty,
+        grade_level: gradeLevel,
+        subject: subject,
         question_count: parseInt(questionCount),
         language: language
       }, { withCredentials: true });
