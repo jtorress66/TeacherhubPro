@@ -424,8 +424,9 @@ class TestGameSaveWithValidation:
         # Should return 400 for validation failure
         assert response.status_code == 400
         data = response.json()
-        assert "error" in data.get("detail", {}) or "errors" in data.get("detail", {})
-        print(f"✓ Invalid game rejected on save: {data.get('detail')}")
+        detail = data.get("detail", {})
+        assert detail.get("error") == "VALIDATION_FAILED" or "errors" in detail
+        print(f"✓ Invalid game rejected on save: {detail}")
 
 
 class TestGameRestartFunctionality:
