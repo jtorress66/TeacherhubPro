@@ -277,15 +277,26 @@ const GamesCreator = () => {
   // Ref to track timers for cleanup
   const timerRef = useRef(null);
 
-  // Game timer effect
+  // Game timer effect - with proper cleanup
   useEffect(() => {
-    let interval;
+    // Clear any existing timer first
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    
     if (playingGame && !showResult && !showNameInput) {
-      interval = setInterval(() => {
+      timerRef.current = setInterval(() => {
         setGameTimer(prev => prev + 1);
       }, 1000);
     }
-    return () => clearInterval(interval);
+    
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
   }, [playingGame, showResult, showNameInput]);
 
   // Confetti effect
