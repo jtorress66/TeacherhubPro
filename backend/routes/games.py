@@ -380,8 +380,15 @@ Output ONLY the JSON. No explanations."""
             user_message = UserMessage(text=user_prompt)
             response = await chat.send_message(user_message)
             
-            # Parse response
-            response_text = response.text.strip()
+            # Parse response - handle both string and object responses
+            if isinstance(response, str):
+                response_text = response.strip()
+            elif hasattr(response, 'text'):
+                response_text = response.text.strip()
+            elif hasattr(response, 'content'):
+                response_text = response.content.strip()
+            else:
+                response_text = str(response).strip()
             
             # Remove markdown code blocks if present
             if response_text.startswith("```"):
