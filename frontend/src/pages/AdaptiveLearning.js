@@ -103,6 +103,18 @@ const AdaptiveLearning = () => {
   const speakText = async (text) => {
     setSpeaking(true);
     try {
+      // Try browser's built-in speech synthesis first (works offline)
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = language === 'es' ? 'es-ES' : 'en-US';
+        utterance.rate = 0.9;
+        utterance.onend = () => setSpeaking(false);
+        utterance.onerror = () => setSpeaking(false);
+        speechSynthesis.speak(utterance);
+        return;
+      }
+      
+      // Fallback to API TTS if available
       const res = await axios.post(`${API}/ai/tts`, {
         text: text,
         language: language
@@ -114,7 +126,51 @@ const AdaptiveLearning = () => {
       audio.play();
     } catch (error) {
       console.error('TTS error:', error);
-      setSpeaking(false);
+      // If API fails, try browser speech as last resort
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = language === 'es' ? 'es-ES' : 'en-US';
+        utterance.onend = () => setSpeaking(false);
+        speechSynthesis.speak(utterance);
+      } else {
+        toast.error(language === 'es' ? 'Audio no disponible' : 'Audio not available');
+        setSpeaking(false);
+      }
+    }
+  };
+
+  const handleAnswerSelect = (questionIdx, optionIdx, correctAnswer) => {
+    const selectedOption = currentLesson.questions[questionIdx].options[optionIdx];
+    setSelectedAnswers({
+      ...selectedAnswers,
+      [questionIdx]: optionIdx
+    });
+    
+    // Show feedback after selection
+    const isCorrect = selectedOption === correctAnswer;
+    setShowAnswerFeedback({
+      ...showAnswerFeedback,
+      [questionIdx]: { selected: optionIdx, isCorrect }
+    });
+  };
+
+  const generateShareLink = async () => {
+    if (!learningPath) return;
+    
+    try {
+      const res = await axios.post(`${API}/adaptive-learning/generate-student-link`, {
+        student_id: selectedStudent,
+        subject: selectedSubject,
+        path_id: learningPath.path_id
+      }, { withCredentials: true });
+      
+      const link = `${window.location.origin}/student-learning/${res.data.token}`;
+      setShareLink(link);
+      navigator.clipboard.writeText(link);
+      toast.success(language === 'es' ? '¡Enlace copiado!' : 'Link copied!');
+    } catch (error) {
+      console.error('Error generating link:', error);
+      toast.error(language === 'es' ? 'Error al generar enlace' : 'Error generating link');
     }
   };
 
