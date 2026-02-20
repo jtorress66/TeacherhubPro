@@ -746,11 +746,33 @@ const GamesCreator = () => {
   };
 
   const exitGame = () => {
+    // Clear the timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    
     setPlayingGame(null);
     setShowNameInput(false);
     setPlayerName('');
-    resetGame();
     setGameTimer(0);
+    setShowConfetti(false);
+    setValidationErrors([]);
+    
+    // Reset all game state
+    setGameProgress({ current: 0, score: 0, streak: 0, bestStreak: 0, answers: [] });
+    setSelectedAnswer(null);
+    setShowResult(false);
+    setFlashcardFlipped(false);
+    setFillBlankAnswer('');
+    setMatchingSelected({ left: null, right: null });
+    setMatchedPairs([]);
+    setShuffledRight([]);
+    setWordSearchFound([]);
+    setWordSearchGrid([]);
+    setCrosswordAnswers({});
+    setDragDropOrder([]);
+    setDraggingItem(null);
   };
 
   const formatTime = (seconds) => {
