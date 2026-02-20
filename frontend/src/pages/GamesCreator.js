@@ -391,14 +391,8 @@ const GamesCreator = () => {
     fetchAnalytics();
   }, []);
 
-  // Initialize shuffled items for matching games (must be at top level)
-  useEffect(() => {
-    if (playingGame?.game_type === 'matching' && playingGame?.questions) {
-      const rightItems = playingGame.questions.map(q => q.match || q.correct_answer);
-      setShuffledRight([...rightItems].sort(() => Math.random() - 0.5));
-      setMatchedPairs([]);
-    }
-  }, [playingGame]);
+  // Note: Matching game initialization is now handled in initializeGameState
+  // This effect is kept for backward compatibility when game changes mid-session
 
   // Check for match when both selected (matching game)
   useEffect(() => {
