@@ -489,6 +489,8 @@ const GamesCreator = () => {
     }
 
     setGenerating(true);
+    setValidationErrors([]);
+    
     try {
       const res = await axios.post(`${API}/games/generate`, {
         content: lessonContent,
@@ -499,11 +501,33 @@ const GamesCreator = () => {
         language: language
       }, { withCredentials: true });
       
+      // Run frontend smoke test on the generated game
+      const smokeTest = runFrontendSmokeTest(res.data);
+      
+      if (!smokeTest.passed) {
+        // Game failed validation - show errors but still display the game
+        setValidationErrors(smokeTest.errors);
+        toast.warning(language === 'es' 
+          ? 'Juego generado con advertencias - revise los errores' 
+          : 'Game generated with warnings - review errors');
+      } else {
+        toast.success(language === 'es' ? '¡Juego generado y validado!' : 'Game generated and validated!');
+      }
+      
       setGeneratedGame(res.data);
-      toast.success(language === 'es' ? '¡Juego generado!' : 'Game generated!');
     } catch (error) {
       console.error('Error generating game:', error);
-      const errorMsg = error.response?.data?.detail || 'Error generating game';
+      const errorDetail = error.response?.data?.detail;
+      let errorMsg = language === 'es' ? 'Error al generar juego' : 'Error generating game';
+      
+      if (errorDetail) {
+        if (typeof errorDetail === 'object') {
+          errorMsg = errorDetail.message || errorDetail.last_error || JSON.stringify(errorDetail);
+        } else {
+          errorMsg = errorDetail;
+        }
+      }
+      
       toast.error(errorMsg);
     } finally {
       setGenerating(false);
