@@ -521,18 +521,123 @@ const GamesCreator = () => {
   };
 
   const startGame = (game, isPreview = false) => {
+    // Run frontend smoke test before starting
+    const smokeTest = runFrontendSmokeTest(game);
+    
+    if (!smokeTest.passed) {
+      setValidationErrors(smokeTest.errors);
+      toast.error(language === 'es' 
+        ? 'El juego tiene errores y no puede iniciarse' 
+        : 'Game has errors and cannot be started');
+      return;
+    }
+    
+    // Clear any previous validation errors
+    setValidationErrors([]);
+    
     if (!isPreview && game.game_id) {
       // For saved games, show name input first
       setShowNameInput(true);
       setPlayingGame(game);
     } else {
       // For preview, start immediately
-      setPlayingGame(game);
-      setGameProgress({ current: 0, score: 0, answers: [] });
-      setSelectedAnswer(null);
-      setShowResult(false);
-      setGameStartTime(Date.now());
+      initializeGameState(game);
     }
+  };
+
+  const initializeGameState = (game) => {
+    setPlayingGame(game);
+    setGameProgress({ current: 0, score: 0, streak: 0, bestStreak: 0, answers: [] });
+    setSelectedAnswer(null);
+    setShowResult(false);
+    setGameStartTime(Date.now());
+    setGameTimer(0);
+    setShowConfetti(false);
+    
+    // Reset game-specific state based on type
+    setFlashcardFlipped(false);
+    setFillBlankAnswer('');
+    setMatchingSelected({ left: null, right: null });
+    setMatchedPairs([]);
+    setWordSearchFound([]);
+    setCrosswordAnswers({});
+    setDragDropOrder([]);
+    setDraggingItem(null);
+    
+    // Initialize matching game shuffled items
+    if (game.game_type === 'matching' && game.questions) {
+      const rightItems = game.questions.map(q => q.match || q.correct_answer || q.right);
+      setShuffledRight([...rightItems].sort(() => Math.random() - 0.5));
+    }
+    
+    // Initialize word search grid
+    if (game.game_type === 'word_search' && game.questions) {
+      const words = game.questions.map(q => (q.word || '').toUpperCase());
+      setWordSearchGrid(generateWordSearchGrid(words));
+    }
+    
+    // Initialize drag-drop order
+    if (game.game_type === 'drag_drop' && game.questions?.length > 0) {
+      const items = game.questions[0].items || game.questions[0].options || [];
+      if (items.length > 0) {
+        setDragDropOrder([...items].sort(() => Math.random() - 0.5));
+      }
+    }
+  };
+
+  // Generate word search grid - extracted as utility function
+  const generateWordSearchGrid = (words) => {
+    const gridSize = 12;
+    const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
+    const directions = [[0,1], [1,0], [1,1], [0,-1], [-1,0], [-1,-1], [1,-1], [-1,1]];
+    
+    // Place words
+    words.forEach(word => {
+      if (!word) return;
+      const wordArr = word.split('');
+      let placed = false;
+      let attempts = 0;
+      
+      while (!placed && attempts < 100) {
+        const dir = directions[Math.floor(Math.random() * directions.length)];
+        const startRow = Math.floor(Math.random() * gridSize);
+        const startCol = Math.floor(Math.random() * gridSize);
+        
+        // Check if word fits
+        let canPlace = true;
+        for (let i = 0; i < wordArr.length; i++) {
+          const newRow = startRow + (dir[0] * i);
+          const newCol = startCol + (dir[1] * i);
+          if (newRow < 0 || newRow >= gridSize || newCol < 0 || newCol >= gridSize) {
+            canPlace = false;
+            break;
+          }
+          if (grid[newRow][newCol] !== '' && grid[newRow][newCol] !== wordArr[i]) {
+            canPlace = false;
+            break;
+          }
+        }
+        
+        if (canPlace) {
+          for (let i = 0; i < wordArr.length; i++) {
+            grid[startRow + (dir[0] * i)][startCol + (dir[1] * i)] = wordArr[i];
+          }
+          placed = true;
+        }
+        attempts++;
+      }
+    });
+    
+    // Fill empty cells with random letters
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for (let r = 0; r < gridSize; r++) {
+      for (let c = 0; c < gridSize; c++) {
+        if (grid[r][c] === '') {
+          grid[r][c] = alphabet[Math.floor(Math.random() * alphabet.length)];
+        }
+      }
+    }
+    return grid;
   };
 
   const startGameWithName = () => {
