@@ -81,6 +81,7 @@ const AdaptiveLearning = () => {
       const res = await axios.post(`${API}/adaptive-learning/generate-path`, {
         student_id: selectedStudent,
         subject: selectedSubject,
+        grade_level: selectedGradeLevel,
         language: language
       }, { withCredentials: true });
       
