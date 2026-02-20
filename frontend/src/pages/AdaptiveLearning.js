@@ -618,7 +618,7 @@ const AdaptiveLearning = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-4 gap-4">
               {/* Student Selection */}
               <div>
                 <label className="text-sm font-medium text-slate-700 mb-2 block">
@@ -632,6 +632,28 @@ const AdaptiveLearning = () => {
                     {students.map(s => (
                       <SelectItem key={s.student_id} value={s.student_id}>
                         {s.name || `${s.first_name} ${s.last_name}`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Grade Level Selection */}
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">
+                  {language === 'es' ? 'Nivel de Grado' : 'Grade Level'}
+                </label>
+                <Select value={selectedGradeLevel} onValueChange={setSelectedGradeLevel}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {gradeLevels.map(g => (
+                      <SelectItem key={g.id} value={g.id}>
+                        <div className="flex items-center gap-2">
+                          <span>{g.emoji}</span>
+                          {g.name}
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
