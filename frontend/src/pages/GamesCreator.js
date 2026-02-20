@@ -1271,42 +1271,69 @@ const GamesCreator = () => {
         <div className="max-w-3xl mx-auto space-y-6">
           {/* Progress Header */}
           {showProgressHeader && (
-            <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+            <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white overflow-hidden">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-medium">{playingGame.title}</span>
-                  <span className="text-sm">
-                    {gameProgress.current + 1} / {totalQuestions}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1 bg-white/20 px-2 py-1 rounded-full">
+                      <Timer className="h-4 w-4" />
+                      <span className="text-sm font-mono">{formatTime(gameTimer)}</span>
+                    </div>
+                    <span className="text-sm bg-white/20 px-2 py-1 rounded-full">
+                      {gameProgress.current + 1} / {totalQuestions}
+                    </span>
+                  </div>
                 </div>
-                <div className="w-full bg-white/20 rounded-full h-2">
+                <div className="w-full bg-white/20 rounded-full h-2 overflow-hidden">
                   <div 
-                    className="bg-white rounded-full h-2 transition-all"
+                    className="bg-white rounded-full h-2 transition-all duration-500 ease-out"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                <div className="flex items-center justify-between mt-2 text-sm">
-                  <span>{language === 'es' ? 'Puntuación:' : 'Score:'} {gameProgress.score}</span>
-                  <Button size="sm" variant="ghost" className="text-white hover:bg-white/20" onClick={exitGame}>
-                    {language === 'es' ? 'Salir' : 'Exit'}
-                  </Button>
+                <div className="flex items-center justify-between mt-3 text-sm">
+                  <div className="flex items-center gap-4">
+                    <span className="flex items-center gap-1">
+                      <Star className="h-4 w-4" />
+                      {gameProgress.score}
+                    </span>
+                    {gameProgress.streak > 1 && (
+                      <span className="flex items-center gap-1 bg-orange-500/30 px-2 py-0.5 rounded-full animate-pulse">
+                        <Flame className="h-4 w-4" />
+                        {gameProgress.streak}x {language === 'es' ? 'Racha' : 'Streak'}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="text-white hover:bg-white/20 p-1 h-auto"
+                      onClick={() => setSoundEnabled(!soundEnabled)}
+                    >
+                      {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                    </Button>
+                    <Button size="sm" variant="ghost" className="text-white hover:bg-white/20" onClick={exitGame}>
+                      {language === 'es' ? 'Salir' : 'Exit'}
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           )}
 
           {/* Game Card */}
-          <Card className="border-2 border-purple-200">
+          <Card className="border-2 border-purple-200 shadow-lg">
             <CardContent className="p-8">
               {/* Question/Prompt - Skip for matching */}
               {playingGame.game_type !== 'matching' && currentQ && (
                 <div className="text-center mb-8">
-                  <Badge className="mb-4 bg-purple-100 text-purple-700">
+                  <Badge className="mb-4 bg-purple-100 text-purple-700 animate-pulse">
                     {gameTypes.find(t => t.id === playingGame.game_type)?.name || 
                      (language === 'es' ? 'Pregunta' : 'Question')} {gameProgress.current + 1}
                   </Badge>
                   {playingGame.game_type !== 'flashcards' && playingGame.game_type !== 'word_search' && playingGame.game_type !== 'crossword' && (
-                    <h3 className="text-2xl font-semibold text-slate-800">
+                    <h3 className="text-2xl font-semibold text-slate-800 animate-fadeIn">
                       {currentQ.question || currentQ.prompt || currentQ.clue}
                     </h3>
                   )}
