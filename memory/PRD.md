@@ -45,20 +45,83 @@ db.grades.find({"student_id": student_id, "assignment_id": {"$in": assignment_id
 
 **Fix Applied:** Moved all hook declarations to the top of the component before any conditional returns.
 
+---
+## Update 2026-02-20 - Major Feature Enhancements
+
+### 1. Adaptive Learning Practice Questions - FIXED ✅
+**Problem:** Practice question selections didn't stay highlighted and weren't recorded.
+
+**Fix Applied:**
+- Added `selectedAnswers` and `showAnswerFeedback` state tracking
+- Practice buttons now show visual feedback (green for correct, red for incorrect)
+- Correct answer is shown after selection
+
+### 2. Listen Button (TTS) - FIXED ✅
+**Problem:** Listen button didn't work because API call was failing.
+
+**Fix Applied:**
+- Changed to use browser's built-in `speechSynthesis` API (works offline)
+- Falls back to API TTS if available
+- Supports both English and Spanish
+
+### 3. Shareable Student Links for Adaptive Learning - NEW ✅
+**Features:**
+- "Share with Student" button on learning path
+- Generates token-based URL that students can use without login
+- Students can complete lessons and progress is automatically tracked
+- New public page: `/student-learning/:token`
+
+### 4. Word Search Game - FIXED ✅
+**Problem:** Grid wasn't displaying.
+
+**Fix Applied:**
+- Now generates a proper 12x12 letter grid with words placed
+- Clickable cells that highlight when selected
+- Words placed in random directions
+
+### 5. Crossword Game - FIXED ✅
+**Problem:** Puzzle wasn't showing, only clues.
+
+**Fix Applied:**
+- Added input fields for each clue with letter count hints
+- Shows Across and Down sections with colored backgrounds
+- Check Answers button validates inputs
+
+### 6. Drag and Drop Game - FIXED ✅
+**Problem:** Items weren't draggable and order wasn't clear.
+
+**Fix Applied:**
+- Full drag-and-drop functionality with HTML5 drag events
+- Visual position numbers show current order
+- Shuffle button to randomize
+- Check Order button validates sequence
+
+### 7. Shareable Game Links - NEW ✅
+**Features:**
+- "Get Student Link" button on saved games
+- Generates public URL for each game
+- Students can play without login
+- Scores are recorded to leaderboard
+- New public page: `/play-game/:gameId`
+
 ### Files Modified
-- `/app/backend/server.py` - Report card grade fetching logic
-- `/app/frontend/src/pages/GamesCreator.js` - Game rendering for all types + hooks restructure
+- `/app/backend/server.py` - Added new public endpoints
+- `/app/frontend/src/pages/AdaptiveLearning.js` - TTS fix, practice tracking, share links
+- `/app/frontend/src/pages/GamesCreator.js` - All game types now functional, share links
+- `/app/frontend/src/pages/StudentLearning.js` - NEW public student learning page
+- `/app/frontend/src/pages/PlayGame.js` - NEW public game play page
+- `/app/frontend/src/App.js` - Added new routes
 
 ### Test Results
-- **Backend:** 95% (19/20 tests passed)
+- **Backend:** 100% (12/12 tests passed)
 - **Frontend:** 100%
-- **Test Report:** `/app/test_reports/iteration_19.json`
+- **Test Report:** `/app/test_reports/iteration_20.json`
 
-### Verified Working
-- Report Cards now show grades from Gradebook ✅
-- All 8 game types generate and render correctly ✅
-- GPA calculation works (4.00 for 92% score) ✅
-- Game leaderboards and analytics functional ✅
+### New API Endpoints
+- `POST /api/adaptive-learning/generate-student-link` - Generate shareable student link
+- `GET /api/student-learning/{token}` - Public student learning access
+- `POST /api/student-learning/{token}/complete-lesson` - Mark lesson complete
+- `GET /api/play-game/{game_id}` - Public game access
 
 
 
