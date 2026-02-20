@@ -701,12 +701,48 @@ const GamesCreator = () => {
   };
 
   const resetGame = () => {
+    // Clear the timer first
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    
+    // Reset core game progress
     setGameProgress({ current: 0, score: 0, streak: 0, bestStreak: 0, answers: [] });
     setSelectedAnswer(null);
     setShowResult(false);
     setGameStartTime(Date.now());
     setGameTimer(0);
     setShowConfetti(false);
+    
+    // Reset all game-specific state
+    setFlashcardFlipped(false);
+    setFillBlankAnswer('');
+    setMatchingSelected({ left: null, right: null });
+    setMatchedPairs([]);
+    setWordSearchFound([]);
+    setCrosswordAnswers({});
+    setDraggingItem(null);
+    
+    // Re-initialize based on game type
+    if (playingGame) {
+      if (playingGame.game_type === 'matching' && playingGame.questions) {
+        const rightItems = playingGame.questions.map(q => q.match || q.correct_answer || q.right);
+        setShuffledRight([...rightItems].sort(() => Math.random() - 0.5));
+      }
+      
+      if (playingGame.game_type === 'word_search' && playingGame.questions) {
+        const words = playingGame.questions.map(q => (q.word || '').toUpperCase());
+        setWordSearchGrid(generateWordSearchGrid(words));
+      }
+      
+      if (playingGame.game_type === 'drag_drop' && playingGame.questions?.length > 0) {
+        const items = playingGame.questions[0].items || playingGame.questions[0].options || [];
+        if (items.length > 0) {
+          setDragDropOrder([...items].sort(() => Math.random() - 0.5));
+        }
+      }
+    }
   };
 
   const exitGame = () => {
