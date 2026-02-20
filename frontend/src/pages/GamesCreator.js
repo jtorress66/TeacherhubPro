@@ -36,7 +36,8 @@ const GamesCreator = () => {
   const [generating, setGenerating] = useState(false);
   const [lessonContent, setLessonContent] = useState('');
   const [gameType, setGameType] = useState('quiz');
-  const [difficulty, setDifficulty] = useState('medium');
+  const [gradeLevel, setGradeLevel] = useState('3-5');
+  const [subject, setSubject] = useState('math');
   const [questionCount, setQuestionCount] = useState('5');
   const [generatedGame, setGeneratedGame] = useState(null);
   const [savedGames, setSavedGames] = useState([]);
