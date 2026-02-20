@@ -42,7 +42,7 @@ class HomeschoolPortalRequest(BaseModel):
 @router.post("/generate-token")
 async def generate_portal_token(
     request: PortalTokenRequest,
-    user: dict = Depends(lambda: get_current_user)
+    user: dict = Depends(get_current_user)
 ):
     """Generate a portal access token for a student's parent"""
     
@@ -170,7 +170,7 @@ async def get_portal_data(token: str):
 @router.post("/homeschool/generate-token")
 async def generate_homeschool_portal_token(
     request: HomeschoolPortalRequest,
-    user: dict = Depends(lambda: get_current_user)
+    user: dict = Depends(get_current_user)
 ):
     """Generate a homeschool parent portal token"""
     
