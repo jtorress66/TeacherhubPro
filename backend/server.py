@@ -4778,8 +4778,18 @@ async def get_homeschool_portal_data(token: str):
 
 
 # ==================== EDUCATIONAL GAMES ====================
+# NOTE: Game endpoints have been moved to routes/games.py with validation
+# The following duplicate endpoints have been removed to use the validated versions:
+# - POST /games/generate (now in routes/games.py with validation and retry logic)
+# - POST /games/save (now in routes/games.py with validation)
+# - GET /games (now in routes/games.py)
+# - GET /games/analytics (now in routes/games.py as /games/analytics/summary)
+# - POST /games/{game_id}/score (now in routes/games.py)
+# - GET /games/{game_id}/leaderboard (now in routes/games.py)
+# - GET /games/{game_id} (now in routes/games.py)
 
-class GameGenerateRequest(BaseModel):
+# Legacy GameGenerateRequest kept for reference but not used
+class GameGenerateRequestLegacy(BaseModel):
     content: str
     game_type: str = "quiz"
     grade_level: str = "3-5"
@@ -4787,11 +4797,12 @@ class GameGenerateRequest(BaseModel):
     question_count: int = 5
     language: str = "es"
 
-@api_router.post("/games/generate")
-async def generate_educational_game(
-    request: GameGenerateRequest,
-    user: dict = Depends(get_current_user)
-):
+# REMOVED: Duplicate endpoint - use routes/games.py instead
+# @api_router.post("/games/generate")
+# async def generate_educational_game_legacy(
+#     request: GameGenerateRequestLegacy,
+#     user: dict = Depends(get_current_user)
+# ):
     """Generate an educational game from lesson content using AI"""
     
     # Check AI access
