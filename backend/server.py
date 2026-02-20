@@ -4818,10 +4818,26 @@ async def generate_educational_game(
         "flashcards": "flashcards for memorization"
     }
     
-    difficulty_hints = {
-        "easy": "simple and straightforward for beginners",
-        "medium": "moderately challenging for intermediate learners",
-        "hard": "challenging questions that require deeper understanding"
+    # Grade level descriptions for appropriate content
+    grade_level_hints = {
+        "k-2": "Use simple words, short sentences. Focus on basic concepts. Include pictures concepts. Very beginner friendly for ages 5-7.",
+        "3-5": "Use grade-appropriate vocabulary. Concepts should be intermediate level for ages 8-10.",
+        "6-8": "Use middle-school vocabulary and concepts. Can include more complex ideas for ages 11-13.",
+        "9-12": "Use high school level content. Can include advanced concepts for ages 14-18."
+    }
+    
+    # Subject descriptions
+    subject_hints = {
+        "math": "Mathematics - focus on numerical concepts, calculations, problem-solving",
+        "english": "English/Language Arts - focus on grammar, vocabulary, reading comprehension, writing",
+        "science": "Science - focus on scientific concepts, experiments, natural phenomena",
+        "social_studies": "Social Studies - focus on society, communities, citizenship",
+        "history": "History - focus on historical events, people, and time periods",
+        "geography": "Geography - focus on places, maps, cultures, and environments",
+        "art": "Art - focus on artistic concepts, techniques, and creativity",
+        "music": "Music - focus on musical concepts, instruments, and composition",
+        "pe": "Physical Education - focus on sports, health, and fitness",
+        "other": "General educational content"
     }
     
     lang_instruction = "Responde completamente en español." if request.language == "es" else "Respond entirely in English."
