@@ -1386,6 +1386,42 @@ const GamesCreator = () => {
 
           {/* Library Tab */}
           <TabsContent value="library" className="space-y-6">
+            {/* Share Link Banner */}
+            {shareLink && (
+              <div className="p-4 bg-green-50 border border-green-200 rounded-xl flex items-center justify-between">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <Link2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-green-700">
+                      {language === 'es' ? 'Enlace para estudiantes:' : 'Student link:'}
+                    </p>
+                    <p className="text-sm text-green-600 truncate">{shareLink}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 ml-4">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    className="border-green-300 text-green-700 hover:bg-green-100"
+                    onClick={() => {
+                      navigator.clipboard.writeText(shareLink);
+                      toast.success(language === 'es' ? '¡Copiado!' : 'Copied!');
+                    }}
+                  >
+                    <Copy className="h-4 w-4 mr-1" />
+                    {language === 'es' ? 'Copiar' : 'Copy'}
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="ghost"
+                    onClick={() => setShareLink('')}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+            
             {loadingGames ? (
               <div className="flex items-center justify-center h-64">
                 <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
@@ -1406,10 +1442,13 @@ const GamesCreator = () => {
                         </Badge>
                       </div>
                       <h4 className="font-semibold text-slate-800 mb-1">{game.title}</h4>
-                      <p className="text-sm text-slate-500 mb-4">
+                      <p className="text-sm text-slate-500 mb-2">
                         {game.questions?.length || 0} {language === 'es' ? 'preguntas' : 'questions'}
                       </p>
-                      <div className="flex gap-2">
+                      <p className="text-xs text-slate-400 mb-4">
+                        {gameTypes.find(t => t.id === game.game_type)?.name}
+                      </p>
+                      <div className="flex gap-2 mb-2">
                         <Button 
                           size="sm" 
                           onClick={() => startGame(game)}
@@ -1418,14 +1457,21 @@ const GamesCreator = () => {
                           <Play className="h-4 w-4 mr-1" />
                           {language === 'es' ? 'Jugar' : 'Play'}
                         </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => copyShareLink(game.game_id)}
-                        >
-                          <Share2 className="h-4 w-4" />
-                        </Button>
                       </div>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="w-full border-green-300 text-green-700 hover:bg-green-50"
+                        onClick={() => {
+                          const link = getShareLink(game.game_id);
+                          setShareLink(link);
+                          navigator.clipboard.writeText(link);
+                          toast.success(language === 'es' ? '¡Enlace copiado!' : 'Link copied!');
+                        }}
+                      >
+                        <Link2 className="h-4 w-4 mr-2" />
+                        {language === 'es' ? 'Obtener enlace para estudiantes' : 'Get student link'}
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}
