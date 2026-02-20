@@ -124,10 +124,24 @@ const GamesCreator = () => {
     },
   ];
 
-  const difficulties = [
-    { id: 'easy', name: language === 'es' ? 'Fácil' : 'Easy', emoji: '🌟' },
-    { id: 'medium', name: language === 'es' ? 'Medio' : 'Medium', emoji: '⭐' },
-    { id: 'hard', name: language === 'es' ? 'Difícil' : 'Hard', emoji: '🔥' },
+  const gradeLevels = [
+    { id: 'k-2', name: language === 'es' ? 'Kínder - 2do' : 'K-2nd Grade', emoji: '🌱' },
+    { id: '3-5', name: language === 'es' ? '3ro - 5to' : '3rd-5th Grade', emoji: '🌿' },
+    { id: '6-8', name: language === 'es' ? '6to - 8vo' : '6th-8th Grade', emoji: '🌳' },
+    { id: '9-12', name: language === 'es' ? '9no - 12vo' : '9th-12th Grade', emoji: '🎓' },
+  ];
+
+  const subjects = [
+    { id: 'math', name: language === 'es' ? 'Matemáticas' : 'Mathematics', icon: '📐', color: 'blue' },
+    { id: 'english', name: language === 'es' ? 'Inglés / Lenguaje' : 'English / Language Arts', icon: '📚', color: 'purple' },
+    { id: 'science', name: language === 'es' ? 'Ciencias' : 'Science', icon: '🔬', color: 'green' },
+    { id: 'social_studies', name: language === 'es' ? 'Estudios Sociales' : 'Social Studies', icon: '🌍', color: 'amber' },
+    { id: 'history', name: language === 'es' ? 'Historia' : 'History', icon: '📜', color: 'orange' },
+    { id: 'geography', name: language === 'es' ? 'Geografía' : 'Geography', icon: '🗺️', color: 'teal' },
+    { id: 'art', name: language === 'es' ? 'Arte' : 'Art', icon: '🎨', color: 'pink' },
+    { id: 'music', name: language === 'es' ? 'Música' : 'Music', icon: '🎵', color: 'indigo' },
+    { id: 'pe', name: language === 'es' ? 'Educación Física' : 'Physical Education', icon: '⚽', color: 'red' },
+    { id: 'other', name: language === 'es' ? 'Otro' : 'Other', icon: '📝', color: 'slate' },
   ];
 
   useEffect(() => {
