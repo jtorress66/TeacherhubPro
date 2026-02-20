@@ -1083,73 +1083,40 @@ const GamesCreator = () => {
       );
     }
 
-    // Word Search - Generate grid with actual letters
+    // Word Search - Uses pre-generated grid from initializeGameState
     if (gameType === 'word_search') {
       const words = playingGame.questions.map(q => (q.word || q.question || q.term || '').toUpperCase());
       
-      // Generate word search grid if not provided
-      const generateGrid = () => {
-        const gridSize = 12;
-        const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
-        const directions = [[0,1], [1,0], [1,1], [0,-1], [-1,0], [-1,-1], [1,-1], [-1,1]];
-        
-        // Place words
-        words.forEach(word => {
-          const wordArr = word.split('');
-          let placed = false;
-          let attempts = 0;
-          
-          while (!placed && attempts < 100) {
-            const dir = directions[Math.floor(Math.random() * directions.length)];
-            const startRow = Math.floor(Math.random() * gridSize);
-            const startCol = Math.floor(Math.random() * gridSize);
-            
-            // Check if word fits
-            let canPlace = true;
-            for (let i = 0; i < wordArr.length; i++) {
-              const newRow = startRow + (dir[0] * i);
-              const newCol = startCol + (dir[1] * i);
-              if (newRow < 0 || newRow >= gridSize || newCol < 0 || newCol >= gridSize) {
-                canPlace = false;
-                break;
-              }
-              if (grid[newRow][newCol] !== '' && grid[newRow][newCol] !== wordArr[i]) {
-                canPlace = false;
-                break;
-              }
-            }
-            
-            if (canPlace) {
-              for (let i = 0; i < wordArr.length; i++) {
-                grid[startRow + (dir[0] * i)][startCol + (dir[1] * i)] = wordArr[i];
-              }
-              placed = true;
-            }
-            attempts++;
-          }
-        });
-        
-        // Fill empty cells with random letters
-        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        for (let r = 0; r < gridSize; r++) {
-          for (let c = 0; c < gridSize; c++) {
-            if (grid[r][c] === '') {
-              grid[r][c] = alphabet[Math.floor(Math.random() * alphabet.length)];
-            }
-          }
-        }
-        return grid;
-      };
-      
-      const grid = playingGame.grid || generateGrid();
+      // Use the pre-generated grid from state, or generate if not available
+      const grid = wordSearchGrid.length > 0 ? wordSearchGrid : (() => {
+        const newGrid = generateWordSearchGrid(words);
+        // Note: We set this once during initialization, not on every render
+        return newGrid;
+      })();
 
       const handleCellClick = (row, col) => {
+        playSound('click');
         // Simple word marking - toggle cell selection
         const cellKey = `${row}-${col}`;
         if (wordSearchFound.includes(cellKey)) {
           setWordSearchFound(wordSearchFound.filter(k => k !== cellKey));
         } else {
           setWordSearchFound([...wordSearchFound, cellKey]);
+        }
+      };
+
+      const handleWordSearchComplete = () => {
+        playSound('complete');
+        setShowConfetti(true);
+        // Calculate score based on number of selected cells vs expected
+        const totalLetters = words.reduce((sum, word) => sum + word.length, 0);
+        const score = Math.min(wordSearchFound.length, totalLetters) > 0 
+          ? Math.round((Math.min(wordSearchFound.length, totalLetters) / totalLetters) * words.length) 
+          : 0;
+        setGameProgress(prev => ({ ...prev, score }));
+        setShowResult(true);
+        if (playingGame.game_id && playerName) {
+          submitScore(playingGame, score, words.length);
         }
       };
 
@@ -1199,9 +1166,9 @@ const GamesCreator = () => {
           
           <div className="flex justify-center gap-3">
             <Button variant="outline" onClick={() => setWordSearchFound([])}>
-              {language === 'es' ? 'Reiniciar' : 'Reset'}
+              {language === 'es' ? 'Reiniciar Selección' : 'Reset Selection'}
             </Button>
-            <Button onClick={() => setShowResult(true)} className="bg-purple-600 hover:bg-purple-700">
+            <Button onClick={handleWordSearchComplete} className="bg-purple-600 hover:bg-purple-700">
               {language === 'es' ? 'Terminé' : 'I\'m Done'}
             </Button>
           </div>
