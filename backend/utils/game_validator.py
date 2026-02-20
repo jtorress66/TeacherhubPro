@@ -145,6 +145,8 @@ def validate_content_quality(game_data: dict, game_type: str) -> List[str]:
     title = game_data.get('title', '')
     if not title or len(title) < 3:
         errors.append("Title is too short or missing")
+    if title and title.lower() in ['game', 'quiz', 'test', 'untitled']:
+        errors.append("Title is too generic - needs descriptive educational title")
     
     # Check for empty strings in questions
     questions = game_data.get('questions', [])
@@ -152,10 +154,17 @@ def validate_content_quality(game_data: dict, game_type: str) -> List[str]:
         for key, value in q.items():
             if isinstance(value, str) and value.strip() == '':
                 errors.append(f"Question {idx + 1} has empty {key}")
+            # Check for placeholder patterns
+            if isinstance(value, str):
+                lower_val = value.lower()
+                if any(p in lower_val for p in ['...', '???', 'xxx', '___' * 3]):
+                    if key != 'question' or '___' not in lower_val:  # Allow ___ in fill_blanks questions
+                        errors.append(f"Question {idx + 1} {key} contains placeholder pattern")
     
-    # Validate minimum question count
-    if len(questions) < 1:
-        errors.append("Game must have at least 1 question")
+    # Validate minimum question count based on game type
+    min_count = MIN_QUESTIONS.get(game_type, 1)
+    if len(questions) < min_count:
+        errors.append(f"Game must have at least {min_count} question(s) for {game_type}")
     
     return errors
 
