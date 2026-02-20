@@ -1182,18 +1182,33 @@ const GamesCreator = () => {
       const downClues = playingGame.questions.filter((_, i) => i % 2 === 1);
       
       const handleCrosswordInput = (clueIdx, value) => {
+        playSound('click');
         setCrosswordAnswers({ ...crosswordAnswers, [clueIdx]: value.toUpperCase() });
       };
 
       const checkCrosswordAnswers = () => {
         let correct = 0;
         playingGame.questions.forEach((q, idx) => {
-          const answer = crosswordAnswers[idx] || '';
-          const correctAnswer = (q.correct_answer || q.answer || '').toUpperCase();
+          const answer = (crosswordAnswers[idx] || '').trim();
+          const correctAnswer = (q.correct_answer || q.answer || '').toUpperCase().trim();
           if (answer === correctAnswer) correct++;
         });
+        
+        if (correct === playingGame.questions.length) {
+          playSound('complete');
+          setShowConfetti(true);
+        } else if (correct > 0) {
+          playSound('correct');
+        } else {
+          playSound('wrong');
+        }
+        
         setGameProgress(prev => ({ ...prev, score: correct }));
         setShowResult(true);
+        
+        if (playingGame.game_id && playerName) {
+          submitScore(playingGame, correct, playingGame.questions.length);
+        }
       };
 
       return (
