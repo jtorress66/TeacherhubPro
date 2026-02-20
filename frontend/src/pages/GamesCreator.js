@@ -1233,6 +1233,47 @@ const GamesCreator = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-slate-700 mb-2 block">
+                        {language === 'es' ? 'Materia' : 'Subject'}
+                      </label>
+                      <Select value={subject} onValueChange={setSubject}>
+                        <SelectTrigger data-testid="subject-select">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {subjects.map(s => (
+                            <SelectItem key={s.id} value={s.id}>
+                              <div className="flex items-center gap-2">
+                                <span>{s.icon}</span>
+                                {s.name}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium text-slate-700 mb-2 block">
+                        {language === 'es' ? 'Nivel de Grado' : 'Grade Level'}
+                      </label>
+                      <Select value={gradeLevel} onValueChange={setGradeLevel}>
+                        <SelectTrigger data-testid="grade-level-select">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {gradeLevels.map(g => (
+                            <SelectItem key={g.id} value={g.id}>
+                              {g.emoji} {g.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-slate-700 mb-2 block">
                         {language === 'es' ? 'Tipo de Juego' : 'Game Type'}
                       </label>
                       <Select value={gameType} onValueChange={setGameType}>
@@ -1254,38 +1295,20 @@ const GamesCreator = () => {
                     
                     <div>
                       <label className="text-sm font-medium text-slate-700 mb-2 block">
-                        {language === 'es' ? 'Dificultad' : 'Difficulty'}
+                        {language === 'es' ? 'Número de Preguntas' : 'Number of Questions'}
                       </label>
-                      <Select value={difficulty} onValueChange={setDifficulty}>
-                        <SelectTrigger data-testid="difficulty-select">
+                      <Select value={questionCount} onValueChange={setQuestionCount}>
+                        <SelectTrigger data-testid="question-count-select">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {difficulties.map(d => (
-                            <SelectItem key={d.id} value={d.id}>
-                              {d.emoji} {d.name}
-                            </SelectItem>
-                          ))}
+                          <SelectItem value="3">3 {language === 'es' ? 'preguntas' : 'questions'}</SelectItem>
+                          <SelectItem value="5">5 {language === 'es' ? 'preguntas' : 'questions'}</SelectItem>
+                          <SelectItem value="10">10 {language === 'es' ? 'preguntas' : 'questions'}</SelectItem>
+                          <SelectItem value="15">15 {language === 'es' ? 'preguntas' : 'questions'}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium text-slate-700 mb-2 block">
-                      {language === 'es' ? 'Número de Preguntas' : 'Number of Questions'}
-                    </label>
-                    <Select value={questionCount} onValueChange={setQuestionCount}>
-                      <SelectTrigger data-testid="question-count-select">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="3">3 {language === 'es' ? 'preguntas' : 'questions'}</SelectItem>
-                        <SelectItem value="5">5 {language === 'es' ? 'preguntas' : 'questions'}</SelectItem>
-                        <SelectItem value="10">10 {language === 'es' ? 'preguntas' : 'questions'}</SelectItem>
-                        <SelectItem value="15">15 {language === 'es' ? 'preguntas' : 'questions'}</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
 
                   <Button 
