@@ -22,6 +22,9 @@ from emergentintegrations.llm.chat import LlmChat, UserMessage
 # Import modular routes
 from routes.auth import router as auth_router
 from routes.ai import router as ai_router
+from routes.games import router as games_router, init_games_routes
+from routes.adaptive_learning import router as adaptive_learning_router, init_adaptive_learning_routes
+from routes.portal import router as portal_router, init_portal_routes
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
