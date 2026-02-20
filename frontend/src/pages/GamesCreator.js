@@ -625,8 +625,76 @@ const GamesCreator = () => {
       );
     }
 
-    // Word Search (display clues and grid)
+    // Word Search - Generate grid with actual letters
     if (gameType === 'word_search') {
+      const words = playingGame.questions.map(q => (q.word || q.question || q.term || '').toUpperCase());
+      
+      // Generate word search grid if not provided
+      const generateGrid = () => {
+        const gridSize = 12;
+        const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
+        const directions = [[0,1], [1,0], [1,1], [0,-1], [-1,0], [-1,-1], [1,-1], [-1,1]];
+        
+        // Place words
+        words.forEach(word => {
+          const wordArr = word.split('');
+          let placed = false;
+          let attempts = 0;
+          
+          while (!placed && attempts < 100) {
+            const dir = directions[Math.floor(Math.random() * directions.length)];
+            const startRow = Math.floor(Math.random() * gridSize);
+            const startCol = Math.floor(Math.random() * gridSize);
+            
+            // Check if word fits
+            let canPlace = true;
+            for (let i = 0; i < wordArr.length; i++) {
+              const newRow = startRow + (dir[0] * i);
+              const newCol = startCol + (dir[1] * i);
+              if (newRow < 0 || newRow >= gridSize || newCol < 0 || newCol >= gridSize) {
+                canPlace = false;
+                break;
+              }
+              if (grid[newRow][newCol] !== '' && grid[newRow][newCol] !== wordArr[i]) {
+                canPlace = false;
+                break;
+              }
+            }
+            
+            if (canPlace) {
+              for (let i = 0; i < wordArr.length; i++) {
+                grid[startRow + (dir[0] * i)][startCol + (dir[1] * i)] = wordArr[i];
+              }
+              placed = true;
+            }
+            attempts++;
+          }
+        });
+        
+        // Fill empty cells with random letters
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        for (let r = 0; r < gridSize; r++) {
+          for (let c = 0; c < gridSize; c++) {
+            if (grid[r][c] === '') {
+              grid[r][c] = alphabet[Math.floor(Math.random() * alphabet.length)];
+            }
+          }
+        }
+        return grid;
+      };
+      
+      const grid = playingGame.grid || generateGrid();
+
+      const handleCellClick = (row, col) => {
+        // Simple word marking - toggle cell selection
+        const cellKey = `${row}-${col}`;
+        if (wordSearchFound.includes(cellKey)) {
+          setWordSearchFound(wordSearchFound.filter(k => k !== cellKey));
+        } else {
+          setWordSearchFound([...wordSearchFound, cellKey]);
+        }
+      };
+
       return (
         <div className="space-y-6">
           <div className="bg-slate-50 p-4 rounded-xl">
@@ -634,123 +702,257 @@ const GamesCreator = () => {
               {language === 'es' ? 'Encuentra estas palabras:' : 'Find these words:'}
             </p>
             <div className="flex flex-wrap gap-2">
-              {playingGame.questions.map((q, idx) => (
-                <Badge key={idx} variant="outline" className="px-3 py-1">
-                  {q.word || q.question || q.term}
+              {words.map((word, idx) => (
+                <Badge key={idx} variant="outline" className="px-3 py-1 text-base">
+                  {word}
                 </Badge>
               ))}
             </div>
           </div>
           
           {/* Word Grid */}
-          {playingGame.grid ? (
-            <div className="flex justify-center">
-              <div className="inline-grid gap-1 p-4 bg-white rounded-xl border-2 border-slate-200" 
-                   style={{ gridTemplateColumns: `repeat(${playingGame.grid[0]?.length || 10}, 1fr)` }}>
-                {playingGame.grid.flat().map((letter, idx) => (
-                  <div 
-                    key={idx}
-                    className="w-8 h-8 flex items-center justify-center font-mono font-bold text-slate-700 bg-slate-50 rounded cursor-pointer hover:bg-purple-100"
-                  >
-                    {letter}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="text-center p-8 bg-yellow-50 rounded-xl">
-              <p className="text-amber-700">
-                {language === 'es' 
-                  ? 'La cuadrícula de búsqueda de palabras se mostrará aquí. Busca las palabras listadas arriba.'
-                  : 'Word search grid will display here. Look for the words listed above.'}
-              </p>
-            </div>
-          )}
-          
-          <div className="flex justify-center">
-            <Button onClick={() => setShowResult(true)} className="bg-purple-600 hover:bg-purple-700">
-              {language === 'es' ? 'Terminé' : 'I\'m Done'}
-            </Button>
-          </div>
-        </div>
-      );
-    }
-
-    // Crossword
-    if (gameType === 'crossword') {
-      return (
-        <div className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Clues */}
-            <div className="space-y-4">
-              <div>
-                <p className="font-semibold text-slate-700 mb-2">{language === 'es' ? 'Horizontal' : 'Across'}</p>
-                <div className="space-y-2">
-                  {playingGame.questions.filter((_, i) => i % 2 === 0).map((q, idx) => (
-                    <p key={idx} className="text-sm text-slate-600">
-                      <span className="font-medium">{idx + 1}.</span> {q.clue || q.question}
-                    </p>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <p className="font-semibold text-slate-700 mb-2">{language === 'es' ? 'Vertical' : 'Down'}</p>
-                <div className="space-y-2">
-                  {playingGame.questions.filter((_, i) => i % 2 === 1).map((q, idx) => (
-                    <p key={idx} className="text-sm text-slate-600">
-                      <span className="font-medium">{idx + 1}.</span> {q.clue || q.question}
-                    </p>
-                  ))}
-                </div>
-              </div>
-            </div>
-            
-            {/* Crossword Grid Placeholder */}
-            <div className="bg-slate-50 p-4 rounded-xl flex items-center justify-center min-h-[200px]">
-              <p className="text-slate-500 text-center">
-                {language === 'es' 
-                  ? 'Crucigrama interactivo - Usa las pistas para resolver'
-                  : 'Interactive crossword - Use the clues to solve'}
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex justify-center">
-            <Button onClick={() => setShowResult(true)} className="bg-purple-600 hover:bg-purple-700">
-              {language === 'es' ? 'Terminé' : 'I\'m Done'}
-            </Button>
-          </div>
-        </div>
-      );
-    }
-
-    // Drag and Drop (simplified as sorting)
-    if (gameType === 'drag_drop') {
-      return (
-        <div className="space-y-6">
-          <div className="bg-slate-50 p-4 rounded-xl">
-            <p className="text-slate-600 mb-4">{currentQ.instruction || currentQ.question}</p>
-            <div className="space-y-2">
-              {(currentQ.items || currentQ.options || []).map((item, idx) => (
-                <div 
-                  key={idx}
-                  className="p-3 bg-white rounded-lg border-2 border-slate-200 cursor-move hover:border-purple-300 hover:shadow-sm"
-                  data-testid={`drag-item-${idx}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <GripVertical className="h-4 w-4 text-slate-400" />
-                    <span>{item}</span>
-                  </div>
-                </div>
-              ))}
+          <div className="flex justify-center overflow-x-auto">
+            <div 
+              className="inline-grid gap-1 p-4 bg-white rounded-xl border-2 border-slate-200" 
+              style={{ gridTemplateColumns: `repeat(${grid[0]?.length || 12}, 1fr)` }}
+            >
+              {grid.map((row, rowIdx) => 
+                row.map((letter, colIdx) => {
+                  const cellKey = `${rowIdx}-${colIdx}`;
+                  const isSelected = wordSearchFound.includes(cellKey);
+                  return (
+                    <button
+                      key={cellKey}
+                      onClick={() => handleCellClick(rowIdx, colIdx)}
+                      className={`w-8 h-8 flex items-center justify-center font-mono font-bold rounded cursor-pointer transition-all ${
+                        isSelected 
+                          ? 'bg-purple-500 text-white' 
+                          : 'text-slate-700 bg-slate-50 hover:bg-purple-100'
+                      }`}
+                      data-testid={`word-cell-${rowIdx}-${colIdx}`}
+                    >
+                      {letter}
+                    </button>
+                  );
+                })
+              )}
             </div>
           </div>
           
           <div className="flex justify-center gap-3">
-            <Button variant="outline" onClick={() => handleAnswer('incorrect', 'correct')}>
-              {language === 'es' ? 'Saltar' : 'Skip'}
+            <Button variant="outline" onClick={() => setWordSearchFound([])}>
+              {language === 'es' ? 'Reiniciar' : 'Reset'}
             </Button>
-            <Button onClick={() => handleAnswer('correct', 'correct')} className="bg-purple-600 hover:bg-purple-700">
+            <Button onClick={() => setShowResult(true)} className="bg-purple-600 hover:bg-purple-700">
+              {language === 'es' ? 'Terminé' : 'I\'m Done'}
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // Crossword - Interactive grid with input
+    if (gameType === 'crossword') {
+      const acrossClues = playingGame.questions.filter((_, i) => i % 2 === 0);
+      const downClues = playingGame.questions.filter((_, i) => i % 2 === 1);
+      
+      const handleCrosswordInput = (clueIdx, value) => {
+        setCrosswordAnswers({ ...crosswordAnswers, [clueIdx]: value.toUpperCase() });
+      };
+
+      const checkCrosswordAnswers = () => {
+        let correct = 0;
+        playingGame.questions.forEach((q, idx) => {
+          const answer = crosswordAnswers[idx] || '';
+          const correctAnswer = (q.correct_answer || q.answer || '').toUpperCase();
+          if (answer === correctAnswer) correct++;
+        });
+        setGameProgress(prev => ({ ...prev, score: correct }));
+        setShowResult(true);
+      };
+
+      return (
+        <div className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Clues & Input */}
+            <div className="space-y-6">
+              <div className="bg-blue-50 p-4 rounded-xl">
+                <p className="font-semibold text-blue-700 mb-3 flex items-center gap-2">
+                  <ChevronRight className="h-4 w-4" />
+                  {language === 'es' ? 'Horizontal' : 'Across'}
+                </p>
+                <div className="space-y-3">
+                  {acrossClues.map((q, idx) => {
+                    const actualIdx = idx * 2;
+                    return (
+                      <div key={idx} className="flex items-start gap-3">
+                        <span className="text-sm font-bold text-blue-600 mt-2">{idx + 1}.</span>
+                        <div className="flex-1">
+                          <p className="text-sm text-slate-700 mb-1">{q.clue || q.question}</p>
+                          <Input
+                            value={crosswordAnswers[actualIdx] || ''}
+                            onChange={(e) => handleCrosswordInput(actualIdx, e.target.value)}
+                            placeholder={`${(q.correct_answer || '').length} ${language === 'es' ? 'letras' : 'letters'}`}
+                            className="uppercase font-mono"
+                            maxLength={(q.correct_answer || '').length + 2}
+                            data-testid={`crossword-across-${idx}`}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              <div className="bg-purple-50 p-4 rounded-xl">
+                <p className="font-semibold text-purple-700 mb-3 flex items-center gap-2">
+                  <ChevronRight className="h-4 w-4 rotate-90" />
+                  {language === 'es' ? 'Vertical' : 'Down'}
+                </p>
+                <div className="space-y-3">
+                  {downClues.map((q, idx) => {
+                    const actualIdx = idx * 2 + 1;
+                    return (
+                      <div key={idx} className="flex items-start gap-3">
+                        <span className="text-sm font-bold text-purple-600 mt-2">{idx + 1}.</span>
+                        <div className="flex-1">
+                          <p className="text-sm text-slate-700 mb-1">{q.clue || q.question}</p>
+                          <Input
+                            value={crosswordAnswers[actualIdx] || ''}
+                            onChange={(e) => handleCrosswordInput(actualIdx, e.target.value)}
+                            placeholder={`${(q.correct_answer || '').length} ${language === 'es' ? 'letras' : 'letters'}`}
+                            className="uppercase font-mono"
+                            maxLength={(q.correct_answer || '').length + 2}
+                            data-testid={`crossword-down-${idx}`}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+            
+            {/* Visual Hint */}
+            <div className="bg-slate-50 p-4 rounded-xl">
+              <p className="text-sm font-medium text-slate-600 mb-4">
+                {language === 'es' ? 'Respuestas hasta ahora:' : 'Your answers so far:'}
+              </p>
+              <div className="space-y-2">
+                {playingGame.questions.map((q, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <Badge variant="outline" className={idx % 2 === 0 ? 'bg-blue-50' : 'bg-purple-50'}>
+                      {idx % 2 === 0 ? 'A' : 'D'}{Math.floor(idx/2) + 1}
+                    </Badge>
+                    <span className="font-mono text-lg tracking-wider">
+                      {(crosswordAnswers[idx] || '').padEnd((q.correct_answer || '').length, '_').split('').join(' ')}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex justify-center gap-3">
+            <Button variant="outline" onClick={() => setCrosswordAnswers({})}>
+              {language === 'es' ? 'Limpiar' : 'Clear'}
+            </Button>
+            <Button onClick={checkCrosswordAnswers} className="bg-purple-600 hover:bg-purple-700">
+              {language === 'es' ? 'Verificar Respuestas' : 'Check Answers'}
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // Drag and Drop - Full implementation with reordering
+    if (gameType === 'drag_drop') {
+      // Initialize drag order if empty
+      const items = currentQ.items || currentQ.options || [];
+      if (dragDropOrder.length === 0 && items.length > 0) {
+        // Shuffle items initially
+        const shuffled = [...items].sort(() => Math.random() - 0.5);
+        setDragDropOrder(shuffled);
+      }
+      
+      const displayItems = dragDropOrder.length > 0 ? dragDropOrder : items;
+
+      const handleDragStart = (idx) => {
+        setDraggingItem(idx);
+      };
+
+      const handleDragOver = (e, idx) => {
+        e.preventDefault();
+        if (draggingItem === null || draggingItem === idx) return;
+        
+        const newOrder = [...displayItems];
+        const draggedItem = newOrder[draggingItem];
+        newOrder.splice(draggingItem, 1);
+        newOrder.splice(idx, 0, draggedItem);
+        setDragDropOrder(newOrder);
+        setDraggingItem(idx);
+      };
+
+      const handleDragEnd = () => {
+        setDraggingItem(null);
+      };
+
+      const checkDragDropOrder = () => {
+        const correctOrder = currentQ.correct_order || items;
+        const isCorrect = displayItems.every((item, idx) => item === correctOrder[idx]);
+        handleAnswer(isCorrect ? 'correct' : 'incorrect', 'correct');
+        setDragDropOrder([]);
+      };
+
+      return (
+        <div className="space-y-6">
+          <div className="bg-amber-50 p-4 rounded-xl border border-amber-200">
+            <p className="text-amber-800 font-medium mb-2">
+              {language === 'es' ? '📋 Instrucciones:' : '📋 Instructions:'}
+            </p>
+            <p className="text-slate-600">
+              {currentQ.instruction || currentQ.question || (language === 'es' 
+                ? 'Arrastra los elementos para ordenarlos correctamente' 
+                : 'Drag the items to put them in the correct order')}
+            </p>
+          </div>
+          
+          <div className="space-y-2">
+            {displayItems.map((item, idx) => (
+              <div
+                key={idx}
+                draggable
+                onDragStart={() => handleDragStart(idx)}
+                onDragOver={(e) => handleDragOver(e, idx)}
+                onDragEnd={handleDragEnd}
+                className={`p-4 bg-white rounded-lg border-2 cursor-move transition-all flex items-center gap-3 ${
+                  draggingItem === idx 
+                    ? 'border-purple-500 bg-purple-50 shadow-lg scale-102' 
+                    : 'border-slate-200 hover:border-purple-300 hover:shadow-sm'
+                }`}
+                data-testid={`drag-item-${idx}`}
+              >
+                <div className="flex items-center gap-2 text-slate-400">
+                  <GripVertical className="h-5 w-5" />
+                  <span className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-sm font-bold">
+                    {idx + 1}
+                  </span>
+                </div>
+                <span className="flex-1 text-slate-700 font-medium">{item}</span>
+              </div>
+            ))}
+          </div>
+          
+          <div className="flex justify-center gap-3">
+            <Button variant="outline" onClick={() => {
+              const shuffled = [...items].sort(() => Math.random() - 0.5);
+              setDragDropOrder(shuffled);
+            }}>
+              <Shuffle className="h-4 w-4 mr-2" />
+              {language === 'es' ? 'Mezclar' : 'Shuffle'}
+            </Button>
+            <Button onClick={checkDragDropOrder} className="bg-purple-600 hover:bg-purple-700">
+              <CheckCircle2 className="h-4 w-4 mr-2" />
               {language === 'es' ? 'Verificar Orden' : 'Check Order'}
             </Button>
           </div>
