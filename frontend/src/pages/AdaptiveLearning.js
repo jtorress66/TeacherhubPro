@@ -844,22 +844,69 @@ const AdaptiveLearning = () => {
                     <Zap className="h-5 w-5 text-blue-600" />
                     {language === 'es' ? 'Práctica' : 'Practice'}
                   </h4>
-                  <div className="space-y-4">
-                    {currentLesson.questions.map((q, idx) => (
-                      <div key={idx} className="bg-white rounded-lg p-4">
-                        <p className="font-medium text-slate-800 mb-2">{q.question}</p>
+                  <div className="space-y-6">
+                    {currentLesson.questions.map((q, qIdx) => (
+                      <div key={qIdx} className="bg-white rounded-lg p-4 shadow-sm">
+                        <div className="flex items-start justify-between mb-3">
+                          <p className="font-medium text-slate-800 flex-1">{qIdx + 1}. {q.question}</p>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => speakText(q.question)}
+                            disabled={speaking}
+                          >
+                            <Volume2 className={`h-4 w-4 ${speaking ? 'animate-pulse text-purple-500' : 'text-slate-400'}`} />
+                          </Button>
+                        </div>
                         {q.options && (
-                          <div className="grid grid-cols-2 gap-2">
-                            {q.options.map((opt, optIdx) => (
-                              <Button 
-                                key={optIdx} 
-                                variant="outline" 
-                                className="justify-start"
-                              >
-                                {opt}
-                              </Button>
-                            ))}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {q.options.map((opt, optIdx) => {
+                              const isSelected = selectedAnswers[qIdx] === optIdx;
+                              const feedback = showAnswerFeedback[qIdx];
+                              const showResult = feedback && feedback.selected === optIdx;
+                              const isCorrect = opt === q.correct_answer;
+                              
+                              return (
+                                <Button 
+                                  key={optIdx} 
+                                  variant="outline" 
+                                  className={`justify-start text-left h-auto py-3 px-4 transition-all ${
+                                    showResult
+                                      ? isCorrect
+                                        ? 'bg-green-100 border-green-500 text-green-700 ring-2 ring-green-500'
+                                        : 'bg-red-100 border-red-500 text-red-700 ring-2 ring-red-500'
+                                      : isSelected
+                                        ? 'bg-purple-100 border-purple-500 text-purple-700 ring-2 ring-purple-400'
+                                        : feedback && isCorrect
+                                        ? 'bg-green-50 border-green-300 text-green-700'
+                                        : 'hover:bg-slate-50 hover:border-purple-300'
+                                  }`}
+                                  onClick={() => !feedback && handleAnswerSelect(qIdx, optIdx, q.correct_answer)}
+                                  disabled={!!feedback}
+                                  data-testid={`answer-option-${qIdx}-${optIdx}`}
+                                >
+                                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mr-3 flex-shrink-0 ${
+                                    showResult
+                                      ? isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                                      : isSelected ? 'bg-purple-500 text-white' : 'bg-slate-200 text-slate-600'
+                                  }`}>
+                                    {String.fromCharCode(65 + optIdx)}
+                                  </span>
+                                  <span className="flex-1">{opt}</span>
+                                  {showResult && isCorrect && <CheckCircle2 className="h-5 w-5 ml-2 text-green-600" />}
+                                </Button>
+                              );
+                            })}
                           </div>
+                        )}
+                        {showAnswerFeedback[qIdx] && (
+                          <p className={`mt-3 text-sm font-medium ${
+                            showAnswerFeedback[qIdx].isCorrect ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {showAnswerFeedback[qIdx].isCorrect 
+                              ? (language === 'es' ? '¡Correcto! 🎉' : 'Correct! 🎉')
+                              : (language === 'es' ? `Incorrecto. La respuesta es: ${q.correct_answer}` : `Incorrect. The answer is: ${q.correct_answer}`)}
+                          </p>
                         )}
                       </div>
                     ))}
