@@ -4039,12 +4039,15 @@ Return JSON in this exact format:
       "questions": [
         {{
           "question": "Question text?",
-          "options": ["Option A", "Option B", "Option C", "Option D"]
+          "options": ["Option A", "Option B", "Option C", "Option D"],
+          "correct_answer": "Option A"
         }}
       ]
     }}
   ]
 }}
+
+IMPORTANT: Each question MUST include a "correct_answer" field that matches exactly one of the options.
 
 Make the content engaging, age-appropriate, and educational. Start from the student's current level and gradually increase difficulty."""
 
