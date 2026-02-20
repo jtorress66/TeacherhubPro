@@ -1391,10 +1391,7 @@ const GamesCreator = () => {
           </div>
           
           <div className="flex justify-center gap-3">
-            <Button variant="outline" onClick={() => {
-              const shuffled = [...items].sort(() => Math.random() - 0.5);
-              setDragDropOrder(shuffled);
-            }}>
+            <Button variant="outline" onClick={shuffleItems}>
               <Shuffle className="h-4 w-4 mr-2" />
               {language === 'es' ? 'Mezclar' : 'Shuffle'}
             </Button>
@@ -1407,25 +1404,35 @@ const GamesCreator = () => {
       );
     }
 
-    // Default fallback - render as quiz
+    // Default fallback - render as quiz with error message if needed
     return (
-      <div className="grid gap-3">
-        {(currentQ.options || [currentQ.correct_answer, 'Other Option A', 'Other Option B']).map((option, idx) => (
-          <button
-            key={idx}
-            onClick={() => !selectedAnswer && handleAnswer(option, currentQ.correct_answer)}
-            disabled={selectedAnswer !== null}
-            className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
-              selectedAnswer === option
-                ? option === currentQ.correct_answer
-                  ? 'border-green-500 bg-green-50'
-                  : 'border-red-500 bg-red-50'
-                : 'border-slate-200 hover:border-purple-400'
-            }`}
-          >
-            {option}
-          </button>
-        ))}
+      <div className="space-y-4">
+        <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 flex items-center gap-3">
+          <AlertTriangle className="h-5 w-5 text-amber-600" />
+          <p className="text-amber-800">
+            {language === 'es' 
+              ? 'Tipo de juego no reconocido. Mostrando como quiz.' 
+              : 'Unrecognized game type. Displaying as quiz.'}
+          </p>
+        </div>
+        <div className="grid gap-3">
+          {(currentQ.options || [currentQ.correct_answer || 'Option A', 'Option B', 'Option C']).map((option, idx) => (
+            <button
+              key={idx}
+              onClick={() => !selectedAnswer && handleAnswer(option, currentQ.correct_answer)}
+              disabled={selectedAnswer !== null}
+              className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
+                selectedAnswer === option
+                  ? option === currentQ.correct_answer
+                    ? 'border-green-500 bg-green-50'
+                    : 'border-red-500 bg-red-50'
+                  : 'border-slate-200 hover:border-purple-400'
+              }`}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
       </div>
     );
   };
