@@ -98,6 +98,8 @@ const AdaptiveLearning = () => {
 
   const startLesson = async (lesson) => {
     setCurrentLesson(lesson);
+    setSelectedAnswers({});
+    setShowAnswerFeedback({});
   };
 
   const speakText = async (text) => {
