@@ -4969,11 +4969,13 @@ Return ONLY valid JSON with no additional text."""
 
 Requirements:
 - Create exactly {request.question_count} questions/items
-- Difficulty level: {difficulty_hints.get(request.difficulty, 'medium')}
-- Make it educational and engaging
+- Grade Level: {grade_level_hints.get(request.grade_level, grade_level_hints['3-5'])}
+- Subject: {subject_hints.get(request.subject, 'General educational content')}
+- Make it educational, engaging and interactive
 - Each item should test understanding of the material
+- Use language and concepts appropriate for the grade level
 
-{game_specific_instructions.get(request.game_type, game_specific_instructions['quiz']).format(difficulty=request.difficulty)}"""
+{game_specific_instructions.get(request.game_type, game_specific_instructions['quiz']).format(difficulty=request.grade_level)}"""
 
     try:
         chat = LlmChat(
