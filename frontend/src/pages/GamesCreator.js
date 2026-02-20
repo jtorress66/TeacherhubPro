@@ -1482,17 +1482,27 @@ const GamesCreator = () => {
                             <Gamepad2 className="h-5 w-5 text-purple-600" />
                           )}
                         </div>
-                        <Badge variant="outline">
-                          {difficulties.find(d => d.id === game.difficulty)?.emoji} {game.difficulty}
-                        </Badge>
+                        <div className="flex gap-1">
+                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                            {subjects.find(s => s.id === game.subject)?.icon || '📝'}
+                          </Badge>
+                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                            {gradeLevels.find(g => g.id === game.grade_level)?.emoji || '🎓'}
+                          </Badge>
+                        </div>
                       </div>
                       <h4 className="font-semibold text-slate-800 mb-1">{game.title}</h4>
                       <p className="text-sm text-slate-500 mb-2">
                         {game.questions?.length || 0} {language === 'es' ? 'preguntas' : 'questions'}
                       </p>
-                      <p className="text-xs text-slate-400 mb-4">
-                        {gameTypes.find(t => t.id === game.game_type)?.name}
-                      </p>
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        <Badge variant="secondary" className="text-xs">
+                          {gameTypes.find(t => t.id === game.game_type)?.name}
+                        </Badge>
+                        <Badge variant="secondary" className="text-xs">
+                          {subjects.find(s => s.id === game.subject)?.name || game.subject}
+                        </Badge>
+                      </div>
                       <div className="flex gap-2 mb-2">
                         <Button 
                           size="sm" 
