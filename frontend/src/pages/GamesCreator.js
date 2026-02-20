@@ -1142,36 +1142,83 @@ const GamesCreator = () => {
       const percentage = Math.round((gameProgress.score / totalQuestions) * 100);
       return (
         <Layout>
-          <div className="max-w-2xl mx-auto space-y-6">
-            <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+          <div className="max-w-2xl mx-auto space-y-6 relative">
+            {/* Confetti Animation */}
+            {showConfetti && (
+              <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+                {[...Array(50)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute animate-bounce"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `-10%`,
+                      animationDelay: `${Math.random() * 2}s`,
+                      animationDuration: `${2 + Math.random() * 2}s`,
+                      fontSize: `${20 + Math.random() * 20}px`
+                    }}
+                  >
+                    {['🎉', '🎊', '⭐', '✨', '🌟', '💫'][Math.floor(Math.random() * 6)]}
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 overflow-hidden">
               <CardContent className="p-8 text-center">
-                <div className="text-6xl mb-4">
+                <div className="text-6xl mb-4 animate-bounce">
                   {percentage >= 80 ? '🏆' : percentage >= 60 ? '⭐' : '💪'}
                 </div>
                 <h2 className="text-3xl font-bold text-slate-800 mb-2">
                   {language === 'es' ? '¡Juego Completado!' : 'Game Complete!'}
                 </h2>
-                <p className="text-xl text-slate-600 mb-6">
+                <p className="text-xl text-slate-600 mb-4">
                   {playerName && <span className="font-semibold">{playerName}, </span>}
                   {language === 'es' ? 'Tu puntuación:' : 'Your score:'} {gameProgress.score}/{totalQuestions}
                 </p>
-                <div className="w-full bg-slate-200 rounded-full h-4 mb-6">
+                
+                {/* Stats Grid */}
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="bg-white/60 rounded-xl p-3">
+                    <div className="flex items-center justify-center gap-2 text-blue-600">
+                      <Timer className="h-5 w-5" />
+                      <span className="text-xl font-bold">{formatTime(gameTimer)}</span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1">{language === 'es' ? 'Tiempo' : 'Time'}</p>
+                  </div>
+                  <div className="bg-white/60 rounded-xl p-3">
+                    <div className="flex items-center justify-center gap-2 text-orange-600">
+                      <Flame className="h-5 w-5" />
+                      <span className="text-xl font-bold">{gameProgress.bestStreak}</span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1">{language === 'es' ? 'Mejor Racha' : 'Best Streak'}</p>
+                  </div>
+                  <div className="bg-white/60 rounded-xl p-3">
+                    <div className="flex items-center justify-center gap-2 text-green-600">
+                      <Award className="h-5 w-5" />
+                      <span className="text-xl font-bold">{percentage}%</span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1">{language === 'es' ? 'Precisión' : 'Accuracy'}</p>
+                  </div>
+                </div>
+                
+                <div className="w-full bg-slate-200 rounded-full h-4 mb-6 overflow-hidden">
                   <div 
-                    className={`h-4 rounded-full ${percentage >= 80 ? 'bg-green-500' : percentage >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                    className={`h-4 rounded-full transition-all duration-1000 ${percentage >= 80 ? 'bg-gradient-to-r from-green-400 to-green-600' : percentage >= 60 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' : 'bg-gradient-to-r from-red-400 to-red-600'}`}
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
                 <p className="text-lg text-slate-600 mb-8">
                   {percentage >= 80 
-                    ? (language === 'es' ? '¡Excelente trabajo!' : 'Excellent work!')
+                    ? (language === 'es' ? '¡Excelente trabajo! 🌟' : 'Excellent work! 🌟')
                     : percentage >= 60 
-                    ? (language === 'es' ? '¡Buen trabajo!' : 'Good job!')
-                    : (language === 'es' ? '¡Sigue practicando!' : 'Keep practicing!')}
+                    ? (language === 'es' ? '¡Buen trabajo! 👍' : 'Good job! 👍')
+                    : (language === 'es' ? '¡Sigue practicando! 💪' : 'Keep practicing! 💪')}
                 </p>
                 
                 {/* Leaderboard in Results */}
                 {leaderboard.length > 0 && (
-                  <div className="mb-6 text-left">
+                  <div className="mb-6 text-left bg-white/40 rounded-xl p-4">
                     <h3 className="font-semibold text-slate-700 mb-3 flex items-center gap-2">
                       <Trophy className="h-5 w-5 text-amber-500" />
                       {language === 'es' ? 'Ranking' : 'Leaderboard'}
@@ -1180,8 +1227,8 @@ const GamesCreator = () => {
                       {leaderboard.slice(0, 5).map((entry, idx) => (
                         <div 
                           key={idx}
-                          className={`flex items-center gap-3 p-2 rounded-lg ${
-                            entry.player_name === playerName ? 'bg-purple-100 border border-purple-300' : 'bg-slate-50'
+                          className={`flex items-center gap-3 p-2 rounded-lg transition-all ${
+                            entry.player_name === playerName ? 'bg-purple-100 border border-purple-300 scale-105' : 'bg-slate-50'
                           }`}
                         >
                           <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
@@ -1201,11 +1248,11 @@ const GamesCreator = () => {
                 )}
                 
                 <div className="flex justify-center gap-4">
-                  <Button onClick={resetGame} variant="outline">
+                  <Button onClick={resetGame} variant="outline" className="hover:scale-105 transition-transform">
                     <RefreshCw className="h-4 w-4 mr-2" />
                     {language === 'es' ? 'Jugar de Nuevo' : 'Play Again'}
                   </Button>
-                  <Button onClick={exitGame} className="bg-purple-600 hover:bg-purple-700">
+                  <Button onClick={exitGame} className="bg-purple-600 hover:bg-purple-700 hover:scale-105 transition-transform">
                     {language === 'es' ? 'Volver' : 'Back'}
                   </Button>
                 </div>
