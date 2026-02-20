@@ -4764,7 +4764,8 @@ async def get_homeschool_portal_data(token: str):
 class GameGenerateRequest(BaseModel):
     content: str
     game_type: str = "quiz"
-    difficulty: str = "medium"
+    grade_level: str = "3-5"
+    subject: str = "math"
     question_count: int = 5
     language: str = "es"
 
