@@ -1899,26 +1899,27 @@ const GamesCreator = () => {
                     <div className="flex gap-2">
                       <Button 
                         variant="outline" 
-                        onClick={() => startGame(generatedGame)}
+                        onClick={() => startGame(generatedGame, true)}
                         className="border-green-300"
+                        data-testid="preview-game-btn"
                       >
                         <Play className="h-4 w-4 mr-2" />
                         {language === 'es' ? 'Previsualizar' : 'Preview'}
                       </Button>
-                      <Button onClick={saveGame} className="bg-green-600 hover:bg-green-700">
+                      <Button onClick={saveGame} className="bg-green-600 hover:bg-green-700" data-testid="save-game-btn">
                         {language === 'es' ? 'Guardar Juego' : 'Save Game'}
                       </Button>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-3 gap-4 text-center">
+                  <div className="grid grid-cols-4 gap-4 text-center">
                     <div className="p-3 bg-white rounded-lg">
                       <p className="text-2xl font-bold text-purple-600">{generatedGame.questions?.length || 0}</p>
                       <p className="text-sm text-slate-500">{language === 'es' ? 'Preguntas' : 'Questions'}</p>
                     </div>
                     <div className="p-3 bg-white rounded-lg">
-                      <p className="text-2xl font-bold text-blue-600">
+                      <p className="text-lg font-bold text-blue-600">
                         {gameTypes.find(t => t.id === generatedGame.game_type)?.name || generatedGame.game_type}
                       </p>
                       <p className="text-sm text-slate-500">{language === 'es' ? 'Tipo' : 'Type'}</p>
@@ -1936,6 +1937,48 @@ const GamesCreator = () => {
                       <p className="text-sm text-slate-500">{language === 'es' ? 'Grado' : 'Grade'}</p>
                     </div>
                   </div>
+                  
+                  {/* Validation Status */}
+                  <div className="mt-4 p-3 bg-green-100 rounded-lg flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <span className="text-sm text-green-700 font-medium">
+                      {language === 'es' ? 'Validación pasada - Juego listo para usar' : 'Validation passed - Game ready to use'}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
+            {/* Validation Error Display */}
+            {validationErrors.length > 0 && (
+              <Card className="border-2 border-red-200 bg-red-50/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-red-700">
+                    <AlertTriangle className="h-5 w-5" />
+                    {language === 'es' ? 'Errores de Validación' : 'Validation Errors'}
+                  </CardTitle>
+                  <CardDescription>
+                    {language === 'es' 
+                      ? 'El juego no puede iniciarse debido a los siguientes errores:' 
+                      : 'The game cannot be started due to the following errors:'}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {validationErrors.map((error, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-red-700">
+                        <span className="text-red-500 mt-0.5">•</span>
+                        <span className="text-sm">{error}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button 
+                    variant="outline" 
+                    className="mt-4 border-red-300 text-red-700 hover:bg-red-100"
+                    onClick={() => setValidationErrors([])}
+                  >
+                    {language === 'es' ? 'Cerrar' : 'Dismiss'}
+                  </Button>
                 </CardContent>
               </Card>
             )}
