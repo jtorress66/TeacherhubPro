@@ -406,10 +406,19 @@ const GamesCreator = () => {
     setSelectedAnswer(answer);
     const isCorrect = answer === correctAnswer;
     
+    // Play sound effect
+    if (isCorrect) {
+      playSound('correct');
+    } else {
+      playSound('wrong');
+    }
+    
     setTimeout(() => {
       setGameProgress(prev => ({
         ...prev,
         score: isCorrect ? prev.score + 1 : prev.score,
+        streak: isCorrect ? prev.streak + 1 : 0,
+        bestStreak: isCorrect ? Math.max(prev.bestStreak, prev.streak + 1) : prev.bestStreak,
         answers: [...prev.answers, { answer, correct: isCorrect }]
       }));
       
@@ -418,20 +427,40 @@ const GamesCreator = () => {
         setSelectedAnswer(null);
       } else {
         setShowResult(true);
+        setShowConfetti(true);
+        playSound('complete');
         // Submit score if this is a saved game (has game_id)
         if (playingGame.game_id && playerName) {
           const finalScore = isCorrect ? gameProgress.score + 1 : gameProgress.score;
           submitScore(playingGame, finalScore, playingGame.questions.length);
         }
+        // Save progress
+        saveGameProgress();
       }
     }, 1000);
   };
 
+  const saveGameProgress = async () => {
+    if (!playingGame?.game_id) return;
+    try {
+      await axios.post(`${API}/games/${playingGame.game_id}/progress`, {
+        current_question: gameProgress.current,
+        score: gameProgress.score,
+        answers: gameProgress.answers,
+        started_at: gameStartTime
+      }, { withCredentials: true });
+    } catch (error) {
+      console.log('Progress save error:', error);
+    }
+  };
+
   const resetGame = () => {
-    setGameProgress({ current: 0, score: 0, answers: [] });
+    setGameProgress({ current: 0, score: 0, streak: 0, bestStreak: 0, answers: [] });
     setSelectedAnswer(null);
     setShowResult(false);
     setGameStartTime(Date.now());
+    setGameTimer(0);
+    setShowConfetti(false);
   };
 
   const exitGame = () => {
@@ -439,6 +468,13 @@ const GamesCreator = () => {
     setShowNameInput(false);
     setPlayerName('');
     resetGame();
+    setGameTimer(0);
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const getShareLink = (gameId) => {
