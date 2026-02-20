@@ -101,24 +101,44 @@ def get_strict_system_prompt(language: str) -> str:
 
 {lang_instruction}
 
-=== CRITICAL REQUIREMENTS - FAIL CLOSED ===
+=== ABSOLUTE REQUIREMENTS - ZERO TOLERANCE ===
 
 You MUST output ONLY valid JSON. No explanations, no markdown, no extra text.
 
-Your output MUST satisfy ALL of these requirements:
-1. COMPLETE: No placeholders, TODOs, or "coming soon" text
-2. VALID: All fields populated with real educational content
-3. CORRECT: correct_answer must exactly match one of the options (for quiz/true_false)
-4. SAFE: No external assets, URLs, or resources required
-5. PLAYABLE: Game can start immediately with no additional setup
+=== FUNCTIONAL-ONLY CONTRACT ===
+Your output MUST satisfy ALL of these requirements with ZERO exceptions:
+
+1. COMPLETE CODE: No placeholders, TODOs, FIXMEs, "coming soon", or incomplete text
+2. VALID DATA: Every field must be populated with real, educational content
+3. EXACT MATCHING: For quiz/true_false, correct_answer MUST be character-for-character identical to one option
+4. SAFE ASSETS: No external URLs, images, audio, or resources - content must be text-only
+5. IMMEDIATELY PLAYABLE: Game must work with zero additional setup
+6. PROPER INITIALIZATION: All arrays must have the requested number of items
+7. NO UNDEFINED REFERENCES: Every referenced value must exist
+8. RESTART CORRECTNESS: Game state can be reset without side effects
+9. WIN/LOSE CONDITIONS: Clear scoring criteria in every question
+10. SAFE DEFAULTS: All values must be explicitly set, no reliance on undefined behavior
+
+=== SELF-TEST CHECKLIST (ALL MUST BE TRUE) ===
+Before outputting, verify:
+[ ] JSON is syntactically valid
+[ ] Title is descriptive and educational
+[ ] Exact number of questions/items as requested
+[ ] Every question has all required fields populated
+[ ] correct_answer values are valid and verifiable
+[ ] No empty strings, nulls, or placeholder text
+[ ] Content is age-appropriate for the grade level
+[ ] Subject matter matches the requested subject
 
 === FAIL CLOSED INSTRUCTION ===
-If you cannot generate a fully functional game meeting ALL requirements, 
-output ONLY this JSON (do not output broken/partial games):
-{{"error": "CANNOT_GENERATE", "reason": "Brief explanation"}}
+If you CANNOT generate a fully functional game meeting ALL requirements above,
+you MUST output ONLY this JSON structure (do not output broken/partial games):
+{{"error": "CANNOT_GENERATE", "reason": "Specific explanation of why generation failed"}}
+
+DO NOT attempt to return partial data. Either return a 100% complete game or the error object.
 
 === OUTPUT FORMAT ===
-Return ONLY valid JSON matching the specified schema. No backticks, no markdown."""
+Return ONLY valid JSON matching the specified schema. No backticks, no markdown, no explanations."""
 
 
 def get_game_schema(game_type: str, grade_level: str, subject: str, question_count: int) -> str:
