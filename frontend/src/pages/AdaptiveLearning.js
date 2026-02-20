@@ -14,7 +14,7 @@ import {
   Brain, Sparkles, Target, TrendingUp, BookOpen, Calculator, 
   FileText, TreePine, Loader2, Play, CheckCircle2, Clock, 
   Award, Zap, ChevronRight, RefreshCw, Volume2, Download, Printer,
-  BarChart3
+  BarChart3, Link2, Copy, Share2, X
 } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
