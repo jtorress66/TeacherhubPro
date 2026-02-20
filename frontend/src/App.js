@@ -246,6 +246,10 @@ const AppRouter = () => {
       <Route path="/portal/:token" element={<ParentPortal />} />
       {/* Homeschool Parent Portal (Public - token-based) */}
       <Route path="/homeschool-portal/:token" element={<HomeschoolPortal />} />
+      {/* Student Learning Path (Public - token-based) */}
+      <Route path="/student-learning/:token" element={<StudentLearning />} />
+      {/* Play Game (Public - no auth required) */}
+      <Route path="/play-game/:gameId" element={<PlayGame />} />
       {/* Setup Admin (Public - one-time use) */}
       <Route path="/setup-admin" element={<SetupAdmin />} />
       {/* Footer/Legal Pages (Public) */}
