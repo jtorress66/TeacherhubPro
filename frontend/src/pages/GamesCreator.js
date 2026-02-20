@@ -1307,17 +1307,12 @@ const GamesCreator = () => {
 
     // Drag and Drop - Full implementation with reordering
     if (gameType === 'drag_drop') {
-      // Initialize drag order if empty
+      // Use pre-initialized drag order from initializeGameState
       const items = currentQ.items || currentQ.options || [];
-      if (dragDropOrder.length === 0 && items.length > 0) {
-        // Shuffle items initially
-        const shuffled = [...items].sort(() => Math.random() - 0.5);
-        setDragDropOrder(shuffled);
-      }
-      
       const displayItems = dragDropOrder.length > 0 ? dragDropOrder : items;
 
       const handleDragStart = (idx) => {
+        playSound('click');
         setDraggingItem(idx);
       };
 
@@ -1340,8 +1335,20 @@ const GamesCreator = () => {
       const checkDragDropOrder = () => {
         const correctOrder = currentQ.correct_order || items;
         const isCorrect = displayItems.every((item, idx) => item === correctOrder[idx]);
+        
+        if (isCorrect) {
+          playSound('correct');
+        } else {
+          playSound('wrong');
+        }
+        
         handleAnswer(isCorrect ? 'correct' : 'incorrect', 'correct');
-        setDragDropOrder([]);
+      };
+
+      const shuffleItems = () => {
+        playSound('click');
+        const shuffled = [...items].sort(() => Math.random() - 0.5);
+        setDragDropOrder(shuffled);
       };
 
       return (
