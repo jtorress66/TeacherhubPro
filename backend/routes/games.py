@@ -464,8 +464,8 @@ async def generate_educational_game(
 
 @router.post("/validate")
 async def validate_game_endpoint(game: dict):
-    """Validate a game without saving it"""
-    report = create_validation_report(game)
+    """Validate a game without saving it - runs full validation suite"""
+    report = run_full_validation(game)
     return report
 
 
@@ -477,6 +477,24 @@ async def smoke_test_game(game: dict):
         "passed": is_valid,
         "errors": errors,
         "game_type": game.get("game_type", "unknown") if game else "unknown"
+    }
+
+
+@router.post("/full-validation")
+async def full_validation_endpoint(game: dict):
+    """
+    Run comprehensive validation including smoke test
+    Returns detailed report with pass/fail status
+    """
+    report = run_full_validation(game)
+    return {
+        "valid": report.get("fully_valid", False),
+        "validation_passed": report.get("is_valid", False),
+        "smoke_test_passed": report.get("smoke_test_passed", False),
+        "errors": report.get("errors", []),
+        "smoke_test_errors": report.get("smoke_test_errors", []),
+        "game_type": report.get("game_type", "unknown"),
+        "question_count": report.get("question_count", 0)
     }
 
 
