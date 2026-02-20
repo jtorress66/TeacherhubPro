@@ -3920,6 +3920,7 @@ async def get_all_teacher_students(user: dict = Depends(get_current_user)):
 class AdaptiveLearningRequest(BaseModel):
     student_id: str
     subject: str
+    grade_level: str = "3-5"
     language: str = "es"
 
 class CompleteLessonRequest(BaseModel):
