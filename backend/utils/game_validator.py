@@ -1,6 +1,7 @@
 """
 Game Validation Module
 Validates generated games before they're shown to users
+Implements strict validation with no tolerance for broken games
 """
 import re
 import json
@@ -9,10 +10,13 @@ from typing import Dict, List, Tuple, Optional
 
 logger = logging.getLogger(__name__)
 
-# Banned tokens that indicate incomplete code
+# Banned tokens that indicate incomplete code - expanded list
 BANNED_TOKENS = [
     'TODO', 'FIXME', 'XXX', 'HACK', 'placeholder', 'mock', 
-    'undefined', 'not implemented', 'coming soon', 'TBD'
+    'undefined', 'not implemented', 'coming soon', 'TBD',
+    'insert here', 'add your', 'example only', 'sample data',
+    'replace with', 'your answer', 'fill in', '[', ']...',
+    'etc.', 'and so on', 'lorem ipsum', 'test data'
 ]
 
 # Required fields by game type
@@ -37,6 +41,18 @@ REQUIRED_QUESTION_FIELDS = {
     'word_search': ['word'],
     'crossword': ['clue', 'correct_answer'],
     'drag_drop': ['items', 'correct_order']
+}
+
+# Minimum question counts per game type
+MIN_QUESTIONS = {
+    'quiz': 1,
+    'true_false': 1,
+    'fill_blanks': 1,
+    'matching': 2,  # Need at least 2 pairs for matching
+    'flashcards': 1,
+    'word_search': 3,  # Need several words
+    'crossword': 2,  # Need at least across and down
+    'drag_drop': 1
 }
 
 
