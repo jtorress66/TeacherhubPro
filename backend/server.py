@@ -5194,9 +5194,17 @@ async def get_game_by_id(game_id: str):
 # ==================== AI ENDPOINTS MOVED TO routes/ai.py ====================
 # The AI Teaching Assistant endpoints have been refactored to routes/ai.py
 
+# Initialize modular route dependencies
+init_games_routes(db, get_current_user, EMERGENT_LLM_KEY, FREE_TRIAL_DAYS)
+init_adaptive_learning_routes(db, get_current_user, EMERGENT_LLM_KEY, FREE_TRIAL_DAYS)
+init_portal_routes(db, get_current_user)
+
 # Include modular routers in the api_router
 api_router.include_router(auth_router)
 api_router.include_router(ai_router)
+api_router.include_router(games_router)
+api_router.include_router(adaptive_learning_router)
+api_router.include_router(portal_router)
 
 # Include the main api_router in the app
 app.include_router(api_router)
