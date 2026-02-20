@@ -4533,7 +4533,7 @@ async def student_complete_lesson(token: str, lesson_id: str = Body(..., embed=T
 async def get_game_for_play(game_id: str):
     """Public endpoint - Get game by ID for students to play (no auth required)"""
     
-    game = await db.games.find_one({"game_id": game_id}, {"_id": 0})
+    game = await db.educational_games.find_one({"game_id": game_id}, {"_id": 0})
     if not game:
         raise HTTPException(status_code=404, detail="Game not found")
     
