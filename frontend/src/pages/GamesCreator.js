@@ -1413,9 +1413,15 @@ const GamesCreator = () => {
                     </div>
                     <div className="p-3 bg-white rounded-lg">
                       <p className="text-2xl font-bold text-amber-600">
-                        {difficulties.find(d => d.id === generatedGame.difficulty)?.emoji}
+                        {subjects.find(s => s.id === generatedGame.subject)?.icon || '📝'}
                       </p>
-                      <p className="text-sm text-slate-500">{language === 'es' ? 'Dificultad' : 'Difficulty'}</p>
+                      <p className="text-sm text-slate-500">{language === 'es' ? 'Materia' : 'Subject'}</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg">
+                      <p className="text-2xl font-bold text-green-600">
+                        {gradeLevels.find(g => g.id === generatedGame.grade_level)?.emoji || '🎓'}
+                      </p>
+                      <p className="text-sm text-slate-500">{language === 'es' ? 'Grado' : 'Grade'}</p>
                     </div>
                   </div>
                 </CardContent>
