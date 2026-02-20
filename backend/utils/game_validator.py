@@ -224,8 +224,8 @@ def create_validation_report(game_data: dict) -> dict:
 # Smoke test simulation for frontend games
 def simulate_game_smoke_test(game_data: dict) -> Tuple[bool, List[str]]:
     """
-    Simulate a smoke test of the game
-    Checks if the game would render and be playable
+    Simulate a comprehensive smoke test of the game
+    Checks if the game would render and be playable without errors
     """
     errors = []
     game_type = game_data.get('game_type', 'quiz') if game_data else 'unknown'
@@ -235,70 +235,142 @@ def simulate_game_smoke_test(game_data: dict) -> Tuple[bool, List[str]]:
     
     questions = game_data.get('questions', [])
     
-    # Test 1: Can initialize
+    # Test 1: Can initialize - questions array exists and is not empty
     if not questions:
-        errors.append("SMOKE_TEST_FAIL: Cannot initialize - no questions")
+        errors.append("SMOKE_TEST_FAIL: Cannot initialize - no questions array")
+        return False, errors
+    
+    if not isinstance(questions, list):
+        errors.append("SMOKE_TEST_FAIL: Questions is not an array")
         return False, errors
     
     # Test 2: Can access first question
     try:
         first_q = questions[0]
         if not isinstance(first_q, dict):
-            errors.append("SMOKE_TEST_FAIL: First question is not accessible")
+            errors.append("SMOKE_TEST_FAIL: First question is not a valid object")
+            return False, errors
     except (IndexError, TypeError) as e:
         errors.append(f"SMOKE_TEST_FAIL: Cannot access first question - {str(e)}")
+        return False, errors
     
-    # Test 3: Simulate primary action based on game type
+    # Test 3: Simulate primary action based on game type with deep validation
     if game_type in ['quiz', 'true_false']:
-        # Simulate clicking an option
-        options = questions[0].get('options', []) if questions else []
-        if not options:
-            errors.append("SMOKE_TEST_FAIL: Quiz has no options to click")
+        # Validate every question has clickable options
+        for idx, q in enumerate(questions):
+            options = q.get('options', [])
+            if not options or not isinstance(options, list):
+                errors.append(f"SMOKE_TEST_FAIL: Question {idx + 1} has no options array")
+            elif len(options) < 2:
+                errors.append(f"SMOKE_TEST_FAIL: Question {idx + 1} has fewer than 2 options")
+            else:
+                # Verify correct_answer exists in options
+                correct = q.get('correct_answer', '')
+                if correct not in options:
+                    errors.append(f"SMOKE_TEST_FAIL: Question {idx + 1} correct_answer '{correct}' not in options")
+                # Verify all options are non-empty strings
+                for opt_idx, opt in enumerate(options):
+                    if not opt or not isinstance(opt, str) or not opt.strip():
+                        errors.append(f"SMOKE_TEST_FAIL: Question {idx + 1} option {opt_idx + 1} is empty")
     
     elif game_type == 'flashcards':
-        # Simulate flipping card
-        q = questions[0] if questions else {}
-        if not q.get('question') and not q.get('correct_answer'):
-            errors.append("SMOKE_TEST_FAIL: Flashcard has no content to display")
+        # Validate every card has front and back
+        for idx, q in enumerate(questions):
+            front = q.get('question') or q.get('front') or q.get('term')
+            back = q.get('correct_answer') or q.get('back') or q.get('definition')
+            if not front:
+                errors.append(f"SMOKE_TEST_FAIL: Flashcard {idx + 1} has no front/question")
+            if not back:
+                errors.append(f"SMOKE_TEST_FAIL: Flashcard {idx + 1} has no back/answer")
     
     elif game_type == 'fill_blanks':
-        # Simulate typing answer
-        q = questions[0] if questions else {}
-        if not q.get('correct_answer'):
-            errors.append("SMOKE_TEST_FAIL: Fill-blank has no correct answer to check against")
+        # Validate every blank has question with blank marker and answer
+        for idx, q in enumerate(questions):
+            question_text = q.get('question') or q.get('sentence') or ''
+            if not question_text:
+                errors.append(f"SMOKE_TEST_FAIL: Fill-blank {idx + 1} has no question text")
+            elif '___' not in question_text and '_blank_' not in question_text.lower():
+                errors.append(f"SMOKE_TEST_FAIL: Fill-blank {idx + 1} has no blank marker (___)")
+            answer = q.get('correct_answer') or q.get('answer')
+            if not answer:
+                errors.append(f"SMOKE_TEST_FAIL: Fill-blank {idx + 1} has no correct answer")
     
     elif game_type == 'matching':
-        # Simulate matching items
+        # Validate matching has enough pairs
         if len(questions) < 2:
             errors.append("SMOKE_TEST_FAIL: Matching needs at least 2 pairs")
+        for idx, q in enumerate(questions):
+            term = q.get('question') or q.get('term') or q.get('left')
+            definition = q.get('correct_answer') or q.get('match') or q.get('right')
+            if not term:
+                errors.append(f"SMOKE_TEST_FAIL: Matching pair {idx + 1} has no term")
+            if not definition:
+                errors.append(f"SMOKE_TEST_FAIL: Matching pair {idx + 1} has no definition")
     
     elif game_type == 'word_search':
-        # Simulate clicking cells
-        for q in questions:
+        # Validate words are valid
+        for idx, q in enumerate(questions):
             word = q.get('word', '')
-            if not word or len(word) < 2:
-                errors.append("SMOKE_TEST_FAIL: Word search has invalid words")
-                break
+            if not word:
+                errors.append(f"SMOKE_TEST_FAIL: Word search word {idx + 1} is empty")
+            elif len(word) < 2:
+                errors.append(f"SMOKE_TEST_FAIL: Word search word {idx + 1} is too short")
+            elif len(word) > 15:
+                errors.append(f"SMOKE_TEST_FAIL: Word search word {idx + 1} is too long (max 15)")
+            elif ' ' in word:
+                errors.append(f"SMOKE_TEST_FAIL: Word search word {idx + 1} contains spaces")
     
     elif game_type == 'crossword':
-        # Simulate entering answers
-        for q in questions:
-            if not q.get('clue') or not q.get('correct_answer'):
-                errors.append("SMOKE_TEST_FAIL: Crossword missing clue or answer")
-                break
+        # Validate clues and answers
+        for idx, q in enumerate(questions):
+            clue = q.get('clue') or q.get('question')
+            answer = q.get('correct_answer') or q.get('answer')
+            if not clue:
+                errors.append(f"SMOKE_TEST_FAIL: Crossword clue {idx + 1} is missing")
+            if not answer:
+                errors.append(f"SMOKE_TEST_FAIL: Crossword answer {idx + 1} is missing")
+            elif ' ' in answer:
+                errors.append(f"SMOKE_TEST_FAIL: Crossword answer {idx + 1} contains spaces")
     
     elif game_type == 'drag_drop':
-        # Simulate dragging items
-        for q in questions:
+        # Validate drag drop items and correct order
+        for idx, q in enumerate(questions):
             items = q.get('items', [])
-            if len(items) < 2:
-                errors.append("SMOKE_TEST_FAIL: Drag-drop needs at least 2 items")
-                break
+            correct_order = q.get('correct_order', [])
+            instruction = q.get('instruction') or q.get('question')
+            
+            if not instruction:
+                errors.append(f"SMOKE_TEST_FAIL: Drag-drop {idx + 1} has no instruction")
+            if not items or len(items) < 2:
+                errors.append(f"SMOKE_TEST_FAIL: Drag-drop {idx + 1} needs at least 2 items")
+            if not correct_order:
+                errors.append(f"SMOKE_TEST_FAIL: Drag-drop {idx + 1} has no correct_order")
+            elif set(items) != set(correct_order):
+                errors.append(f"SMOKE_TEST_FAIL: Drag-drop {idx + 1} correct_order doesn't match items")
     
-    # Test 4: Can calculate score
-    # (This would pass if questions exist and have correct_answer or equivalent)
+    # Test 4: Verify scoring can be calculated (no missing data)
+    for idx, q in enumerate(questions):
+        if game_type in ['quiz', 'true_false', 'fill_blanks', 'flashcards', 'crossword']:
+            if not (q.get('correct_answer') or q.get('answer')):
+                errors.append(f"SMOKE_TEST_FAIL: Question {idx + 1} has no answer for scoring")
     
-    # Test 5: Can restart (always passes in data validation)
+    # Test 5: Verify restart would work (no stateful issues in data)
+    # This passes if data is immutable/serializable - already validated above
     
     is_valid = len(errors) == 0
     return is_valid, errors
+
+
+def run_full_validation(game_data: dict) -> dict:
+    """
+    Run complete validation suite and return detailed report
+    Used for API endpoint and debugging
+    """
+    report = create_validation_report(game_data)
+    smoke_pass, smoke_errors = simulate_game_smoke_test(game_data)
+    
+    report['smoke_test_passed'] = smoke_pass
+    report['smoke_test_errors'] = smoke_errors
+    report['fully_valid'] = report['is_valid'] and smoke_pass
+    
+    return report
