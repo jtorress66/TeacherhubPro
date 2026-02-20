@@ -20,7 +20,7 @@ import {
   HelpCircle, CheckCircle2, Loader2, Play, Share2, Copy,
   Shuffle, Grid3X3, ListChecks, MessageSquare, Zap, Star,
   BookOpen, GraduationCap, ChevronRight, RefreshCw, Download,
-  Search, LayoutGrid, GripVertical, BarChart3, Medal, Users, Clock
+  Search, LayoutGrid, GripVertical, BarChart3, Medal, Users, Clock, Link2, X
 } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
