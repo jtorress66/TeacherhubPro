@@ -404,16 +404,24 @@ const GamesCreator = () => {
       
       if (matchingSelected.right.text === correctAnswer) {
         // Correct match
+        playSound('correct');
         setMatchedPairs(prev => [...prev, matchingSelected.left.text, matchingSelected.right.text]);
-        setGameProgress(prev => ({ ...prev, score: prev.score + 1 }));
+        setGameProgress(prev => ({ 
+          ...prev, 
+          score: prev.score + 1,
+          streak: prev.streak + 1,
+          bestStreak: Math.max(prev.bestStreak, prev.streak + 1)
+        }));
         toast.success(language === 'es' ? '¡Correcto!' : 'Correct!');
       } else {
+        playSound('wrong');
+        setGameProgress(prev => ({ ...prev, streak: 0 }));
         toast.error(language === 'es' ? 'Intenta de nuevo' : 'Try again');
       }
       
       setTimeout(() => setMatchingSelected({ left: null, right: null }), 300);
     }
-  }, [matchingSelected, playingGame, language]);
+  }, [matchingSelected, playingGame, language, playSound]);
 
   // Check if matching game complete
   useEffect(() => {
