@@ -90,7 +90,7 @@ async def check_ai_access(user: dict) -> bool:
 @router.post("/generate")
 async def generate_educational_game(
     request: GameGenerateRequest,
-    user: dict = Depends(lambda: get_current_user)
+    user: dict = Depends(get_current_user)
 ):
     """Generate an educational game from lesson content using AI"""
     
@@ -292,7 +292,7 @@ Requirements:
 @router.post("/save")
 async def save_educational_game(
     game: dict,
-    user: dict = Depends(lambda: get_current_user)
+    user: dict = Depends(get_current_user)
 ):
     """Save a generated educational game"""
     game_id = game.get("game_id") or f"game_{uuid.uuid4().hex[:12]}"
@@ -320,7 +320,7 @@ async def save_educational_game(
 
 
 @router.get("")
-async def get_teacher_games(user: dict = Depends(lambda: get_current_user)):
+async def get_teacher_games(user: dict = Depends(get_current_user)):
     """Get all games created by the current teacher"""
     games = await db.educational_games.find(
         {"teacher_id": user.get("user_id")},
@@ -350,7 +350,7 @@ async def get_game(game_id: str):
 
 
 @router.delete("/{game_id}")
-async def delete_game(game_id: str, user: dict = Depends(lambda: get_current_user)):
+async def delete_game(game_id: str, user: dict = Depends(get_current_user)):
     """Delete a game"""
     result = await db.educational_games.delete_one({
         "game_id": game_id,
@@ -394,7 +394,7 @@ async def get_game_leaderboard(game_id: str, limit: int = 10):
 
 
 @router.get("/analytics/summary")
-async def get_games_analytics(user: dict = Depends(lambda: get_current_user)):
+async def get_games_analytics(user: dict = Depends(get_current_user)):
     """Get analytics summary for all games created by the teacher"""
     teacher_id = user.get("user_id")
     
@@ -446,7 +446,7 @@ async def get_games_analytics(user: dict = Depends(lambda: get_current_user)):
 async def save_game_progress(
     game_id: str,
     progress: dict,
-    user: dict = Depends(lambda: get_current_user)
+    user: dict = Depends(get_current_user)
 ):
     """Save game progress for a user"""
     user_id = user.get("user_id")
@@ -471,7 +471,7 @@ async def save_game_progress(
 @router.get("/{game_id}/progress")
 async def get_game_progress(
     game_id: str,
-    user: dict = Depends(lambda: get_current_user)
+    user: dict = Depends(get_current_user)
 ):
     """Get saved game progress for a user"""
     user_id = user.get("user_id")
