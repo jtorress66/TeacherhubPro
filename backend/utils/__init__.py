@@ -1,22 +1,17 @@
-"""Utilities package"""
-from utils.database import db, client
-from utils.auth import (
-    get_current_user, 
-    create_jwt_token, 
-    hash_password, 
-    verify_password,
-    generate_user_id,
-    generate_session_token,
-    JWT_EXPIRATION_DAYS
+"""
+Utils Package
+Utility modules for TeacherHubPro
+"""
+from .game_validator import (
+    validate_game,
+    simulate_game_smoke_test,
+    create_validation_report,
+    GameValidationError
 )
-from utils.constants import (
-    SUBSCRIPTION_PLANS,
-    FREE_TRIAL_DAYS,
-    STRIPE_API_KEY,
-    STRIPE_WEBHOOK_SECRET,
-    RESEND_API_KEY,
-    SENDER_EMAIL,
-    EMERGENT_LLM_KEY,
-    AI_SYSTEM_PROMPTS,
-    STANDARDS_INFO
-)
+
+__all__ = [
+    'validate_game',
+    'simulate_game_smoke_test', 
+    'create_validation_report',
+    'GameValidationError'
+]
