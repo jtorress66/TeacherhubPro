@@ -32,6 +32,9 @@ const AdaptiveLearning = () => {
   const [selectedSubject, setSelectedSubject] = useState('math');
   const [learningPath, setLearningPath] = useState(null);
   const [currentLesson, setCurrentLesson] = useState(null);
+  const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [showAnswerFeedback, setShowAnswerFeedback] = useState({});
+  const [shareLink, setShareLink] = useState('');
 
   const subjects = [
     { id: 'math', name: language === 'es' ? 'Matemáticas' : 'Mathematics', icon: Calculator, color: 'blue' },
