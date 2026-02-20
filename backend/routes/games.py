@@ -18,17 +18,21 @@ router = APIRouter(prefix="/games", tags=["games"])
 
 # These will be set by the main app
 db = None
-get_current_user = None
+_get_current_user_func = None
 EMERGENT_LLM_KEY = None
 FREE_TRIAL_DAYS = 7
 
 def init_games_routes(database, auth_dependency, llm_key, trial_days):
     """Initialize the games routes with dependencies"""
-    global db, get_current_user, EMERGENT_LLM_KEY, FREE_TRIAL_DAYS
+    global db, _get_current_user_func, EMERGENT_LLM_KEY, FREE_TRIAL_DAYS
     db = database
-    get_current_user = auth_dependency
+    _get_current_user_func = auth_dependency
     EMERGENT_LLM_KEY = llm_key
     FREE_TRIAL_DAYS = trial_days
+
+async def get_current_user(request):
+    """Wrapper to call the actual auth dependency"""
+    return await _get_current_user_func(request)
 
 
 class GameGenerateRequest(BaseModel):
