@@ -427,12 +427,14 @@ const GamesCreator = () => {
   useEffect(() => {
     if (playingGame?.game_type === 'matching' && matchedPairs.length > 0 && 
         matchedPairs.length === playingGame.questions.length * 2) {
+      playSound('complete');
+      setShowConfetti(true);
       setShowResult(true);
       if (playingGame.game_id && playerName) {
         submitScore(playingGame, gameProgress.score, playingGame.questions.length);
       }
     }
-  }, [matchedPairs, playingGame, playerName, gameProgress.score]);
+  }, [matchedPairs, playingGame, playerName, gameProgress.score, playSound]);
 
   const fetchSavedGames = async () => {
     try {
