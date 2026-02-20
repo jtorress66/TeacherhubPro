@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -22,22 +22,41 @@ import {
   Shuffle, Grid3X3, ListChecks, MessageSquare, Zap, Star,
   BookOpen, GraduationCap, ChevronRight, RefreshCw, Download,
   Search, LayoutGrid, GripVertical, BarChart3, Medal, Users, Clock, Link2, X,
-  Volume2, VolumeX, Timer, Award, Flame
+  Volume2, VolumeX, Timer, Award, Flame, AlertTriangle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-// Sound effects using Web Audio API
+// Sound effects using Web Audio API - wrapped in try/catch for safety
 const useGameSounds = () => {
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const audioCtxRef = useRef(null);
+  
+  const getAudioContext = useCallback(() => {
+    try {
+      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+        audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return audioCtxRef.current;
+    } catch (e) {
+      return null;
+    }
+  }, []);
   
   const playSound = useCallback((type) => {
     if (!soundEnabled) return;
     
     try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const audioCtx = getAudioContext();
+      if (!audioCtx) return;
+      
+      // Resume audio context if suspended (browser policy)
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      
       const oscillator = audioCtx.createOscillator();
       const gainNode = audioCtx.createGain();
       
@@ -46,9 +65,9 @@ const useGameSounds = () => {
       
       switch(type) {
         case 'correct':
-          oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-          oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
-          oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+          oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+          oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+          oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
           gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
           gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
           oscillator.start(audioCtx.currentTime);
@@ -96,11 +115,119 @@ const useGameSounds = () => {
           break;
       }
     } catch (e) {
-      console.log('Sound not available');
+      // Sound not available - fail silently
     }
-  }, [soundEnabled]);
+  }, [soundEnabled, getAudioContext]);
   
   return { playSound, soundEnabled, setSoundEnabled };
+};
+
+// Frontend smoke test for games - validates game data before rendering
+const runFrontendSmokeTest = (game) => {
+  const errors = [];
+  
+  if (!game) {
+    return { passed: false, errors: ['No game data provided'] };
+  }
+  
+  // Check basic structure
+  if (!game.questions || !Array.isArray(game.questions)) {
+    return { passed: false, errors: ['Game has no questions array'] };
+  }
+  
+  if (game.questions.length === 0) {
+    return { passed: false, errors: ['Game has empty questions array'] };
+  }
+  
+  const gameType = game.game_type || 'quiz';
+  
+  // Validate each question based on type
+  game.questions.forEach((q, idx) => {
+    if (!q || typeof q !== 'object') {
+      errors.push(`Question ${idx + 1}: Invalid question object`);
+      return;
+    }
+    
+    switch (gameType) {
+      case 'quiz':
+      case 'true_false':
+        if (!q.options || !Array.isArray(q.options) || q.options.length < 2) {
+          errors.push(`Question ${idx + 1}: Missing or invalid options array`);
+        } else if (!q.correct_answer || !q.options.includes(q.correct_answer)) {
+          errors.push(`Question ${idx + 1}: correct_answer not in options`);
+        }
+        if (!q.question) {
+          errors.push(`Question ${idx + 1}: Missing question text`);
+        }
+        break;
+        
+      case 'flashcards':
+        if (!(q.question || q.front || q.term)) {
+          errors.push(`Flashcard ${idx + 1}: Missing front/question`);
+        }
+        if (!(q.correct_answer || q.back || q.definition)) {
+          errors.push(`Flashcard ${idx + 1}: Missing back/answer`);
+        }
+        break;
+        
+      case 'fill_blanks':
+        if (!q.question && !q.sentence) {
+          errors.push(`Fill-blank ${idx + 1}: Missing question/sentence`);
+        }
+        if (!q.correct_answer && !q.answer) {
+          errors.push(`Fill-blank ${idx + 1}: Missing correct_answer`);
+        }
+        break;
+        
+      case 'matching':
+        if (!(q.question || q.term || q.left)) {
+          errors.push(`Matching pair ${idx + 1}: Missing term`);
+        }
+        if (!(q.correct_answer || q.match || q.right)) {
+          errors.push(`Matching pair ${idx + 1}: Missing definition`);
+        }
+        break;
+        
+      case 'word_search':
+        if (!q.word || typeof q.word !== 'string' || q.word.length < 2) {
+          errors.push(`Word ${idx + 1}: Invalid or missing word`);
+        }
+        break;
+        
+      case 'crossword':
+        if (!q.clue && !q.question) {
+          errors.push(`Crossword ${idx + 1}: Missing clue`);
+        }
+        if (!q.correct_answer && !q.answer) {
+          errors.push(`Crossword ${idx + 1}: Missing answer`);
+        }
+        break;
+        
+      case 'drag_drop':
+        if (!q.items || !Array.isArray(q.items) || q.items.length < 2) {
+          errors.push(`Drag-drop ${idx + 1}: Missing or invalid items array`);
+        }
+        if (!q.correct_order || !Array.isArray(q.correct_order)) {
+          errors.push(`Drag-drop ${idx + 1}: Missing correct_order`);
+        }
+        break;
+        
+      default:
+        break;
+    }
+  });
+  
+  // Type-specific validation
+  if (gameType === 'matching' && game.questions.length < 2) {
+    errors.push('Matching game needs at least 2 pairs');
+  }
+  
+  return {
+    passed: errors.length === 0,
+    errors,
+    gameType,
+    questionCount: game.questions.length
+  };
 };
 
 const GamesCreator = () => {
