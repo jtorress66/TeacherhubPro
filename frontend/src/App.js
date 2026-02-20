@@ -41,6 +41,8 @@ import AdaptiveLearning from "./pages/AdaptiveLearning";
 import StudentProgress from "./pages/StudentProgress";
 import HomeschoolPortal from "./pages/HomeschoolPortal";
 import GamesCreator from "./pages/GamesCreator";
+import StudentLearning from "./pages/StudentLearning";
+import PlayGame from "./pages/PlayGame";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
