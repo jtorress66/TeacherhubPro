@@ -7,7 +7,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://teacherhub-pro.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://classroom-genius-2.preview.emergentagent.com').rstrip('/')
 
 # Test credentials for super_admin user
 TEST_EMAIL = "test@school.edu"
