@@ -4797,17 +4797,7 @@ class GameGenerateRequestLegacy(BaseModel):
     question_count: int = 5
     language: str = "es"
 
-# REMOVED: Duplicate endpoint - use routes/games.py instead
-# @api_router.post("/games/generate")
-# async def generate_educational_game_legacy(
-#     request: GameGenerateRequestLegacy,
-#     user: dict = Depends(get_current_user)
-# ):
-    """Generate an educational game from lesson content using AI"""
-    
-    # Check AI access
-    user_role = user.get("role", "teacher")
-    if user_role not in ["admin", "super_admin"]:
+# All game endpoints are now in routes/games.py with proper validation
         # Check subscription/trial
         has_access = False
         user_id = user.get("user_id")
