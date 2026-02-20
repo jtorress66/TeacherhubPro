@@ -2,7 +2,7 @@
 Educational Games Routes
 Handles game generation, saving, playing, and analytics
 """
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone, timedelta
@@ -30,7 +30,7 @@ def init_games_routes(database, auth_dependency, llm_key, trial_days):
     EMERGENT_LLM_KEY = llm_key
     FREE_TRIAL_DAYS = trial_days
 
-async def get_current_user(request):
+async def get_current_user(request: Request):
     """Wrapper to call the actual auth dependency"""
     return await _get_current_user_func(request)
 
