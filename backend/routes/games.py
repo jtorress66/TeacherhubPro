@@ -17,7 +17,7 @@ from emergentintegrations.llm.chat import LlmChat, UserMessage
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from utils.game_validator import validate_game, simulate_game_smoke_test, create_validation_report
+from utils.game_validator import validate_game, simulate_game_smoke_test, create_validation_report, run_full_validation
 
 logger = logging.getLogger(__name__)
 
