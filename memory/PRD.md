@@ -123,6 +123,51 @@ db.grades.find({"student_id": student_id, "assignment_id": {"$in": assignment_id
 - `POST /api/student-learning/{token}/complete-lesson` - Mark lesson complete
 - `GET /api/play-game/{game_id}` - Public game access
 
+---
+## Update 2026-02-20 - Grade Levels and Subjects Enhancement
+
+### 1. Adaptive Learning - Added Grade Level Selector ✅
+**New Feature:** Teachers can now select the grade level before generating learning paths.
+
+**Options:**
+- 🌱 K-2nd Grade (Kínder - 2do)
+- 🌿 3rd-5th Grade (3ro - 5to)
+- 🌳 6th-8th Grade (6to - 8vo)
+- 🎓 9th-12th Grade (9no - 12vo)
+
+The AI now generates content that is age-appropriate for the selected grade level.
+
+### 2. Games Creator - Subject and Grade Level Selectors ✅
+**Changes:**
+- **Replaced "Difficulty"** with **Grade Level** selector (same 4 options as above)
+- **Added Subject selector** with 10 options:
+  - 📐 Mathematics (Matemáticas)
+  - 📚 English/Language Arts (Inglés/Lenguaje)
+  - 🔬 Science (Ciencias)
+  - 🌍 Social Studies (Estudios Sociales)
+  - 📜 History (Historia)
+  - 🗺️ Geography (Geografía)
+  - 🎨 Art (Arte)
+  - 🎵 Music (Música)
+  - ⚽ Physical Education (Educación Física)
+  - 📝 Other (Otro)
+
+### 3. Saved Games Display - Enhanced Badges ✅
+**Library View:** Saved games now display:
+- Subject emoji badge (📐, 📚, 🔬, etc.)
+- Grade Level emoji badge (🌱, 🌿, 🌳, 🎓)
+- Subject name text badge
+
+### Files Modified
+- `/app/frontend/src/pages/AdaptiveLearning.js` - Added grade level selector and state
+- `/app/frontend/src/pages/GamesCreator.js` - Replaced difficulty with grade level, added subject
+- `/app/backend/server.py` - Updated models and AI prompts to use grade level and subject
+
+### Test Results
+- **Backend:** 100%
+- **Frontend:** 100%
+- **Test Report:** `/app/test_reports/iteration_21.json`
+
 
 
 ## Original Problem Statement
