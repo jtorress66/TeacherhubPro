@@ -90,7 +90,7 @@ async def check_ai_access(user: dict) -> bool:
 @router.post("/generate-path")
 async def generate_adaptive_learning_path(
     request: AdaptiveLearningRequest,
-    user: dict = Depends(lambda: get_current_user)
+    user: dict = Depends(get_current_user)
 ):
     """Generate a personalized adaptive learning path for a student using AI"""
     
@@ -222,7 +222,7 @@ IMPORTANT: Each question MUST include a "correct_answer" field that matches exac
 @router.post("/complete-lesson")
 async def complete_lesson(
     request: CompleteLessonRequest,
-    user: dict = Depends(lambda: get_current_user)
+    user: dict = Depends(get_current_user)
 ):
     """Mark a lesson as completed and update progress"""
     now = datetime.now(timezone.utc).isoformat()
@@ -268,7 +268,7 @@ async def complete_lesson(
 @router.get("/progress/{student_id}")
 async def get_student_progress(
     student_id: str,
-    user: dict = Depends(lambda: get_current_user)
+    user: dict = Depends(get_current_user)
 ):
     """Get learning progress for a student across all subjects"""
     progress_list = await db.adaptive_learning_progress.find(
@@ -291,7 +291,7 @@ async def get_student_progress(
 @router.get("/dashboard/{student_id}")
 async def get_adaptive_dashboard(
     student_id: str,
-    user: dict = Depends(lambda: get_current_user)
+    user: dict = Depends(get_current_user)
 ):
     """Get comprehensive dashboard data for a student's adaptive learning"""
     student = await db.students.find_one({"student_id": student_id}, {"_id": 0})
@@ -333,7 +333,7 @@ async def get_adaptive_dashboard(
 @router.post("/generate-student-link")
 async def generate_student_learning_link(
     request: StudentLearningLinkRequest,
-    user: dict = Depends(lambda: get_current_user)
+    user: dict = Depends(get_current_user)
 ):
     """Generate a shareable link for students to access their learning path"""
     
