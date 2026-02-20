@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -7,6 +7,7 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Textarea } from '../components/ui/textarea';
 import { Input } from '../components/ui/input';
+import { Progress } from '../components/ui/progress';
 import { 
   Select, 
   SelectContent, 
@@ -20,16 +21,92 @@ import {
   HelpCircle, CheckCircle2, Loader2, Play, Share2, Copy,
   Shuffle, Grid3X3, ListChecks, MessageSquare, Zap, Star,
   BookOpen, GraduationCap, ChevronRight, RefreshCw, Download,
-  Search, LayoutGrid, GripVertical, BarChart3, Medal, Users, Clock, Link2, X
+  Search, LayoutGrid, GripVertical, BarChart3, Medal, Users, Clock, Link2, X,
+  Volume2, VolumeX, Timer, Award, Flame
 } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Sound effects using Web Audio API
+const useGameSounds = () => {
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  
+  const playSound = useCallback((type) => {
+    if (!soundEnabled) return;
+    
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      
+      switch(type) {
+        case 'correct':
+          oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+          oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+          oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+          gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+          oscillator.start(audioCtx.currentTime);
+          oscillator.stop(audioCtx.currentTime + 0.4);
+          break;
+        case 'wrong':
+          oscillator.frequency.setValueAtTime(200, audioCtx.currentTime);
+          oscillator.frequency.setValueAtTime(150, audioCtx.currentTime + 0.1);
+          gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+          oscillator.start(audioCtx.currentTime);
+          oscillator.stop(audioCtx.currentTime + 0.3);
+          break;
+        case 'click':
+          oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+          gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+          oscillator.start(audioCtx.currentTime);
+          oscillator.stop(audioCtx.currentTime + 0.05);
+          break;
+        case 'complete':
+          // Victory fanfare
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.15);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime + i * 0.15);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.15 + 0.3);
+            osc.start(audioCtx.currentTime + i * 0.15);
+            osc.stop(audioCtx.currentTime + i * 0.15 + 0.3);
+          });
+          break;
+        case 'flip':
+          oscillator.frequency.setValueAtTime(400, audioCtx.currentTime);
+          oscillator.frequency.setValueAtTime(600, audioCtx.currentTime + 0.05);
+          gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+          oscillator.start(audioCtx.currentTime);
+          oscillator.stop(audioCtx.currentTime + 0.1);
+          break;
+        default:
+          break;
+      }
+    } catch (e) {
+      console.log('Sound not available');
+    }
+  }, [soundEnabled]);
+  
+  return { playSound, soundEnabled, setSoundEnabled };
+};
+
 const GamesCreator = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const { playSound, soundEnabled, setSoundEnabled } = useGameSounds();
   
   // All state declarations must be at the top, before any useEffect
   const [activeTab, setActiveTab] = useState('create');
