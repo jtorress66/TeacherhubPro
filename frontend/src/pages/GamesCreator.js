@@ -120,7 +120,7 @@ const GamesCreator = () => {
   const [savedGames, setSavedGames] = useState([]);
   const [loadingGames, setLoadingGames] = useState(true);
   const [playingGame, setPlayingGame] = useState(null);
-  const [gameProgress, setGameProgress] = useState({ current: 0, score: 0, answers: [] });
+  const [gameProgress, setGameProgress] = useState({ current: 0, score: 0, streak: 0, bestStreak: 0, answers: [] });
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [analytics, setAnalytics] = useState(null);
@@ -129,6 +129,8 @@ const GamesCreator = () => {
   const [playerName, setPlayerName] = useState('');
   const [showNameInput, setShowNameInput] = useState(false);
   const [gameStartTime, setGameStartTime] = useState(null);
+  const [gameTimer, setGameTimer] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
   
   // Game-specific state (must be at top level, not after conditional returns)
   const [flashcardFlipped, setFlashcardFlipped] = useState(false);
@@ -141,6 +143,25 @@ const GamesCreator = () => {
   const [dragDropOrder, setDragDropOrder] = useState([]);
   const [draggingItem, setDraggingItem] = useState(null);
   const [shareLink, setShareLink] = useState('');
+
+  // Game timer effect
+  useEffect(() => {
+    let interval;
+    if (playingGame && !showResult && !showNameInput) {
+      interval = setInterval(() => {
+        setGameTimer(prev => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [playingGame, showResult, showNameInput]);
+
+  // Confetti effect
+  useEffect(() => {
+    if (showConfetti) {
+      const timer = setTimeout(() => setShowConfetti(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showConfetti]);
 
   const gameTypes = [
     { 
