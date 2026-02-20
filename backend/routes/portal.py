@@ -2,7 +2,7 @@
 Portal Routes
 Handles parent and student portal access (public endpoints)
 """
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone, timedelta
@@ -15,13 +15,17 @@ router = APIRouter(prefix="/portal", tags=["portal"])
 
 # These will be set by the main app
 db = None
-get_current_user = None
+_get_current_user_func = None
 
 def init_portal_routes(database, auth_dependency):
     """Initialize the portal routes with dependencies"""
-    global db, get_current_user
+    global db, _get_current_user_func
     db = database
-    get_current_user = auth_dependency
+    _get_current_user_func = auth_dependency
+
+async def get_current_user(request: Request):
+    """Wrapper to call the actual auth dependency"""
+    return await _get_current_user_func(request)
 
 
 class PortalTokenRequest(BaseModel):
