@@ -30,6 +30,7 @@ const AdaptiveLearning = () => {
   const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('math');
+  const [selectedGradeLevel, setSelectedGradeLevel] = useState('3-5');
   const [learningPath, setLearningPath] = useState(null);
   const [currentLesson, setCurrentLesson] = useState(null);
   const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -41,6 +42,13 @@ const AdaptiveLearning = () => {
     { id: 'language', name: language === 'es' ? 'Lenguaje' : 'Language Arts', icon: FileText, color: 'purple' },
     { id: 'science', name: language === 'es' ? 'Ciencias' : 'Science', icon: TreePine, color: 'green' },
     { id: 'reading', name: language === 'es' ? 'Lectura' : 'Reading', icon: BookOpen, color: 'amber' },
+  ];
+
+  const gradeLevels = [
+    { id: 'k-2', name: language === 'es' ? 'Kínder - 2do' : 'K-2nd Grade', emoji: '🌱' },
+    { id: '3-5', name: language === 'es' ? '3ro - 5to' : '3rd-5th Grade', emoji: '🌿' },
+    { id: '6-8', name: language === 'es' ? '6to - 8vo' : '6th-8th Grade', emoji: '🌳' },
+    { id: '9-12', name: language === 'es' ? '9no - 12vo' : '9th-12th Grade', emoji: '🎓' },
   ];
 
   useEffect(() => {
