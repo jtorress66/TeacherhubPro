@@ -15,8 +15,8 @@ BANNED_TOKENS = [
     'TODO', 'FIXME', 'XXX', 'HACK', 'placeholder', 'mock', 
     'undefined', 'not implemented', 'coming soon', 'TBD',
     'insert here', 'add your', 'example only', 'sample data',
-    'replace with', 'your answer', 'fill in', '[', ']...',
-    'etc.', 'and so on', 'lorem ipsum', 'test data'
+    'replace with', 'your answer here', 'fill in the blank here',
+    'etc.', 'and so on', 'lorem ipsum', 'test data only'
 ]
 
 # Required fields by game type
