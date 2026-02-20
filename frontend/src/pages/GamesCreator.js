@@ -449,7 +449,7 @@ const GamesCreator = () => {
 
   const fetchAnalytics = async () => {
     try {
-      const res = await axios.get(`${API}/games/analytics`, { withCredentials: true });
+      const res = await axios.get(`${API}/games/analytics/summary`, { withCredentials: true });
       setAnalytics(res.data);
     } catch (error) {
       console.error('Error fetching analytics:', error);
