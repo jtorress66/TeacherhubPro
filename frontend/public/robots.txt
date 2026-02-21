@@ -1,0 +1,42 @@
+# Robots.txt for TeacherHubPro
+# https://teacherhubpro.com
+
+User-agent: *
+Allow: /
+Allow: /pricing
+Allow: /contact
+Allow: /help
+Allow: /privacy-policy
+Allow: /terms-of-use
+Allow: /cookies-policy
+Allow: /accessibility
+
+# Disallow authenticated/private areas
+Disallow: /dashboard
+Disallow: /planner
+Disallow: /templates
+Disallow: /attendance
+Disallow: /gradebook
+Disallow: /report-cards
+Disallow: /classes
+Disallow: /substitute-packet
+Disallow: /presentations
+Disallow: /settings
+Disallow: /ai-assistant
+Disallow: /adaptive-learning
+Disallow: /student-progress
+Disallow: /games
+Disallow: /admin
+Disallow: /portal
+Disallow: /homeschool-portal
+Disallow: /student-learning
+Disallow: /play-game
+Disallow: /setup-admin
+Disallow: /subscription
+Disallow: /auth
+
+# Disallow API endpoints
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://teacherhubpro.com/sitemap.xml
