@@ -1,5 +1,5 @@
 # Robots.txt for TeacherHubPro
-# https://teacherhubpro.com
+# Dynamic sitemap available at /api/sitemap.xml
 
 User-agent: *
 Allow: /
@@ -38,5 +38,5 @@ Disallow: /auth
 # Disallow API endpoints
 Disallow: /api/
 
-# Sitemap location
-Sitemap: https://teacherhubpro.com/sitemap.xml
+# Sitemap location (dynamic, uses current domain)
+Sitemap: /api/sitemap.xml
