@@ -4948,6 +4948,27 @@ async def robots(request: Request):
         media_type="text/plain"
     )
 
+
+# API routes for sitemap (accessible via /api/sitemap.xml)
+@api_router.get("/sitemap.xml", response_class=PlainTextResponse)
+async def api_sitemap(request: Request):
+    """Generate dynamic sitemap.xml for SEO via API"""
+    base_url = get_base_url(request)
+    return PlainTextResponse(
+        content=generate_sitemap_xml(base_url),
+        media_type="application/xml"
+    )
+
+
+@api_router.get("/robots.txt", response_class=PlainTextResponse)
+async def api_robots(request: Request):
+    """Generate robots.txt via API"""
+    base_url = get_base_url(request)
+    return PlainTextResponse(
+        content=generate_robots_txt(base_url),
+        media_type="text/plain"
+    )
+
 # ==================== END SITEMAP AND ROBOTS.TXT ====================
 
 app.add_middleware(
