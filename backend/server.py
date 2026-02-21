@@ -4830,10 +4830,8 @@ def get_base_url(request: Request) -> str:
     return os.environ.get('SITE_URL', 'https://teacherhubpro.com')
 
 
-@app.get("/sitemap.xml", response_class=PlainTextResponse)
-async def sitemap(request: Request):
-    """Generate dynamic sitemap.xml for SEO"""
-    base_url = get_base_url(request)
+def generate_sitemap_xml(base_url: str) -> str:
+    """Generate sitemap XML content"""
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     
     # Define all public pages with their properties
@@ -4866,19 +4864,12 @@ async def sitemap(request: Request):
         xml_content += '  </url>\n'
     
     xml_content += '</urlset>'
-    
-    return PlainTextResponse(
-        content=xml_content,
-        media_type="application/xml"
-    )
+    return xml_content
 
 
-@app.get("/robots.txt", response_class=PlainTextResponse)
-async def robots(request: Request):
-    """Generate robots.txt file"""
-    base_url = get_base_url(request)
-    
-    robots_content = f"""# Robots.txt for TeacherHubPro
+def generate_robots_txt(base_url: str) -> str:
+    """Generate robots.txt content"""
+    return f"""# Robots.txt for TeacherHubPro
 # https://teacherhubpro.com
 
 User-agent: *
@@ -4921,9 +4912,46 @@ Disallow: /api/
 # Sitemap location
 Sitemap: {base_url}/sitemap.xml
 """
-    
+
+
+# Root-level routes (for direct access)
+@app.get("/sitemap.xml", response_class=PlainTextResponse)
+async def sitemap(request: Request):
+    """Generate dynamic sitemap.xml for SEO"""
+    base_url = get_base_url(request)
     return PlainTextResponse(
-        content=robots_content,
+        content=generate_sitemap_xml(base_url),
+        media_type="application/xml"
+    )
+
+
+@app.get("/robots.txt", response_class=PlainTextResponse)
+async def robots(request: Request):
+    """Generate robots.txt file"""
+    base_url = get_base_url(request)
+    return PlainTextResponse(
+        content=generate_robots_txt(base_url),
+        media_type="text/plain"
+    )
+
+
+# API-prefixed routes (accessible through /api/sitemap.xml)
+@api_router.get("/sitemap.xml", response_class=PlainTextResponse)
+async def api_sitemap(request: Request):
+    """Generate dynamic sitemap.xml for SEO (API route)"""
+    base_url = get_base_url(request)
+    return PlainTextResponse(
+        content=generate_sitemap_xml(base_url),
+        media_type="application/xml"
+    )
+
+
+@api_router.get("/robots.txt", response_class=PlainTextResponse)
+async def api_robots(request: Request):
+    """Generate robots.txt file (API route)"""
+    base_url = get_base_url(request)
+    return PlainTextResponse(
+        content=generate_robots_txt(base_url),
         media_type="text/plain"
     )
 
