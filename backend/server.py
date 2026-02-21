@@ -4815,6 +4815,120 @@ api_router.include_router(portal_router)
 # Include the main api_router in the app
 app.include_router(api_router)
 
+# ==================== SITEMAP AND ROBOTS.TXT ====================
+
+def get_base_url(request: Request) -> str:
+    """Get the base URL from request or environment"""
+    # Try to get from request headers first (for proxy scenarios)
+    forwarded_proto = request.headers.get("x-forwarded-proto", "https")
+    forwarded_host = request.headers.get("x-forwarded-host") or request.headers.get("host")
+    
+    if forwarded_host:
+        return f"{forwarded_proto}://{forwarded_host}"
+    
+    # Fallback to environment or default
+    return os.environ.get('SITE_URL', 'https://teacherhubpro.com')
+
+
+@app.get("/sitemap.xml", response_class=PlainTextResponse)
+async def sitemap(request: Request):
+    """Generate dynamic sitemap.xml for SEO"""
+    base_url = get_base_url(request)
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    # Define all public pages with their properties
+    # Priority: 1.0 = highest, 0.1 = lowest
+    # Changefreq: always, hourly, daily, weekly, monthly, yearly, never
+    public_pages = [
+        # Main pages - highest priority
+        {"loc": "/", "priority": "1.0", "changefreq": "weekly"},
+        {"loc": "/pricing", "priority": "0.9", "changefreq": "monthly"},
+        
+        # Legal and informational pages
+        {"loc": "/contact", "priority": "0.7", "changefreq": "monthly"},
+        {"loc": "/help", "priority": "0.7", "changefreq": "monthly"},
+        {"loc": "/privacy-policy", "priority": "0.5", "changefreq": "yearly"},
+        {"loc": "/terms-of-use", "priority": "0.5", "changefreq": "yearly"},
+        {"loc": "/cookies-policy", "priority": "0.4", "changefreq": "yearly"},
+        {"loc": "/accessibility", "priority": "0.4", "changefreq": "yearly"},
+    ]
+    
+    # Build XML
+    xml_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    
+    for page in public_pages:
+        xml_content += '  <url>\n'
+        xml_content += f'    <loc>{base_url}{page["loc"]}</loc>\n'
+        xml_content += f'    <lastmod>{today}</lastmod>\n'
+        xml_content += f'    <changefreq>{page["changefreq"]}</changefreq>\n'
+        xml_content += f'    <priority>{page["priority"]}</priority>\n'
+        xml_content += '  </url>\n'
+    
+    xml_content += '</urlset>'
+    
+    return PlainTextResponse(
+        content=xml_content,
+        media_type="application/xml"
+    )
+
+
+@app.get("/robots.txt", response_class=PlainTextResponse)
+async def robots(request: Request):
+    """Generate robots.txt file"""
+    base_url = get_base_url(request)
+    
+    robots_content = f"""# Robots.txt for TeacherHubPro
+# https://teacherhubpro.com
+
+User-agent: *
+Allow: /
+Allow: /pricing
+Allow: /contact
+Allow: /help
+Allow: /privacy-policy
+Allow: /terms-of-use
+Allow: /cookies-policy
+Allow: /accessibility
+
+# Disallow authenticated/private areas
+Disallow: /dashboard
+Disallow: /planner
+Disallow: /templates
+Disallow: /attendance
+Disallow: /gradebook
+Disallow: /report-cards
+Disallow: /classes
+Disallow: /substitute-packet
+Disallow: /presentations
+Disallow: /settings
+Disallow: /ai-assistant
+Disallow: /adaptive-learning
+Disallow: /student-progress
+Disallow: /games
+Disallow: /admin
+Disallow: /portal
+Disallow: /homeschool-portal
+Disallow: /student-learning
+Disallow: /play-game
+Disallow: /setup-admin
+Disallow: /subscription
+Disallow: /auth
+
+# Disallow API endpoints
+Disallow: /api/
+
+# Sitemap location
+Sitemap: {base_url}/sitemap.xml
+"""
+    
+    return PlainTextResponse(
+        content=robots_content,
+        media_type="text/plain"
+    )
+
+# ==================== END SITEMAP AND ROBOTS.TXT ====================
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
