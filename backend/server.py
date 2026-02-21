@@ -4818,16 +4818,30 @@ app.include_router(api_router)
 # ==================== SITEMAP AND ROBOTS.TXT ====================
 
 def get_base_url(request: Request) -> str:
-    """Get the base URL from request or environment"""
-    # Try to get from request headers first (for proxy scenarios)
+    """Get the base URL from request headers (for dynamic domain detection)"""
+    # Get protocol from forwarded header or default to https
     forwarded_proto = request.headers.get("x-forwarded-proto", "https")
-    forwarded_host = request.headers.get("x-forwarded-host") or request.headers.get("host")
+    
+    # Get host from various possible headers
+    forwarded_host = request.headers.get("x-forwarded-host")
+    if not forwarded_host:
+        forwarded_host = request.headers.get("host", "")
+    
+    # Remove port if present for cleaner URLs
+    if forwarded_host and ":" in forwarded_host:
+        # Keep port only for non-standard ports
+        host_parts = forwarded_host.split(":")
+        port = host_parts[1] if len(host_parts) > 1 else ""
+        if port not in ["80", "443", ""]:
+            forwarded_host = forwarded_host  # Keep the port
+        else:
+            forwarded_host = host_parts[0]  # Remove standard ports
     
     if forwarded_host:
         return f"{forwarded_proto}://{forwarded_host}"
     
-    # Fallback to environment or default
-    return os.environ.get('SITE_URL', 'https://teacherhubpro.com')
+    # Fallback - should not reach here in normal operation
+    return "https://teacherhubpro.com"
 
 
 def generate_sitemap_xml(base_url: str) -> str:
