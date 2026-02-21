@@ -4805,6 +4805,131 @@ init_games_routes(db, get_current_user, EMERGENT_LLM_KEY, FREE_TRIAL_DAYS)
 init_adaptive_learning_routes(db, get_current_user, EMERGENT_LLM_KEY, FREE_TRIAL_DAYS)
 init_portal_routes(db, get_current_user)
 
+# ==================== SITEMAP AND ROBOTS.TXT ====================
+
+def get_base_url(request: Request) -> str:
+    """Get the base URL from request headers (for dynamic domain detection)"""
+    # Get protocol from forwarded header or default to https
+    forwarded_proto = request.headers.get("x-forwarded-proto", "https")
+    
+    # Get host from various possible headers
+    forwarded_host = request.headers.get("x-forwarded-host")
+    if not forwarded_host:
+        forwarded_host = request.headers.get("host", "")
+    
+    # Remove port if present for cleaner URLs
+    if forwarded_host and ":" in forwarded_host:
+        host_parts = forwarded_host.split(":")
+        port = host_parts[1] if len(host_parts) > 1 else ""
+        if port not in ["80", "443", ""]:
+            forwarded_host = forwarded_host
+        else:
+            forwarded_host = host_parts[0]
+    
+    if forwarded_host:
+        return f"{forwarded_proto}://{forwarded_host}"
+    
+    return "https://teacherhubpro.com"
+
+
+def generate_sitemap_xml(base_url: str) -> str:
+    """Generate sitemap XML content with absolute URLs"""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    public_pages = [
+        {"loc": "/", "priority": "1.0", "changefreq": "weekly"},
+        {"loc": "/pricing", "priority": "0.9", "changefreq": "monthly"},
+        {"loc": "/contact", "priority": "0.7", "changefreq": "monthly"},
+        {"loc": "/help", "priority": "0.7", "changefreq": "monthly"},
+        {"loc": "/privacy-policy", "priority": "0.5", "changefreq": "yearly"},
+        {"loc": "/terms-of-use", "priority": "0.5", "changefreq": "yearly"},
+        {"loc": "/cookies-policy", "priority": "0.4", "changefreq": "yearly"},
+        {"loc": "/accessibility", "priority": "0.4", "changefreq": "yearly"},
+    ]
+    
+    xml_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    
+    for page in public_pages:
+        xml_content += '  <url>\n'
+        xml_content += f'    <loc>{base_url}{page["loc"]}</loc>\n'
+        xml_content += f'    <lastmod>{today}</lastmod>\n'
+        xml_content += f'    <changefreq>{page["changefreq"]}</changefreq>\n'
+        xml_content += f'    <priority>{page["priority"]}</priority>\n'
+        xml_content += '  </url>\n'
+    
+    xml_content += '</urlset>'
+    return xml_content
+
+
+def generate_robots_txt(base_url: str) -> str:
+    """Generate robots.txt content"""
+    return f"""# Robots.txt for TeacherHubPro
+
+User-agent: *
+Allow: /
+Allow: /pricing
+Allow: /contact
+Allow: /help
+Allow: /privacy-policy
+Allow: /terms-of-use
+Allow: /cookies-policy
+Allow: /accessibility
+
+# Disallow authenticated/private areas
+Disallow: /dashboard
+Disallow: /planner
+Disallow: /templates
+Disallow: /attendance
+Disallow: /gradebook
+Disallow: /report-cards
+Disallow: /classes
+Disallow: /substitute-packet
+Disallow: /presentations
+Disallow: /settings
+Disallow: /ai-assistant
+Disallow: /adaptive-learning
+Disallow: /student-progress
+Disallow: /games
+Disallow: /admin
+Disallow: /portal
+Disallow: /homeschool-portal
+Disallow: /student-learning
+Disallow: /play-game
+Disallow: /setup-admin
+Disallow: /subscription
+Disallow: /auth
+
+# Disallow API endpoints
+Disallow: /api/
+
+# Sitemap location
+Sitemap: {base_url}/api/sitemap.xml
+"""
+
+
+# API routes for sitemap (accessible via /api/sitemap.xml)
+@api_router.get("/sitemap.xml", response_class=PlainTextResponse)
+async def api_sitemap(request: Request):
+    """Generate dynamic sitemap.xml for SEO via API"""
+    base_url = get_base_url(request)
+    return PlainTextResponse(
+        content=generate_sitemap_xml(base_url),
+        media_type="application/xml"
+    )
+
+
+@api_router.get("/robots.txt", response_class=PlainTextResponse)
+async def api_robots(request: Request):
+    """Generate robots.txt via API"""
+    base_url = get_base_url(request)
+    return PlainTextResponse(
+        content=generate_robots_txt(base_url),
+        media_type="text/plain"
+    )
+
+# ==================== END SITEMAP AND ROBOTS.TXT ====================
+
 # Include modular routers in the api_router
 api_router.include_router(auth_router)
 api_router.include_router(ai_router)
