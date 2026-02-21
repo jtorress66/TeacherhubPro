@@ -4914,7 +4914,7 @@ Sitemap: {base_url}/sitemap.xml
 """
 
 
-# Root-level routes (for direct access)
+# Root-level routes (for direct access - backup if static files aren't served)
 @app.get("/sitemap.xml", response_class=PlainTextResponse)
 async def sitemap(request: Request):
     """Generate dynamic sitemap.xml for SEO"""
@@ -4928,27 +4928,6 @@ async def sitemap(request: Request):
 @app.get("/robots.txt", response_class=PlainTextResponse)
 async def robots(request: Request):
     """Generate robots.txt file"""
-    base_url = get_base_url(request)
-    return PlainTextResponse(
-        content=generate_robots_txt(base_url),
-        media_type="text/plain"
-    )
-
-
-# API-prefixed routes (accessible through /api/sitemap.xml)
-@api_router.get("/sitemap.xml", response_class=PlainTextResponse)
-async def api_sitemap(request: Request):
-    """Generate dynamic sitemap.xml for SEO (API route)"""
-    base_url = get_base_url(request)
-    return PlainTextResponse(
-        content=generate_sitemap_xml(base_url),
-        media_type="application/xml"
-    )
-
-
-@api_router.get("/robots.txt", response_class=PlainTextResponse)
-async def api_robots(request: Request):
-    """Generate robots.txt file (API route)"""
     base_url = get_base_url(request)
     return PlainTextResponse(
         content=generate_robots_txt(base_url),
