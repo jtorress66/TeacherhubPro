@@ -4805,6 +4805,7 @@ class GameGenerateRequestLegacy(BaseModel):
 init_games_routes(db, get_current_user, EMERGENT_LLM_KEY, FREE_TRIAL_DAYS)
 init_adaptive_learning_routes(db, get_current_user, EMERGENT_LLM_KEY, FREE_TRIAL_DAYS)
 init_portal_routes(db, get_current_user)
+init_google_classroom_routes(db, get_current_user)
 
 # ==================== SITEMAP AND ROBOTS.TXT ====================
 
