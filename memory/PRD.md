@@ -1,6 +1,38 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-23 - Multi-Language Support FIX
+
+### Issue Fixed:
+- **Problem:** Landing page only had EN/ES toggle; authenticated area only showed English
+- **Solution:** Replaced simple toggle with full `LanguageSelector` component everywhere
+
+### Changes Made:
+1. **Landing.js** - Replaced `toggleLanguage` button with `LanguageSelector` component
+2. **LanguageSelector.js** - Enhanced with:
+   - Added `stopPropagation`/`preventDefault` to prevent navigation conflicts
+   - Added border styling for better visibility
+   - Fixed z-index to 9999 for dropdown
+   - Dropdown opens UPWARD in sidebar (bottom-full)
+   - Added type="button" to prevent form submission
+
+### All 7 Languages Now Available:
+| Code | Flag | Native Name | English Name |
+|------|------|-------------|--------------|
+| en | 🇺🇸 | English | English |
+| es | 🇪🇸 | Español | Spanish |
+| fr | 🇫🇷 | Français | French |
+| pt | 🇧🇷 | Português | Portuguese |
+| de | 🇩🇪 | Deutsch | German |
+| it | 🇮🇹 | Italiano | Italian |
+| zh | 🇨🇳 | 中文 | Chinese |
+
+### Test Results:
+- **Frontend:** 100% pass rate
+- **Test Report:** `/app/test_reports/iteration_25.json`
+- **Languages Verified:** Spanish, English, French, German, Chinese
+
+---
 ## Update 2026-02-23 - Multi-Language Support & SEO Pages
 
 ### 1. Multi-Language Support Completed ✅
