@@ -237,7 +237,7 @@ const Landing = () => {
           </div>
           
           <div className="flex items-center gap-2 sm:gap-3">
-            <LanguageSelector variant="compact" />
+            <LanguageSelector variant="compact" dropdownPosition="down" />
             <Button 
               size="sm" 
               className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-md text-xs sm:text-sm px-3 sm:px-4"
