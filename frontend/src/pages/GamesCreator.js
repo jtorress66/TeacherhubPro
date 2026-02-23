@@ -2241,8 +2241,34 @@ const GamesCreator = () => {
                         }}
                       >
                         <Link2 className="h-4 w-4 mr-2" />
-                        {language === 'es' ? 'Obtener enlace para estudiantes' : 'Get student link'}
+                        {language === 'es' ? 'Copiar enlace' : 'Copy link'}
                       </Button>
+                      
+                      {/* Google Classroom Share Button */}
+                      {googleClassroom.connected ? (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="w-full border-blue-400 text-blue-700 hover:bg-blue-50 mt-2"
+                          onClick={() => openGoogleShareDialog(game)}
+                        >
+                          <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c1.66 0 3.22-.45 4.56-1.24l.44.44V21l5 5v-5l-5-5h-.79l-.44-.44C16.22 16.78 14.66 17.23 12 17.23c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6c0 .66-.11 1.3-.3 1.9l1.9 1.9c.26-.85.4-1.77.4-2.8 0-4.97-4.03-9-9-9z"/>
+                            <circle cx="12" cy="12" r="4"/>
+                          </svg>
+                          Google Classroom
+                        </Button>
+                      ) : (
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          className="w-full text-slate-500 hover:bg-slate-100 mt-2"
+                          onClick={connectGoogleClassroom}
+                        >
+                          <Share2 className="h-4 w-4 mr-2" />
+                          {language === 'es' ? 'Conectar Google Classroom' : 'Connect Google Classroom'}
+                        </Button>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
