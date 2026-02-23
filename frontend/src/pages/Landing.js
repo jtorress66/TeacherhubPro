@@ -9,6 +9,7 @@ import { Card, CardContent } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { BookOpen, Calendar, Users, ClipboardList, CheckCircle, Globe, BarChart3, Mail, Palette, Shield, Building2, Sparkles, ArrowRight, FileText, GraduationCap, School, Printer, Bot, Zap, Brain, FileQuestion, Lightbulb, Target, Wand2, Star, Layers, Copy, CalendarDays, Link2, ExternalLink, Home, Heart, Download, Volume2, Headphones, Eye, Lock, Compass, TreePine, Telescope } from 'lucide-react';
 import { toast } from 'sonner';
+import LanguageSelector from '../components/LanguageSelector';
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -236,16 +237,7 @@ const Landing = () => {
           </div>
           
           <div className="flex items-center gap-2 sm:gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleLanguage}
-              className="flex items-center gap-1 px-2"
-              data-testid="language-toggle"
-            >
-              <Globe className="h-4 w-4" />
-              <span className="hidden sm:inline">{language === 'es' ? 'EN' : 'ES'}</span>
-            </Button>
+            <LanguageSelector variant="compact" />
             <Button 
               size="sm" 
               className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-md text-xs sm:text-sm px-3 sm:px-4"
