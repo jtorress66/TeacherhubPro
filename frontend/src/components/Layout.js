@@ -265,7 +265,7 @@ const Layout = ({ children }) => {
                 {isDarkMode ? <Sun className="h-4 w-4 mr-2 text-amber-500" /> : <Moon className="h-4 w-4 mr-2" />}
                 {isDarkMode ? (language === 'es' ? 'Claro' : 'Light') : (language === 'es' ? 'Oscuro' : 'Dark')}
               </Button>
-              <LanguageSelector variant="compact" />
+              <LanguageSelector variant="compact" dropdownPosition="up" />
             </div>
             
             <Button 
