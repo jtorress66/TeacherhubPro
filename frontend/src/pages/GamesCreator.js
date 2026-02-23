@@ -2023,59 +2023,6 @@ const GamesCreator = () => {
 
           {/* Library Tab */}
           <TabsContent value="library" className="space-y-6">
-            {/* Google Classroom Connection Status */}
-            <Card className={`border-2 ${googleClassroom.connected ? 'border-green-200 bg-green-50/50' : 'border-blue-200 bg-blue-50/50'}`}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${googleClassroom.connected ? 'bg-green-100' : 'bg-blue-100'}`}>
-                      <svg className={`h-6 w-6 ${googleClassroom.connected ? 'text-green-600' : 'text-blue-600'}`} viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c1.66 0 3.22-.45 4.56-1.24V21l5 5v-5l-5-5h-.79l-.44-.44C16.22 16.78 14.66 17.23 12 17.23c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6c0 .66-.11 1.3-.3 1.9l1.9 1.9c.26-.85.4-1.77.4-2.8 0-4.97-4.03-9-9-9z"/>
-                        <circle cx="12" cy="12" r="4"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <h4 className={`font-semibold ${googleClassroom.connected ? 'text-green-800' : 'text-blue-800'}`}>
-                        Google Classroom
-                      </h4>
-                      {googleClassroom.connected ? (
-                        <p className="text-sm text-green-600">
-                          {language === 'es' ? 'Conectado como' : 'Connected as'} {googleClassroom.email}
-                        </p>
-                      ) : (
-                        <p className="text-sm text-blue-600">
-                          {language === 'es' ? 'Conecta para compartir juegos con tus estudiantes' : 'Connect to share games with your students'}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  {googleClassroom.connected ? (
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-green-100 text-green-700 border-green-300">
-                        <CheckCircle2 className="h-3 w-3 mr-1" />
-                        {language === 'es' ? 'Conectado' : 'Connected'}
-                      </Badge>
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        className="text-slate-500 hover:text-red-600"
-                        onClick={disconnectGoogleClassroom}
-                      >
-                        {language === 'es' ? 'Desconectar' : 'Disconnect'}
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button 
-                      onClick={connectGoogleClassroom}
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      {language === 'es' ? 'Conectar' : 'Connect'}
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-            
             {/* Share Link Banner */}
             {shareLink && (
               <div className="p-4 bg-green-50 border border-green-200 rounded-xl flex items-center justify-between">
