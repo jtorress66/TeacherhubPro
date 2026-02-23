@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useSchool } from '../contexts/SchoolContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Button } from './ui/button';
+import LanguageSelector from './LanguageSelector';
 import { 
   LayoutDashboard, 
   Calendar, 
@@ -15,7 +16,6 @@ import {
   LogOut,
   Menu,
   X,
-  Globe,
   ChevronRight,
   FileText,
   BarChart3,
@@ -109,9 +109,7 @@ const Layout = ({ children }) => {
             >
               {isDarkMode ? <Sun className="h-5 w-5 text-amber-500" /> : <Moon className="h-5 w-5" />}
             </Button>
-            <Button variant="ghost" size="icon" onClick={toggleLanguage}>
-              <Globe className="h-5 w-5" />
-            </Button>
+            <LanguageSelector variant="compact" />
           </div>
         </div>
       </header>
@@ -256,7 +254,7 @@ const Layout = ({ children }) => {
               </div>
             </div>
             
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -267,15 +265,7 @@ const Layout = ({ children }) => {
                 {isDarkMode ? <Sun className="h-4 w-4 mr-2 text-amber-500" /> : <Moon className="h-4 w-4 mr-2" />}
                 {isDarkMode ? (language === 'es' ? 'Claro' : 'Light') : (language === 'es' ? 'Oscuro' : 'Dark')}
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex-1"
-                onClick={toggleLanguage}
-              >
-                <Globe className="h-4 w-4 mr-2" />
-                {language.toUpperCase()}
-              </Button>
+              <LanguageSelector variant="compact" />
             </div>
             
             <Button 
