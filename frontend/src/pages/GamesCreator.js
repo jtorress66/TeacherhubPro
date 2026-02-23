@@ -2397,6 +2397,66 @@ const GamesCreator = () => {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Delete Confirmation Dialog */}
+      {deleteConfirm.show && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 bg-red-100 rounded-full">
+                  <Trash2 className="h-6 w-6 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-800">
+                    {language === 'es' ? '¿Eliminar juego?' : 'Delete game?'}
+                  </h3>
+                  <p className="text-sm text-slate-500">
+                    {language === 'es' ? 'Esta acción no se puede deshacer' : 'This action cannot be undone'}
+                  </p>
+                </div>
+              </div>
+              
+              {deleteConfirm.game && (
+                <div className="bg-slate-50 p-4 rounded-lg mb-6">
+                  <p className="font-medium text-slate-800">{deleteConfirm.game.title}</p>
+                  <p className="text-sm text-slate-500">
+                    {deleteConfirm.game.questions?.length || 0} {language === 'es' ? 'preguntas' : 'questions'}
+                  </p>
+                </div>
+              )}
+              
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => setDeleteConfirm({ show: false, game: null, deleting: false })}
+                  disabled={deleteConfirm.deleting}
+                >
+                  {language === 'es' ? 'Cancelar' : 'Cancel'}
+                </Button>
+                <Button 
+                  className="flex-1 bg-red-600 hover:bg-red-700"
+                  onClick={() => deleteGame(deleteConfirm.game.game_id)}
+                  disabled={deleteConfirm.deleting}
+                >
+                  {deleteConfirm.deleting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      {language === 'es' ? 'Eliminando...' : 'Deleting...'}
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {language === 'es' ? 'Eliminar' : 'Delete'}
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };
