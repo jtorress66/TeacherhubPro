@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
@@ -9,12 +10,15 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
+import { Input } from '../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { toast } from 'sonner';
 import { 
   FileText, Printer, Download, Loader2, GraduationCap, 
   User, Calendar, School, Award, BookOpen, Clock,
-  CheckCircle2, AlertCircle, TrendingUp, TrendingDown
+  CheckCircle2, AlertCircle, TrendingUp, TrendingDown,
+  Users, Search, Filter, ChevronRight, Sparkles
 } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -22,6 +26,7 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const ReportCards = () => {
   const { user } = useAuth();
   const { language } = useLanguage();
+  const { isDarkMode } = useTheme();
   const navigate = useNavigate();
   const printRef = useRef();
   
@@ -36,6 +41,13 @@ const ReportCards = () => {
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedStudent, setSelectedStudent] = useState('');
   const [selectedSemester, setSelectedSemester] = useState('');
+  const [activeTab, setActiveTab] = useState('individual');
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // Batch generation state
+  const [batchGenerating, setBatchGenerating] = useState(false);
+  const [batchProgress, setBatchProgress] = useState(0);
+  const [selectedStudents, setSelectedStudents] = useState([]);
   
   // Report card data
   const [reportData, setReportData] = useState(null);
