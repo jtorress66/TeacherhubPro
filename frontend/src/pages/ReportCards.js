@@ -691,6 +691,186 @@ const ReportCards = () => {
             )}
           </div>
         </div>
+          </TabsContent>
+
+          {/* Batch Tab */}
+          <TabsContent value="batch" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Batch Selection Panel */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5 text-emerald-600" />
+                    {language === 'es' ? 'Generación por Lotes' : 'Batch Generation'}
+                  </CardTitle>
+                  <CardDescription>
+                    {language === 'es' ? 'Genere boletas para múltiples estudiantes' : 'Generate report cards for multiple students'}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Semester Selection */}
+                  <div>
+                    <Label>{language === 'es' ? 'Semestre' : 'Semester'}</Label>
+                    <Select value={selectedSemester} onValueChange={setSelectedSemester}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={language === 'es' ? 'Seleccionar semestre' : 'Select semester'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {semesters.map(sem => (
+                          <SelectItem key={sem.semester_id} value={sem.semester_id}>
+                            {language === 'es' ? sem.name_es || sem.name : sem.name}
+                            {sem.is_active && ` (${language === 'es' ? 'Activo' : 'Active'})`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Class Selection */}
+                  <div>
+                    <Label>{language === 'es' ? 'Clase' : 'Class'}</Label>
+                    <Select value={selectedClass} onValueChange={(v) => {
+                      setSelectedClass(v);
+                      setSelectedStudent('');
+                      setReportData(null);
+                      setSelectedStudents([]);
+                    }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={language === 'es' ? 'Seleccionar clase' : 'Select class'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {classes.map(cls => (
+                          <SelectItem key={cls.class_id} value={cls.class_id}>
+                            {cls.name} - {cls.grade_level}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Selection Info */}
+                  {selectedClass && (
+                    <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3">
+                      <p className="text-sm text-emerald-700 dark:text-emerald-400">
+                        <CheckCircle2 className="h-4 w-4 inline mr-1" />
+                        {selectedStudents.length} / {students.length} {language === 'es' ? 'seleccionados' : 'selected'}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Generate Batch Button */}
+                  <Button 
+                    className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700"
+                    onClick={generateBatchReportCards}
+                    disabled={selectedStudents.length === 0 || !selectedClass || batchGenerating}
+                    data-testid="generate-batch-btn"
+                  >
+                    {batchGenerating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" /> 
+                        {language === 'es' ? `Generando ${batchProgress}%...` : `Generating ${batchProgress}%...`}
+                      </>
+                    ) : (
+                      <>
+                        <Printer className="h-4 w-4 mr-2" /> 
+                        {language === 'es' ? `Imprimir ${selectedStudents.length} Boletas` : `Print ${selectedStudents.length} Report Cards`}
+                      </>
+                    )}
+                  </Button>
+
+                  {/* Progress bar */}
+                  {batchGenerating && (
+                    <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div 
+                        className="bg-gradient-to-r from-emerald-500 to-green-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${batchProgress}%` }}
+                      />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Student List for Batch Selection */}
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>{language === 'es' ? 'Seleccionar Estudiantes' : 'Select Students'}</CardTitle>
+                    {selectedClass && students.length > 0 && (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={selectAllStudents}
+                      >
+                        {selectedStudents.length === students.length 
+                          ? (language === 'es' ? 'Deseleccionar Todos' : 'Deselect All')
+                          : (language === 'es' ? 'Seleccionar Todos' : 'Select All')
+                        }
+                      </Button>
+                    )}
+                  </div>
+                  {selectedClass && (
+                    <div className="relative mt-2">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder={language === 'es' ? 'Buscar estudiante...' : 'Search student...'}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-9"
+                      />
+                    </div>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  {!selectedClass ? (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <Users className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                      <p>{language === 'es' ? 'Seleccione una clase para ver estudiantes' : 'Select a class to view students'}</p>
+                    </div>
+                  ) : students.length === 0 ? (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                      <p>{language === 'es' ? 'No hay estudiantes en esta clase' : 'No students in this class'}</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[400px] overflow-y-auto">
+                      {filteredStudents.map(student => {
+                        const isSelected = selectedStudents.includes(student.student_id);
+                        return (
+                          <div
+                            key={student.student_id}
+                            onClick={() => toggleStudentSelection(student.student_id)}
+                            className={`
+                              flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all
+                              ${isSelected 
+                                ? 'bg-emerald-100 dark:bg-emerald-900/30 border-2 border-emerald-500' 
+                                : 'bg-secondary/50 hover:bg-secondary border-2 border-transparent'
+                              }
+                            `}
+                          >
+                            <div className={`
+                              h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium
+                              ${isSelected ? 'bg-emerald-500 text-white' : 'bg-muted text-muted-foreground'}
+                            `}>
+                              {isSelected ? <CheckCircle2 className="h-5 w-5" /> : (student.name || student.first_name || '?').charAt(0)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium truncate">
+                                {student.name || `${student.first_name} ${student.last_name}`}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {student.student_number || 'No ID'}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </Layout>
   );
