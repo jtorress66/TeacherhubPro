@@ -2501,6 +2501,102 @@ const GamesCreator = () => {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Google Classroom Share Dialog */}
+      {googleClassroom.showShareDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="p-6 border-b border-slate-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    <svg className="h-6 w-6 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c1.66 0 3.22-.45 4.56-1.24V21l5 5v-5l-5-5h-.79l-.44-.44C16.22 16.78 14.66 17.23 12 17.23c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6c0 .66-.11 1.3-.3 1.9l1.9 1.9c.26-.85.4-1.77.4-2.8 0-4.97-4.03-9-9-9z"/>
+                      <circle cx="12" cy="12" r="4"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-800">
+                      {language === 'es' ? 'Compartir en Google Classroom' : 'Share to Google Classroom'}
+                    </h3>
+                    <p className="text-sm text-slate-500">{googleClassroom.email}</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setGoogleClassroom(prev => ({ ...prev, showShareDialog: false, selectedGame: null }))}
+                  className="p-2 hover:bg-slate-100 rounded-full transition"
+                >
+                  <X className="h-5 w-5 text-slate-500" />
+                </button>
+              </div>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              {/* Game Info */}
+              {googleClassroom.selectedGame && (
+                <div className="bg-purple-50 p-4 rounded-lg">
+                  <p className="font-medium text-purple-800">{googleClassroom.selectedGame.title}</p>
+                  <p className="text-sm text-purple-600">
+                    {googleClassroom.selectedGame.questions?.length || 0} {language === 'es' ? 'preguntas' : 'questions'}
+                  </p>
+                </div>
+              )}
+              
+              {/* Select Course */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  {language === 'es' ? 'Seleccionar Clase' : 'Select Class'}
+                </label>
+                {googleClassroom.courses.length > 0 ? (
+                  <select 
+                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={googleClassroom.selectedCourse || ''}
+                    onChange={(e) => setGoogleClassroom(prev => ({ ...prev, selectedCourse: e.target.value }))}
+                  >
+                    <option value="">{language === 'es' ? '-- Seleccionar clase --' : '-- Select class --'}</option>
+                    {googleClassroom.courses.map(course => (
+                      <option key={course.id} value={course.id}>
+                        {course.name} {course.section ? `(${course.section})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="text-slate-500 text-sm p-3 bg-slate-50 rounded-lg">
+                    {language === 'es' ? 'No se encontraron clases. Asegúrate de tener clases activas en Google Classroom.' : 'No classes found. Make sure you have active classes in Google Classroom.'}
+                  </p>
+                )}
+              </div>
+            </div>
+            
+            <div className="p-4 bg-slate-50 rounded-b-xl flex gap-3">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => setGoogleClassroom(prev => ({ ...prev, showShareDialog: false, selectedGame: null }))}
+              >
+                {language === 'es' ? 'Cancelar' : 'Cancel'}
+              </Button>
+              <Button 
+                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                onClick={shareToGoogleClassroom}
+                disabled={!googleClassroom.selectedCourse || googleClassroom.sharing}
+              >
+                {googleClassroom.sharing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    {language === 'es' ? 'Compartiendo...' : 'Sharing...'}
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="h-4 w-4 mr-2" />
+                    {language === 'es' ? 'Compartir' : 'Share'}
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };
