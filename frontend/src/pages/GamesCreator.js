@@ -273,18 +273,6 @@ const GamesCreator = () => {
   const [shareLink, setShareLink] = useState('');
   const [validationErrors, setValidationErrors] = useState([]);
   const [isValidating, setIsValidating] = useState(false);
-  
-  // Google Classroom Integration State
-  const [googleClassroom, setGoogleClassroom] = useState({
-    connected: false,
-    loading: true,
-    email: null,
-    courses: [],
-    showShareDialog: false,
-    selectedGame: null,
-    selectedCourse: null,
-    sharing: false
-  });
 
   // Ref to track timers for cleanup
   const timerRef = useRef(null);
