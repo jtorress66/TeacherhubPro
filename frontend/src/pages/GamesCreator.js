@@ -273,6 +273,7 @@ const GamesCreator = () => {
   const [shareLink, setShareLink] = useState('');
   const [validationErrors, setValidationErrors] = useState([]);
   const [isValidating, setIsValidating] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, game: null, deleting: false });
 
   // Ref to track timers for cleanup
   const timerRef = useRef(null);
