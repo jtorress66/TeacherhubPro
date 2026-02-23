@@ -2154,6 +2154,17 @@ const GamesCreator = () => {
                         </svg>
                         Google Classroom
                       </Button>
+                      
+                      {/* Delete Button */}
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        className="w-full text-red-500 hover:bg-red-50 hover:text-red-700 mt-2"
+                        onClick={() => setDeleteConfirm({ show: true, game: game, deleting: false })}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        {language === 'es' ? 'Eliminar' : 'Delete'}
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}
