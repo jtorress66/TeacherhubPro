@@ -1,5 +1,16 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
+// Available languages with their display names and flags
+export const availableLanguages = [
+  { code: 'en', name: 'English', flag: '🇺🇸', nativeName: 'English' },
+  { code: 'es', name: 'Spanish', flag: '🇪🇸', nativeName: 'Español' },
+  { code: 'fr', name: 'French', flag: '🇫🇷', nativeName: 'Français' },
+  { code: 'pt', name: 'Portuguese', flag: '🇧🇷', nativeName: 'Português' },
+  { code: 'de', name: 'German', flag: '🇩🇪', nativeName: 'Deutsch' },
+  { code: 'it', name: 'Italian', flag: '🇮🇹', nativeName: 'Italiano' },
+  { code: 'zh', name: 'Chinese', flag: '🇨🇳', nativeName: '中文' },
+];
+
 const translations = {
   en: {
     // Navigation
@@ -153,13 +164,26 @@ const translations = {
     to: 'To',
     date: 'Date',
     teacher: 'Teacher',
+    selectLanguage: 'Select Language',
     
     // Days
     monday: 'Monday',
     tuesday: 'Tuesday',
     wednesday: 'Wednesday',
     thursday: 'Thursday',
-    friday: 'Friday'
+    friday: 'Friday',
+    
+    // Games
+    educationalGames: 'Educational Games',
+    myGames: 'My Games',
+    createGame: 'Create Game',
+    play: 'Play',
+    copyLink: 'Copy Link',
+    shareToClassroom: 'Share to Classroom',
+    deleteGame: 'Delete Game',
+    questions: 'Questions',
+    gameType: 'Game Type',
+    gradeLevel: 'Grade Level'
   },
   es: {
     // Navigation
@@ -313,13 +337,497 @@ const translations = {
     to: 'Hasta',
     date: 'Fecha',
     teacher: 'Maestro',
+    selectLanguage: 'Seleccionar Idioma',
     
     // Days
     monday: 'Lunes',
     tuesday: 'Martes',
     wednesday: 'Miércoles',
     thursday: 'Jueves',
-    friday: 'Viernes'
+    friday: 'Viernes',
+    
+    // Games
+    educationalGames: 'Juegos Educativos',
+    myGames: 'Mis Juegos',
+    createGame: 'Crear Juego',
+    play: 'Jugar',
+    copyLink: 'Copiar Enlace',
+    shareToClassroom: 'Compartir en Classroom',
+    deleteGame: 'Eliminar Juego',
+    questions: 'Preguntas',
+    gameType: 'Tipo de Juego',
+    gradeLevel: 'Nivel de Grado'
+  },
+  fr: {
+    // Navigation
+    dashboard: 'Tableau de Bord',
+    planner: 'Planificateur',
+    attendance: 'Présence',
+    gradebook: 'Carnet de Notes',
+    classes: 'Classes',
+    settings: 'Paramètres',
+    logout: 'Déconnexion',
+    
+    // Auth
+    login: 'Connexion',
+    register: "S'inscrire",
+    email: 'Email',
+    password: 'Mot de Passe',
+    name: 'Nom',
+    signInWithGoogle: 'Se connecter avec Google',
+    orContinueWith: 'ou continuer avec',
+    dontHaveAccount: "Pas de compte?",
+    alreadyHaveAccount: 'Déjà un compte?',
+    
+    // Dashboard
+    welcome: 'Bienvenue',
+    todayOverview: "Aperçu d'Aujourd'hui",
+    quickActions: 'Actions Rapides',
+    attendancePending: 'Présence en Attente',
+    upcomingAssignments: 'Devoirs à Venir',
+    recentPlans: 'Plans Récents',
+    totalClasses: 'Total des Classes',
+    totalStudents: 'Total des Élèves',
+    totalPlans: 'Total des Plans',
+    
+    // Classes
+    addClass: 'Ajouter Classe',
+    className: 'Nom de Classe',
+    grade: 'Niveau',
+    section: 'Section',
+    subject: 'Matière',
+    yearTerm: 'Année/Période',
+    students: 'Élèves',
+    addStudent: 'Ajouter Élève',
+    firstName: 'Prénom',
+    lastName: 'Nom',
+    studentNumber: "Numéro d'Élève",
+    parentEmail: 'Email du Parent',
+    notes: 'Notes',
+    accommodations: 'Aménagements',
+    
+    // Planner
+    weeklyPlan: 'Plan Hebdomadaire',
+    createPlan: 'Créer Plan',
+    weekOf: 'Semaine du',
+    unit: 'Unité',
+    story: 'Histoire/Titre',
+    objectiveOfWeek: 'Objectif de la Semaine',
+    skillsOfWeek: 'Compétences de la Semaine',
+    dayTheme: 'Thème du Jour',
+    activities: 'Activités',
+    materials: 'Matériels',
+    standards: 'Standards',
+    expectations: 'Attentes',
+    firstWeek: 'Première Semaine',
+    secondWeek: 'Deuxième Semaine',
+    saveAsTemplate: 'Enregistrer comme Modèle',
+    duplicateLastWeek: 'Dupliquer Semaine Précédente',
+    exportPdf: 'Exporter PDF',
+    
+    // Common
+    save: 'Enregistrer',
+    cancel: 'Annuler',
+    delete: 'Supprimer',
+    edit: 'Modifier',
+    view: 'Voir',
+    search: 'Rechercher',
+    filter: 'Filtrer',
+    loading: 'Chargement...',
+    noData: 'Aucune donnée disponible',
+    confirmDelete: 'Êtes-vous sûr de vouloir supprimer?',
+    success: 'Succès',
+    error: 'Erreur',
+    from: 'De',
+    to: 'À',
+    date: 'Date',
+    teacher: 'Enseignant',
+    selectLanguage: 'Sélectionner la Langue',
+    
+    // Days
+    monday: 'Lundi',
+    tuesday: 'Mardi',
+    wednesday: 'Mercredi',
+    thursday: 'Jeudi',
+    friday: 'Vendredi',
+    
+    // Attendance
+    takeAttendance: 'Prendre la Présence',
+    present: 'Présent',
+    absent: 'Absent',
+    tardy: 'En Retard',
+    excused: 'Excusé',
+    markAllPresent: 'Marquer Tous Présents',
+    submitAttendance: 'Soumettre Présence',
+    
+    // Gradebook
+    assignments: 'Devoirs',
+    createAssignment: 'Créer Devoir',
+    title: 'Titre',
+    description: 'Description',
+    points: 'Points',
+    dueDate: 'Date Limite',
+    category: 'Catégorie',
+    homework: 'Devoir',
+    quiz: 'Quiz',
+    test: 'Examen',
+    project: 'Projet',
+    
+    // Games
+    educationalGames: 'Jeux Éducatifs',
+    myGames: 'Mes Jeux',
+    createGame: 'Créer Jeu',
+    play: 'Jouer',
+    copyLink: 'Copier Lien',
+    shareToClassroom: 'Partager sur Classroom',
+    deleteGame: 'Supprimer Jeu',
+    questions: 'Questions',
+    gameType: 'Type de Jeu',
+    gradeLevel: 'Niveau Scolaire'
+  },
+  pt: {
+    // Navigation
+    dashboard: 'Painel',
+    planner: 'Planejador',
+    attendance: 'Presença',
+    gradebook: 'Boletim',
+    classes: 'Turmas',
+    settings: 'Configurações',
+    logout: 'Sair',
+    
+    // Auth
+    login: 'Entrar',
+    register: 'Cadastrar',
+    email: 'Email',
+    password: 'Senha',
+    name: 'Nome',
+    signInWithGoogle: 'Entrar com Google',
+    orContinueWith: 'ou continuar com',
+    dontHaveAccount: 'Não tem conta?',
+    alreadyHaveAccount: 'Já tem conta?',
+    
+    // Dashboard
+    welcome: 'Bem-vindo',
+    todayOverview: 'Resumo de Hoje',
+    quickActions: 'Ações Rápidas',
+    attendancePending: 'Presença Pendente',
+    upcomingAssignments: 'Próximas Tarefas',
+    recentPlans: 'Planos Recentes',
+    totalClasses: 'Total de Turmas',
+    totalStudents: 'Total de Alunos',
+    totalPlans: 'Total de Planos',
+    
+    // Classes
+    addClass: 'Adicionar Turma',
+    className: 'Nome da Turma',
+    grade: 'Série',
+    section: 'Seção',
+    subject: 'Matéria',
+    yearTerm: 'Ano/Período',
+    students: 'Alunos',
+    addStudent: 'Adicionar Aluno',
+    firstName: 'Nome',
+    lastName: 'Sobrenome',
+    studentNumber: 'Número do Aluno',
+    parentEmail: 'Email do Responsável',
+    notes: 'Notas',
+    accommodations: 'Adaptações',
+    
+    // Common
+    save: 'Salvar',
+    cancel: 'Cancelar',
+    delete: 'Excluir',
+    edit: 'Editar',
+    view: 'Ver',
+    search: 'Buscar',
+    filter: 'Filtrar',
+    loading: 'Carregando...',
+    noData: 'Nenhum dado disponível',
+    confirmDelete: 'Tem certeza que deseja excluir?',
+    success: 'Sucesso',
+    error: 'Erro',
+    from: 'De',
+    to: 'Até',
+    date: 'Data',
+    teacher: 'Professor',
+    selectLanguage: 'Selecionar Idioma',
+    
+    // Days
+    monday: 'Segunda',
+    tuesday: 'Terça',
+    wednesday: 'Quarta',
+    thursday: 'Quinta',
+    friday: 'Sexta',
+    
+    // Games
+    educationalGames: 'Jogos Educativos',
+    myGames: 'Meus Jogos',
+    createGame: 'Criar Jogo',
+    play: 'Jogar',
+    copyLink: 'Copiar Link',
+    shareToClassroom: 'Compartilhar no Classroom',
+    deleteGame: 'Excluir Jogo',
+    questions: 'Perguntas',
+    gameType: 'Tipo de Jogo',
+    gradeLevel: 'Nível Escolar'
+  },
+  de: {
+    // Navigation
+    dashboard: 'Übersicht',
+    planner: 'Unterrichtsplaner',
+    attendance: 'Anwesenheit',
+    gradebook: 'Notenbuch',
+    classes: 'Klassen',
+    settings: 'Einstellungen',
+    logout: 'Abmelden',
+    
+    // Auth
+    login: 'Anmelden',
+    register: 'Registrieren',
+    email: 'E-Mail',
+    password: 'Passwort',
+    name: 'Name',
+    signInWithGoogle: 'Mit Google anmelden',
+    orContinueWith: 'oder weiter mit',
+    dontHaveAccount: 'Kein Konto?',
+    alreadyHaveAccount: 'Bereits ein Konto?',
+    
+    // Dashboard
+    welcome: 'Willkommen',
+    todayOverview: 'Heutige Übersicht',
+    quickActions: 'Schnellaktionen',
+    attendancePending: 'Anwesenheit ausstehend',
+    upcomingAssignments: 'Anstehende Aufgaben',
+    recentPlans: 'Aktuelle Pläne',
+    totalClasses: 'Gesamtklassen',
+    totalStudents: 'Gesamtschüler',
+    totalPlans: 'Gesamtpläne',
+    
+    // Classes
+    addClass: 'Klasse hinzufügen',
+    className: 'Klassenname',
+    grade: 'Klassenstufe',
+    section: 'Abschnitt',
+    subject: 'Fach',
+    yearTerm: 'Jahr/Semester',
+    students: 'Schüler',
+    addStudent: 'Schüler hinzufügen',
+    firstName: 'Vorname',
+    lastName: 'Nachname',
+    studentNumber: 'Schülernummer',
+    parentEmail: 'Eltern-E-Mail',
+    notes: 'Notizen',
+    accommodations: 'Anpassungen',
+    
+    // Common
+    save: 'Speichern',
+    cancel: 'Abbrechen',
+    delete: 'Löschen',
+    edit: 'Bearbeiten',
+    view: 'Ansehen',
+    search: 'Suchen',
+    filter: 'Filtern',
+    loading: 'Laden...',
+    noData: 'Keine Daten verfügbar',
+    confirmDelete: 'Möchten Sie dies wirklich löschen?',
+    success: 'Erfolg',
+    error: 'Fehler',
+    from: 'Von',
+    to: 'Bis',
+    date: 'Datum',
+    teacher: 'Lehrer',
+    selectLanguage: 'Sprache auswählen',
+    
+    // Days
+    monday: 'Montag',
+    tuesday: 'Dienstag',
+    wednesday: 'Mittwoch',
+    thursday: 'Donnerstag',
+    friday: 'Freitag',
+    
+    // Games
+    educationalGames: 'Lernspiele',
+    myGames: 'Meine Spiele',
+    createGame: 'Spiel erstellen',
+    play: 'Spielen',
+    copyLink: 'Link kopieren',
+    shareToClassroom: 'Im Classroom teilen',
+    deleteGame: 'Spiel löschen',
+    questions: 'Fragen',
+    gameType: 'Spieltyp',
+    gradeLevel: 'Klassenstufe'
+  },
+  it: {
+    // Navigation
+    dashboard: 'Pannello',
+    planner: 'Pianificatore',
+    attendance: 'Presenze',
+    gradebook: 'Registro Voti',
+    classes: 'Classi',
+    settings: 'Impostazioni',
+    logout: 'Esci',
+    
+    // Auth
+    login: 'Accedi',
+    register: 'Registrati',
+    email: 'Email',
+    password: 'Password',
+    name: 'Nome',
+    signInWithGoogle: 'Accedi con Google',
+    orContinueWith: 'o continua con',
+    dontHaveAccount: 'Non hai un account?',
+    alreadyHaveAccount: 'Hai già un account?',
+    
+    // Dashboard
+    welcome: 'Benvenuto',
+    todayOverview: 'Panoramica di Oggi',
+    quickActions: 'Azioni Rapide',
+    attendancePending: 'Presenze in Sospeso',
+    upcomingAssignments: 'Compiti in Arrivo',
+    recentPlans: 'Piani Recenti',
+    totalClasses: 'Totale Classi',
+    totalStudents: 'Totale Studenti',
+    totalPlans: 'Totale Piani',
+    
+    // Classes
+    addClass: 'Aggiungi Classe',
+    className: 'Nome Classe',
+    grade: 'Anno',
+    section: 'Sezione',
+    subject: 'Materia',
+    yearTerm: 'Anno/Periodo',
+    students: 'Studenti',
+    addStudent: 'Aggiungi Studente',
+    firstName: 'Nome',
+    lastName: 'Cognome',
+    studentNumber: 'Numero Studente',
+    parentEmail: 'Email Genitore',
+    notes: 'Note',
+    accommodations: 'Adattamenti',
+    
+    // Common
+    save: 'Salva',
+    cancel: 'Annulla',
+    delete: 'Elimina',
+    edit: 'Modifica',
+    view: 'Visualizza',
+    search: 'Cerca',
+    filter: 'Filtra',
+    loading: 'Caricamento...',
+    noData: 'Nessun dato disponibile',
+    confirmDelete: 'Sei sicuro di voler eliminare?',
+    success: 'Successo',
+    error: 'Errore',
+    from: 'Da',
+    to: 'A',
+    date: 'Data',
+    teacher: 'Insegnante',
+    selectLanguage: 'Seleziona Lingua',
+    
+    // Days
+    monday: 'Lunedì',
+    tuesday: 'Martedì',
+    wednesday: 'Mercoledì',
+    thursday: 'Giovedì',
+    friday: 'Venerdì',
+    
+    // Games
+    educationalGames: 'Giochi Educativi',
+    myGames: 'I Miei Giochi',
+    createGame: 'Crea Gioco',
+    play: 'Gioca',
+    copyLink: 'Copia Link',
+    shareToClassroom: 'Condividi su Classroom',
+    deleteGame: 'Elimina Gioco',
+    questions: 'Domande',
+    gameType: 'Tipo di Gioco',
+    gradeLevel: 'Livello Scolastico'
+  },
+  zh: {
+    // Navigation
+    dashboard: '仪表板',
+    planner: '课程计划',
+    attendance: '考勤',
+    gradebook: '成绩册',
+    classes: '班级',
+    settings: '设置',
+    logout: '退出',
+    
+    // Auth
+    login: '登录',
+    register: '注册',
+    email: '邮箱',
+    password: '密码',
+    name: '姓名',
+    signInWithGoogle: '使用Google登录',
+    orContinueWith: '或使用',
+    dontHaveAccount: '没有账户？',
+    alreadyHaveAccount: '已有账户？',
+    
+    // Dashboard
+    welcome: '欢迎',
+    todayOverview: '今日概览',
+    quickActions: '快捷操作',
+    attendancePending: '待处理考勤',
+    upcomingAssignments: '即将到期作业',
+    recentPlans: '最近计划',
+    totalClasses: '班级总数',
+    totalStudents: '学生总数',
+    totalPlans: '计划总数',
+    
+    // Classes
+    addClass: '添加班级',
+    className: '班级名称',
+    grade: '年级',
+    section: '班组',
+    subject: '科目',
+    yearTerm: '学年/学期',
+    students: '学生',
+    addStudent: '添加学生',
+    firstName: '名',
+    lastName: '姓',
+    studentNumber: '学号',
+    parentEmail: '家长邮箱',
+    notes: '备注',
+    accommodations: '特殊安排',
+    
+    // Common
+    save: '保存',
+    cancel: '取消',
+    delete: '删除',
+    edit: '编辑',
+    view: '查看',
+    search: '搜索',
+    filter: '筛选',
+    loading: '加载中...',
+    noData: '暂无数据',
+    confirmDelete: '确定要删除吗？',
+    success: '成功',
+    error: '错误',
+    from: '从',
+    to: '到',
+    date: '日期',
+    teacher: '教师',
+    selectLanguage: '选择语言',
+    
+    // Days
+    monday: '星期一',
+    tuesday: '星期二',
+    wednesday: '星期三',
+    thursday: '星期四',
+    friday: '星期五',
+    
+    // Games
+    educationalGames: '教育游戏',
+    myGames: '我的游戏',
+    createGame: '创建游戏',
+    play: '开始',
+    copyLink: '复制链接',
+    shareToClassroom: '分享到Classroom',
+    deleteGame: '删除游戏',
+    questions: '问题',
+    gameType: '游戏类型',
+    gradeLevel: '年级水平'
   }
 };
 
@@ -339,11 +847,26 @@ export const LanguageProvider = ({ children }) => {
   };
 
   const toggleLanguage = () => {
-    setLanguage(prev => prev === 'en' ? 'es' : 'en');
+    // Cycle through languages
+    const codes = availableLanguages.map(l => l.code);
+    const currentIndex = codes.indexOf(language);
+    const nextIndex = (currentIndex + 1) % codes.length;
+    setLanguage(codes[nextIndex]);
+  };
+
+  const getCurrentLanguage = () => {
+    return availableLanguages.find(l => l.code === language) || availableLanguages[0];
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, toggleLanguage }}>
+    <LanguageContext.Provider value={{ 
+      language, 
+      setLanguage, 
+      t, 
+      toggleLanguage, 
+      getCurrentLanguage,
+      availableLanguages 
+    }}>
       {children}
     </LanguageContext.Provider>
   );
