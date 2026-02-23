@@ -4938,6 +4938,7 @@ api_router.include_router(ai_router)
 api_router.include_router(games_router)
 api_router.include_router(adaptive_learning_router)
 api_router.include_router(portal_router)
+api_router.include_router(google_classroom_router)
 
 # Include the main api_router in the app
 app.include_router(api_router)
