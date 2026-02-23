@@ -39,29 +39,31 @@ const LanguageSelector = ({ variant = 'default', showLabel = true }) => {
         </button>
         
         {isOpen && (
-          <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-50">
+          <div className="absolute bottom-full left-0 mb-2 w-52 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-[100]">
             <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-700">
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">{t('selectLanguage')}</p>
             </div>
-            {availableLanguages.map((lang) => (
-              <button
-                key={lang.code}
-                onClick={() => handleSelect(lang.code)}
-                data-testid={`lang-option-${lang.code}`}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${
-                  language === lang.code ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300'
-                }`}
-              >
-                <span className="text-xl">{lang.flag}</span>
-                <div className="flex-1 text-left">
-                  <p className={`text-sm font-medium ${language === lang.code ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300'}`}>
-                    {lang.nativeName}
-                  </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">{lang.name}</p>
-                </div>
-                {language === lang.code && <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
-              </button>
-            ))}
+            <div className="max-h-64 overflow-y-auto">
+              {availableLanguages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => handleSelect(lang.code)}
+                  data-testid={`lang-option-${lang.code}`}
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${
+                    language === lang.code ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  <span className="text-xl">{lang.flag}</span>
+                  <div className="flex-1 text-left">
+                    <p className={`text-sm font-medium ${language === lang.code ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                      {lang.nativeName}
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{lang.name}</p>
+                  </div>
+                  {language === lang.code && <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
