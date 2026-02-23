@@ -307,129 +307,17 @@ const GamesCreator = () => {
     }
   }, [showConfetti]);
 
-  // Check Google Classroom connection status
-  useEffect(() => {
-    const checkGoogleClassroom = async () => {
-      try {
-        const res = await axios.get(`${API}/google-classroom/status`, { withCredentials: true });
-        setGoogleClassroom(prev => ({
-          ...prev,
-          connected: res.data.connected,
-          email: res.data.google_email,
-          loading: false
-        }));
-        
-        // If connected, fetch courses
-        if (res.data.connected) {
-          fetchGoogleCourses();
-        }
-      } catch (error) {
-        setGoogleClassroom(prev => ({ ...prev, loading: false, connected: false }));
-      }
-    };
+  // Simple Google Classroom share - opens Google Classroom's built-in share dialog
+  const shareToGoogleClassroom = (game) => {
+    const gameLink = getShareLink(game.game_id);
+    const title = encodeURIComponent(game.title);
+    const url = encodeURIComponent(gameLink);
     
-    checkGoogleClassroom();
+    // Google Classroom share URL format
+    const googleClassroomUrl = `https://classroom.google.com/share?url=${url}&title=${title}`;
     
-    // Check URL for google_connected parameter
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('google_connected') === 'true') {
-      toast.success(language === 'es' ? '¡Google Classroom conectado!' : 'Google Classroom connected!');
-      window.history.replaceState({}, '', window.location.pathname);
-      checkGoogleClassroom();
-    }
-  }, [language]);
-
-  const fetchGoogleCourses = async () => {
-    try {
-      const res = await axios.get(`${API}/google-classroom/courses`, { withCredentials: true });
-      setGoogleClassroom(prev => ({
-        ...prev,
-        courses: res.data.courses || []
-      }));
-    } catch (error) {
-      console.error('Failed to fetch Google courses:', error);
-      if (error.response?.status === 401) {
-        // Token expired
-        setGoogleClassroom(prev => ({ ...prev, connected: false, courses: [] }));
-        toast.error(language === 'es' ? 'Sesión de Google expirada. Por favor reconecta.' : 'Google session expired. Please reconnect.');
-      }
-    }
-  };
-
-  const connectGoogleClassroom = async () => {
-    try {
-      const res = await axios.get(`${API}/google-classroom/auth-url`, { withCredentials: true });
-      if (res.data.auth_url) {
-        window.location.href = res.data.auth_url;
-      }
-    } catch (error) {
-      console.error('Failed to get Google auth URL:', error);
-      const errorMsg = error.response?.data?.detail || 'Failed to connect to Google Classroom';
-      toast.error(errorMsg);
-    }
-  };
-
-  const disconnectGoogleClassroom = async () => {
-    try {
-      await axios.delete(`${API}/google-classroom/disconnect`, { withCredentials: true });
-      setGoogleClassroom({
-        connected: false,
-        loading: false,
-        email: null,
-        courses: [],
-        showShareDialog: false,
-        selectedGame: null,
-        selectedCourse: null,
-        sharing: false
-      });
-      toast.success(language === 'es' ? 'Google Classroom desconectado' : 'Google Classroom disconnected');
-    } catch (error) {
-      toast.error('Failed to disconnect');
-    }
-  };
-
-  const shareToGoogleClassroom = async () => {
-    if (!googleClassroom.selectedCourse || !googleClassroom.selectedGame) return;
-    
-    setGoogleClassroom(prev => ({ ...prev, sharing: true }));
-    
-    try {
-      const game = googleClassroom.selectedGame;
-      const gameLink = getShareLink(game.game_id);
-      
-      await axios.post(
-        `${API}/google-classroom/courses/${googleClassroom.selectedCourse}/assignment`,
-        {
-          title: game.title,
-          description: `${language === 'es' ? 'Juego educativo: ' : 'Educational game: '}${game.title}\n\n${language === 'es' ? 'Tipo: ' : 'Type: '}${game.game_type}\n${language === 'es' ? 'Preguntas: ' : 'Questions: '}${game.questions?.length || 0}`,
-          link_url: gameLink,
-          link_title: game.title
-        },
-        { withCredentials: true }
-      );
-      
-      toast.success(language === 'es' ? '¡Juego compartido en Google Classroom!' : 'Game shared to Google Classroom!');
-      setGoogleClassroom(prev => ({ 
-        ...prev, 
-        showShareDialog: false, 
-        selectedGame: null,
-        selectedCourse: null,
-        sharing: false 
-      }));
-    } catch (error) {
-      console.error('Failed to share to Google Classroom:', error);
-      const errorMsg = error.response?.data?.detail || 'Failed to share';
-      toast.error(errorMsg);
-      setGoogleClassroom(prev => ({ ...prev, sharing: false }));
-    }
-  };
-
-  const openGoogleShareDialog = (game) => {
-    setGoogleClassroom(prev => ({
-      ...prev,
-      showShareDialog: true,
-      selectedGame: game
-    }));
+    // Open in new window
+    window.open(googleClassroomUrl, '_blank', 'width=600,height=600');
   };
 
   const gameTypes = [
