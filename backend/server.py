@@ -25,6 +25,7 @@ from routes.ai import router as ai_router
 from routes.games import router as games_router, init_games_routes
 from routes.adaptive_learning import router as adaptive_learning_router, init_adaptive_learning_routes
 from routes.portal import router as portal_router, init_portal_routes
+from routes.google_classroom import google_classroom_router, init_google_classroom_routes
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
