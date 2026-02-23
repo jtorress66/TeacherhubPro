@@ -5,204 +5,209 @@ The user wants to build a comprehensive, teacher-focused web application called 
 1.  **Core Teacher Modules:** A digital lesson planner, attendance tracker, and gradebook with GPA calculation.
 2.  **PDF & Printing:** Export lesson plans to PDF and generate printable Substitute Packets.
 3.  **User & School Management:**
-    *   **Roles:** , , and a  (the user/app owner).
-    *   **Super Admin Panel:** A centralized dashboard to manage all schools, users, branding, and platform settings, including bulk CSV import for teachers and students.
-    *   **Multi-School Customization:** The Super Admin must be able to customize branding for each school.
-4.  **Monetization:** A Stripe-based subscription model with a 7-day free trial.
+    *   **Roles:** , , and a .
+    *   **Super Admin Panel:** A centralized dashboard to manage all schools, users, branding, and platform settings.
+4.  **Monetization:** A Stripe-based subscription model.
 5.  **Authentication:** JWT-based custom auth and Emergent-managed Google Auth.
 6.  **Parent/Student Access:** A read-only portal for parents/students to view grades and attendance.
 7.  **AI Features:**
-    *   An AI Teaching Assistant (Claude Sonnet 4.5) for generating lesson plans and materials.
-    *   **Adaptive Learning Paths:** AI that adjusts to a child's pace for core subjects.
-    *   **Educational Games:** Convert lessons/assignments into interactive games.
-8.  **Calendar Integration:** One-tap export of lesson plans to Google Calendar, Microsoft Outlook, etc.
+    *   An AI Teaching Assistant for generating lesson plans and materials.
+    *   **Adaptive Learning Paths:** AI that adjusts to a child's pace.
+    *   **Educational Games:** Convert lessons into interactive games.
+8.  **Calendar Integration:** Export lesson plans to external calendars.
 9.  **External Integrations:** Offer integration with platforms like Google Classroom.
 10. **UX/UI:** A professional, modern, bilingual (English/Spanish) interface that is fully mobile-responsive.
-11. **Homeschooler Features:** A suite of tools including adaptive learning, a comprehensive parent dashboard, curriculum customization, and offline access to materials via PDF downloads.
+11. **Homeschooler Features:** A suite of tools including adaptive learning, a comprehensive parent dashboard, and curriculum customization.
 
 **User's preferred language**: English. The next agent must respond in **English**.
 
 **what currently exists?**
-The application now includes a full suite of features for teachers and homeschoolers. Core functionality like the lesson planner, presentation creator, and gradebook are stable.
+The agent successfully completed a major quality overhaul of the Educational Games feature, implementing robust backend validation, stricter AI prompts, and fixing all frontend game types. A subsequent bug in game generation () was also resolved. Following this, the agent addressed SEO by creating static  and  files for the production domain.
 
-In this session, the agent delivered several major features:
-1.  **Adaptive Learning Engine:** A new page and backend service that uses AI to generate personalized learning paths for students.
-2.  **Student Progress Dashboard:** A visual dashboard for teachers/parents to track a student's progress through adaptive learning paths.
-3.  **Homeschool Parent Portal:** A secure, token-based portal for parents to view their child's progress without needing a full account. It supports multiple languages.
-4.  **Educational Games Creator:** A powerful new section where teachers can convert lesson content into 8 different types of interactive games (e.g., Quiz, Word Search, Flashcards). The feature includes game analytics and leaderboards.
-5.  **Critical Bug Fixes:** Resolved a major subscription issue that prevented  and  users from accessing AI features. Also fixed a bug on the Report Card page and verified the Template of the Week functionality.
+A critical bug where students were redirected to the login page was investigated. The agent determined the code was correct and the issue stemmed from school firewalls. As a solution, a simple, API-free Share to Google Classroom button was implemented. The agent also added the highly-requested feature for teachers to delete their own games. Most recently, the agent began work on expanding language support beyond English and Spanish.
 
 **Last working item**:
--   **Last item agent was working:** The user reported that the newly created educational games were not functional. Specifically, the quiz options weren't displaying, and it was unclear how to use flashcards. The user requested to make all game types functional, add more games, and add an option to count game scores as a grade in the gradebook. The agent was starting to fix the game rendering logic in .
+-   **Last item agent was working:** Implementing multi-language support. The agent updated  to include French, Portuguese, German, Italian, and Chinese. A new reusable component was created at  to allow users to switch languages. The work was interrupted before this new component could be integrated into the main application layout.
 -   **Status:** IN PROGRESS
 -   **Agent Testing Done:** N
--   **Which testing method agent to use?** both. Use the frontend testing agent to ensure all 8 game types render and function correctly. Use the backend testing agent to validate the new Count as Grade endpoint and its integration with the gradebook.
--   **User Testing Done:** Y (User found the bug)
+-   **Which testing method agent to use?** Frontend testing agent. Instruct the agent to add the  to the main layout and verify that changing the language updates UI text on multiple key pages (e.g., Dashboard, Games Creator).
+-   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Games are not functional and need gradebook integration (P0)**
--   **Issue 2: Complete the Refactoring of  (P1)**
--   **Issue 3: Template of the Week Bug Verification (P1)**
+-   **Issue 1: Integrate the new  component (P0)**
+-   **Issue 2: Remove dead code from the abandoned Google Classroom OAuth implementation (P1)**
+-   **Issue 3: Complete the Refactoring of  (P1)**
+-   **Issue 4: Create new public-facing pages for SEO (P2)**
+-   **Issue 5: Template of the Week Bug Verification (P2)**
 
 **Issues Detail:**
--   **Issue 1: Games are not functional and need gradebook integration (P0)**
-    -   **Attempted fixes:** The agent identified that the game rendering logic in  was incomplete and only handled the 'quiz' type correctly.
+-   **Issue 1: Integrate the new  component (P0)**
+    -   **Attempted fixes:** The  has been updated and the  component has been created.
     -   **Next debug checklist:**
-        1.  Modify  to correctly render the UI for all 8 game types (Quiz, Flashcards, Matching, Fill-in-the-Blank, etc.).
-        2.  Implement a Count as Grade checkbox in the game creation form.
-        3.  Create a new backend endpoint (e.g., ) that accepts a game score, student ID, and assignment details.
-        4.  Update the  function in  to call this new endpoint when a game is completed and Count as Grade is enabled.
-    -   **Why fix this issue and what will be achieved with the fix?** This makes the new Games Creator feature fully functional and integrates it with the core gradebook, delivering on a key user request.
+        1.  Import  into  or the main header component.
+        2.  Place the component in a visible location within the UI (e.g., top navigation bar).
+        3.  Test that changing the language updates text on the Dashboard and Games Creator pages to confirm the context is working correctly.
+    -   **Why fix this issue and what will be achieved with the fix?** This will complete the user's request to make the application accessible in multiple languages, improving its global reach.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Both.
+    -   **Should Test frontend/backend/both after fix?** Frontend.
     -   **Blocked on other issue:** None.
 
--   **Issue 2: Complete the Refactoring of  (P1)**
-    -   **Attempted fixes:** None. This task continues to be deferred. The file has now grown to over 5,000 lines.
+-   **Issue 2: Remove dead code from the abandoned Google Classroom OAuth implementation (P1)**
+    -   **Attempted fixes:** None. The agent pivoted to a simpler solution, leaving the old code behind.
     -   **Next debug checklist:**
-        1.  Create new route files in  for , , and .
-        2.  Systematically move the corresponding endpoints from  into these new files.
-        3.  Update  to import and include the new routers from the  directory.
-    -   **Why fix this issue and what will be achieved with the fix?** This is critical for backend stability and maintainability. The current file size is a significant risk.
+        1.  Delete the file .
+        2.  In , remove the import and registration of the .
+        3.  In , remove the  and  variables.
+    -   **Why fix this issue and what will be achieved with the fix?** This removes unused, confusing code, improving maintainability and preventing accidental use of a non-functional feature.
     -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Backend (ensure no regressions).
+    -   **Blocked on other issue:** None.
+
+-   **Issue 3: Complete the Refactoring of  (P1)**
+    -   **Attempted fixes:** Endpoints for , , and  were successfully extracted in a previous session. No further progress was made in this session.
+    -   **Next debug checklist:**
+        1.  Create new route files for , , , , , , , and .
+        2.  Systematically move the remaining endpoints from  into these new files.
+        3.  Update  to import and include all new routers.
+    -   **Why fix this issue and what will be achieved with the fix?** The  file is still extremely large, posing a risk to backend stability. Completing the refactor is critical technical debt.
+    -   **Status:** IN PROGRESS
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Backend (extensive regression testing).
     -   **Blocked on other issue:** None.
 
--   **Issue 3: Template of the Week Bug Verification (P1)**
-    -   **Attempted fixes:** The agent traced the code flow from the Dashboard to the Lesson Planner and verified with  that the backend endpoints and frontend logic for using a starter template are correct.
+-   **Issue 4: Create new public-facing pages for SEO (P2)**
+    -   **Attempted fixes:** The agent identified that these pages were mentioned by the user but do not exist.
     -   **Next debug checklist:**
-        1.  The agent has done its part. The next step is for the user to confirm on their end.
-        2.  In the next  call, include a verification step: Please confirm if the Template of the Week button on the dashboard now works as expected.
-    -   **Why fix this issue and what will be achieved with the fix?** Closes out a lingering bug and ensures a core dashboard feature is working.
+        1.  Create new React components for , , , , and .
+        2.  Add public routes for these pages in .
+        3.  Populate pages with relevant marketing content.
+        4.  Update  to include these new URLs.
+    -   **Why fix this issue and what will be achieved with the fix?** This aligns with the user's SEO strategy and makes the sitemap more effective by including all intended marketing pages.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend.
+    -   **Blocked on other issue:** None.
+
+-   **Issue 5: Template of the Week Bug Verification (P2)**
+    -   **Attempted fixes:** An agent in a previous session verified the backend logic. The fix is pending user confirmation.
+    -   **Next debug checklist:**
+        1.  Include a verification step in the next  call: Please confirm if the Template of the Week button on the dashboard now works as expected.
+    -   **Why fix this issue and what will be achieved with the fix?** Closes out a lingering bug from a past session.
     -   **Status:** USER VERIFICATION PENDING
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** None needed from agent.
     -   **Blocked on other issue:** None.
 
 **In progress Task List**:
--   **Task 1: Enhance Educational Games Feature (P0)**
-    -   **Where to resume:** In , modify the JSX that renders the  state to handle all 8 game types.
-    -   **What will be achieved with this?** A fully functional, interactive, and valuable educational games feature that integrates with the gradebook.
+-   **Task 1: Complete Multi-Language Feature (P0)**
+    -   **Where to resume:** Integrate the newly created  component into the main UI layout ( or header).
+    -   **What will be achieved with this?** A fully functional language switcher that allows users to select from English, Spanish, French, Portuguese, German, Italian, and Chinese.
     -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Both.
+    -   **Should Test frontend/backend/both after fix?** Frontend.
     -   **Blocked on something:** None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks (P1):**
-    *   **Finish Report Card Generation:** The student fetching is fixed, but the page needs UI for selecting classes/students and generating a printable report.
-    -   **Email Parent Portal Links:** Integrate the Resend API to automatically email the generated portal links to parents.
-    *   **Finish Bulk Import Tools:** The UI and endpoints exist but require end-to-end testing and validation.
-    *   **Game Analytics Export:** Add a button to export game analytics data as a CSV.
+    *   **Create Public SEO Pages:** Build out the , , , etc. pages.
+    *   **Finish Report Card Generation:** The UI needs work to allow selection of classes/students and generate a printable report.
+    *   **Email Parent Portal Links:** Integrate Resend API to automatically email portal links.
+    *   **Finish Bulk Import Tools:** UI and endpoints exist but need end-to-end testing.
+    *   **Game Analytics Export:** Add a button to export game analytics as a CSV.
     *   **Student Accounts for Games:** Allow students to have persistent scores and progress across games.
 -   **Future Tasks (P2):**
-    *   Full Google Classroom Integration (data sync).
+    *   Full Google Classroom Integration (data sync beyond the share button).
     *   Drag-and-Drop Seating Chart Editor.
     *   Quick Week Copy in Lesson Planner.
     *   Audit Log for admin actions.
+    *   Add background music options to games.
 
 **Completed work in this session**
--   **Adaptive Learning Engine:** Implemented with AI, including  and backend endpoints.
--   **Student Progress Dashboard:** Created with visualizations for tracking learning at .
--   **Homeschool Parent Portal:** Launched a secure, multi-language, token-based portal at .
--   **Educational Games Creator:** Built a major new feature at  with 8 game types, analytics, and leaderboards.
--   **AI Subscription Bug Fix:** Patched a critical bug in  preventing  and  roles from using AI features.
--   **Report Card Page Bug Fix:** Corrected the API endpoint for fetching students in .
--   **Template of the Week Logic Verified:** Confirmed the feature's implementation is sound.
--   **Added Global  Endpoint:** For easier access to student lists.
+-   **Game Quality Overhaul:** Successfully implemented the user's strict contract for game generation, including backend validation, hardened AI prompts, and a full audit/fix of all 8 frontend game types. Passed comprehensive testing.
+-   **Game Generation Bug Fix:** Resolved a critical bug () preventing game generation.
+-   **Static SEO Files:** Created  and  in the frontend public directory with production URLs, as per user's final specification.
+-   **Simple Google Classroom Integration:** Added a Share to Google Classroom button on each game card. This uses a direct share URL, requires no API credentials, and solves the school firewall problem.
+-   **Delete Games Feature:** Implemented a delete button with a confirmation dialog on each game card in the teacher's library.
+-   **Multi-Language Support (Started):** Extended the  with 5 new languages and created a reusable  component.
 
 **Earlier issues found/mentioned but not fixed**
--   **Monolithic  file refactoring.** This critical tech-debt item was deferred again and the file is now dangerously large.
+-   **Monolithic  file refactoring.** This is now in progress (under ) but remains a critical technical debt item that is not fully resolved.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** Monolithic  file.
 -   **Recurrence count:** 10+
--   **Status:** NOT STARTED
--   **New Recurring Issue This Session:** User confusion between preview and production environments. The agent repeatedly debugged issues (e.g., AI feature requires subscription, Games Creator link missing) that were ultimately caused by the user looking at their production site, which had not yet been redeployed with the latest code.
+-   **Status:** IN PROGRESS
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **AI-Powered Content Generation:** Heavily used Claude Sonnet 4.5 via  to generate dynamic learning paths and interactive games (quizzes, word searches, etc.).
--   **Role-Based Access Control (RBAC):** Fixed a critical bug in the subscription check () to properly handle  and  roles, granting them school-wide access to AI features.
--   **Token-Based Public Access:** Implemented a secure parent portal using short-lived, single-use tokens, allowing access to specific data without full authentication.
--   **Environment Mismatch Debugging:** A recurring theme was guiding the user on the difference between the preview environment (where features are built) and their production environment (which requires deployment and cache clearing).
--   **Dynamic Frontend Rendering:** The agent started building a complex game player in  designed to render different UIs based on the game type.
+-   **Static Site Generation for SEO:** The final, correct solution for  and  involved placing static files in the React  folder. This is a standard and robust approach for SPAs to serve root-level files.
+-   **URL-based Sharing Integration:** The Google Classroom integration was simplified to use a pre-formatted URL () instead of a full OAuth API integration. This is a low-effort, high-impact solution when deep integration isn't needed and solves the user's firewall problem.
+-   **Environment-Specific Data & Debugging:** The agent correctly diagnosed that a critical bug with student game access was not a code issue, but a result of separate databases for the preview and production environments. This highlights the importance of testing with production-like data.
 
 **key DB schema**
--   **adaptive_learning_progress:** 
--   **homeschool_portal_tokens:** 
--   **games:** 
--   **game_scores:** 
+-   **educational_games:** 
 
 **changes in tech stack**
--   No new technologies added, but heavy reliance on  and  for client-side PDF generation.
+-   No new technologies added.
 
 **All files of reference**
--   **/app/frontend/src/pages/GamesCreator.js**: New file, heavily modified, and the focus of the current task.
--   **/app/backend/server.py**: Heavily modified with numerous new endpoints for games, portals, and adaptive learning. Urgently needs refactoring.
--   **/app/backend/routes/ai.py**: Contains the critical subscription logic fix.
--   **/app/frontend/src/pages/StudentProgress.js**: New file for the progress dashboard.
--   **/app/frontend/src/pages/HomeschoolPortal.js**: New file for the parent portal.
--   **/app/frontend/src/components/Layout.js**: Modified to add all new pages to the navigation sidebar.
--   **/app/frontend/src/App.js**: Modified to add routes for all new pages.
+-   **/app/frontend/src/contexts/LanguageContext.js**: Rewritten to support multiple new languages.
+-   **/app/frontend/src/components/LanguageSelector.js**: New component created to switch languages.
+-   **/app/frontend/src/pages/GamesCreator.js**: Heavily modified to fix games, add the Google Classroom share button, and add the delete game functionality.
+-   **/app/frontend/public/sitemap.xml**: New static file for SEO.
+-   **/app/frontend/public/robots.txt**: New static file for SEO.
+-   **/app/backend/routes/games.py**: Rewritten for game quality overhaul.
+-   **/app/backend/utils/game_validator.py**: New file for backend game validation.
+-   **/app/backend/routes/google_classroom.py**: New file for the abandoned OAuth implementation (should be deleted).
 
 **Areas that need refactoring**:
--   **/app/backend/server.py**: CRITICAL. At over 5,000 lines, it is unstable and hard to maintain. Refactoring is the highest priority technical debt.
--   **/app/frontend/src/pages/GamesCreator.js**: This file is becoming a monolith. The game playing logic should be extracted into separate components per game type (e.g., , ).
+-   **/app/backend/server.py**: CRITICAL. The refactoring task must be completed.
+-   **/app/frontend/src/pages/GamesCreator.js**: This file is extremely large. It should be a high-priority candidate for being broken down into smaller components.
+-   **Google Classroom OAuth Code:** The file , its registration in , and the related environment variables are now dead code and should be removed.
 
 **key api endpoints**
--   
--   
--   
--   
--   
--   
--   
+-   : Deletes a game owned by the authenticated teacher.
 
 **Critical Info for New Agent**
--   **PREVIEW vs. PRODUCTION ENVIRONMENT:** This is the most common source of user confusion. Features you build are in the preview environment. The user MUST redeploy to see them on their live site and may need to clear their browser cache or do a hard refresh (). Be prepared to explain this clearly.
--   **AI ACCESS FIX:** The subscription check in  was fixed to allow  and  roles to access AI features. This addresses the user's report of AI features require an active subscription. They must redeploy for this fix to apply to them.
--   **GAME CREATOR IS BROKEN:** The immediate task is to fix the game player in . It does not currently render game types other than the basic quiz correctly.
+-   **Finish the Language Feature:** The immediate priority is to integrate the newly created  component into the main UI so users can actually switch languages.
+-   **Clean Up Obsolete Code:** The complex Google Classroom OAuth implementation was abandoned in favor of a simpler share button. You should remove the now-dead code in  and  to avoid confusion.
+-   **Continue the  Refactor:** This is a recurring, high-priority technical debt item. Do not neglect it.
+-   **User has separate Preview & Production data:** Be aware that the user's data on the preview environment is different from their production data. When diagnosing issues reported on production, you must test against the production environment.
 
 **documents and test reports created in this job**
--   /app/memory/PRD.md
--   /app/test_reports/iteration_14.json
--   /app/test_reports/iteration_15.json
--   /app/test_reports/iteration_16.json
--   /app/test_reports/iteration_17.json
--   /app/test_reports/iteration_18.json
+-   /app/test_reports/iteration_23.json
+-   /app/memory/GAME_QUALITY_OVERHAUL.md
+-   /app/memory/PRD.md (Updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Asks for more game types (word search, etc.), game analytics, and leaderboards. (Status: COMPLETED)
-2.  **User:** Points out the Educational Games link is missing from the sidebar after they redeployed. (Status: RESOLVED - It was a cache/environment issue. Agent confirmed the code was correct and provided a screenshot from the preview environment.)
-3.  **User:** Confirms they can now see the Games Creator but reports the games are not functional (e.g., flashcard answers missing). Asks for games to be functional and count as a grade. (Status: IN PROGRESS - This is the current task.)
-4.  **User:** Asks for multi-language support for Parent Portal links and a new feature to convert lessons into educational games. (Status: COMPLETED)
-5.  **User:** Reports the Generate Learning Path feature is failing with an error. (Status: RESOLVED - Agent identified the error message AI features require an active subscription and fixed the backend RBAC logic.)
-6.  **User:** Insists the student Juan Torres exists, disputing the agent's initial diagnosis. (Status: RESOLVED - User was correct, the issue was subscription-related, not a missing student.)
-7.  **User:** Asks to add a Parent Portal for homeschoolers, fix the Report Card page, and verify the Template of the Week bug. (Status: COMPLETED)
-8.  **User:** Asks to add a Student Progress Dashboard to track adaptive learning progress. (Status: COMPLETED)
-9.  **User:** Approves the plan to complete the P0 homeschooler features (Adaptive Learning & PDF exports). (Status: COMPLETED)
-10. **User:** Provides initial prompt to start the session.
+1.  **User:** Asks for multi-language support. (Status: IN PROGRESS)
+2.  **User:** Requests the ability for teachers to delete games. (Status: COMPLETED)
+3.  **User:** Agrees to the simpler Share to Google Classroom button solution. (Status: COMPLETED)
+4.  **User:** Clarifies they don't have developer API credentials for Google Cloud. (Status: ADDRESSED)
+5.  **User:** Asks for the credentials needed for Google Classroom integration. (Status: ADDRESSED)
+6.  **User:** Explains the student access problem is due to a school firewall and asks for Google Classroom integration as a workaround. (Status: COMPLETED)
+7.  **User:** Reports the game sharing isn't working on production, even after deployment. (Status: ADDRESSED, diagnosed as environmental issue)
+8.  **User:** Asks if a redeploy is needed for the sitemap fix. (Status: ADDRESSED)
+9.  **User:** Reports the dynamic sitemap links are incorrect. (Status: ADDRESSED, switched to static file)
+10. **User:** Requests a static  and  for the production domain. (Status: COMPLETED)
 
 **Project Health Check:**
--   **Broken:** The game player in  is not functional for most game types.
+-   **Broken:** None.
 -   **Mocked:** Resend API for emails remains in test mode.
 
 **3rd Party Integrations**
 -   **Emergent-managed Google Auth**
 -   **Stripe** (Payments)
 -   **Resend** (Emails, in test mode)
--   **Pexels** (Image Search)
--   **Anthropic Claude Sonnet 4.5** (AI Assistant, Adaptive Learning, Games - via )
+-   **Anthropic Claude Sonnet 4.5** (AI features - via )
 -   **OpenAI TTS** (Audio narration)
--   **Sora 2** (Video Generation)
--   **Google Classroom** (Advertised, but not implemented)
+-   **Google Classroom** (Simple Share Button - No API)
 
 **Testing status**
--   **Testing agent used after significant changes:** YES (used after every major feature was completed)
+-   **Testing agent used after significant changes:** YES (for the game quality overhaul).
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** []
 -   **Known regressions:** None.
@@ -210,9 +215,9 @@ In this session, the agent delivered several major features:
 **Credentials to test flow:**
 -   **Platform Super Admin:**  / 
 -   **School Teacher / Has Plans:**  / 
--   **Expired Trial User:**  / 
+-   **Teacher with Google Classroom issue:**  / 
 
 **What agent forgot to execute**
--   The agent did not complete the end-to-end testing for the **Bulk Import** tools.
--   The **Report Card Generation** feature was only partially fixed (student data fetching). It still lacks the full UI and PDF generation capability.
--   The long-standing task to **refactor ** was once again deferred.</analysis>
+-   The agent did not integrate the  component it created into the UI.
+-   The agent did not remove the obsolete backend code (, router registration, .env variables) after pivoting to a simpler Google Classroom share button.
+-   The agent did not create the new public-facing pages (, , etc.) that the user mentioned in the context of the sitemap.</analysis>
