@@ -199,6 +199,164 @@ const ReportCards = () => {
     return 'F';
   };
 
+  // Filter students based on search
+  const filteredStudents = students.filter(stu => {
+    const name = stu.name || `${stu.first_name} ${stu.last_name}`;
+    return name.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
+  // Toggle student selection for batch
+  const toggleStudentSelection = (studentId) => {
+    setSelectedStudents(prev => 
+      prev.includes(studentId) 
+        ? prev.filter(id => id !== studentId)
+        : [...prev, studentId]
+    );
+  };
+
+  // Select all students
+  const selectAllStudents = () => {
+    if (selectedStudents.length === students.length) {
+      setSelectedStudents([]);
+    } else {
+      setSelectedStudents(students.map(s => s.student_id));
+    }
+  };
+
+  // Generate batch report cards (print all)
+  const generateBatchReportCards = async () => {
+    if (selectedStudents.length === 0) {
+      toast.error(language === 'es' ? 'Seleccione al menos un estudiante' : 'Select at least one student');
+      return;
+    }
+
+    setBatchGenerating(true);
+    setBatchProgress(0);
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${language === 'es' ? 'Boletas de Calificaciones' : 'Report Cards'}</title>
+        <style>
+          @page { size: letter; margin: 0.5in; }
+          body { font-family: Arial, sans-serif; font-size: 11pt; }
+          .page-break { page-break-after: always; }
+          .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 15px; }
+          .school-logo { max-height: 80px; margin-bottom: 10px; }
+          .school-name { font-size: 18pt; font-weight: bold; margin: 5px 0; }
+          .report-title { font-size: 14pt; color: #666; margin-top: 10px; }
+          .student-info { display: flex; flex-wrap: wrap; gap: 20px; margin: 15px 0; padding: 10px; background: #f5f5f5; }
+          .info-item { }
+          .info-label { font-size: 9pt; color: #666; }
+          .info-value { font-weight: bold; }
+          table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          th { background: #f0f0f0; font-weight: bold; }
+          .grade { text-align: center; font-weight: bold; }
+          .grade-a { color: #16a34a; }
+          .grade-b { color: #2563eb; }
+          .grade-c { color: #ca8a04; }
+          .grade-d { color: #ea580c; }
+          .grade-f { color: #dc2626; }
+          .gpa-section { text-align: center; padding: 15px; background: #f9f9f9; border-radius: 8px; margin: 15px 0; }
+          .gpa-value { font-size: 24pt; font-weight: bold; color: #1e40af; }
+          .attendance-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
+          .attendance-item { text-align: center; padding: 10px; background: #f5f5f5; border-radius: 5px; }
+          .attendance-value { font-size: 18pt; font-weight: bold; }
+          .attendance-label { font-size: 9pt; color: #666; }
+          .signature-section { display: flex; justify-content: space-between; margin-top: 40px; }
+          .signature-line { width: 200px; border-top: 1px solid #333; padding-top: 5px; text-align: center; font-size: 10pt; }
+          @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+        </style>
+      </head>
+      <body>
+    `);
+
+    try {
+      for (let i = 0; i < selectedStudents.length; i++) {
+        const studentId = selectedStudents[i];
+        setBatchProgress(Math.round(((i + 1) / selectedStudents.length) * 100));
+        
+        try {
+          const res = await axios.get(
+            `${API}/report-cards/generate?student_id=${studentId}&class_id=${selectedClass}&semester_id=${selectedSemester}`,
+            { withCredentials: true }
+          );
+          const data = res.data;
+          const student = students.find(s => s.student_id === studentId);
+          
+          printWindow.document.write(`
+            <div class="${i < selectedStudents.length - 1 ? 'page-break' : ''}">
+              <div class="header">
+                ${school?.logo_url ? `<img src="${school.logo_url}" alt="School Logo" class="school-logo">` : ''}
+                <h1 class="school-name">${school?.name || 'School Name'}</h1>
+                <p>${school?.address || ''}</p>
+                <h2 class="report-title">${language === 'es' ? 'BOLETA DE CALIFICACIONES' : 'REPORT CARD'}</h2>
+                <p>${semesters.find(s => s.semester_id === selectedSemester)?.name || ''}</p>
+              </div>
+              <div class="student-info">
+                <div><p class="info-label">${language === 'es' ? 'Nombre' : 'Name'}</p><p class="info-value">${data.student?.name || student?.name || ''}</p></div>
+                <div><p class="info-label">${language === 'es' ? 'Grado' : 'Grade'}</p><p class="info-value">${data.class?.grade_level || ''}</p></div>
+                <div><p class="info-label">${language === 'es' ? 'Clase' : 'Class'}</p><p class="info-value">${data.class?.name || ''}</p></div>
+                <div><p class="info-label">${language === 'es' ? 'ID' : 'ID'}</p><p class="info-value">${data.student?.student_number || 'N/A'}</p></div>
+              </div>
+              <table>
+                <thead><tr><th>${language === 'es' ? 'Materia' : 'Subject'}</th><th style="text-align:center">${language === 'es' ? 'Calificación' : 'Grade'}</th><th style="text-align:center">${language === 'es' ? 'Letra' : 'Letter'}</th></tr></thead>
+                <tbody>
+                  ${data.grades?.length > 0 ? data.grades.map(g => `
+                    <tr>
+                      <td>${g.category || g.assignment_name || 'General'}</td>
+                      <td style="text-align:center" class="${getGradeColor(g.percentage || g.grade)}">${(g.percentage || g.grade || 0).toFixed(1)}%</td>
+                      <td style="text-align:center" class="${getGradeColor(g.percentage || g.grade)}">${getLetterGrade(g.percentage || g.grade)}</td>
+                    </tr>
+                  `).join('') : `<tr><td colspan="3" style="text-align:center">${language === 'es' ? 'No hay calificaciones' : 'No grades recorded'}</td></tr>`}
+                </tbody>
+              </table>
+              <div class="gpa-section">
+                <p>${language === 'es' ? 'Promedio General (GPA)' : 'Grade Point Average (GPA)'}</p>
+                <p class="gpa-value">${data.gpa?.toFixed(2) || 'N/A'}</p>
+                <p>${language === 'es' ? 'de 4.0' : 'of 4.0'}</p>
+              </div>
+              <div class="attendance-grid">
+                <div class="attendance-item"><p class="attendance-value" style="color:#16a34a">${data.attendance?.present || 0}</p><p class="attendance-label">${language === 'es' ? 'Presente' : 'Present'}</p></div>
+                <div class="attendance-item"><p class="attendance-value" style="color:#dc2626">${data.attendance?.absent || 0}</p><p class="attendance-label">${language === 'es' ? 'Ausente' : 'Absent'}</p></div>
+                <div class="attendance-item"><p class="attendance-value" style="color:#ca8a04">${data.attendance?.tardy || 0}</p><p class="attendance-label">${language === 'es' ? 'Tardanza' : 'Tardy'}</p></div>
+                <div class="attendance-item"><p class="attendance-value" style="color:#2563eb">${data.attendance?.rate?.toFixed(1) || 0}%</p><p class="attendance-label">${language === 'es' ? 'Tasa' : 'Rate'}</p></div>
+              </div>
+              <div class="signature-section">
+                <div class="signature-line"><p>${language === 'es' ? 'Firma del Maestro' : 'Teacher Signature'}</p></div>
+                <div class="signature-line"><p>${language === 'es' ? 'Firma del Director' : 'Principal Signature'}</p></div>
+                <div class="signature-line"><p>${language === 'es' ? 'Firma del Padre/Tutor' : 'Parent/Guardian Signature'}</p></div>
+              </div>
+              <div style="text-align:center;margin-top:20px;font-size:10pt;color:#666">
+                <p>${language === 'es' ? 'Generado por TeacherHubPro' : 'Generated by TeacherHubPro'} • ${new Date().toLocaleDateString()}</p>
+              </div>
+            </div>
+          `);
+        } catch (err) {
+          console.error(`Error generating report for student ${studentId}:`, err);
+        }
+      }
+      
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+      
+      toast.success(language === 'es' ? `${selectedStudents.length} boletas generadas` : `${selectedStudents.length} report cards generated`);
+    } catch (error) {
+      console.error('Batch generation error:', error);
+      toast.error(language === 'es' ? 'Error al generar boletas' : 'Error generating report cards');
+    } finally {
+      setBatchGenerating(false);
+      setBatchProgress(0);
+    }
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -213,51 +371,133 @@ const ReportCards = () => {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-heading font-bold text-slate-800 flex items-center gap-3">
-              <FileText className="h-8 w-8 text-green-600" />
+            <h1 className="text-3xl font-heading font-bold text-foreground flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600">
+                <GraduationCap className="h-6 w-6 text-white" />
+              </div>
               {language === 'es' ? 'Boletas de Calificaciones' : 'Report Cards'}
             </h1>
-            <p className="text-slate-500 mt-1">
+            <p className="text-muted-foreground mt-1">
               {language === 'es' ? 'Generar e imprimir boletas de calificaciones' : 'Generate and print student report cards'}
             </p>
           </div>
+          <div className="flex gap-2">
+            <Badge variant="outline" className="gap-1">
+              <Users className="h-3 w-3" />
+              {classes.length} {language === 'es' ? 'Clases' : 'Classes'}
+            </Badge>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Selection Panel */}
-          <Card>
-            <CardHeader>
-              <CardTitle>{language === 'es' ? 'Seleccionar Estudiante' : 'Select Student'}</CardTitle>
-              <CardDescription>
-                {language === 'es' ? 'Elija la clase, estudiante y período' : 'Choose class, student, and period'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Semester Selection */}
-              <div>
-                <Label>{language === 'es' ? 'Semestre' : 'Semester'}</Label>
-                <Select value={selectedSemester} onValueChange={setSelectedSemester}>
-                  <SelectTrigger data-testid="semester-select">
-                    <SelectValue placeholder={language === 'es' ? 'Seleccionar semestre' : 'Select semester'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {semesters.map(sem => (
-                      <SelectItem key={sem.semester_id} value={sem.semester_id}>
-                        {language === 'es' ? sem.name_es || sem.name : sem.name}
-                        {sem.is_active && ` (${language === 'es' ? 'Activo' : 'Active'})`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+        {/* Tabs for Individual vs Batch */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="individual" className="gap-2">
+              <User className="h-4 w-4" />
+              {language === 'es' ? 'Individual' : 'Individual'}
+            </TabsTrigger>
+            <TabsTrigger value="batch" className="gap-2">
+              <Users className="h-4 w-4" />
+              {language === 'es' ? 'Por Lotes' : 'Batch'}
+            </TabsTrigger>
+          </TabsList>
 
-              {/* Class Selection */}
-              <div>
-                <Label>{language === 'es' ? 'Clase' : 'Class'}</Label>
-                <Select value={selectedClass} onValueChange={(v) => {
-                  setSelectedClass(v);
+          {/* Individual Tab */}
+          <TabsContent value="individual" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Selection Panel */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5 text-emerald-600" />
+                    {language === 'es' ? 'Seleccionar Estudiante' : 'Select Student'}
+                  </CardTitle>
+                  <CardDescription>
+                    {language === 'es' ? 'Elija la clase, estudiante y período' : 'Choose class, student, and period'}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Semester Selection */}
+                  <div>
+                    <Label>{language === 'es' ? 'Semestre' : 'Semester'}</Label>
+                    <Select value={selectedSemester} onValueChange={setSelectedSemester}>
+                      <SelectTrigger data-testid="semester-select">
+                        <SelectValue placeholder={language === 'es' ? 'Seleccionar semestre' : 'Select semester'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {semesters.map(sem => (
+                          <SelectItem key={sem.semester_id} value={sem.semester_id}>
+                            {language === 'es' ? sem.name_es || sem.name : sem.name}
+                            {sem.is_active && ` (${language === 'es' ? 'Activo' : 'Active'})`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Class Selection */}
+                  <div>
+                    <Label>{language === 'es' ? 'Clase' : 'Class'}</Label>
+                    <Select value={selectedClass} onValueChange={(v) => {
+                      setSelectedClass(v);
+                      setSelectedStudent('');
+                      setReportData(null);
+                      setSelectedStudents([]);
+                    }}>
+                      <SelectTrigger data-testid="class-select">
+                        <SelectValue placeholder={language === 'es' ? 'Seleccionar clase' : 'Select class'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {classes.map(cls => (
+                          <SelectItem key={cls.class_id} value={cls.class_id}>
+                            {cls.name} - {cls.grade_level}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Student Selection */}
+                  <div>
+                    <Label>{language === 'es' ? 'Estudiante' : 'Student'}</Label>
+                    <Select 
+                      value={selectedStudent} 
+                      onValueChange={(v) => {
+                        setSelectedStudent(v);
+                        setReportData(null);
+                      }}
+                      disabled={!selectedClass}
+                    >
+                      <SelectTrigger data-testid="student-select">
+                        <SelectValue placeholder={language === 'es' ? 'Seleccionar estudiante' : 'Select student'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {students.map(stu => (
+                          <SelectItem key={stu.student_id} value={stu.student_id}>
+                            {stu.name || `${stu.first_name} ${stu.last_name}`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Generate Button */}
+                  <Button 
+                    className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700"
+                    onClick={generateReportCard}
+                    disabled={!selectedStudent || !selectedClass || generating}
+                    data-testid="generate-report-btn"
+                  >
+                    {generating ? (
+                      <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {language === 'es' ? 'Generando...' : 'Generating...'}</>
+                    ) : (
+                      <><Sparkles className="h-4 w-4 mr-2" /> {language === 'es' ? 'Generar Boleta' : 'Generate Report Card'}</>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
                   setSelectedStudent('');
                   setReportData(null);
                 }}>
