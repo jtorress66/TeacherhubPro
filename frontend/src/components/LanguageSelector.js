@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useLanguage, availableLanguages } from '../contexts/LanguageContext';
 import { Globe, ChevronDown, Check } from 'lucide-react';
 
-const LanguageSelector = ({ variant = 'default', showLabel = true }) => {
+const LanguageSelector = ({ variant = 'default', showLabel = true, dropdownPosition = 'auto' }) => {
   const { language, setLanguage, getCurrentLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -22,6 +22,20 @@ const LanguageSelector = ({ variant = 'default', showLabel = true }) => {
   const handleSelect = (code) => {
     setLanguage(code);
     setIsOpen(false);
+  };
+
+  // Determine dropdown position class
+  // 'up' = opens upward (for sidebars at bottom)
+  // 'down' = opens downward (for headers at top)
+  // 'auto' = default behavior based on variant
+  const getDropdownPositionClass = () => {
+    if (dropdownPosition === 'up') {
+      return 'bottom-full left-0 mb-2';
+    } else if (dropdownPosition === 'down') {
+      return 'top-full right-0 mt-2';
+    }
+    // Auto: compact in sidebar opens up, others open down
+    return variant === 'compact' ? 'bottom-full left-0 mb-2' : 'top-full right-0 mt-2';
   };
 
   // Compact variant (just flags)
@@ -44,7 +58,7 @@ const LanguageSelector = ({ variant = 'default', showLabel = true }) => {
         </button>
         
         {isOpen && (
-          <div className="absolute bottom-full left-0 mb-2 w-52 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-[9999]">
+          <div className={`absolute ${getDropdownPositionClass()} w-52 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-[9999]`}>
             <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-700">
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">{t('selectLanguage')}</p>
             </div>
