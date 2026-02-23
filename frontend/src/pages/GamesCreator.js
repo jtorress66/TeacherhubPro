@@ -321,6 +321,25 @@ const GamesCreator = () => {
     window.open(googleClassroomUrl, '_blank', 'width=600,height=600');
   };
 
+  // Delete game function
+  const deleteGame = async (gameId) => {
+    setDeleteConfirm(prev => ({ ...prev, deleting: true }));
+    
+    try {
+      await axios.delete(`${API}/games/${gameId}`, { withCredentials: true });
+      
+      // Remove from local state
+      setSavedGames(prev => prev.filter(g => g.game_id !== gameId));
+      
+      toast.success(language === 'es' ? '¡Juego eliminado!' : 'Game deleted!');
+      setDeleteConfirm({ show: false, game: null, deleting: false });
+    } catch (error) {
+      console.error('Failed to delete game:', error);
+      toast.error(language === 'es' ? 'Error al eliminar el juego' : 'Failed to delete game');
+      setDeleteConfirm(prev => ({ ...prev, deleting: false }));
+    }
+  };
+
   const gameTypes = [
     { 
       id: 'quiz', 
