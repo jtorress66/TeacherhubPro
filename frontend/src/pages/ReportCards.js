@@ -498,76 +498,21 @@ const ReportCards = () => {
                   </Button>
                 </CardContent>
               </Card>
-                  setSelectedStudent('');
-                  setReportData(null);
-                }}>
-                  <SelectTrigger data-testid="class-select">
-                    <SelectValue placeholder={language === 'es' ? 'Seleccionar clase' : 'Select class'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {classes.map(cls => (
-                      <SelectItem key={cls.class_id} value={cls.class_id}>
-                        {cls.name} - {cls.grade_level}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
 
-              {/* Student Selection */}
-              <div>
-                <Label>{language === 'es' ? 'Estudiante' : 'Student'}</Label>
-                <Select 
-                  value={selectedStudent} 
-                  onValueChange={(v) => {
-                    setSelectedStudent(v);
-                    setReportData(null);
-                  }}
-                  disabled={!selectedClass}
-                >
-                  <SelectTrigger data-testid="student-select">
-                    <SelectValue placeholder={language === 'es' ? 'Seleccionar estudiante' : 'Select student'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {students.map(stu => (
-                      <SelectItem key={stu.student_id} value={stu.student_id}>
-                        {stu.name || `${stu.first_name} ${stu.last_name}`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Generate Button */}
-              <Button 
-                className="w-full"
-                onClick={generateReportCard}
-                disabled={!selectedStudent || !selectedClass || generating}
-                data-testid="generate-report-btn"
-              >
-                {generating ? (
-                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {language === 'es' ? 'Generando...' : 'Generating...'}</>
+              {/* Preview Panel */}
+              <div className="lg:col-span-2">
+                {!reportData ? (
+                  <Card className="h-full flex items-center justify-center min-h-[400px]">
+                    <div className="text-center p-8">
+                      <FileText className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
+                      <p className="text-muted-foreground">
+                        {language === 'es' 
+                          ? 'Seleccione un estudiante para generar la boleta de calificaciones'
+                          : 'Select a student to generate the report card'}
+                      </p>
+                    </div>
+                  </Card>
                 ) : (
-                  <><FileText className="h-4 w-4 mr-2" /> {language === 'es' ? 'Generar Boleta' : 'Generate Report Card'}</>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Preview Panel */}
-          <div className="lg:col-span-2">
-            {!reportData ? (
-              <Card className="h-full flex items-center justify-center min-h-[400px]">
-                <div className="text-center p-8">
-                  <FileText className="h-16 w-16 text-slate-200 mx-auto mb-4" />
-                  <p className="text-slate-500">
-                    {language === 'es' 
-                      ? 'Seleccione un estudiante para generar la boleta de calificaciones'
-                      : 'Select a student to generate the report card'}
-                  </p>
-                </div>
-              </Card>
-            ) : (
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>{language === 'es' ? 'Vista Previa' : 'Preview'}</CardTitle>
