@@ -43,6 +43,11 @@ import HomeschoolPortal from "./pages/HomeschoolPortal";
 import GamesCreator from "./pages/GamesCreator";
 import StudentLearning from "./pages/StudentLearning";
 import PlayGame from "./pages/PlayGame";
+// Public SEO Marketing Pages
+import FeaturesPage from "./pages/FeaturesPage";
+import AIAssistantMarketing from "./pages/AIAssistantMarketing";
+import HomeschoolMarketing from "./pages/HomeschoolMarketing";
+import IntegrationsPage from "./pages/IntegrationsPage";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -252,6 +257,11 @@ const AppRouter = () => {
       <Route path="/play-game/:gameId" element={<PlayGame />} />
       {/* Setup Admin (Public - one-time use) */}
       <Route path="/setup-admin" element={<SetupAdmin />} />
+      {/* Public SEO Marketing Pages */}
+      <Route path="/features" element={<FeaturesPage />} />
+      <Route path="/ai-features" element={<AIAssistantMarketing />} />
+      <Route path="/homeschool" element={<HomeschoolMarketing />} />
+      <Route path="/integrations" element={<IntegrationsPage />} />
       {/* Footer/Legal Pages (Public) */}
       <Route path="/contact" element={<Contact />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
