@@ -22,7 +22,7 @@ import {
   Shuffle, Grid3X3, ListChecks, MessageSquare, Zap, Star,
   BookOpen, GraduationCap, ChevronRight, RefreshCw, Download,
   Search, LayoutGrid, GripVertical, BarChart3, Medal, Users, Clock, Link2, X,
-  Volume2, VolumeX, Timer, Award, Flame, AlertTriangle
+  Volume2, VolumeX, Timer, Award, Flame, AlertTriangle, Trash2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
