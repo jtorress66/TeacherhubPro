@@ -2703,6 +2703,130 @@ const GamesCreator = () => {
       </div>
       
       {/* Delete Confirmation Dialog */}
+      {/* Grade Settings Modal for Existing Games */}
+      {showGradeSettings && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowGradeSettings(false)}>
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full" onClick={e => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 bg-amber-100 rounded-full">
+                  <Award className="h-6 w-6 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-800">
+                    {language === 'es' ? 'Configuración de Calificación' : 'Grade Settings'}
+                  </h3>
+                  <p className="text-sm text-slate-500">
+                    {language === 'es' ? 'Configura cómo este juego cuenta para calificaciones' : 'Configure how this game counts for grades'}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                  <span className="font-medium text-slate-700">
+                    {language === 'es' ? 'Contar como Calificación' : 'Count as Grade'}
+                  </span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={gradeSettings.count_as_grade}
+                      onChange={(e) => setGradeSettings({...gradeSettings, count_as_grade: e.target.checked})}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                  </label>
+                </div>
+                
+                {gradeSettings.count_as_grade && (
+                  <>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-sm text-slate-600 mb-1 block">
+                          {language === 'es' ? 'Puntos Totales' : 'Total Points'}
+                        </label>
+                        <Input
+                          type="number"
+                          value={gradeSettings.grade_points}
+                          onChange={(e) => setGradeSettings({...gradeSettings, grade_points: parseInt(e.target.value) || 100})}
+                          className="h-10"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm text-slate-600 mb-1 block">
+                          {language === 'es' ? 'Método' : 'Method'}
+                        </label>
+                        <Select
+                          value={gradeSettings.grade_method}
+                          onValueChange={(val) => setGradeSettings({...gradeSettings, grade_method: val})}
+                        >
+                          <SelectTrigger className="h-10">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="first">{language === 'es' ? 'Primer Intento' : 'First Attempt'}</SelectItem>
+                            <SelectItem value="best">{language === 'es' ? 'Mejor Puntaje' : 'Best Score'}</SelectItem>
+                            <SelectItem value="average">{language === 'es' ? 'Promedio' : 'Average'}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm text-slate-600 mb-1 block">
+                        {language === 'es' ? 'Clase' : 'Class'}
+                      </label>
+                      <Select
+                        value={gradeSettings.class_id}
+                        onValueChange={(val) => setGradeSettings({...gradeSettings, class_id: val})}
+                      >
+                        <SelectTrigger className="h-10">
+                          <SelectValue placeholder={language === 'es' ? 'Seleccionar clase...' : 'Select class...'} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {classes.map(cls => (
+                            <SelectItem key={cls.class_id} value={cls.class_id}>
+                              {cls.name} ({cls.grade_level})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-sm text-slate-600 mb-1 block">
+                        {language === 'es' ? 'Nombre de Asignación' : 'Assignment Name'}
+                      </label>
+                      <Input
+                        type="text"
+                        value={gradeSettings.assignment_name}
+                        onChange={(e) => setGradeSettings({...gradeSettings, assignment_name: e.target.value})}
+                        placeholder={language === 'es' ? 'Ej: Quiz de Matemáticas' : 'E.g., Math Quiz'}
+                        className="h-10"
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+              
+              <div className="flex gap-3 mt-6">
+                <Button 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => setShowGradeSettings(false)}
+                >
+                  {language === 'es' ? 'Cancelar' : 'Cancel'}
+                </Button>
+                <Button 
+                  className="flex-1 bg-amber-600 hover:bg-amber-700"
+                  onClick={() => updateGameGradeSettings(showGradeSettings)}
+                >
+                  {language === 'es' ? 'Guardar' : 'Save'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {deleteConfirm.show && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
