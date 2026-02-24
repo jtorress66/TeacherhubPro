@@ -1064,7 +1064,7 @@ const Landing = () => {
               </p>
               <div className="flex items-center gap-2 text-orange-600 text-sm font-medium">
                 <FileText className="h-4 w-4" />
-                {language === 'es' ? 'Exportar PDF' : 'PDF Export'}
+                {t('landingPdfExport')}
               </div>
             </div>
 
