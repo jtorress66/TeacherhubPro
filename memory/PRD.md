@@ -1,6 +1,50 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-24 - Educational Games Critical Bug Fixes (VERIFIED)
+
+### Issues Fixed:
+
+**1. Question Regeneration Bug (P0) - FIXED ✅**
+- **Problem:** Students received the same questions every time they replayed a game
+- **Root Cause:** `setGameStarted(true)` was called BEFORE the new questions were applied to state
+- **Fix:** Modified `startGame()` in `PlayGame.js` to:
+  - Store new questions in `questionsToUse` variable first
+  - Update game state with questions BEFORE calling `setGameStarted(true)`
+  - Ensures React renders with the correct questions
+
+**2. Time Tracking Bug (P0) - FIXED ✅**
+- **Problem:** Game time was always recorded as "0s"
+- **Root Cause:** `time_taken: 0` was hardcoded in `submitScore()`
+- **Fix:** Added timer using `useRef`:
+  - Created `startTimeRef = useRef(null)` to store start time
+  - Record `Date.now()` when game starts
+  - Calculate actual duration: `Math.floor((Date.now() - startTimeRef.current) / 1000)`
+  - Send real `time_taken` to backend
+
+**3. Invalid Date Bug (P0) - FIXED ✅**
+- **Problem:** Leaderboard displayed "Invalid Date" for scores
+- **Root Cause:** Frontend used `entry.played_at` but backend stores `submitted_at`
+- **Fix:** Changed line 2567 in `GamesCreator.js`:
+  - Before: `new Date(entry.played_at).toLocaleDateString()`
+  - After: `entry.submitted_at ? new Date(entry.submitted_at).toLocaleDateString() : '—'`
+
+### Files Modified:
+- `/app/frontend/src/pages/PlayGame.js` - Timer implementation & question state fix
+- `/app/frontend/src/pages/GamesCreator.js` - Date field correction
+
+### Test Results:
+- **Backend:** 100% (7/7 tests passed)
+- **Frontend E2E:** 100% - All game flows tested successfully
+- **Test Report:** `/app/test_reports/iteration_28.json`
+- **Regression Tests:** `/app/backend/tests/test_game_bugs_fixes.py`
+
+### Evidence of Fix:
+- Question regeneration toast "¡Nuevas preguntas generadas!" appears
+- Leaderboard shows `time_taken=11s, 45s` (not 0s)
+- `submitted_at` returned in ISO format: `2026-02-24T19:20:57.466916+00:00`
+
+---
 ## Update 2026-02-24 - Educational Games Analytics & Grade Integration
 
 ### Issues Fixed (Round 2):
