@@ -758,10 +758,10 @@ const Landing = () => {
 
               <div className="space-y-4">
                 {[
-                  { icon: Building2, text: language === 'es' ? 'Logo de tu escuela en todos los documentos' : 'Your school logo on all documents' },
-                  { icon: Palette, text: language === 'es' ? 'Colores personalizados que coinciden con tu marca' : 'Custom colors that match your brand' },
-                  { icon: FileText, text: language === 'es' ? 'Formatos de PDF exactos de tu escuela' : 'Your school\'s exact PDF formats' },
-                  { icon: Shield, text: language === 'es' ? 'Panel de administración centralizado' : 'Centralized admin dashboard' },
+                  { icon: Building2, text: t('landingSchoolLogoAll') },
+                  { icon: Palette, text: t('landingCustomColorsMatch') },
+                  { icon: FileText, text: t('landingPdfFormats') },
+                  { icon: Shield, text: t('landingCentralizedAdmin') },
                 ].map((item, index) => (
                   <div key={index} className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center">
@@ -781,18 +781,18 @@ const Landing = () => {
                     <School className="h-8 w-8 text-white" />
                   </div>
                   <div>
-                    <div className="text-xl font-bold">{language === 'es' ? 'Tu Escuela' : 'Your School'}</div>
-                    <div className="text-sm text-slate-500">{language === 'es' ? 'Planificación del Maestro' : "Teacher's Planning"}</div>
+                    <div className="text-xl font-bold">{t('landingYourSchool')}</div>
+                    <div className="text-sm text-slate-500">{t('landingTeachersPlanning')}</div>
                   </div>
                 </div>
                 <div className="border-t border-slate-200 pt-6">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <div className="text-slate-500">{language === 'es' ? 'Maestro' : 'Teacher'}</div>
+                      <div className="text-slate-500">{t('teacher')}</div>
                       <div className="font-medium">María González</div>
                     </div>
                     <div>
-                      <div className="text-slate-500">{language === 'es' ? 'Grado' : 'Grade'}</div>
+                      <div className="text-slate-500">{t('grade')}</div>
                       <div className="font-medium">4-A</div>
                     </div>
                   </div>
@@ -808,10 +808,10 @@ const Landing = () => {
               
               {/* Floating badges */}
               <div className="absolute -top-4 -right-4 bg-cyan-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
-                {language === 'es' ? 'Tu logo aquí' : 'Your logo here'}
+                {t('landingYourLogoHere')}
               </div>
               <div className="absolute -bottom-4 -left-4 bg-purple-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
-                {language === 'es' ? 'Tus colores' : 'Your colors'}
+                {t('landingYourColors')}
               </div>
             </div>
           </div>
@@ -824,15 +824,13 @@ const Landing = () => {
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-medium mb-4">
               <Link2 className="h-4 w-4" />
-              {language === 'es' ? 'Integraciones' : 'Integrations'}
+              {t('landingIntegrations')}
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-              {language === 'es' ? 'Conecta con tus plataformas favoritas' : 'Connect with your favorite platforms'}
+              {t('landingConnectFavorite')}
             </h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              {language === 'es' 
-                ? 'TeacherHubPro se integra con las herramientas educativas que ya usas' 
-                : 'TeacherHubPro integrates with the educational tools you already use'}
+              {t('landingConnectFavoriteDesc')}
             </p>
           </div>
 
@@ -853,13 +851,11 @@ const Landing = () => {
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-2xl md:text-3xl font-bold text-slate-900">Google Classroom</h3>
                       <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
-                        {language === 'es' ? 'Disponible' : 'Available'}
+                        {t('landingAvailable')}
                       </span>
                     </div>
                     <p className="text-lg text-slate-600">
-                      {language === 'es' 
-                        ? 'Sincroniza tus clases, estudiantes y calificaciones directamente con Google Classroom' 
-                        : 'Sync your classes, students, and grades directly with Google Classroom'}
+                      {t('landingMostPopular')}
                     </p>
                   </div>
                 </div>
