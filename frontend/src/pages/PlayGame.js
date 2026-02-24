@@ -136,32 +136,59 @@ const PlayGame = () => {
     console.log(`[PlayGame] Starting game - New Session: ${newSessionId}`);
     console.log(`[PlayGame] Old questions hash: ${hashQuestions(currentQuestions)}`);
     
-    // Always try to regenerate questions for fresh gameplay
+    let questionsToUse = null;
+    let aiRegenerationSucceeded = false;
+    
+    // Try to regenerate questions via AI
     try {
       const res = await axios.post(`${API}/games/${gameId}/regenerate-questions`, null, {
         params: { 
           player_name: playerName,
-          session_id: newSessionId // Pass session ID to backend
+          session_id: newSessionId,
+          timestamp: Date.now()
+        },
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
         }
       });
       
       console.log(`[PlayGame] Regenerate response - regenerated: ${res.data.regenerated}`);
       
-      if (res.data.regenerated && res.data.questions?.length > 0) {
-        // FORCE new questions - create a new array reference
-        const newQuestions = [...res.data.questions];
-        setCurrentQuestions(newQuestions);
+      if (res.data.regenerated === true && res.data.questions?.length > 0) {
+        // AI successfully regenerated
+        questionsToUse = res.data.questions.map(q => JSON.parse(JSON.stringify(q)));
+        aiRegenerationSucceeded = true;
         
-        console.log(`[PlayGame] NEW questions hash: ${hashQuestions(newQuestions)}`);
-        console.log(`[PlayGame] First question: ${newQuestions[0]?.question?.substring(0, 50)}...`);
+        console.log(`[PlayGame] AI NEW questions hash: ${hashQuestions(questionsToUse)}`);
+        console.log(`[PlayGame] First question: ${questionsToUse[0]?.question?.substring(0, 50)}...`);
         
-        toast.success(language === 'es' ? '¡Nuevas preguntas generadas!' : 'New questions generated!');
+        toast.success(language === 'es' ? '¡Nuevas preguntas generadas por IA!' : 'New AI-generated questions!');
       } else {
-        console.log(`[PlayGame] Using existing questions - regeneration not available`);
-        console.log(`[PlayGame] Message: ${res.data.message}`);
+        console.log(`[PlayGame] AI regeneration not available: ${res.data.message}`);
       }
     } catch (error) {
       console.error('[PlayGame] Regeneration error:', error);
+    }
+    
+    // If AI failed, create variation from existing questions
+    if (!aiRegenerationSucceeded) {
+      console.log(`[PlayGame] Creating local variation for first play...`);
+      questionsToUse = createQuestionVariation(gameData?.questions || currentQuestions, gameData?.game_type);
+      
+      console.log(`[PlayGame] Local variation hash: ${hashQuestions(questionsToUse)}`);
+      toast.info(language === 'es' ? '¡Preguntas reorganizadas!' : 'Questions shuffled!');
+    }
+    
+    // Set the questions
+    if (questionsToUse && questionsToUse.length > 0) {
+      setCurrentQuestions(questionsToUse);
+      
+      // Initialize matching game
+      if (gameData?.game_type === 'matching') {
+        const rightItems = questionsToUse.map(q => q.match || q.correct_answer);
+        setShuffledRight(shuffleArray(rightItems));
+      }
     }
     
     // Record start time
