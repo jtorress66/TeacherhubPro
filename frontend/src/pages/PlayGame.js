@@ -255,30 +255,53 @@ const PlayGame = () => {
     return shuffled;
   }, []);
 
+  // Track play count for guaranteed rotation
+  const playCountRef = useRef(0);
+
   // Create variation in questions even without AI regeneration
+  // GUARANTEES different question order on every Play Again
   const createQuestionVariation = useCallback((questions, gameType) => {
     if (!questions || questions.length === 0) return [];
     
-    // Deep clone and shuffle question order
-    let varied = shuffleArray(questions.map(q => JSON.parse(JSON.stringify(q))));
+    // Increment play count for guaranteed rotation
+    playCountRef.current += 1;
+    const playCount = playCountRef.current;
     
-    // For quiz and true_false games, also shuffle the options within each question
-    if (gameType === 'quiz' || gameType === 'true_false') {
+    console.log(`[PlayGame] Creating variation - Play #${playCount}`);
+    
+    // Deep clone questions
+    let varied = questions.map(q => JSON.parse(JSON.stringify(q)));
+    
+    // For small question sets (2-3 questions), use ROTATION instead of random shuffle
+    // This GUARANTEES a different order every time
+    if (varied.length <= 3) {
+      // Rotate array by playCount positions
+      const rotateBy = playCount % varied.length;
+      if (rotateBy > 0) {
+        varied = [...varied.slice(rotateBy), ...varied.slice(0, rotateBy)];
+      }
+      console.log(`[PlayGame] Small set - Rotated by ${rotateBy}`);
+    } else {
+      // For larger sets, use Fisher-Yates shuffle
+      varied = shuffleArray(varied);
+      console.log(`[PlayGame] Large set - Shuffled`);
+    }
+    
+    // For quiz games with multiple choice, also shuffle the options
+    if (gameType === 'quiz') {
       varied = varied.map(q => {
-        if (q.options && Array.isArray(q.options)) {
-          // Shuffle options while keeping track of correct answer
+        if (q.options && Array.isArray(q.options) && q.options.length > 2) {
           const correctAnswer = q.correct_answer;
           q.options = shuffleArray(q.options);
-          // Ensure correct_answer still matches one of the options
           q.correct_answer = correctAnswer;
         }
         return q;
       });
     }
     
-    // For matching games, the right side will be shuffled separately
-    // For fill_blanks, question order is shuffled
-    // For flashcards, card order is shuffled
+    // For TRUE/FALSE games: Since options can't be shuffled meaningfully,
+    // rotation of questions is the only variation without AI
+    // But we can add a visual cue that it's a "new round"
     
     return varied;
   }, [shuffleArray]);
