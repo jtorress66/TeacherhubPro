@@ -257,21 +257,19 @@ const Landing = () => {
             <div className="relative z-10">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-100 text-cyan-700 text-sm font-medium mb-6">
                 <Sparkles className="h-4 w-4" />
-                {language === 'es' ? 'Diseñado para maestros' : 'Built for teachers'}
+                {t('landingBuiltForTeachers')}
               </div>
               
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 leading-tight mb-6">
-                {language === 'es' ? (
-                  <>Tu aula <span className="text-cyan-600">completa</span> en una plataforma</>
-                ) : (
-                  <>Your <span className="text-cyan-600">complete</span> classroom in one platform</>
+                {t('landingHeroTitle').split(' ').map((word, i) => 
+                  word.toLowerCase() === 'complete' || word.toLowerCase() === 'completa' || word.toLowerCase() === 'complète' || word.toLowerCase() === 'completa' || word.toLowerCase() === 'komplettes' || word.toLowerCase() === 'completa' || word.toLowerCase() === '完整的' 
+                    ? <span key={i} className="text-cyan-600">{word} </span> 
+                    : word + ' '
                 )}
               </h1>
               
               <p className="text-xl text-slate-600 mb-8 max-w-lg">
-                {language === 'es' 
-                  ? 'Planificación con IA, presentaciones interactivas, calificaciones, asistencia, y más. Todo lo que necesitas para enseñar mejor.' 
-                  : 'AI-powered lesson planning, interactive presentations, gradebook, attendance, and more. Everything you need to teach better.'}
+                {t('landingHeroSubtitle')}
               </p>
               
               <div className="flex flex-wrap gap-4">
@@ -280,12 +278,12 @@ const Landing = () => {
                   className="bg-slate-900 hover:bg-slate-800 text-white px-8 h-14 text-lg"
                   onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
                 >
-                  {language === 'es' ? 'Comenzar gratis' : 'Start free'}
+                  {t('landingStartFree')}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Link to="/pricing">
                   <Button size="lg" variant="outline" className="px-8 h-14 text-lg border-slate-300 text-slate-800 hover:text-slate-900 hover:bg-slate-100">
-                    {language === 'es' ? 'Ver precios' : 'View pricing'}
+                    {t('landingViewPricing')}
                   </Button>
                 </Link>
               </div>
