@@ -171,18 +171,48 @@ const PlayGame = () => {
     }
   };
 
-  const resetGame = () => {
-    setGameProgress({ current: 0, score: 0 });
-    setSelectedAnswer(null);
+  const resetGame = async () => {
+    // Show loading state
     setShowResult(false);
+    setSelectedAnswer(null);
+    
+    // Try to regenerate questions for the replay (anti-cheat)
+    let newQuestions = game?.questions || [];
+    
+    try {
+      const res = await axios.post(`${API}/games/${gameId}/regenerate-questions`, null, {
+        params: { player_name: playerName }
+      });
+      
+      if (res.data.regenerated && res.data.questions?.length > 0) {
+        newQuestions = res.data.questions;
+        toast.success(language === 'es' ? '¡Nuevas preguntas generadas!' : 'New questions generated!');
+      }
+    } catch (error) {
+      console.log('Question regeneration not available, using existing questions');
+    }
+    
+    // Update game with new questions
+    setGame(prev => ({
+      ...prev,
+      questions: newQuestions
+    }));
+    
+    // Reset all game state
+    setGameProgress({ current: 0, score: 0 });
     setFlashcardFlipped(false);
     setFillBlankAnswer('');
     setMatchedPairs([]);
     setWordSearchFound([]);
     setCrosswordAnswers({});
     setDragDropOrder([]);
-    if (game?.game_type === 'matching' && game?.questions) {
-      const rightItems = game.questions.map(q => q.match || q.correct_answer);
+    
+    // Reset timer for the new game
+    startTimeRef.current = Date.now();
+    
+    // Re-shuffle matching game items with new questions
+    if (game?.game_type === 'matching' && newQuestions) {
+      const rightItems = newQuestions.map(q => q.match || q.correct_answer);
       setShuffledRight([...rightItems].sort(() => Math.random() - 0.5));
     }
   };
