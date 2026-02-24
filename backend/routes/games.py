@@ -940,7 +940,7 @@ async def regenerate_game_questions(
                             "message": "Subscription required for question regeneration"
                         }
     
-    # Generate new questions using AI
+    # Generate new questions using AI with emphasis on VARIATION
     try:
         game_type = game.get("game_type", "quiz")
         grade_level = game.get("grade_level", "3-5")
@@ -948,9 +948,25 @@ async def regenerate_game_questions(
         question_count = game.get("question_count", len(game.get("questions", []))) or 5
         lang = game.get("language", "es")
         
-        # Create a request for regeneration
+        # Get existing questions to avoid duplicates
+        existing_questions = game.get("questions", [])
+        existing_q_texts = [q.get("question", "") for q in existing_questions]
+        
+        # Create enhanced content with variation instructions
+        variation_content = f"""{original_content}
+
+IMPORTANT VARIATION REQUIREMENTS:
+- Generate COMPLETELY DIFFERENT questions from these existing ones: {existing_q_texts[:3]}
+- Use DIFFERENT numbers, scenarios, and phrasing
+- For True/False: Create statements about DIFFERENT aspects of the topic
+- For Quiz: Ask about DIFFERENT concepts within the same subject
+- Make questions feel fresh and new, not repetitive
+- Vary the difficulty slightly (some easier, some harder)
+"""
+        
+        # Create a request for regeneration with variation emphasis
         regenerate_request = GameGenerateRequest(
-            content=original_content,
+            content=variation_content,
             game_type=game_type,
             grade_level=grade_level,
             subject=subject,
