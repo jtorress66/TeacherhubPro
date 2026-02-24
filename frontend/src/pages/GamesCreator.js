@@ -2670,6 +2670,7 @@ const GamesCreator = () => {
                   )}
                 </CardContent>
               </Card>
+              </div>
             )}
           </TabsContent>
         </Tabs>
