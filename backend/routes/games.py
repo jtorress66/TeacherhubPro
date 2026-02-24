@@ -912,13 +912,51 @@ async def regenerate_game_questions(
     
     original_content = game.get("original_content", "")
     
-    # If no original content stored, return the existing questions
+    # If no original content stored, DERIVE content from existing questions
     if not original_content:
-        return {
-            "questions": game.get("questions", []),
-            "regenerated": False,
-            "message": "Original content not available, using existing questions"
-        }
+        existing_questions = game.get("questions", [])
+        game_title = game.get("title", "Educational Game")
+        game_type = game.get("game_type", "quiz")
+        
+        # Create derived content from the game title and questions
+        if existing_questions:
+            question_texts = []
+            for q in existing_questions:
+                if game_type == "true_false":
+                    question_texts.append(q.get("question", ""))
+                elif game_type == "quiz":
+                    question_texts.append(f"{q.get('question', '')} Answer: {q.get('correct_answer', '')}")
+                elif game_type == "flashcards":
+                    question_texts.append(f"{q.get('question', q.get('term', ''))} = {q.get('correct_answer', q.get('definition', ''))}")
+                elif game_type == "matching":
+                    question_texts.append(f"{q.get('question', q.get('term', ''))} matches {q.get('correct_answer', q.get('match', ''))}")
+                elif game_type == "fill_blanks":
+                    question_texts.append(f"{q.get('question', '')} Answer: {q.get('correct_answer', '')}")
+                else:
+                    question_texts.append(q.get("question", ""))
+            
+            # Create derived content that describes the topic
+            original_content = f"""Topic: {game_title}
+Subject: {game.get('subject', 'general')}
+Grade Level: {game.get('grade_level', '3-5')}
+
+This game covers the following educational content:
+{chr(10).join(question_texts)}
+
+Use this information to create NEW and DIFFERENT questions about the same topic."""
+            
+            # Save the derived content for future regenerations
+            await db.educational_games.update_one(
+                {"game_id": game_id},
+                {"$set": {"original_content": original_content}}
+            )
+            logger.info(f"Derived original_content for game {game_id} from existing questions")
+        else:
+            return {
+                "questions": [],
+                "regenerated": False,
+                "message": "No questions available to derive content from"
+            }
     
     # Check if AI access is available (this is a public endpoint, so we check game owner's access)
     teacher_id = game.get("teacher_id")
