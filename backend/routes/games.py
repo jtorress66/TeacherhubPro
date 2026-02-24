@@ -735,7 +735,7 @@ async def get_games_analytics(user: dict = Depends(get_current_user)):
     
     games = await db.educational_games.find(
         {"teacher_id": teacher_id},
-        {"_id": 0, "game_id": 1, "title": 1, "game_type": 1}
+        {"_id": 0, "game_id": 1, "title": 1, "game_type": 1, "count_as_grade": 1, "grade_points": 1}
     ).to_list(100)
     
     game_ids = [g["game_id"] for g in games]
@@ -743,29 +743,76 @@ async def get_games_analytics(user: dict = Depends(get_current_user)):
     scores = await db.game_scores.find(
         {"game_id": {"$in": game_ids}},
         {"_id": 0}
-    ).to_list(1000)
+    ).to_list(10000)
+    
+    # Calculate unique players across all games
+    all_players = set()
+    for score in scores:
+        player_key = score.get("student_id") or score.get("player_name")
+        if player_key:
+            all_players.add(player_key)
     
     analytics = {
         "total_games": len(games),
         "total_plays": len(scores),
         "average_score": round(sum(s.get("percentage", 0) for s in scores) / len(scores), 1) if scores else 0,
+        "unique_players": len(all_players),
         "games_by_type": {},
-        "top_games": []
+        "top_games": [],
+        "game_stats": []  # Detailed per-game statistics
     }
     
     for game in games:
         game_type = game.get("game_type", "quiz")
         analytics["games_by_type"][game_type] = analytics["games_by_type"].get(game_type, 0) + 1
     
+    # Calculate per-game statistics
     plays_by_game = {}
+    scores_by_game = {}
+    players_by_game = {}
+    
     for score in scores:
         gid = score.get("game_id")
         plays_by_game[gid] = plays_by_game.get(gid, 0) + 1
+        
+        if gid not in scores_by_game:
+            scores_by_game[gid] = []
+        scores_by_game[gid].append(score.get("percentage", 0))
+        
+        if gid not in players_by_game:
+            players_by_game[gid] = set()
+        player_key = score.get("student_id") or score.get("player_name")
+        if player_key:
+            players_by_game[gid].add(player_key)
     
     game_map = {g["game_id"]: g for g in games}
+    
+    # Build game_stats array with detailed per-game statistics
+    for game in games:
+        gid = game["game_id"]
+        game_scores = scores_by_game.get(gid, [])
+        
+        game_stat = {
+            "game_id": gid,
+            "title": game.get("title", "Unknown"),
+            "game_type": game.get("game_type", "quiz"),
+            "play_count": plays_by_game.get(gid, 0),
+            "unique_players": len(players_by_game.get(gid, set())),
+            "avg_score": round(sum(game_scores) / len(game_scores), 1) if game_scores else 0,
+            "best_score": max(game_scores) if game_scores else 0,
+            "worst_score": min(game_scores) if game_scores else 0,
+            "count_as_grade": game.get("count_as_grade", False),
+            "grade_points": game.get("grade_points", 100)
+        }
+        analytics["game_stats"].append(game_stat)
+    
+    # Sort game_stats by play count descending
+    analytics["game_stats"].sort(key=lambda x: x["play_count"], reverse=True)
+    
+    # Top games for backward compatibility
     analytics["top_games"] = [
-        {"game_id": gid, "title": game_map.get(gid, {}).get("title", "Unknown"), "plays": count}
-        for gid, count in sorted(plays_by_game.items(), key=lambda x: x[1], reverse=True)[:5]
+        {"game_id": gs["game_id"], "title": gs["title"], "plays": gs["play_count"]}
+        for gs in analytics["game_stats"][:5]
     ]
     
     return analytics
