@@ -1,6 +1,60 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-24 - Play Again COMPLETE FIX (VERIFIED)
+
+### Issue: Play Again was reusing the same questions
+
+### Root Cause Analysis:
+1. No unique session tracking - same game state was being reused
+2. State update `setGame(prev => ({...prev, questions: newQuestions}))` was not forcing re-render
+3. No verification mechanism to confirm questions actually changed
+4. Frontend was falling back to old questions if API returned any issues
+
+### Complete Fix Implementation:
+
+**1. Unique Session ID System**
+- `generateSessionId()` creates unique ID: `session_{timestamp}_{random9chars}`
+- Session ID generated on initial play AND on every Play Again click
+- Session ID displayed at bottom of game screen for verification
+
+**2. Question Hash Verification**
+- `hashQuestions()` creates a hash of all questions
+- Hash displayed on results screen alongside session ID
+- Allows visual verification that questions changed
+
+**3. Separate State Management**
+- `gameData` - stores original game data from server (immutable)
+- `currentQuestions` - stores current session's questions (changes on Play Again)
+- Clear separation prevents accidental state reuse
+
+**4. Complete State Reset in resetGame()**
+- Generate NEW session ID first
+- Call regenerate API with cache-busting headers
+- Create new array reference: `res.data.questions.map(q => ({...q}))`
+- Clear ALL game-specific state (answers, progress, matching pairs, etc.)
+- Reset timer
+
+**5. Console Logging for Debugging**
+```
+[PlayGame] ========== PLAY AGAIN TRIGGERED ==========
+[PlayGame] Old Session: session_xxx
+[PlayGame] Old Questions Hash: -69ac10c3
+[PlayGame] NEW Session: session_yyy
+[PlayGame] NEW Questions Hash: -13eceecc
+[PlayGame] ========== RESET COMPLETE ==========
+```
+
+### Test Results:
+- **All 5 criteria PASSED** - `/app/test_reports/iteration_31.json`
+- **Round 1:** "María tiene un jardín cuadrado..." (hash: -69ac10c3)
+- **Round 2:** "María tiene 4 filas de stickers..." (hash: -13eceecc)
+- **Session changed:** session_1771971799502 → session_1771971818175
+
+### Files Modified:
+- `/app/frontend/src/pages/PlayGame.js` - Complete rewrite (600+ lines)
+
+---
 ## Update 2026-02-24 - Educational Games AGGRESSIVE Question Regeneration (VERIFIED)
 
 ### Issues Fixed:
