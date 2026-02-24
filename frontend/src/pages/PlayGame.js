@@ -90,11 +90,31 @@ const PlayGame = () => {
     }
   };
 
-  const startGame = () => {
+  const startGame = async () => {
     if (!playerName.trim()) {
       toast.error(language === 'es' ? 'Ingresa tu nombre' : 'Enter your name');
       return;
     }
+    
+    // Try to regenerate questions for anti-cheat
+    try {
+      const res = await axios.post(`${API}/games/${gameId}/regenerate-questions`, null, {
+        params: { player_name: playerName }
+      });
+      
+      if (res.data.regenerated && res.data.questions?.length > 0) {
+        // Update game with new questions
+        setGame(prev => ({
+          ...prev,
+          questions: res.data.questions
+        }));
+        toast.success(language === 'es' ? '¡Nuevas preguntas generadas!' : 'New questions generated!');
+      }
+    } catch (error) {
+      // If regeneration fails, continue with existing questions
+      console.log('Question regeneration not available, using existing questions');
+    }
+    
     setGameStarted(true);
     setGameProgress({ current: 0, score: 0 });
   };
