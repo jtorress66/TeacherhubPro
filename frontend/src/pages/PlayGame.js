@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -13,11 +13,31 @@ import axios from 'axios';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Generate unique session ID
+const generateSessionId = () => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+// Generate hash of questions for verification
+const hashQuestions = (questions) => {
+  if (!questions || questions.length === 0) return 'empty';
+  const text = questions.map(q => q.question || q.term || '').join('|');
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) {
+    const char = text.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return hash.toString(16);
+};
+
 const PlayGame = () => {
   const { gameId } = useParams();
+  
+  // Core state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [game, setGame] = useState(null);
+  const [gameData, setGameData] = useState(null); // Original game data from server
+  const [currentQuestions, setCurrentQuestions] = useState([]); // Current session's questions
+  const [sessionId, setSessionId] = useState(generateSessionId());
   const [playerName, setPlayerName] = useState('');
   const [gameStarted, setGameStarted] = useState(false);
   const [gameProgress, setGameProgress] = useState({ current: 0, score: 0 });
@@ -26,7 +46,7 @@ const PlayGame = () => {
   const [language, setLanguage] = useState('es');
   const [regenerating, setRegenerating] = useState(false);
   
-  // Timer state for tracking time taken
+  // Timer state
   const startTimeRef = useRef(null);
   
   // Game-specific state
@@ -40,29 +60,30 @@ const PlayGame = () => {
   const [dragDropOrder, setDragDropOrder] = useState([]);
   const [draggingItem, setDraggingItem] = useState(null);
 
+  // Fetch initial game data
   useEffect(() => {
     fetchGame();
   }, [gameId]);
 
-  // Initialize shuffled items for matching games
+  // Initialize matching game when questions change
   useEffect(() => {
-    if (game?.game_type === 'matching' && game?.questions) {
-      const rightItems = game.questions.map(q => q.match || q.correct_answer);
+    if (gameData?.game_type === 'matching' && currentQuestions.length > 0) {
+      const rightItems = currentQuestions.map(q => q.match || q.correct_answer);
       setShuffledRight([...rightItems].sort(() => Math.random() - 0.5));
       setMatchedPairs([]);
     }
-  }, [game]);
+  }, [currentQuestions, sessionId]); // Re-run when session changes
 
-  // Check for match when both selected
+  // Check for match
   useEffect(() => {
-    if (matchingSelected.left && matchingSelected.right && game) {
-      const leftQ = game.questions.find(q => 
+    if (matchingSelected.left && matchingSelected.right && currentQuestions.length > 0) {
+      const leftQ = currentQuestions.find(q => 
         (q.question || q.term || q.left) === matchingSelected.left.text
       );
       const correctAnswer = leftQ?.correct_answer || leftQ?.match || leftQ?.right;
       
       if (matchingSelected.right.text === correctAnswer) {
-        setMatchedPairs([...matchedPairs, matchingSelected.left.text, matchingSelected.right.text]);
+        setMatchedPairs(prev => [...prev, matchingSelected.left.text, matchingSelected.right.text]);
         setGameProgress(prev => ({ ...prev, score: prev.score + 1 }));
         toast.success(language === 'es' ? '¡Correcto!' : 'Correct!');
       } else {
@@ -75,7 +96,7 @@ const PlayGame = () => {
 
   // Check if matching game is complete
   useEffect(() => {
-    if (game?.game_type === 'matching' && matchedPairs.length === game.questions.length * 2) {
+    if (gameData?.game_type === 'matching' && currentQuestions.length > 0 && matchedPairs.length === currentQuestions.length * 2) {
       setShowResult(true);
       submitScore();
     }
@@ -84,8 +105,14 @@ const PlayGame = () => {
   const fetchGame = async () => {
     try {
       const res = await axios.get(`${API}/play-game/${gameId}`);
-      setGame(res.data);
+      setGameData(res.data);
+      setCurrentQuestions(res.data.questions || []);
       setError(null);
+      
+      // Log initial load
+      console.log(`[PlayGame] Initial load - Session: ${sessionId}`);
+      console.log(`[PlayGame] Questions hash: ${hashQuestions(res.data.questions)}`);
+      console.log(`[PlayGame] Question count: ${res.data.questions?.length || 0}`);
     } catch (error) {
       console.error('Error fetching game:', error);
       setError(error.response?.data?.detail || 'Game not found');
@@ -100,34 +127,48 @@ const PlayGame = () => {
       return;
     }
     
-    // Try to regenerate questions for anti-cheat
-    let questionsToUse = game?.questions || [];
+    setRegenerating(true);
     
+    // Generate new session ID for this play
+    const newSessionId = generateSessionId();
+    setSessionId(newSessionId);
+    
+    console.log(`[PlayGame] Starting game - New Session: ${newSessionId}`);
+    console.log(`[PlayGame] Old questions hash: ${hashQuestions(currentQuestions)}`);
+    
+    // Always try to regenerate questions for fresh gameplay
     try {
       const res = await axios.post(`${API}/games/${gameId}/regenerate-questions`, null, {
-        params: { player_name: playerName }
+        params: { 
+          player_name: playerName,
+          session_id: newSessionId // Pass session ID to backend
+        }
       });
       
+      console.log(`[PlayGame] Regenerate response - regenerated: ${res.data.regenerated}`);
+      
       if (res.data.regenerated && res.data.questions?.length > 0) {
-        // Use the newly generated questions
-        questionsToUse = res.data.questions;
+        // FORCE new questions - create a new array reference
+        const newQuestions = [...res.data.questions];
+        setCurrentQuestions(newQuestions);
+        
+        console.log(`[PlayGame] NEW questions hash: ${hashQuestions(newQuestions)}`);
+        console.log(`[PlayGame] First question: ${newQuestions[0]?.question?.substring(0, 50)}...`);
+        
         toast.success(language === 'es' ? '¡Nuevas preguntas generadas!' : 'New questions generated!');
+      } else {
+        console.log(`[PlayGame] Using existing questions - regeneration not available`);
+        console.log(`[PlayGame] Message: ${res.data.message}`);
       }
     } catch (error) {
-      // If regeneration fails, continue with existing questions
-      console.log('Question regeneration not available, using existing questions');
+      console.error('[PlayGame] Regeneration error:', error);
     }
     
-    // Update game state with questions (new or existing) BEFORE starting
-    setGame(prev => ({
-      ...prev,
-      questions: questionsToUse
-    }));
-    
-    // Record start time for tracking how long the game takes
+    // Record start time
     startTimeRef.current = Date.now();
     
-    // Now start the game
+    // Start the game
+    setRegenerating(false);
     setGameStarted(true);
     setGameProgress({ current: 0, score: 0 });
   };
@@ -142,7 +183,7 @@ const PlayGame = () => {
         score: isCorrect ? prev.score + 1 : prev.score
       }));
       
-      if (gameProgress.current < game.questions.length - 1) {
+      if (gameProgress.current < currentQuestions.length - 1) {
         setGameProgress(prev => ({ ...prev, current: prev.current + 1 }));
         setSelectedAnswer(null);
         setFlashcardFlipped(false);
@@ -156,72 +197,121 @@ const PlayGame = () => {
 
   const submitScore = async () => {
     try {
-      // Calculate actual time taken in seconds
       const timeTaken = startTimeRef.current 
         ? Math.floor((Date.now() - startTimeRef.current) / 1000) 
         : 0;
       
+      const finalScore = gameProgress.score + (selectedAnswer === currentQuestions[gameProgress.current]?.correct_answer ? 1 : 0);
+      
+      console.log(`[PlayGame] Submitting score - Session: ${sessionId}, Score: ${finalScore}, Time: ${timeTaken}s`);
+      
       await axios.post(`${API}/games/${gameId}/score`, {
         player_name: playerName,
-        score: gameProgress.score + (selectedAnswer === game.questions[gameProgress.current]?.correct_answer ? 1 : 0),
-        total_questions: game.questions.length,
-        time_taken: timeTaken
+        score: finalScore,
+        total_questions: currentQuestions.length,
+        time_taken: timeTaken,
+        session_id: sessionId
       });
     } catch (error) {
       console.error('Error submitting score:', error);
     }
   };
 
-  const resetGame = async () => {
-    // Show loading state while regenerating
+  // CRITICAL: Complete reset for Play Again
+  const resetGame = useCallback(async () => {
+    console.log(`[PlayGame] ========== PLAY AGAIN TRIGGERED ==========`);
+    console.log(`[PlayGame] Old Session: ${sessionId}`);
+    console.log(`[PlayGame] Old Questions Hash: ${hashQuestions(currentQuestions)}`);
+    
+    // Show loading state
     setRegenerating(true);
     setShowResult(false);
-    setSelectedAnswer(null);
     
-    // Try to regenerate questions for the replay (anti-cheat)
-    let newQuestions = game?.questions || [];
+    // Generate NEW session ID - this is critical
+    const newSessionId = generateSessionId();
+    console.log(`[PlayGame] NEW Session: ${newSessionId}`);
+    
+    // FORCE regenerate questions from backend
+    let newQuestions = null;
     
     try {
       const res = await axios.post(`${API}/games/${gameId}/regenerate-questions`, null, {
-        params: { player_name: playerName }
+        params: { 
+          player_name: playerName,
+          session_id: newSessionId,
+          force_new: true // Signal to backend to force new generation
+        },
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
       });
       
-      if (res.data.regenerated && res.data.questions?.length > 0) {
-        newQuestions = res.data.questions;
-        toast.success(language === 'es' ? '¡Nuevas preguntas generadas!' : 'New questions generated!');
+      console.log(`[PlayGame] Regenerate API Response:`);
+      console.log(`  - regenerated: ${res.data.regenerated}`);
+      console.log(`  - message: ${res.data.message}`);
+      console.log(`  - questions count: ${res.data.questions?.length || 0}`);
+      
+      if (res.data.questions?.length > 0) {
+        // Create completely new array - no reference to old data
+        newQuestions = res.data.questions.map(q => ({...q}));
+        
+        console.log(`[PlayGame] NEW Questions Hash: ${hashQuestions(newQuestions)}`);
+        console.log(`[PlayGame] First NEW question: ${newQuestions[0]?.question?.substring(0, 60)}...`);
+        
+        if (res.data.regenerated) {
+          toast.success(language === 'es' ? '¡Nuevas preguntas generadas!' : 'New questions generated!');
+        }
       }
     } catch (error) {
-      console.log('Question regeneration not available, using existing questions');
+      console.error('[PlayGame] Regeneration failed:', error);
+      toast.error(language === 'es' ? 'Error al generar preguntas' : 'Error generating questions');
     }
     
-    // Update game with new questions
-    setGame(prev => ({
-      ...prev,
-      questions: newQuestions
-    }));
+    // COMPLETE STATE RESET
+    // 1. Update session ID FIRST
+    setSessionId(newSessionId);
     
-    // Reset all game state
+    // 2. Clear ALL game state
+    setSelectedAnswer(null);
     setGameProgress({ current: 0, score: 0 });
     setFlashcardFlipped(false);
     setFillBlankAnswer('');
     setMatchedPairs([]);
+    setMatchingSelected({ left: null, right: null });
     setWordSearchFound([]);
     setCrosswordAnswers({});
     setDragDropOrder([]);
+    setDraggingItem(null);
     
-    // Reset timer for the new game
-    startTimeRef.current = Date.now();
-    
-    // Re-shuffle matching game items with new questions
-    if (game?.game_type === 'matching' && newQuestions) {
-      const rightItems = newQuestions.map(q => q.match || q.correct_answer);
-      setShuffledRight([...rightItems].sort(() => Math.random() - 0.5));
+    // 3. Set new questions (or keep old if regeneration failed)
+    if (newQuestions && newQuestions.length > 0) {
+      setCurrentQuestions(newQuestions);
+      
+      // Re-shuffle for matching games
+      if (gameData?.game_type === 'matching') {
+        const rightItems = newQuestions.map(q => q.match || q.correct_answer);
+        setShuffledRight([...rightItems].sort(() => Math.random() - 0.5));
+      }
+    } else {
+      console.warn('[PlayGame] No new questions received, shuffling existing ones');
+      // At minimum, shuffle the existing questions order
+      const shuffled = [...currentQuestions].sort(() => Math.random() - 0.5);
+      setCurrentQuestions(shuffled);
     }
     
-    // Hide loading state
+    // 4. Reset timer
+    startTimeRef.current = Date.now();
+    
+    // 5. Hide loading
     setRegenerating(false);
-  };
+    
+    console.log(`[PlayGame] ========== RESET COMPLETE ==========`);
+    console.log(`[PlayGame] Final Session: ${newSessionId}`);
+    console.log(`[PlayGame] Ready for new game`);
+  }, [gameId, playerName, currentQuestions, sessionId, gameData, language]);
 
+  // Loading screen
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
@@ -230,6 +320,7 @@ const PlayGame = () => {
     );
   }
 
+  // Error screen
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
@@ -246,6 +337,26 @@ const PlayGame = () => {
     );
   }
 
+  // Regenerating screen
+  if (regenerating) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <CardContent className="p-8 text-center">
+            <Loader2 className="h-12 w-12 animate-spin text-purple-500 mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-slate-800 mb-2">
+              {language === 'es' ? 'Generando nuevas preguntas...' : 'Generating new questions...'}
+            </h2>
+            <p className="text-slate-600">
+              {language === 'es' ? 'Preparando tu nuevo desafío' : 'Preparing your new challenge'}
+            </p>
+            <p className="text-xs text-slate-400 mt-4">Session: {sessionId}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   // Name input screen
   if (!gameStarted) {
     return (
@@ -253,10 +364,10 @@ const PlayGame = () => {
         <Card className="max-w-md w-full bg-gradient-to-br from-white to-purple-50 border-purple-200">
           <CardContent className="p-8 text-center">
             <div className="text-5xl mb-4">🎮</div>
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">{game?.title}</h2>
+            <h2 className="text-2xl font-bold text-slate-800 mb-2">{gameData?.title}</h2>
             <p className="text-slate-600 mb-6">
-              {game?.questions?.length} {language === 'es' ? 'preguntas' : 'questions'} • 
-              {' '}{game?.difficulty}
+              {currentQuestions.length} {language === 'es' ? 'preguntas' : 'questions'} • 
+              {' '}{gameData?.difficulty || 'medium'}
             </p>
             <Input
               value={playerName}
@@ -267,9 +378,14 @@ const PlayGame = () => {
             />
             <Button 
               onClick={startGame}
+              disabled={regenerating}
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
             >
-              <Play className="h-4 w-4 mr-2" />
+              {regenerating ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Play className="h-4 w-4 mr-2" />
+              )}
               {language === 'es' ? '¡Jugar!' : 'Play!'}
             </Button>
             <div className="flex justify-center gap-2 mt-4">
@@ -296,7 +412,7 @@ const PlayGame = () => {
 
   // Results screen
   if (showResult) {
-    const totalQuestions = game.questions.length;
+    const totalQuestions = currentQuestions.length;
     const percentage = Math.round((gameProgress.score / totalQuestions) * 100);
     
     return (
@@ -325,15 +441,22 @@ const PlayGame = () => {
                 ? (language === 'es' ? '¡Buen trabajo!' : 'Good job!')
                 : (language === 'es' ? '¡Sigue practicando!' : 'Keep practicing!')}
             </p>
+            
+            {/* Session info for debugging */}
+            <p className="text-xs text-slate-400 mb-4">
+              Session: {sessionId} | Questions Hash: {hashQuestions(currentQuestions)}
+            </p>
+            
             <Button 
-              onClick={resetGame} 
+              onClick={resetGame}
               disabled={regenerating}
               className="bg-purple-600 hover:bg-purple-700"
+              data-testid="play-again-button"
             >
               {regenerating ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  {language === 'es' ? 'Generando nuevas preguntas...' : 'Generating new questions...'}
+                  {language === 'es' ? 'Generando...' : 'Generating...'}
                 </>
               ) : (
                 <>
@@ -348,32 +471,25 @@ const PlayGame = () => {
     );
   }
 
-  // Loading screen while regenerating questions
-  if (regenerating) {
+  // Game play screen
+  const currentQ = currentQuestions[gameProgress.current];
+  const totalQuestions = currentQuestions.length;
+  const progress = ((gameProgress.current + 1) / totalQuestions) * 100;
+
+  if (!currentQ) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
+        <Card className="max-w-md">
           <CardContent className="p-8 text-center">
-            <Loader2 className="h-12 w-12 animate-spin text-purple-500 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-slate-800 mb-2">
-              {language === 'es' ? 'Preparando nuevas preguntas...' : 'Preparing new questions...'}
-            </h2>
-            <p className="text-slate-600">
-              {language === 'es' ? 'Esto tomará solo un momento' : 'This will only take a moment'}
-            </p>
+            <p className="text-slate-600">Loading question...</p>
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  // Game play screen
-  const currentQ = game.questions[gameProgress.current];
-  const totalQuestions = game.questions.length;
-  const progress = ((gameProgress.current + 1) / totalQuestions) * 100;
-
   const renderGameContent = () => {
-    const gameType = game.game_type;
+    const gameType = gameData?.game_type;
 
     // Quiz / Multiple Choice / True-False
     if (gameType === 'quiz' || gameType === 'true_false') {
@@ -386,7 +502,7 @@ const PlayGame = () => {
             
             return (
               <button
-                key={idx}
+                key={`${sessionId}-${gameProgress.current}-${idx}`}
                 onClick={() => !selectedAnswer && handleAnswer(option, currentQ.correct_answer)}
                 disabled={selectedAnswer !== null}
                 className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
@@ -512,9 +628,9 @@ const PlayGame = () => {
       );
     }
 
-    // Matching - handled separately due to different UI
+    // Matching
     if (gameType === 'matching') {
-      const leftItems = game.questions.map(q => ({ 
+      const leftItems = currentQuestions.map(q => ({ 
         id: q.question || q.term || q.left,
         text: q.question || q.term || q.left 
       }));
@@ -537,7 +653,7 @@ const PlayGame = () => {
             </p>
             {leftItems.map((item, idx) => (
               <button
-                key={idx}
+                key={`${sessionId}-left-${idx}`}
                 onClick={() => handleMatchClick('left', item)}
                 disabled={matchedPairs.includes(item.text)}
                 className={`w-full p-3 rounded-lg border-2 text-sm transition-all ${
@@ -558,7 +674,7 @@ const PlayGame = () => {
             </p>
             {rightItems.map((item, idx) => (
               <button
-                key={idx}
+                key={`${sessionId}-right-${idx}`}
                 onClick={() => handleMatchClick('right', item)}
                 disabled={matchedPairs.includes(item.text)}
                 className={`w-full p-3 rounded-lg border-2 text-sm transition-all ${
@@ -594,7 +710,7 @@ const PlayGame = () => {
         <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-medium">{game.title}</span>
+              <span className="font-medium">{gameData?.title}</span>
               <span className="text-sm">
                 {gameProgress.current + 1} / {totalQuestions}
               </span>
@@ -612,12 +728,12 @@ const PlayGame = () => {
         {/* Game Card */}
         <Card className="border-2 border-purple-200">
           <CardContent className="p-8">
-            {game.game_type !== 'matching' && (
+            {gameData?.game_type !== 'matching' && (
               <div className="text-center mb-8">
                 <Badge className="mb-4 bg-purple-100 text-purple-700">
                   {language === 'es' ? 'Pregunta' : 'Question'} {gameProgress.current + 1}
                 </Badge>
-                {game.game_type !== 'flashcards' && (
+                {gameData?.game_type !== 'flashcards' && (
                   <h3 className="text-2xl font-semibold text-slate-800">
                     {currentQ.question || currentQ.prompt}
                   </h3>
@@ -628,9 +744,10 @@ const PlayGame = () => {
           </CardContent>
         </Card>
 
-        {/* Footer */}
-        <div className="text-center text-slate-400 text-sm">
+        {/* Footer with session info */}
+        <div className="text-center text-slate-400 text-xs">
           <p>Powered by TeacherHubPro 🎮</p>
+          <p className="mt-1">Session: {sessionId.substring(0, 20)}...</p>
         </div>
       </div>
     </div>
