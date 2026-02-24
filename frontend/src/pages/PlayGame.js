@@ -24,6 +24,7 @@ const PlayGame = () => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [language, setLanguage] = useState('es');
+  const [regenerating, setRegenerating] = useState(false);
   
   // Timer state for tracking time taken
   const startTimeRef = useRef(null);
