@@ -135,12 +135,11 @@ const PlayGame = () => {
     setSessionId(newSessionId);
     
     console.log(`[PlayGame] Starting game - New Session: ${newSessionId}`);
-    console.log(`[PlayGame] Old questions hash: ${hashQuestions(currentQuestions)}`);
+    console.log(`[PlayGame] Original questions hash: ${hashQuestions(gameData?.questions)}`);
     
     let questionsToUse = null;
-    let aiRegenerationSucceeded = false;
     
-    // Try to regenerate questions via AI
+    // ALWAYS try to regenerate questions via AI
     try {
       const res = await axios.post(`${API}/games/${gameId}/regenerate-questions`, null, {
         params: { 
@@ -157,28 +156,22 @@ const PlayGame = () => {
       console.log(`[PlayGame] Regenerate response - regenerated: ${res.data.regenerated}`);
       
       if (res.data.regenerated === true && res.data.questions?.length > 0) {
-        // AI successfully regenerated
+        // AI generated NEW questions
         questionsToUse = res.data.questions.map(q => JSON.parse(JSON.stringify(q)));
-        aiRegenerationSucceeded = true;
         
         console.log(`[PlayGame] AI NEW questions hash: ${hashQuestions(questionsToUse)}`);
         console.log(`[PlayGame] First question: ${questionsToUse[0]?.question?.substring(0, 50)}...`);
         
-        toast.success(language === 'es' ? '¡Nuevas preguntas generadas por IA!' : 'New AI-generated questions!');
+        toast.success(language === 'es' ? '¡Preguntas generadas!' : 'Questions generated!');
       } else {
-        console.log(`[PlayGame] AI regeneration not available: ${res.data.message}`);
+        // Use original questions if AI fails
+        console.log(`[PlayGame] Using original questions: ${res.data.message}`);
+        questionsToUse = gameData?.questions || currentQuestions;
       }
     } catch (error) {
       console.error('[PlayGame] Regeneration error:', error);
-    }
-    
-    // If AI failed, create variation from existing questions
-    if (!aiRegenerationSucceeded) {
-      console.log(`[PlayGame] Creating local variation for first play...`);
-      questionsToUse = createQuestionVariation(gameData?.questions || currentQuestions, gameData?.game_type);
-      
-      console.log(`[PlayGame] Local variation hash: ${hashQuestions(questionsToUse)}`);
-      toast.info(language === 'es' ? '¡Preguntas reorganizadas!' : 'Questions shuffled!');
+      // Use original questions on error
+      questionsToUse = gameData?.questions || currentQuestions;
     }
     
     // Set the questions
