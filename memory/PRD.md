@@ -1,6 +1,62 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-24 - Play Again GUARANTEED VARIATION (VERIFIED)
+
+### Problem:
+Play Again was showing the same questions because:
+1. AI regeneration requires subscription (returns `regenerated: false`)
+2. Random shuffle of 2 questions often produces same order (50% chance)
+3. Frontend used API response even when `regenerated: false`
+
+### Solution - Two-Tier Variation System:
+
+**Tier 1: AI Regeneration (When Available)**
+- Uses Claude API via `original_content`
+- Generates completely new questions each time
+- Works for games with active subscription
+
+**Tier 2: Rotation-Based Variation (Fallback)**
+- For small question sets (≤3 questions): Uses ROTATION instead of random
+- `playCountRef` tracks number of plays
+- Rotation formula: `rotateBy = playCount % questions.length`
+- GUARANTEES different question order every time
+
+### Key Code Changes:
+
+```javascript
+// Track play count for guaranteed rotation
+const playCountRef = useRef(0);
+
+// For small sets, use ROTATION (guaranteed different)
+if (varied.length <= 3) {
+  const rotateBy = playCount % varied.length;
+  varied = [...varied.slice(rotateBy), ...varied.slice(0, rotateBy)];
+}
+```
+
+### Hash Function Updated:
+- Now ORDER-SENSITIVE: includes index in hash calculation
+- Different order = different hash
+
+### Test Results (All 5 Criteria PASSED):
+
+**True/False Game (2 Questions):**
+| Round | First Question | Hash | Session |
+|-------|---------------|------|---------|
+| 1 | "The sun revolves around Earth." | 6657a3d4 | session_1771973587331 |
+| 2 | "The Earth is round." | -35333a84 | session_1771973595543 |
+| 3 | "The sun revolves around Earth." | 6657a3d4 | session_1771973604775 |
+
+**Quiz Game (5 Questions with AI):**
+| Round | First Question | Hash |
+|-------|---------------|------|
+| 1 | "María tiene un jardín cuadrado..." | 37081612 |
+| 2 | "María tiene 4 cajas con pelotas..." | 5af68541 |
+
+### Test Report: `/app/test_reports/iteration_32.json`
+
+---
 ## Update 2026-02-24 - Play Again COMPLETE FIX (VERIFIED)
 
 ### Issue: Play Again was reusing the same questions
