@@ -902,8 +902,8 @@ async def regenerate_game_questions(
 ):
     """
     Regenerate questions for a game to prevent memorization/cheating.
-    Uses AI to create new questions based on the original content.
-    Returns a new set of questions for this play session.
+    Uses AI to create COMPLETELY NEW questions based on the original content.
+    This is ALWAYS available - no subscription required for Play Again functionality.
     """
     # Get the original game
     game = await db.educational_games.find_one({"game_id": game_id}, {"_id": 0})
@@ -911,14 +911,12 @@ async def regenerate_game_questions(
         raise HTTPException(status_code=404, detail="Game not found")
     
     original_content = game.get("original_content", "")
+    game_title = game.get("title", "Educational Game")
+    game_type = game.get("game_type", "quiz")
+    existing_questions = game.get("questions", [])
     
     # If no original content stored, DERIVE content from existing questions
     if not original_content:
-        existing_questions = game.get("questions", [])
-        game_title = game.get("title", "Educational Game")
-        game_type = game.get("game_type", "quiz")
-        
-        # Create derived content from the game title and questions
         if existing_questions:
             question_texts = []
             for q in existing_questions:
@@ -932,6 +930,11 @@ async def regenerate_game_questions(
                     question_texts.append(f"{q.get('question', q.get('term', ''))} matches {q.get('correct_answer', q.get('match', ''))}")
                 elif game_type == "fill_blanks":
                     question_texts.append(f"{q.get('question', '')} Answer: {q.get('correct_answer', '')}")
+                elif game_type == "word_search":
+                    # For word search, extract the words
+                    words = q.get("words", [])
+                    if words:
+                        question_texts.append(f"Words: {', '.join(words)}")
                 else:
                     question_texts.append(q.get("question", ""))
             
@@ -940,10 +943,10 @@ async def regenerate_game_questions(
 Subject: {game.get('subject', 'general')}
 Grade Level: {game.get('grade_level', '3-5')}
 
-This game covers the following educational content:
+This educational game covers:
 {chr(10).join(question_texts)}
 
-Use this information to create NEW and DIFFERENT questions about the same topic."""
+IMPORTANT: Generate COMPLETELY NEW content about the same educational topic."""
             
             # Save the derived content for future regenerations
             await db.educational_games.update_one(
@@ -958,25 +961,8 @@ Use this information to create NEW and DIFFERENT questions about the same topic.
                 "message": "No questions available to derive content from"
             }
     
-    # Check if AI access is available (this is a public endpoint, so we check game owner's access)
-    teacher_id = game.get("teacher_id")
-    if teacher_id:
-        teacher = await db.users.find_one({"user_id": teacher_id}, {"_id": 0})
-        if teacher:
-            # Check if teacher has active subscription
-            subscription = await db.subscriptions.find_one({"user_id": teacher_id, "status": "active"})
-            if not subscription:
-                # Check school subscription
-                school_id = teacher.get("school_id")
-                if school_id:
-                    school_sub = await db.subscriptions.find_one({"school_id": school_id, "status": "active"})
-                    if not school_sub:
-                        # No active subscription, return existing questions
-                        return {
-                            "questions": game.get("questions", []),
-                            "regenerated": False,
-                            "message": "Subscription required for question regeneration"
-                        }
+    # NO SUBSCRIPTION CHECK - Always allow AI regeneration for Play Again
+    # This is essential for the educational experience
     
     # Generate new questions using AI with AGGRESSIVE variation
     try:
