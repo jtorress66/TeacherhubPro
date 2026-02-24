@@ -196,6 +196,8 @@ const translations = {
     landingEverythingDesc: 'A complete platform designed specifically for teachers.',
     landingFeatures: 'Features',
     landingAiAssistant: 'AI Assistant',
+    landingPoweredBy: 'Powered by Anthropic',
+    landingActiveTeachers: 'active teachers',
     landingHomeschool: 'Homeschool',
     landingIntegrations: 'Integrations',
     landingCustomization: 'Customization',
