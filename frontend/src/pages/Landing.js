@@ -663,27 +663,23 @@ const Landing = () => {
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 text-white text-sm font-medium mb-6 backdrop-blur-sm">
                 <Sparkles className="h-4 w-4" />
-                {language === 'es' ? '¡NUEVO! Presentaciones con IA' : 'NEW! AI Presentations'}
+                {t('landingNewAiPresentations')}
               </div>
               
               <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-                {language === 'es' 
-                  ? 'Crea presentaciones que cautivan' 
-                  : 'Create presentations that captivate'}
+                {t('landingCreatePresentations')}
               </h2>
               
               <p className="text-xl text-white/90 mb-8 max-w-lg">
-                {language === 'es' 
-                  ? 'Genera presentaciones educativas completas con IA. Elige temas visuales, agrega imágenes, aplica transiciones y guarda para usar después.' 
-                  : 'Generate complete educational presentations with AI. Choose visual themes, add images, apply transitions, and save for later use.'}
+                {t('landingPresentationsDesc')}
               </p>
 
               <div className="grid grid-cols-2 gap-4 mb-8">
                 {[
-                  { icon: Wand2, title: language === 'es' ? 'Genera con IA' : 'AI Generate', desc: language === 'es' ? '6+ diapositivas en segundos' : '6+ slides in seconds' },
-                  { icon: Palette, title: language === 'es' ? '8 Temas Visuales' : '8 Visual Themes', desc: language === 'es' ? 'Océano, Galaxia, Pizarra...' : 'Ocean, Galaxy, Blackboard...' },
-                  { icon: FileText, title: language === 'es' ? 'Guardar y Cargar' : 'Save & Load', desc: language === 'es' ? 'Biblioteca personal' : 'Personal library' },
-                  { icon: Printer, title: language === 'es' ? 'Descargar HTML' : 'Download HTML', desc: language === 'es' ? 'Usa sin internet' : 'Use offline' },
+                  { icon: Wand2, title: t('landingAiGenerate'), desc: t('landingAiGenerateDesc') },
+                  { icon: Palette, title: t('landing8VisualThemes'), desc: t('landing8VisualThemesDesc') },
+                  { icon: FileText, title: t('landingSaveAndLoad'), desc: t('landingSaveAndLoadDesc') },
+                  { icon: Printer, title: t('landingDownloadHtml'), desc: t('landingDownloadHtmlDesc') },
                 ].map((feature, idx) => (
                   <div key={idx} className="bg-white/10 rounded-xl p-4 backdrop-blur-sm hover:bg-white/20 transition-all">
                     <feature.icon className="h-6 w-6 mb-2 text-cyan-300" />
@@ -698,7 +694,7 @@ const Landing = () => {
                 className="bg-white text-cyan-700 hover:bg-white/90 px-8"
                 onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
               >
-                {language === 'es' ? 'Crear mi primera presentación' : 'Create my first presentation'}
+                {t('landingCreateFirstPresentation')}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
@@ -709,8 +705,8 @@ const Landing = () => {
                 {/* Fake presentation preview */}
                 <div className="bg-gradient-to-br from-purple-700 to-indigo-600 rounded-xl aspect-video mb-4 flex flex-col items-center justify-center text-white p-6">
                   <span className="text-6xl mb-4">🌌</span>
-                  <h3 className="text-2xl font-bold text-center">{language === 'es' ? 'El Sistema Solar' : 'The Solar System'}</h3>
-                  <p className="text-white/70 text-sm mt-2">{language === 'es' ? 'Ciencias - 4to Grado' : 'Science - 4th Grade'}</p>
+                  <h3 className="text-2xl font-bold text-center">{t('landingTheSolarSystem')}</h3>
+                  <p className="text-white/70 text-sm mt-2">{t('landingScienceGrade')}</p>
                 </div>
                 
                 {/* Slide thumbnails */}
@@ -724,7 +720,7 @@ const Landing = () => {
                 
                 {/* Transition indicator */}
                 <div className="mt-4 flex items-center justify-center gap-2 text-white/70 text-sm">
-                  <span className="px-3 py-1 bg-white/10 rounded-full">{language === 'es' ? '✨ Transiciones activadas' : '✨ Transitions enabled'}</span>
+                  <span className="px-3 py-1 bg-white/10 rounded-full">{t('landingTransitionsEnabled')}</span>
                 </div>
               </div>
             </div>
@@ -747,17 +743,15 @@ const Landing = () => {
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-cyan-400 text-sm font-medium mb-6">
                 <Palette className="h-4 w-4" />
-                {language === 'es' ? 'Personalización total' : 'Full customization'}
+                {t('landingFullCustomization')}
               </div>
               
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                {language === 'es' 
-                  ? 'Tu escuela, tu marca, tu plataforma' 
-                  : 'Your school, your brand, your platform'}
+                {t('landingSchoolBrandingTitle')}
               </h2>
               
               <p className="text-xl text-slate-300 mb-8">
-                {language === 'es'
+                {t('landingSchoolBrandingDesc')}
                   ? 'Cada escuela tiene su identidad. TeacherHubPro se adapta completamente a la tuya.'
                   : 'Every school has its identity. TeacherHubPro fully adapts to yours.'}
               </p>
