@@ -2429,16 +2429,31 @@ const GamesCreator = () => {
                             <h4 className="font-semibold text-slate-800">{game.title}</h4>
                             <p className="text-sm text-slate-500">
                               {gameTypes.find(t => t.id === game.game_type)?.name}
+                              {game.count_as_grade && (
+                                <span className="ml-2 text-amber-600 font-medium">
+                                  📊 {language === 'es' ? 'Cuenta como calificación' : 'Counts as grade'}
+                                </span>
+                              )}
                             </p>
                           </div>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => fetchLeaderboard(game.game_id)}
-                          >
-                            <Trophy className="h-4 w-4 mr-1" />
-                            {language === 'es' ? 'Ranking' : 'Leaderboard'}
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => fetchStudentStats(game.game_id)}
+                            >
+                              <Users className="h-4 w-4 mr-1" />
+                              {language === 'es' ? 'Estudiantes' : 'Students'}
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => fetchLeaderboard(game.game_id)}
+                            >
+                              <Trophy className="h-4 w-4 mr-1" />
+                              {language === 'es' ? 'Ranking' : 'Leaderboard'}
+                            </Button>
+                          </div>
                         </div>
                         <div className="grid grid-cols-4 gap-4 text-center">
                           <div>
