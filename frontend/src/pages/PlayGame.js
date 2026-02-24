@@ -317,13 +317,12 @@ const PlayGame = () => {
     setRegenerating(true);
     setShowResult(false);
     
-    // Generate NEW session ID - this is critical
+    // Generate NEW session ID
     const newSessionId = generateSessionId();
     console.log(`[PlayGame] NEW Session: ${newSessionId}`);
     
-    // Attempt to regenerate questions from backend
+    // ALWAYS regenerate questions via AI - no fallback to shuffle
     let newQuestions = null;
-    let aiRegenerationSucceeded = false;
     
     try {
       const res = await axios.post(`${API}/games/${gameId}/regenerate-questions`, null, {
@@ -331,7 +330,7 @@ const PlayGame = () => {
           player_name: playerName,
           session_id: newSessionId,
           force_new: true,
-          timestamp: Date.now() // Cache buster
+          timestamp: Date.now()
         },
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -345,44 +344,26 @@ const PlayGame = () => {
       console.log(`  - message: ${res.data.message}`);
       console.log(`  - questions count: ${res.data.questions?.length || 0}`);
       
-      // ONLY use API questions if regeneration ACTUALLY succeeded
       if (res.data.regenerated === true && res.data.questions?.length > 0) {
-        // AI successfully generated NEW questions
+        // AI generated NEW questions
         newQuestions = res.data.questions.map(q => JSON.parse(JSON.stringify(q)));
-        aiRegenerationSucceeded = true;
         
         console.log(`[PlayGame] AI Regeneration SUCCESS`);
         console.log(`[PlayGame] NEW Questions Hash: ${hashQuestions(newQuestions)}`);
         console.log(`[PlayGame] First NEW question: ${newQuestions[0]?.question?.substring(0, 60)}...`);
         
-        toast.success(language === 'es' ? '¡Nuevas preguntas generadas por IA!' : 'New AI-generated questions!');
+        toast.success(language === 'es' ? '¡Nuevas preguntas generadas!' : 'New questions generated!');
       } else {
-        console.log(`[PlayGame] AI Regeneration NOT available: ${res.data.message}`);
+        console.error(`[PlayGame] AI Regeneration FAILED: ${res.data.message}`);
+        toast.error(language === 'es' ? 'Error generando preguntas nuevas' : 'Error generating new questions');
       }
     } catch (error) {
       console.error('[PlayGame] Regeneration API error:', error);
-    }
-    
-    // If AI regeneration failed, create variation from existing questions
-    if (!aiRegenerationSucceeded) {
-      console.log(`[PlayGame] Creating local variation from existing questions...`);
-      
-      // Get the ORIGINAL questions from gameData, not currentQuestions (which may already be shuffled)
-      const originalQuestions = gameData?.questions || currentQuestions;
-      newQuestions = createQuestionVariation(originalQuestions, gameData?.game_type);
-      
-      console.log(`[PlayGame] Local Variation Created`);
-      console.log(`[PlayGame] NEW Questions Hash: ${hashQuestions(newQuestions)}`);
-      console.log(`[PlayGame] First question (varied): ${newQuestions[0]?.question?.substring(0, 60)}...`);
-      
-      toast.info(language === 'es' ? '¡Preguntas reorganizadas!' : 'Questions reshuffled!');
+      toast.error(language === 'es' ? 'Error de conexión' : 'Connection error');
     }
     
     // COMPLETE STATE RESET
-    // 1. Update session ID FIRST
     setSessionId(newSessionId);
-    
-    // 2. Clear ALL game state completely
     setSelectedAnswer(null);
     setGameProgress({ current: 0, score: 0 });
     setFlashcardFlipped(false);
@@ -394,28 +375,27 @@ const PlayGame = () => {
     setDragDropOrder([]);
     setDraggingItem(null);
     
-    // 3. Set the new/varied questions
+    // Set new AI-generated questions
     if (newQuestions && newQuestions.length > 0) {
       setCurrentQuestions(newQuestions);
       
-      // Re-shuffle for matching games
+      // Re-initialize matching game with new questions
       if (gameData?.game_type === 'matching') {
         const rightItems = newQuestions.map(q => q.match || q.correct_answer);
         setShuffledRight(shuffleArray(rightItems));
       }
     }
     
-    // 4. Reset timer
+    // Reset timer
     startTimeRef.current = Date.now();
     
-    // 5. Hide loading
+    // Hide loading
     setRegenerating(false);
     
     console.log(`[PlayGame] ========== RESET COMPLETE ==========`);
     console.log(`[PlayGame] Final Session: ${newSessionId}`);
-    console.log(`[PlayGame] Final Questions Hash: ${hashQuestions(newQuestions)}`);
-    console.log(`[PlayGame] AI Used: ${aiRegenerationSucceeded}`);
-  }, [gameId, playerName, currentQuestions, sessionId, gameData, language, createQuestionVariation, shuffleArray]);
+    console.log(`[PlayGame] Questions regenerated: ${newQuestions ? 'YES' : 'NO'}`);
+  }, [gameId, playerName, currentQuestions, sessionId, gameData, language, shuffleArray]);
 
   // Loading screen
   if (loading) {
