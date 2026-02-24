@@ -995,7 +995,7 @@ const Landing = () => {
               </p>
               <div className="flex items-center gap-2 text-blue-600 text-sm font-medium">
                 <Eye className="h-4 w-4" />
-                {language === 'es' ? 'Visibilidad Total' : 'Full Visibility'}
+                {t('landingFullVisibility')}
               </div>
             </div>
 
@@ -1005,16 +1005,14 @@ const Landing = () => {
                 <Layers className="h-8 w-8 text-green-600" />
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-2">
-                {language === 'es' ? 'Currículo Flexible' : 'Flexible Curriculum'}
+                {t('landingFlexibleCurriculum')}
               </h3>
               <p className="text-slate-600 mb-3">
-                {language === 'es' 
-                  ? 'Crea o personaliza planes de lección, tarjetas de estudio e integra recursos externos.' 
-                  : 'Create or customize lesson plans, flashcards, and integrate external resources.'}
+                {t('landingFlexibleCurriculumDesc2')}
               </p>
               <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
                 <Wand2 className="h-4 w-4" />
-                {language === 'es' ? '100% Personalizable' : '100% Customizable'}
+                {t('landing100Customizable')}
               </div>
             </div>
 
@@ -1024,12 +1022,10 @@ const Landing = () => {
                 <Download className="h-8 w-8 text-orange-600" />
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-2">
-                {language === 'es' ? 'Descarga y Aprende' : 'Download & Learn'}
+                {t('landingDownloadAndLearn')}
               </h3>
               <p className="text-slate-600 mb-3">
-                {language === 'es' 
-                  ? 'Descarga lecciones y materiales en PDF para aprender en cualquier lugar, sin conexión.' 
-                  : 'Download lessons and materials as PDFs to learn anywhere, without internet.'}
+                {t('landingDownloadAndLearnDesc')}
               </p>
               <div className="flex items-center gap-2 text-orange-600 text-sm font-medium">
                 <FileText className="h-4 w-4" />
@@ -1043,16 +1039,14 @@ const Landing = () => {
                 <Volume2 className="h-8 w-8 text-rose-600" />
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-2">
-                {language === 'es' ? 'Texto a Voz' : 'Text-to-Speech'}
+                {t('landingTextToSpeech')}
               </h3>
               <p className="text-slate-600 mb-3">
-                {language === 'es' 
-                  ? 'Herramientas de lectura en voz alta para diferentes estilos de aprendizaje y accesibilidad.' 
-                  : 'Read-aloud tools for different learning styles and accessibility needs.'}
+                {t('landingTextToSpeechDesc2')}
               </p>
               <div className="flex items-center gap-2 text-rose-600 text-sm font-medium">
                 <Headphones className="h-4 w-4" />
-                {language === 'es' ? 'Aprendizaje Auditivo' : 'Audio Learning'}
+                {t('landingAudioLearning')}
               </div>
             </div>
 
@@ -1062,16 +1056,14 @@ const Landing = () => {
                 <Lock className="h-8 w-8 text-slate-600" />
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-2">
-                {language === 'es' ? 'Contenido Seguro' : 'Safe Content'}
+                {t('landingSafeContent')}
               </h3>
               <p className="text-slate-600 mb-3">
-                {language === 'es' 
-                  ? 'Curación de contenido educativo seguro, aprobado por padres para tranquilidad.' 
-                  : 'Parent-approved educational content curation for peace of mind.'}
+                {t('landingSafeContentDesc2')}
               </p>
               <div className="flex items-center gap-2 text-slate-600 text-sm font-medium">
                 <Shield className="h-4 w-4" />
-                {language === 'es' ? 'Control Parental' : 'Parental Control'}
+                {t('landingParentalControl')}
               </div>
             </div>
           </div>
@@ -1079,18 +1071,18 @@ const Landing = () => {
           {/* Subject Modules */}
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-amber-100">
             <h3 className="text-2xl font-bold text-slate-800 mb-6 text-center">
-              {language === 'es' ? 'Módulos por Materia' : 'Subject-Specific Modules'}
+              {t('landingSubjectModules')}
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { icon: BookOpen, name: language === 'es' ? 'Matemáticas' : 'Mathematics', color: 'text-blue-600 bg-blue-50' },
-                { icon: FileText, name: language === 'es' ? 'Lenguaje' : 'Language Arts', color: 'text-purple-600 bg-purple-50' },
-                { icon: TreePine, name: language === 'es' ? 'Ciencias' : 'Science', color: 'text-green-600 bg-green-50' },
-                { icon: Telescope, name: language === 'es' ? 'Astronomía' : 'Astronomy', color: 'text-indigo-600 bg-indigo-50' },
-                { icon: Globe, name: language === 'es' ? 'Geografía' : 'Geography', color: 'text-teal-600 bg-teal-50' },
-                { icon: Compass, name: language === 'es' ? 'Historia' : 'History', color: 'text-amber-600 bg-amber-50' },
-                { icon: Palette, name: language === 'es' ? 'Arte' : 'Art', color: 'text-pink-600 bg-pink-50' },
-                { icon: Heart, name: language === 'es' ? 'Educación Física' : 'Physical Ed', color: 'text-red-600 bg-red-50' },
+                { icon: BookOpen, name: t('landingMathematics'), color: 'text-blue-600 bg-blue-50' },
+                { icon: FileText, name: t('landingLanguageArts'), color: 'text-purple-600 bg-purple-50' },
+                { icon: TreePine, name: t('landingScience'), color: 'text-green-600 bg-green-50' },
+                { icon: Telescope, name: t('landingAstronomy'), color: 'text-indigo-600 bg-indigo-50' },
+                { icon: Globe, name: t('landingGeography'), color: 'text-teal-600 bg-teal-50' },
+                { icon: Compass, name: t('landingHistory'), color: 'text-amber-600 bg-amber-50' },
+                { icon: Palette, name: t('landingArt'), color: 'text-pink-600 bg-pink-50' },
+                { icon: Heart, name: t('landingPhysicalEd'), color: 'text-red-600 bg-red-50' },
               ].map((subject, idx) => (
                 <div key={idx} className={`flex items-center gap-3 p-4 rounded-xl ${subject.color.split(' ')[1]}`}>
                   <subject.icon className={`h-6 w-6 ${subject.color.split(' ')[0]}`} />
@@ -1108,7 +1100,7 @@ const Landing = () => {
               onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
             >
               <Home className="h-5 w-5 mr-2" />
-              {language === 'es' ? 'Comenzar Educación en Casa' : 'Start Homeschooling'}
+              {t('landingStartHomeschooling')}
             </Button>
           </div>
         </div>
@@ -1127,26 +1119,24 @@ const Landing = () => {
             <div className="text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-100 text-cyan-700 text-sm font-medium mb-6">
                 <Sparkles className="h-4 w-4" />
-                {language === 'es' ? '7 días gratis' : '7 days free'}
+                {t('landing7DaysFree')}
               </div>
               
               <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-                {language === 'es' ? 'Comienza hoy' : 'Get started today'}
+                {t('landingGetStartedToday')}
               </h2>
               
               <p className="text-xl text-slate-600 mb-8">
-                {language === 'es' 
-                  ? 'Únete a miles de maestros que ya transformaron su planificación.' 
-                  : 'Join thousands of teachers who have transformed their planning.'}
+                {t('landingStartYourJourney')}
               </p>
 
               {/* Benefits list */}
               <div className="space-y-4 mb-8">
                 {[
-                  { icon: CheckCircle, text: language === 'es' ? 'Sin tarjeta de crédito requerida' : 'No credit card required' },
-                  { icon: CheckCircle, text: language === 'es' ? 'Configuración en 2 minutos' : 'Setup in 2 minutes' },
-                  { icon: CheckCircle, text: language === 'es' ? 'Cancela en cualquier momento' : 'Cancel anytime' },
-                  { icon: CheckCircle, text: language === 'es' ? 'Soporte en español e inglés' : 'Support in Spanish & English' },
+                  { icon: CheckCircle, text: t('landingNoCreditCard') },
+                  { icon: CheckCircle, text: t('landingSetup2Min') },
+                  { icon: CheckCircle, text: t('landingCancelAnytime') },
+                  { icon: CheckCircle, text: t('landingSupportBilingual') },
                 ].map((item, index) => (
                   <div key={index} className="flex items-center gap-3 justify-center lg:justify-start">
                     <item.icon className="h-5 w-5 text-cyan-500 flex-shrink-0" />
