@@ -531,6 +531,9 @@ async def save_educational_game(
     
     game_id = game.get("game_id") or f"game_{uuid.uuid4().hex[:12]}"
     
+    # Extract grade settings if provided
+    grade_settings = game.get("grade_settings", {})
+    
     await db.educational_games.update_one(
         {"game_id": game_id},
         {"$set": {
@@ -545,6 +548,16 @@ async def save_educational_game(
             "hints": game.get("hints", []),
             "categories": game.get("categories", []),
             "validation_status": "passed",
+            # Store original content for question regeneration
+            "original_content": game.get("original_content", ""),
+            "language": game.get("language", "es"),
+            "question_count": len(game.get("questions", [])),
+            # Grade settings
+            "count_as_grade": grade_settings.get("count_as_grade", False),
+            "grade_points": grade_settings.get("grade_points", 100),
+            "grade_method": grade_settings.get("grade_method", "best"),
+            "class_id": grade_settings.get("class_id"),
+            "assignment_name": grade_settings.get("assignment_name"),
             "created_at": game.get("created_at") or datetime.now(timezone.utc).isoformat(),
             "updated_at": datetime.now(timezone.utc).isoformat()
         }},
