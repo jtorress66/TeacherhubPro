@@ -22,100 +22,91 @@ The user wants to build a comprehensive, teacher-focused web application called 
 **User's preferred language**: English. The next agent must respond in **English**.
 
 **what currently exists?**
-The agent successfully completed a major quality overhaul of the Educational Games feature, implementing robust backend validation, stricter AI prompts, and fixing all frontend game types. A subsequent bug in game generation () was also resolved. Following this, the agent addressed SEO by creating static  and  files for the production domain.
-
-A critical bug where students were redirected to the login page was investigated. The agent determined the code was correct and the issue stemmed from school firewalls. As a solution, a simple, API-free Share to Google Classroom button was implemented. The agent also added the highly-requested feature for teachers to delete their own games. Most recently, the agent began work on expanding language support beyond English and Spanish.
+The agent integrated a multi-language  component into the application's main layout and landing page, supporting 7 languages. It also created four new public-facing SEO pages (, , , ) and updated the  accordingly. Additionally, the Report Cards UI was significantly improved with a tabbed interface for individual and batch generation. However, the multi-language implementation on the landing page is incomplete; it only translates parts of the page for languages other than English and Spanish, which is the current focus of the work.
 
 **Last working item**:
--   **Last item agent was working:** Implementing multi-language support. The agent updated  to include French, Portuguese, German, Italian, and Chinese. A new reusable component was created at  to allow users to switch languages. The work was interrupted before this new component could be integrated into the main application layout.
+-   **Last item agent was working:** The agent was trying to fix a bug where the Landing page only partially translates when a language other than English or Spanish is selected. After adding all necessary translation keys to , the agent began replacing all remaining hardcoded text in . The file is very large, and the agent was attempting to use  for a global find-and-replace when the session ended.
 -   **Status:** IN PROGRESS
 -   **Agent Testing Done:** N
--   **Which testing method agent to use?** Frontend testing agent. Instruct the agent to add the  to the main layout and verify that changing the language updates UI text on multiple key pages (e.g., Dashboard, Games Creator).
+-   **Which testing method agent to use?** Frontend testing agent. Instruct the agent to test the Landing page by switching to French, German, and Chinese, and verify that 100% of the page content is translated correctly.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Integrate the new  component (P0)**
--   **Issue 2: Remove dead code from the abandoned Google Classroom OAuth implementation (P1)**
--   **Issue 3: Complete the Refactoring of  (P1)**
--   **Issue 4: Create new public-facing pages for SEO (P2)**
+-   **Issue 1: Complete Landing Page Translation (P0)**
+-   **Issue 2: Google Search Console Indexing Failures (P1)**
+-   **Issue 3: Remove dead code from Google Classroom OAuth (P2)**
+-   **Issue 4: Complete the Refactoring of  (P2)**
 -   **Issue 5: Template of the Week Bug Verification (P2)**
 
 **Issues Detail:**
--   **Issue 1: Integrate the new  component (P0)**
-    -   **Attempted fixes:** The  has been updated and the  component has been created.
+-   **Issue 1: Complete Landing Page Translation (P0)**
+    -   **Attempted fixes:** The agent successfully added all required translation strings for all 7 languages into . It then began replacing hardcoded  logic in  with the  translation function. The process was not completed due to the file's large size (over 140 occurrences remaining).
     -   **Next debug checklist:**
-        1.  Import  into  or the main header component.
-        2.  Place the component in a visible location within the UI (e.g., top navigation bar).
-        3.  Test that changing the language updates text on the Dashboard and Games Creator pages to confirm the context is working correctly.
-    -   **Why fix this issue and what will be achieved with the fix?** This will complete the user's request to make the application accessible in multiple languages, improving its global reach.
+        1.  Resume the process of replacing all remaining hardcoded English/Spanish strings in  with the corresponding  function calls.
+        2.  Use 128 to confirm all instances have been removed.
+        3.  Thoroughly test by switching to non-English/Spanish languages (e.g., French, German) and ensuring the entire page content updates.
+    -   **Why fix this issue and what will be achieved with the fix?** To fulfill the user's request for full multi-language support and provide a professional, consistent experience for a global audience.
     -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Frontend.
+    -   **Blocked on other issue:** None.
+
+-   **Issue 2: Google Search Console Indexing Failures (P1)**
+    -   **Attempted fixes:** The agent reviewed the  but could not access the user-provided Google Search Console link due to authentication requirements.
+    -   **Next debug checklist:**
+        1.  Ask the user for a screenshot of the GSC report that specifies which 3 pages failed to be indexed.
+        2.  Based on the failed URLs, use  to inspect their HTTP response headers to check for  errors or  directives.
+        3.  Verify the routes are correctly configured in .
+    -   **Why fix this issue and what will be achieved with the fix?** To ensure all public-facing marketing pages are discoverable by search engines, which is crucial for the user's SEO strategy.
+    -   **Status:** BLOCKED (waiting for user input)
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Frontend.
     -   **Blocked on other issue:** None.
 
--   **Issue 2: Remove dead code from the abandoned Google Classroom OAuth implementation (P1)**
-    -   **Attempted fixes:** None. The agent pivoted to a simpler solution, leaving the old code behind.
+-   **Issue 3: Remove dead code from Google Classroom OAuth (P2)**
+    -   **Attempted fixes:** None in this session.
     -   **Next debug checklist:**
         1.  Delete the file .
         2.  In , remove the import and registration of the .
         3.  In , remove the  and  variables.
-    -   **Why fix this issue and what will be achieved with the fix?** This removes unused, confusing code, improving maintainability and preventing accidental use of a non-functional feature.
+    -   **Why fix this issue and what will be achieved with the fix?** This removes unused, confusing code, improving maintainability.
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Backend (ensure no regressions).
+    -   **Should Test frontend/backend/both after fix?** Backend.
     -   **Blocked on other issue:** None.
 
--   **Issue 3: Complete the Refactoring of  (P1)**
-    -   **Attempted fixes:** Endpoints for , , and  were successfully extracted in a previous session. No further progress was made in this session.
-    -   **Next debug checklist:**
-        1.  Create new route files for , , , , , , , and .
-        2.  Systematically move the remaining endpoints from  into these new files.
-        3.  Update  to import and include all new routers.
-    -   **Why fix this issue and what will be achieved with the fix?** The  file is still extremely large, posing a risk to backend stability. Completing the refactor is critical technical debt.
+-   **Issue 4: Complete the Refactoring of  (P2)**
+    -   **Attempted fixes:** None in this session.
+    -   **Next debug checklist:** Systematically move the remaining endpoints from  into new, logically separated route files (e.g., , ).
+    -   **Why fix this issue and what will be achieved with the fix?** Resolves critical technical debt, making the backend more modular and stable.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Backend (extensive regression testing).
-    -   **Blocked on other issue:** None.
-
--   **Issue 4: Create new public-facing pages for SEO (P2)**
-    -   **Attempted fixes:** The agent identified that these pages were mentioned by the user but do not exist.
-    -   **Next debug checklist:**
-        1.  Create new React components for , , , , and .
-        2.  Add public routes for these pages in .
-        3.  Populate pages with relevant marketing content.
-        4.  Update  to include these new URLs.
-    -   **Why fix this issue and what will be achieved with the fix?** This aligns with the user's SEO strategy and makes the sitemap more effective by including all intended marketing pages.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend.
+    -   **Should Test frontend/backend/both after fix?** Backend.
     -   **Blocked on other issue:** None.
 
 -   **Issue 5: Template of the Week Bug Verification (P2)**
-    -   **Attempted fixes:** An agent in a previous session verified the backend logic. The fix is pending user confirmation.
-    -   **Next debug checklist:**
-        1.  Include a verification step in the next  call: Please confirm if the Template of the Week button on the dashboard now works as expected.
+    -   **Attempted fixes:** None in this session.
+    -   **Next debug checklist:** Ask the user to confirm if the Template of the Week button on the dashboard now works as expected.
     -   **Why fix this issue and what will be achieved with the fix?** Closes out a lingering bug from a past session.
     -   **Status:** USER VERIFICATION PENDING
     -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** None needed from agent.
+    -   **Should Test frontend/backend/both after fix?** None.
     -   **Blocked on other issue:** None.
 
 **In progress Task List**:
--   **Task 1: Complete Multi-Language Feature (P0)**
-    -   **Where to resume:** Integrate the newly created  component into the main UI layout ( or header).
-    -   **What will be achieved with this?** A fully functional language switcher that allows users to select from English, Spanish, French, Portuguese, German, Italian, and Chinese.
+-   **Task 1: Complete Landing Page Internationalization (i18n) (P0)**
+    -   **Where to resume:** Continue replacing hardcoded strings in  with the  function. The agent had just added the new translation keys to the context.
+    -   **What will be achieved with this?** A fully translated Landing page for all 7 supported languages.
     -   **Status:** IN PROGRESS
     -   **Should Test frontend/backend/both after fix?** Frontend.
     -   **Blocked on something:** None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks (P1):**
-    *   **Create Public SEO Pages:** Build out the , , , etc. pages.
-    *   **Finish Report Card Generation:** The UI needs work to allow selection of classes/students and generate a printable report.
+    *   **Finish Report Card Generation:** The UI is built, but the PDF generation and download logic needs to be implemented.
     *   **Email Parent Portal Links:** Integrate Resend API to automatically email portal links.
     *   **Finish Bulk Import Tools:** UI and endpoints exist but need end-to-end testing.
     *   **Game Analytics Export:** Add a button to export game analytics as a CSV.
-    *   **Student Accounts for Games:** Allow students to have persistent scores and progress across games.
 -   **Future Tasks (P2):**
     *   Full Google Classroom Integration (data sync beyond the share button).
     *   Drag-and-Drop Seating Chart Editor.
@@ -124,15 +115,21 @@ A critical bug where students were redirected to the login page was investigated
     *   Add background music options to games.
 
 **Completed work in this session**
--   **Game Quality Overhaul:** Successfully implemented the user's strict contract for game generation, including backend validation, hardened AI prompts, and a full audit/fix of all 8 frontend game types. Passed comprehensive testing.
--   **Game Generation Bug Fix:** Resolved a critical bug () preventing game generation.
--   **Static SEO Files:** Created  and  in the frontend public directory with production URLs, as per user's final specification.
--   **Simple Google Classroom Integration:** Added a Share to Google Classroom button on each game card. This uses a direct share URL, requires no API credentials, and solves the school firewall problem.
--   **Delete Games Feature:** Implemented a delete button with a confirmation dialog on each game card in the teacher's library.
--   **Multi-Language Support (Started):** Extended the  with 5 new languages and created a reusable  component.
+-   **Multi-Language Feature:**
+    -   Integrated the  component into the  (for authenticated users) and  (for public visitors).
+    -   Fixed a critical bug where the dropdown menu would render off-screen by adding a  prop to control its open direction (upward in the sidebar, downward in the header).
+    -   Added translation strings for 5 new languages (French, Portuguese, German, Italian, Chinese) to .
+    -   Partially refactored  to use the  translation function, fixing translations for the top-half of the page.
+-   **SEO & Content:**
+    -   Created 4 new public-facing SEO pages: , , , and .
+    -   Added routes for these new pages in .
+    -   Updated  to include the new page URLs.
+-   **Report Cards UI Overhaul:**
+    -   Redesigned the  page with a tabbed interface for Individual and Batch generation.
+    -   Improved the visual design and layout of the selection controls.
 
 **Earlier issues found/mentioned but not fixed**
--   **Monolithic  file refactoring.** This is now in progress (under ) but remains a critical technical debt item that is not fully resolved.
+-   **Monolithic  file refactoring.** This is a high-priority technical debt item that is only partially complete.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** Monolithic  file.
@@ -143,59 +140,57 @@ A critical bug where students were redirected to the login page was investigated
 
 
 **Key Technical Concepts**
--   **Static Site Generation for SEO:** The final, correct solution for  and  involved placing static files in the React  folder. This is a standard and robust approach for SPAs to serve root-level files.
--   **URL-based Sharing Integration:** The Google Classroom integration was simplified to use a pre-formatted URL () instead of a full OAuth API integration. This is a low-effort, high-impact solution when deep integration isn't needed and solves the user's firewall problem.
--   **Environment-Specific Data & Debugging:** The agent correctly diagnosed that a critical bug with student game access was not a code issue, but a result of separate databases for the preview and production environments. This highlights the importance of testing with production-like data.
+-   **Context-based Internationalization (i18n):** The application uses a React Context () to provide a translation function  and the current language state to all components. All UI text is being migrated to use this system.
+-   **Conditional Component Styling:** A  prop was added to the  component to dynamically apply Tailwind CSS classes ( vs. default), allowing the dropdown to open upward or downward depending on its location in the UI.
 
 **key DB schema**
--   **educational_games:** 
+-   No changes in this session.
 
 **changes in tech stack**
 -   No new technologies added.
 
 **All files of reference**
--   **/app/frontend/src/contexts/LanguageContext.js**: Rewritten to support multiple new languages.
--   **/app/frontend/src/components/LanguageSelector.js**: New component created to switch languages.
--   **/app/frontend/src/pages/GamesCreator.js**: Heavily modified to fix games, add the Google Classroom share button, and add the delete game functionality.
--   **/app/frontend/public/sitemap.xml**: New static file for SEO.
--   **/app/frontend/public/robots.txt**: New static file for SEO.
--   **/app/backend/routes/games.py**: Rewritten for game quality overhaul.
--   **/app/backend/utils/game_validator.py**: New file for backend game validation.
--   **/app/backend/routes/google_classroom.py**: New file for the abandoned OAuth implementation (should be deleted).
+-   **/app/frontend/src/contexts/LanguageContext.js**: Heavily modified to include translations for 7 languages.
+-   **/app/frontend/src/pages/Landing.js**: Heavily modified to use the  and partially refactored to use the  translation function. This is the file for the current task.
+-   **/app/frontend/src/components/LanguageSelector.js**: Modified to add dark mode support and a prop for controlling dropdown direction.
+-   **/app/frontend/src/components/Layout.js**: Modified to integrate the  component.
+-   **/app/frontend/src/App.js**: Modified to add routes for the new SEO pages.
+-   **/app/frontend/src/pages/ReportCards.js**: Heavily modified with a new UI/UX.
+-   **/app/frontend/public/sitemap.xml**: Updated with new URLs.
+-   **/app/frontend/src/pages/{FeaturesPage.js, AIAssistantMarketing.js, HomeschoolMarketing.js, IntegrationsPage.js}**: New files created.
 
 **Areas that need refactoring**:
--   **/app/backend/server.py**: CRITICAL. The refactoring task must be completed.
--   **/app/frontend/src/pages/GamesCreator.js**: This file is extremely large. It should be a high-priority candidate for being broken down into smaller components.
--   **Google Classroom OAuth Code:** The file , its registration in , and the related environment variables are now dead code and should be removed.
+-   **/app/frontend/src/pages/Landing.js**: CRITICAL. This file is extremely large and contains complex, mixed concerns (UI, state, auth forms). The current task of replacing hardcoded strings should be completed first, but this file is a prime candidate for being broken down into smaller components.
+-   **/app/backend/server.py**: CRITICAL. This recurring technical debt item must be completed to improve backend stability and maintainability.
+-   **Google Classroom OAuth Code:** The file  and its related code are obsolete and should be removed.
 
 **key api endpoints**
--   : Deletes a game owned by the authenticated teacher.
+-   No new API endpoints were created in this session.
 
 **Critical Info for New Agent**
--   **Finish the Language Feature:** The immediate priority is to integrate the newly created  component into the main UI so users can actually switch languages.
--   **Clean Up Obsolete Code:** The complex Google Classroom OAuth implementation was abandoned in favor of a simpler share button. You should remove the now-dead code in  and  to avoid confusion.
--   **Continue the  Refactor:** This is a recurring, high-priority technical debt item. Do not neglect it.
--   **User has separate Preview & Production data:** Be aware that the user's data on the preview environment is different from their production data. When diagnosing issues reported on production, you must test against the production environment.
+-   **Immediate Priority:** Your first task is to fix the incomplete translations on the Landing page. All required translation strings are already present in . You must finish replacing all hardcoded  checks in  with the  function. The user has reported this bug twice, so it is critical to resolve it completely.
+-   **Google Search Console:** The user reported an indexing issue but the provided link requires authentication. You must ask the user for a screenshot of the report to identify the problematic URLs before you can debug it.
+-   **Dropdown Positioning:** Remember the pattern used to fix the  dropdown: a prop was added to conditionally change its opening direction. This is a useful technique for reusable components placed in different contexts (header vs. footer).
 
 **documents and test reports created in this job**
--   /app/test_reports/iteration_23.json
--   /app/memory/GAME_QUALITY_OVERHAUL.md
+-   /app/test_reports/iteration_24.json
+-   /app/test_reports/iteration_25.json
 -   /app/memory/PRD.md (Updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Asks for multi-language support. (Status: IN PROGRESS)
-2.  **User:** Requests the ability for teachers to delete games. (Status: COMPLETED)
-3.  **User:** Agrees to the simpler Share to Google Classroom button solution. (Status: COMPLETED)
-4.  **User:** Clarifies they don't have developer API credentials for Google Cloud. (Status: ADDRESSED)
-5.  **User:** Asks for the credentials needed for Google Classroom integration. (Status: ADDRESSED)
-6.  **User:** Explains the student access problem is due to a school firewall and asks for Google Classroom integration as a workaround. (Status: COMPLETED)
-7.  **User:** Reports the game sharing isn't working on production, even after deployment. (Status: ADDRESSED, diagnosed as environmental issue)
-8.  **User:** Asks if a redeploy is needed for the sitemap fix. (Status: ADDRESSED)
-9.  **User:** Reports the dynamic sitemap links are incorrect. (Status: ADDRESSED, switched to static file)
-10. **User:** Requests a static  and  for the production domain. (Status: COMPLETED)
+1.  **User:** Reports that after the last fix, the landing page still only translates halfway for languages other than English/Spanish. (Status: PENDING FIX)
+2.  **Agent:** Summarizes the current sitemap and explains the likely cause of the Google Search Console issue.
+3.  **User:** Reports three issues: 1) landing page translations are incomplete for non-EN/ES languages, 2) 3 pages are not indexed in Google Search Console, and 3) asks to see the updated sitemap. (Status: PENDING FIX / BLOCKED)
+4.  **Agent:** Confirms the multi-language support is now fully functional in both the header and sidebar. (Status: INCOMPLETE, led to user bug report)
+5.  **User:** Reports that on the landing page, the language dropdown is clipped and not fully visible after opening. (Status: RESOLVED)
+6.  **Agent:** Completes the initial multi-language implementation and confirms with testing agent. (Status: INCOMPLETE, led to user bug reports)
+7.  **User:** Reports that after the first fix attempt, the language selector is not working correctly; on the landing page, only EN/ES are available, and logged in, only English works. (Status: RESOLVED)
+8.  **Agent:** Calls  after implementing language support, new SEO pages, and report card UI improvements. (Status: INTERRUPTED by user feedback)
+9.  **User:** Provides initial approval to proceed with: multi-language support, creating public SEO pages, updating the sitemap, and improving the Report Card UI. (Status: IN PROGRESS)
+10. **Agent:** Proposes initial plan via . (Status: APPROVED)
 
 **Project Health Check:**
--   **Broken:** None.
+-   **Broken:** The internationalization on the Landing page is partially broken.
 -   **Mocked:** Resend API for emails remains in test mode.
 
 **3rd Party Integrations**
@@ -207,17 +202,15 @@ A critical bug where students were redirected to the login page was investigated
 -   **Google Classroom** (Simple Share Button - No API)
 
 **Testing status**
--   **Testing agent used after significant changes:** YES (for the game quality overhaul).
+-   **Testing agent used after significant changes:** YES (twice in this session).
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** []
--   **Known regressions:** None.
+-   **Known regressions:** The multi-language support on the landing page is not working completely.
 
 **Credentials to test flow:**
 -   **Platform Super Admin:**  / 
 -   **School Teacher / Has Plans:**  / 
--   **Teacher with Google Classroom issue:**  / 
 
 **What agent forgot to execute**
--   The agent did not integrate the  component it created into the UI.
--   The agent did not remove the obsolete backend code (, router registration, .env variables) after pivoting to a simpler Google Classroom share button.
--   The agent did not create the new public-facing pages (, , etc.) that the user mentioned in the context of the sitemap.</analysis>
+-   The agent did not fully complete the translation of the  file, resulting in a bug where the page only partially translates.
+-   The agent did not address the other pending tasks from the initial handoff (removing dead Google Classroom code, completing the  refactor) as priorities were shifted by the user's request.</analysis>
