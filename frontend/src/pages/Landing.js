@@ -752,8 +752,6 @@ const Landing = () => {
               
               <p className="text-xl text-slate-300 mb-8">
                 {t('landingSchoolBrandingDesc')}
-                  ? 'Cada escuela tiene su identidad. TeacherHubPro se adapta completamente a la tuya.'
-                  : 'Every school has its identity. TeacherHubPro fully adapts to yours.'}
               </p>
 
               <div className="space-y-4">
