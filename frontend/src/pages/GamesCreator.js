@@ -2261,6 +2261,11 @@ const GamesCreator = () => {
                       <h4 className="font-semibold text-slate-800 mb-1">{game.title}</h4>
                       <p className="text-sm text-slate-500 mb-2">
                         {game.questions?.length || 0} {language === 'es' ? 'preguntas' : 'questions'}
+                        {game.count_as_grade && (
+                          <span className="ml-2 text-amber-600 font-medium">
+                            📊 {language === 'es' ? 'Cuenta como calificación' : 'Counts as grade'}
+                          </span>
+                        )}
                       </p>
                       <div className="flex flex-wrap gap-1 mb-3">
                         <Badge variant="secondary" className="text-xs">
@@ -2280,6 +2285,27 @@ const GamesCreator = () => {
                           {language === 'es' ? 'Jugar' : 'Play'}
                         </Button>
                       </div>
+                      
+                      {/* Grade Settings Button */}
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className={`w-full ${game.count_as_grade ? 'border-amber-400 bg-amber-50 text-amber-700' : 'border-slate-300 text-slate-600'} hover:bg-amber-50 mb-2`}
+                        onClick={() => {
+                          setGradeSettings({
+                            count_as_grade: game.count_as_grade || false,
+                            grade_points: game.grade_points || 100,
+                            grade_method: game.grade_method || 'best',
+                            class_id: game.class_id || '',
+                            assignment_name: game.assignment_name || ''
+                          });
+                          setShowGradeSettings(game.game_id);
+                        }}
+                      >
+                        <Award className="h-4 w-4 mr-2" />
+                        {language === 'es' ? 'Calificación' : 'Grade Settings'}
+                      </Button>
+                      
                       <Button 
                         size="sm" 
                         variant="outline"
