@@ -1293,7 +1293,7 @@ const Landing = () => {
                         disabled={isLoading}
                         data-testid="register-submit"
                       >
-                        {isLoading ? '...' : (language === 'es' ? 'Crear cuenta gratis' : 'Create free account')}
+                        {isLoading ? '...' : t('landingCreateFreeAccount')}
                       </Button>
                     </form>
                   </TabsContent>
@@ -1313,27 +1313,27 @@ const Landing = () => {
             {/* Footer Links */}
             <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-sm">
               <Link to="/contact" className="text-slate-500 hover:text-cyan-600 transition-colors">
-                {language === 'es' ? 'Contacto' : 'Contact'}
+                {t('landingContact')}
               </Link>
               <span className="text-slate-300">•</span>
               <Link to="/privacy-policy" className="text-slate-500 hover:text-cyan-600 transition-colors">
-                {language === 'es' ? 'Política de Privacidad' : 'Privacy Policy'}
+                {t('landingPrivacyPolicy')}
               </Link>
               <span className="text-slate-300">•</span>
               <Link to="/help" className="text-slate-500 hover:text-cyan-600 transition-colors">
-                {language === 'es' ? 'Ayuda' : 'Help'}
+                {t('landingHelp')}
               </Link>
               <span className="text-slate-300">•</span>
               <Link to="/terms-of-use" className="text-slate-500 hover:text-cyan-600 transition-colors">
-                {language === 'es' ? 'Términos de Uso' : 'Terms of Use'}
+                {t('landingTermsOfUse')}
               </Link>
               <span className="text-slate-300">•</span>
               <Link to="/cookies-policy" className="text-slate-500 hover:text-cyan-600 transition-colors">
-                {language === 'es' ? 'Política de Cookies' : 'Cookies Policy'}
+                {t('landingCookiesPolicy')}
               </Link>
               <span className="text-slate-300">•</span>
               <Link to="/accessibility" className="text-slate-500 hover:text-cyan-600 transition-colors">
-                {language === 'es' ? 'Accesibilidad' : 'Accessibility'}
+                {t('landingAccessibility')}
               </Link>
             </div>
             
@@ -1349,7 +1349,7 @@ const Landing = () => {
               </div>
               <span className="text-slate-300 hidden md:inline">•</span>
               <div className="text-sm text-slate-500">
-                © 2026 TeacherHubPro. {language === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}
+                © 2026 TeacherHubPro. {t('landingAllRightsReserved')}
               </div>
             </div>
           </div>
