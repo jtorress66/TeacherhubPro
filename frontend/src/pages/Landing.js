@@ -865,17 +865,17 @@ const Landing = () => {
                     {
                       icon: Users,
                       title: language === 'es' ? 'Importar Clases' : 'Import Classes',
-                      desc: language === 'es' ? 'Trae tus clases y listas de estudiantes automáticamente' : 'Bring your classes and student rosters automatically'
+                      desc: t('landingImportClassesDesc')
                     },
                     {
                       icon: BarChart3,
-                      title: language === 'es' ? 'Sincronizar Calificaciones' : 'Sync Grades',
-                      desc: language === 'es' ? 'Envía calificaciones a Google Classroom con un clic' : 'Send grades to Google Classroom with one click'
+                      title: t('landingSyncGrades'),
+                      desc: t('landingSyncGradesDesc')
                     },
                     {
                       icon: Shield,
-                      title: language === 'es' ? 'Seguro y Privado' : 'Secure & Private',
-                      desc: language === 'es' ? 'Autenticación OAuth segura, tus datos protegidos' : 'Secure OAuth authentication, your data protected'
+                      title: t('landingSecurePrivate'),
+                      desc: t('landingSecurePrivateDesc')
                     }
                   ].map((feature, idx) => (
                     <div key={idx} className="p-4 rounded-xl bg-slate-50 border border-slate-100">
@@ -889,15 +889,15 @@ const Landing = () => {
                 <div className="flex flex-col sm:flex-row items-center gap-4 pt-6 border-t border-slate-100">
                   <div className="flex items-center gap-2 text-slate-600">
                     <CheckCircle className="h-5 w-5 text-green-500" />
-                    <span className="text-sm">{language === 'es' ? 'Configuración en minutos' : 'Setup in minutes'}</span>
+                    <span className="text-sm">{t('landingSetupMinutes')}</span>
                   </div>
                   <div className="flex items-center gap-2 text-slate-600">
                     <CheckCircle className="h-5 w-5 text-green-500" />
-                    <span className="text-sm">{language === 'es' ? 'Sin costo adicional' : 'No extra cost'}</span>
+                    <span className="text-sm">{t('landingNoExtraCost')}</span>
                   </div>
                   <div className="flex items-center gap-2 text-slate-600">
                     <CheckCircle className="h-5 w-5 text-green-500" />
-                    <span className="text-sm">{language === 'es' ? 'Soporte incluido' : 'Support included'}</span>
+                    <span className="text-sm">{t('landingSupportIncluded')}</span>
                   </div>
                 </div>
               </div>
@@ -907,7 +907,7 @@ const Landing = () => {
           {/* Coming Soon Integrations */}
           <div className="text-center mb-8">
             <h3 className="text-xl font-semibold text-slate-700 mb-6">
-              {language === 'es' ? 'Próximamente' : 'Coming Soon'}
+              {t('landingComingSoon')}
             </h3>
             <div className="flex flex-wrap justify-center gap-4">
               {[
@@ -928,12 +928,10 @@ const Landing = () => {
           <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-6 md:p-8 text-center">
             <Link2 className="h-10 w-10 text-purple-600 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-slate-800 mb-2">
-              {language === 'es' ? '¿Necesitas otra integración?' : 'Need another integration?'}
+              {t('landingNeedIntegration')}
             </h3>
             <p className="text-slate-600 mb-4">
-              {language === 'es' 
-                ? 'Contáctanos para solicitar integraciones con otras plataformas educativas' 
-                : 'Contact us to request integrations with other educational platforms'}
+              {t('landingNeedIntegrationDesc')}
             </p>
             <Button 
               variant="outline" 
@@ -941,7 +939,7 @@ const Landing = () => {
               onClick={() => navigate('/contact')}
             >
               <Mail className="h-4 w-4 mr-2" />
-              {language === 'es' ? 'Solicitar Integración' : 'Request Integration'}
+              {t('landingRequestIntegration')}
             </Button>
           </div>
         </div>
@@ -954,15 +952,13 @@ const Landing = () => {
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-100 text-amber-700 text-sm font-medium mb-4">
               <Home className="h-4 w-4" />
-              {language === 'es' ? 'Educación en Casa' : 'Homeschool'}
+              {t('landingHomeschool')}
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-              {language === 'es' ? 'Perfecto para Educadores en Casa' : 'Perfect for Homeschool Educators'}
+              {t('landingPerfectHomeschool')}
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              {language === 'es' 
-                ? 'Todo lo que necesitas para la educación de tus hijos en un solo lugar. Sin necesidad de ir a ningún otro lado.' 
-                : 'Everything you need for your children\'s education in one place. No need to go anywhere else.'}
+              {t('landingHomeschoolCompleteDesc')}
             </p>
           </div>
 
@@ -974,16 +970,14 @@ const Landing = () => {
                 <Brain className="h-8 w-8 text-purple-600" />
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-2">
-                {language === 'es' ? 'Aprendizaje Adaptativo' : 'Adaptive Learning'}
+                {t('landingAdaptiveLearning')}
               </h3>
               <p className="text-slate-600 mb-3">
-                {language === 'es' 
-                  ? 'IA que se adapta al ritmo de tu hijo, asegurando dominio de conceptos en matemáticas, lenguaje y ciencias.' 
-                  : 'AI that adapts to your child\'s pace, ensuring mastery of concepts in math, language arts, and science.'}
+                {t('landingAdaptiveLearningDesc')}
               </p>
               <div className="flex items-center gap-2 text-purple-600 text-sm font-medium">
                 <Sparkles className="h-4 w-4" />
-                {language === 'es' ? 'Impulsado por IA' : 'AI-Powered'}
+                {t('landingAiPowered')}
               </div>
             </div>
 
@@ -993,11 +987,10 @@ const Landing = () => {
                 <BarChart3 className="h-8 w-8 text-blue-600" />
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-2">
-                {language === 'es' ? 'Panel de Padres' : 'Parent Dashboard'}
+                {t('landingParentDashboard')}
               </h3>
               <p className="text-slate-600 mb-3">
-                {language === 'es' 
-                  ? 'Análisis completo, seguimiento de asistencia e informes detallados para gestionar el progreso.' 
+                {t('landingParentDashboardDesc')} 
                   : 'Comprehensive analytics, attendance tracking, and detailed reports to manage progress.'}
               </p>
               <div className="flex items-center gap-2 text-blue-600 text-sm font-medium">
