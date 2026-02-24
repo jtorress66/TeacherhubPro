@@ -940,7 +940,7 @@ async def regenerate_game_questions(
                             "message": "Subscription required for question regeneration"
                         }
     
-    # Generate new questions using AI with emphasis on VARIATION
+    # Generate new questions using AI with AGGRESSIVE variation
     try:
         game_type = game.get("game_type", "quiz")
         grade_level = game.get("grade_level", "3-5")
@@ -948,20 +948,51 @@ async def regenerate_game_questions(
         question_count = game.get("question_count", len(game.get("questions", []))) or 5
         lang = game.get("language", "es")
         
-        # Get existing questions to avoid duplicates
+        # Get ALL existing questions to COMPLETELY avoid
         existing_questions = game.get("questions", [])
         existing_q_texts = [q.get("question", "") for q in existing_questions]
         
-        # Create enhanced content with variation instructions
+        # Create AGGRESSIVE variation instructions based on game type
+        if game_type == "true_false":
+            variation_instructions = f"""
+=== CRITICAL: TRUE/FALSE REGENERATION RULES ===
+You MUST create COMPLETELY NEW and DIFFERENT true/false statements.
+
+FORBIDDEN - DO NOT USE ANY OF THESE EXISTING STATEMENTS (or similar versions):
+{chr(10).join(['- ' + q for q in existing_q_texts])}
+
+REQUIREMENTS:
+1. Create statements about ENTIRELY DIFFERENT facts from the topic
+2. DO NOT rephrase or reword existing statements - create NEW ones
+3. Cover DIFFERENT aspects: if existing questions are about dates, ask about people; if about people, ask about events
+4. Use DIFFERENT sentence structures and vocabulary
+5. Include some obscure/interesting facts not covered before
+6. Mix TRUE and FALSE statements (not all true or all false)
+7. Each statement MUST be verifiable and educationally accurate
+
+If the topic is limited, expand to related sub-topics within the same subject area.
+"""
+        else:
+            variation_instructions = f"""
+=== CRITICAL: QUESTION REGENERATION RULES ===
+You MUST create COMPLETELY NEW and DIFFERENT questions.
+
+FORBIDDEN - DO NOT USE ANY OF THESE EXISTING QUESTIONS (or similar versions):
+{chr(10).join(['- ' + q for q in existing_q_texts])}
+
+REQUIREMENTS:
+1. Ask about ENTIRELY DIFFERENT concepts within the topic
+2. DO NOT rephrase existing questions - create completely NEW ones
+3. Use DIFFERENT numbers, scenarios, and examples
+4. If existing questions are about X, ask about Y instead
+5. Vary difficulty levels (mix easy, medium, hard)
+6. Use creative scenarios and real-world applications
+"""
+        
+        # Create enhanced content with aggressive variation instructions
         variation_content = f"""{original_content}
 
-IMPORTANT VARIATION REQUIREMENTS:
-- Generate COMPLETELY DIFFERENT questions from these existing ones: {existing_q_texts[:3]}
-- Use DIFFERENT numbers, scenarios, and phrasing
-- For True/False: Create statements about DIFFERENT aspects of the topic
-- For Quiz: Ask about DIFFERENT concepts within the same subject
-- Make questions feel fresh and new, not repetitive
-- Vary the difficulty slightly (some easier, some harder)
+{variation_instructions}
 """
         
         # Create a request for regeneration with variation emphasis
