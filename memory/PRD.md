@@ -1,6 +1,55 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-24 - Educational Games Analytics & Grade Integration
+
+### Features Implemented:
+
+**1. Enhanced Analytics System**
+- Analytics endpoint now returns `game_stats` array with detailed per-game statistics
+- Added `unique_players` count to analytics summary
+- Each game shows: play_count, unique_players, avg_score, best_score, worst_score
+- Added "Students" button to view detailed per-student statistics
+
+**2. Grade Integration (Count as Grade)**
+- New toggle "Contar como Calificación" (Count as Grade) when saving a game
+- Configurable options:
+  - **Grade Points**: Total points for the assignment (default 100)
+  - **Grade Method**: First Attempt / Best Score / Average
+  - **Class**: Select which class to assign
+  - **Assignment Name**: Custom name for the grade entry
+- Automatically creates assignment and grade entries when students complete games
+
+**3. Dynamic Question Regeneration (Anti-Cheat)**
+- New endpoint `POST /games/{game_id}/regenerate-questions`
+- Uses AI to generate fresh questions each time a student plays
+- Based on original content stored with the game
+- Prevents students from memorizing answers by replaying
+
+**4. Student Statistics**
+- New endpoint `GET /games/{game_id}/student-stats`
+- Shows per-student breakdown:
+  - Total attempts
+  - Best/Average/Worst scores
+  - Time taken per attempt
+  - All attempt history with dates
+
+### API Endpoints Added:
+- `GET /api/games/analytics/summary` - Enhanced with game_stats & unique_players
+- `PUT /api/games/{game_id}/grade-settings` - Update grade configuration
+- `POST /api/games/{game_id}/regenerate-questions` - Generate new questions
+- `GET /api/games/{game_id}/student-stats` - Detailed student statistics
+
+### Files Modified:
+- `/app/backend/routes/games.py` - All new endpoints and analytics enhancement
+- `/app/frontend/src/pages/GamesCreator.js` - Grade settings UI and student stats modal
+- `/app/frontend/src/pages/PlayGame.js` - Question regeneration on game start
+
+### Test Results:
+- **Backend:** 100% (12/12 tests passed)
+- **Test Report:** `/app/test_reports/iteration_27.json`
+
+---
 ## Update 2026-02-24 - Multi-Language Support COMPLETE FIX
 
 ### Issue Fixed:
