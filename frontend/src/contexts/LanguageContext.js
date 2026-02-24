@@ -2250,6 +2250,8 @@ const translations = {
     landingEverythingDesc: '专为教师设计的完整平台。',
     landingFeatures: '功能',
     landingAiAssistant: 'AI助手',
+    landingPoweredBy: '由Anthropic提供支持',
+    landingActiveTeachers: '活跃教师',
     landingHomeschool: '家庭教育',
     landingIntegrations: '集成',
     landingCustomization: '定制',
