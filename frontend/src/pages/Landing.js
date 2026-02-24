@@ -203,28 +203,28 @@ const Landing = () => {
             />
             <div className="flex flex-col">
               <span className="text-base sm:text-2xl font-bold text-slate-800">TeacherHubPro</span>
-              <span className="text-[10px] sm:text-xs font-medium text-cyan-600 hidden sm:block">{language === 'es' ? 'Tu aula digital' : 'Your digital classroom'}</span>
+              <span className="text-[10px] sm:text-xs font-medium text-cyan-600 hidden sm:block">{t('landingDigitalClassroom')}</span>
             </div>
           </div>
           
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm font-medium text-slate-700 hover:text-cyan-600 transition-colors">
-              {language === 'es' ? 'Funciones' : 'Features'}
+              {t('landingFeatures')}
             </a>
             <a href="#ai-assistant" className="text-sm font-medium text-slate-700 hover:text-cyan-600 transition-colors">
-              {language === 'es' ? 'Asistente IA' : 'AI Assistant'}
+              {t('landingAiAssistant')}
             </a>
             <a href="#homeschool" className="text-sm font-medium text-slate-700 hover:text-amber-600 transition-colors">
-              {language === 'es' ? 'Educación en Casa' : 'Homeschool'}
+              {t('landingHomeschool')}
             </a>
             <a href="#integrations" className="text-sm font-medium text-slate-700 hover:text-cyan-600 transition-colors">
-              {language === 'es' ? 'Integraciones' : 'Integrations'}
+              {t('landingIntegrations')}
             </a>
             <a href="#customization" className="text-sm font-medium text-slate-700 hover:text-cyan-600 transition-colors">
-              {language === 'es' ? 'Personalización' : 'Customization'}
+              {t('landingCustomization')}
             </a>
             <Link to="/pricing" className="text-sm font-medium text-slate-700 hover:text-cyan-600 transition-colors">
-              {language === 'es' ? 'Precios' : 'Pricing'}
+              {t('landingPricing')}
             </Link>
           </div>
           
@@ -235,8 +235,8 @@ const Landing = () => {
               className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-md text-xs sm:text-sm px-3 sm:px-4"
               onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
             >
-              <span className="hidden sm:inline">{language === 'es' ? 'Comenzar - Iniciar sesión' : 'Get Started - Log In'}</span>
-              <span className="sm:hidden">{language === 'es' ? 'Comenzar' : 'Start'}</span>
+              <span className="hidden sm:inline">{t('landingGetStarted')}</span>
+              <span className="sm:hidden">{t('landingStart')}</span>
             </Button>
           </div>
         </div>
