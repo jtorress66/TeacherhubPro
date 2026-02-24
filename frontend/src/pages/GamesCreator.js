@@ -2564,11 +2564,13 @@ const GamesCreator = () => {
                   )}
                 </CardContent>
               </Card>
+              </div>
             )}
 
-            {/* Student Stats Modal */}
+            {/* Student Stats Modal - Fixed Position */}
             {selectedStudentStats && (
-              <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setSelectedStudentStats(null)}>
+                <Card className="w-full max-w-lg border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2">
