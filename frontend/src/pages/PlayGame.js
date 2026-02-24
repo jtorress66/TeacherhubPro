@@ -16,10 +16,11 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 // Generate unique session ID
 const generateSessionId = () => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-// Generate hash of questions for verification
+// Generate hash of questions INCLUDING ORDER for verification
 const hashQuestions = (questions) => {
   if (!questions || questions.length === 0) return 'empty';
-  const text = questions.map(q => q.question || q.term || '').join('|');
+  // Include index to make hash order-sensitive
+  const text = questions.map((q, idx) => `${idx}:${q.question || q.term || ''}`).join('|');
   let hash = 0;
   for (let i = 0; i < text.length; i++) {
     const char = text.charCodeAt(i);
