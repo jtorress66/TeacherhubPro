@@ -988,8 +988,7 @@ const Landing = () => {
                 {t('landingParentDashboard')}
               </h3>
               <p className="text-slate-600 mb-3">
-                {t('landingParentDashboardDesc')} 
-                  : 'Comprehensive analytics, attendance tracking, and detailed reports to manage progress.'}
+                {t('landingParentDashboardDesc')}
               </p>
               <div className="flex items-center gap-2 text-blue-600 text-sm font-medium">
                 <Eye className="h-4 w-4" />
