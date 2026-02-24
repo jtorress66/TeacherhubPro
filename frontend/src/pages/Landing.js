@@ -421,7 +421,7 @@ const Landing = () => {
                       <Bot className="h-7 w-7 text-white" />
                     </div>
                     <div>
-                      <div className="text-xl font-bold">{language === 'es' ? 'Asistente de IA' : 'AI Teaching Assistant'}</div>
+                      <div className="text-xl font-bold">{t('landingAiTeachingAssistant')}</div>
                       <div className="text-sm text-white/70 flex items-center gap-2">
                         <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
                         Claude Sonnet 4.5
@@ -432,29 +432,25 @@ const Landing = () => {
                   {/* Demo chat interface */}
                   <div className="space-y-3 mb-6">
                     <div className="bg-white/10 rounded-lg p-3 text-sm backdrop-blur-sm">
-                      <div className="text-white/60 text-xs mb-1">{language === 'es' ? 'Tú preguntaste:' : 'You asked:'}</div>
-                      {language === 'es' 
-                        ? '¿Cómo puedo enseñar fracciones equivalentes a 4to grado?' 
-                        : 'How can I teach equivalent fractions to 4th grade?'}
+                      <div className="text-white/60 text-xs mb-1">{t('landingYouAsked')}</div>
+                      {t('landingAiQuestion')}
                     </div>
                     <div className="bg-white/20 rounded-lg p-3 text-sm backdrop-blur-sm">
                       <div className="text-white/60 text-xs mb-1 flex items-center gap-1">
                         <Sparkles className="h-3 w-3" /> 
-                        {language === 'es' ? 'Respuesta IA:' : 'AI Response:'}
+                        {t('landingAiResponse')}
                       </div>
-                      {language === 'es' 
-                        ? 'Aquí tienes un plan de lección basado en el estándar CCSS.MATH.4.NF.A.1 con actividades manipulativas...' 
-                        : "Here's a lesson plan based on CCSS.MATH.4.NF.A.1 standard with hands-on activities..."}
+                      {t('landingAiAnswer')}
                     </div>
                   </div>
 
                   {/* Tool buttons */}
                   <div className="grid grid-cols-2 gap-2">
                     {[
-                      { icon: BookOpen, label: language === 'es' ? 'Planes de Lección' : 'Lesson Plans' },
-                      { icon: FileQuestion, label: language === 'es' ? 'Quizzes' : 'Quizzes' },
-                      { icon: ClipboardList, label: language === 'es' ? 'Hojas de Trabajo' : 'Worksheets' },
-                      { icon: Lightbulb, label: language === 'es' ? 'Ideas' : 'Ideas' },
+                      { icon: BookOpen, label: t('landingLessonPlans') },
+                      { icon: FileQuestion, label: t('landingQuizzes') },
+                      { icon: ClipboardList, label: t('landingWorksheets') },
+                      { icon: Lightbulb, label: t('landingIdeas') },
                     ].map((tool, i) => (
                       <div key={i} className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2 text-sm backdrop-blur-sm">
                         <tool.icon className="h-4 w-4" />
@@ -470,27 +466,23 @@ const Landing = () => {
             <div className="order-1 lg:order-2">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100 text-purple-700 text-sm font-medium mb-6">
                 <Sparkles className="h-4 w-4" />
-                {language === 'es' ? 'Nuevo: Inteligencia Artificial' : 'New: Artificial Intelligence'}
+                {t('landingNewAi')}
               </div>
               
               <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-                {language === 'es' 
-                  ? 'Tu asistente de IA para enseñar mejor' 
-                  : 'Your AI assistant to teach better'}
+                {t('landingAiAssistantToTeach')}
               </h2>
               
               <p className="text-xl text-slate-600 mb-8">
-                {language === 'es'
-                  ? 'Genera planes de lección, quizzes, resúmenes y actividades basadas en los estándares Common Core y Puerto Rico, al instante.'
-                  : 'Generate lesson plans, quizzes, summaries, and activities based on Common Core and Puerto Rico standards, instantly.'}
+                {t('landingAiAssistantDesc2')}
               </p>
 
               <div className="space-y-4 mb-8">
                 {[
-                  { icon: Target, text: language === 'es' ? 'Alineado con Common Core y PR CORE' : 'Aligned with Common Core & PR CORE' },
-                  { icon: Zap, text: language === 'es' ? 'Genera contenido en segundos' : 'Generate content in seconds' },
-                  { icon: Globe, text: language === 'es' ? 'Bilingüe: Español e Inglés' : 'Bilingual: Spanish & English' },
-                  { icon: Brain, text: language === 'es' ? 'Powered by Claude Sonnet 4.5' : 'Powered by Claude Sonnet 4.5' },
+                  { icon: Target, text: t('landingAlignedStandards') },
+                  { icon: Zap, text: t('landingGenerateSeconds') },
+                  { icon: Globe, text: t('landingBilingual') },
+                  { icon: Brain, text: t('landingPoweredBy') },
                 ].map((item, index) => (
                   <div key={index} className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -507,12 +499,12 @@ const Landing = () => {
                   className="bg-purple-600 hover:bg-purple-700 text-white px-6"
                   onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
                 >
-                  {language === 'es' ? 'Probar gratis' : 'Try it free'}
+                  {t('landingTryItFree')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <div className="flex items-center gap-2 text-sm text-slate-500">
                   <Shield className="h-4 w-4" />
-                  {language === 'es' ? 'Incluido en suscripción' : 'Included in subscription'}
+                  {t('landingIncludedSubscription')}
                 </div>
               </div>
             </div>
