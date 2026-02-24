@@ -2061,6 +2061,95 @@ const GamesCreator = () => {
                     </div>
                   </div>
                   
+                  {/* Grade Settings Toggle */}
+                  <div className="mt-4 p-4 bg-white rounded-lg border border-slate-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Award className="h-5 w-5 text-amber-500" />
+                        <span className="font-medium text-slate-700">
+                          {language === 'es' ? 'Contar como Calificación' : 'Count as Grade'}
+                        </span>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={gradeSettings.count_as_grade}
+                          onChange={(e) => setGradeSettings({...gradeSettings, count_as_grade: e.target.checked})}
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                      </label>
+                    </div>
+                    
+                    {gradeSettings.count_as_grade && (
+                      <div className="space-y-3 pt-3 border-t border-slate-200">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="text-sm text-slate-600 mb-1 block">
+                              {language === 'es' ? 'Puntos Totales' : 'Total Points'}
+                            </label>
+                            <Input
+                              type="number"
+                              value={gradeSettings.grade_points}
+                              onChange={(e) => setGradeSettings({...gradeSettings, grade_points: parseInt(e.target.value) || 100})}
+                              className="h-9"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm text-slate-600 mb-1 block">
+                              {language === 'es' ? 'Método de Calificación' : 'Grade Method'}
+                            </label>
+                            <Select
+                              value={gradeSettings.grade_method}
+                              onValueChange={(val) => setGradeSettings({...gradeSettings, grade_method: val})}
+                            >
+                              <SelectTrigger className="h-9">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="first">{language === 'es' ? 'Primer Intento' : 'First Attempt'}</SelectItem>
+                                <SelectItem value="best">{language === 'es' ? 'Mejor Puntaje' : 'Best Score'}</SelectItem>
+                                <SelectItem value="average">{language === 'es' ? 'Promedio' : 'Average'}</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-sm text-slate-600 mb-1 block">
+                            {language === 'es' ? 'Clase' : 'Class'}
+                          </label>
+                          <Select
+                            value={gradeSettings.class_id}
+                            onValueChange={(val) => setGradeSettings({...gradeSettings, class_id: val})}
+                          >
+                            <SelectTrigger className="h-9">
+                              <SelectValue placeholder={language === 'es' ? 'Seleccionar clase...' : 'Select class...'} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {classes.map(cls => (
+                                <SelectItem key={cls.class_id} value={cls.class_id}>
+                                  {cls.name} ({cls.grade_level})
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <label className="text-sm text-slate-600 mb-1 block">
+                            {language === 'es' ? 'Nombre de Asignación (opcional)' : 'Assignment Name (optional)'}
+                          </label>
+                          <Input
+                            type="text"
+                            value={gradeSettings.assignment_name}
+                            onChange={(e) => setGradeSettings({...gradeSettings, assignment_name: e.target.value})}
+                            placeholder={language === 'es' ? 'Ej: Quiz de Matemáticas' : 'E.g., Math Quiz'}
+                            className="h-9"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
                   {/* Validation Status */}
                   <div className="mt-4 p-3 bg-green-100 rounded-lg flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-green-600" />
