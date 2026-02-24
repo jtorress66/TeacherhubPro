@@ -59,6 +59,15 @@ class GameScoreRequest(BaseModel):
     score: int
     total_questions: int
     time_taken: int = 0
+    student_id: Optional[str] = None  # Optional student ID for grade linking
+
+
+class GameGradeSettings(BaseModel):
+    count_as_grade: bool = False
+    grade_points: int = 100
+    grade_method: str = "best"  # "first", "best", "average"
+    class_id: Optional[str] = None
+    assignment_name: Optional[str] = None
 
 
 async def check_ai_access(user: dict) -> bool:
