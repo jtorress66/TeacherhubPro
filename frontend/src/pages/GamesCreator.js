@@ -2498,9 +2498,10 @@ const GamesCreator = () => {
               </CardContent>
             </Card>
 
-            {/* Leaderboard Modal/Card */}
+            {/* Leaderboard Modal - Fixed Position */}
             {selectedGameForLeaderboard && (
-              <Card className="border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50">
+              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setSelectedGameForLeaderboard(null)}>
+                <Card className="w-full max-w-lg border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50 max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2">
@@ -2512,7 +2513,7 @@ const GamesCreator = () => {
                       variant="ghost"
                       onClick={() => setSelectedGameForLeaderboard(null)}
                     >
-                      ✕
+                      <X className="h-4 w-4" />
                     </Button>
                   </div>
                   <CardDescription>
