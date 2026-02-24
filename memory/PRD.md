@@ -640,8 +640,8 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
 5. Implement seating chart drag/drop
 
 ## URLs
-- Frontend: https://teacherhub-pro-1.preview.emergentagent.com
-- Backend API: https://teacherhub-pro-1.preview.emergentagent.com/api
+- Frontend: https://classroom-central-4.preview.emergentagent.com
+- Backend API: https://classroom-central-4.preview.emergentagent.com/api
 
 ## Database Collections
 - users, user_sessions, schools

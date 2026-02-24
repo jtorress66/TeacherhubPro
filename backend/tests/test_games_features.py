@@ -7,7 +7,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://teacherhub-pro-1.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://classroom-central-4.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 TEST_EMAIL = "test@school.edu"
