@@ -259,6 +259,18 @@ const GamesCreator = () => {
   const [gameTimer, setGameTimer] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
   
+  // Grade settings state
+  const [showGradeSettings, setShowGradeSettings] = useState(false);
+  const [gradeSettings, setGradeSettings] = useState({
+    count_as_grade: false,
+    grade_points: 100,
+    grade_method: 'best',
+    class_id: '',
+    assignment_name: ''
+  });
+  const [classes, setClasses] = useState([]);
+  const [selectedStudentStats, setSelectedStudentStats] = useState(null);
+  
   // Game-specific state (must be at top level, not after conditional returns)
   const [flashcardFlipped, setFlashcardFlipped] = useState(false);
   const [fillBlankAnswer, setFillBlankAnswer] = useState('');
@@ -277,6 +289,19 @@ const GamesCreator = () => {
 
   // Ref to track timers for cleanup
   const timerRef = useRef(null);
+
+  // Fetch classes for grade settings
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const res = await axios.get(`${API}/classes`, { withCredentials: true });
+        setClasses(res.data || []);
+      } catch (error) {
+        console.error('Error fetching classes:', error);
+      }
+    };
+    fetchClasses();
+  }, []);
 
   // Game timer effect - with proper cleanup
   useEffect(() => {
