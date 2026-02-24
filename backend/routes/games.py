@@ -594,7 +594,11 @@ async def get_game(game_id: str):
         "questions": game.get("questions", []),
         "words": game.get("words", []),
         "created_at": game.get("created_at"),
-        "validation_status": game.get("validation_status", "unknown")
+        "validation_status": game.get("validation_status", "unknown"),
+        # Grade settings for frontend display
+        "count_as_grade": game.get("count_as_grade", False),
+        "grade_points": game.get("grade_points", 100),
+        "grade_method": game.get("grade_method", "best")
     }
 
 
