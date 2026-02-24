@@ -2564,6 +2564,110 @@ const GamesCreator = () => {
                 </CardContent>
               </Card>
             )}
+
+            {/* Student Stats Modal */}
+            {selectedStudentStats && (
+              <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5 text-blue-500" />
+                      {language === 'es' ? 'Estadísticas por Estudiante' : 'Student Statistics'}
+                    </CardTitle>
+                    <Button 
+                      size="sm" 
+                      variant="ghost"
+                      onClick={() => setSelectedStudentStats(null)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <CardDescription>
+                    {selectedStudentStats.game_title}
+                    {selectedStudentStats.count_as_grade && (
+                      <span className="ml-2 text-amber-600 font-medium">
+                        • {language === 'es' ? 'Método:' : 'Method:'} {
+                          selectedStudentStats.grade_method === 'first' ? (language === 'es' ? 'Primer Intento' : 'First Attempt') :
+                          selectedStudentStats.grade_method === 'best' ? (language === 'es' ? 'Mejor Puntaje' : 'Best Score') :
+                          (language === 'es' ? 'Promedio' : 'Average')
+                        }
+                      </span>
+                    )}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex gap-4 mb-4 text-center">
+                    <div className="flex-1 p-3 bg-white rounded-lg">
+                      <p className="text-2xl font-bold text-blue-600">{selectedStudentStats.total_unique_players}</p>
+                      <p className="text-xs text-slate-500">{language === 'es' ? 'Estudiantes' : 'Students'}</p>
+                    </div>
+                    <div className="flex-1 p-3 bg-white rounded-lg">
+                      <p className="text-2xl font-bold text-purple-600">{selectedStudentStats.total_plays}</p>
+                      <p className="text-xs text-slate-500">{language === 'es' ? 'Total Intentos' : 'Total Attempts'}</p>
+                    </div>
+                  </div>
+                  
+                  {selectedStudentStats.player_stats?.length > 0 ? (
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {selectedStudentStats.player_stats.map((player, idx) => (
+                        <div key={idx} className="p-4 bg-white rounded-lg border">
+                          <div className="flex items-center justify-between mb-2">
+                            <div>
+                              <p className="font-semibold text-slate-800">{player.player_name}</p>
+                              <p className="text-xs text-slate-500">
+                                {player.total_attempts} {language === 'es' ? 'intentos' : 'attempts'}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-bold text-green-600">{player.best_score}%</p>
+                              <p className="text-xs text-slate-500">{language === 'es' ? 'Mejor' : 'Best'}</p>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                            <div className="p-2 bg-slate-50 rounded">
+                              <p className="font-medium text-blue-600">{player.average_score}%</p>
+                              <p className="text-xs text-slate-500">{language === 'es' ? 'Promedio' : 'Average'}</p>
+                            </div>
+                            <div className="p-2 bg-slate-50 rounded">
+                              <p className="font-medium text-amber-600">{player.worst_score}%</p>
+                              <p className="text-xs text-slate-500">{language === 'es' ? 'Mínimo' : 'Lowest'}</p>
+                            </div>
+                            <div className="p-2 bg-slate-50 rounded">
+                              <p className="font-medium text-purple-600">{Math.round(player.average_time || 0)}s</p>
+                              <p className="text-xs text-slate-500">{language === 'es' ? 'Tiempo' : 'Time'}</p>
+                            </div>
+                          </div>
+                          {player.attempts.length > 1 && (
+                            <details className="mt-2">
+                              <summary className="text-xs text-blue-600 cursor-pointer hover:text-blue-700">
+                                {language === 'es' ? 'Ver todos los intentos' : 'View all attempts'}
+                              </summary>
+                              <div className="mt-2 space-y-1 text-xs">
+                                {player.attempts.map((attempt, aidx) => (
+                                  <div key={aidx} className="flex justify-between p-2 bg-slate-50 rounded">
+                                    <span>{new Date(attempt.submitted_at).toLocaleString()}</span>
+                                    <span className="font-medium">{attempt.percentage}%</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </details>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Users className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                      <p className="text-slate-500">
+                        {language === 'es' 
+                          ? 'Aún no hay estudiantes que hayan jugado' 
+                          : 'No students have played yet'}
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
       </div>
