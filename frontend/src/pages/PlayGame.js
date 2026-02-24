@@ -218,10 +218,49 @@ const PlayGame = () => {
   };
 
   // CRITICAL: Complete reset for Play Again
+  // Shuffle array helper (Fisher-Yates algorithm)
+  const shuffleArray = useCallback((array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }, []);
+
+  // Create variation in questions even without AI regeneration
+  const createQuestionVariation = useCallback((questions, gameType) => {
+    if (!questions || questions.length === 0) return [];
+    
+    // Deep clone and shuffle question order
+    let varied = shuffleArray(questions.map(q => JSON.parse(JSON.stringify(q))));
+    
+    // For quiz and true_false games, also shuffle the options within each question
+    if (gameType === 'quiz' || gameType === 'true_false') {
+      varied = varied.map(q => {
+        if (q.options && Array.isArray(q.options)) {
+          // Shuffle options while keeping track of correct answer
+          const correctAnswer = q.correct_answer;
+          q.options = shuffleArray(q.options);
+          // Ensure correct_answer still matches one of the options
+          q.correct_answer = correctAnswer;
+        }
+        return q;
+      });
+    }
+    
+    // For matching games, the right side will be shuffled separately
+    // For fill_blanks, question order is shuffled
+    // For flashcards, card order is shuffled
+    
+    return varied;
+  }, [shuffleArray]);
+
   const resetGame = useCallback(async () => {
     console.log(`[PlayGame] ========== PLAY AGAIN TRIGGERED ==========`);
     console.log(`[PlayGame] Old Session: ${sessionId}`);
     console.log(`[PlayGame] Old Questions Hash: ${hashQuestions(currentQuestions)}`);
+    console.log(`[PlayGame] Old First Question: ${currentQuestions[0]?.question?.substring(0, 50)}...`);
     
     // Show loading state
     setRegenerating(true);
@@ -231,19 +270,22 @@ const PlayGame = () => {
     const newSessionId = generateSessionId();
     console.log(`[PlayGame] NEW Session: ${newSessionId}`);
     
-    // FORCE regenerate questions from backend
+    // Attempt to regenerate questions from backend
     let newQuestions = null;
+    let aiRegenerationSucceeded = false;
     
     try {
       const res = await axios.post(`${API}/games/${gameId}/regenerate-questions`, null, {
         params: { 
           player_name: playerName,
           session_id: newSessionId,
-          force_new: true // Signal to backend to force new generation
+          force_new: true,
+          timestamp: Date.now() // Cache buster
         },
         headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
       });
       
@@ -252,27 +294,44 @@ const PlayGame = () => {
       console.log(`  - message: ${res.data.message}`);
       console.log(`  - questions count: ${res.data.questions?.length || 0}`);
       
-      if (res.data.questions?.length > 0) {
-        // Create completely new array - no reference to old data
-        newQuestions = res.data.questions.map(q => ({...q}));
+      // ONLY use API questions if regeneration ACTUALLY succeeded
+      if (res.data.regenerated === true && res.data.questions?.length > 0) {
+        // AI successfully generated NEW questions
+        newQuestions = res.data.questions.map(q => JSON.parse(JSON.stringify(q)));
+        aiRegenerationSucceeded = true;
         
+        console.log(`[PlayGame] AI Regeneration SUCCESS`);
         console.log(`[PlayGame] NEW Questions Hash: ${hashQuestions(newQuestions)}`);
         console.log(`[PlayGame] First NEW question: ${newQuestions[0]?.question?.substring(0, 60)}...`);
         
-        if (res.data.regenerated) {
-          toast.success(language === 'es' ? '¡Nuevas preguntas generadas!' : 'New questions generated!');
-        }
+        toast.success(language === 'es' ? '¡Nuevas preguntas generadas por IA!' : 'New AI-generated questions!');
+      } else {
+        console.log(`[PlayGame] AI Regeneration NOT available: ${res.data.message}`);
       }
     } catch (error) {
-      console.error('[PlayGame] Regeneration failed:', error);
-      toast.error(language === 'es' ? 'Error al generar preguntas' : 'Error generating questions');
+      console.error('[PlayGame] Regeneration API error:', error);
+    }
+    
+    // If AI regeneration failed, create variation from existing questions
+    if (!aiRegenerationSucceeded) {
+      console.log(`[PlayGame] Creating local variation from existing questions...`);
+      
+      // Get the ORIGINAL questions from gameData, not currentQuestions (which may already be shuffled)
+      const originalQuestions = gameData?.questions || currentQuestions;
+      newQuestions = createQuestionVariation(originalQuestions, gameData?.game_type);
+      
+      console.log(`[PlayGame] Local Variation Created`);
+      console.log(`[PlayGame] NEW Questions Hash: ${hashQuestions(newQuestions)}`);
+      console.log(`[PlayGame] First question (varied): ${newQuestions[0]?.question?.substring(0, 60)}...`);
+      
+      toast.info(language === 'es' ? '¡Preguntas reorganizadas!' : 'Questions reshuffled!');
     }
     
     // COMPLETE STATE RESET
     // 1. Update session ID FIRST
     setSessionId(newSessionId);
     
-    // 2. Clear ALL game state
+    // 2. Clear ALL game state completely
     setSelectedAnswer(null);
     setGameProgress({ current: 0, score: 0 });
     setFlashcardFlipped(false);
@@ -284,20 +343,15 @@ const PlayGame = () => {
     setDragDropOrder([]);
     setDraggingItem(null);
     
-    // 3. Set new questions (or keep old if regeneration failed)
+    // 3. Set the new/varied questions
     if (newQuestions && newQuestions.length > 0) {
       setCurrentQuestions(newQuestions);
       
       // Re-shuffle for matching games
       if (gameData?.game_type === 'matching') {
         const rightItems = newQuestions.map(q => q.match || q.correct_answer);
-        setShuffledRight([...rightItems].sort(() => Math.random() - 0.5));
+        setShuffledRight(shuffleArray(rightItems));
       }
-    } else {
-      console.warn('[PlayGame] No new questions received, shuffling existing ones');
-      // At minimum, shuffle the existing questions order
-      const shuffled = [...currentQuestions].sort(() => Math.random() - 0.5);
-      setCurrentQuestions(shuffled);
     }
     
     // 4. Reset timer
@@ -308,8 +362,9 @@ const PlayGame = () => {
     
     console.log(`[PlayGame] ========== RESET COMPLETE ==========`);
     console.log(`[PlayGame] Final Session: ${newSessionId}`);
-    console.log(`[PlayGame] Ready for new game`);
-  }, [gameId, playerName, currentQuestions, sessionId, gameData, language]);
+    console.log(`[PlayGame] Final Questions Hash: ${hashQuestions(newQuestions)}`);
+    console.log(`[PlayGame] AI Used: ${aiRegenerationSucceeded}`);
+  }, [gameId, playerName, currentQuestions, sessionId, gameData, language, createQuestionVariation, shuffleArray]);
 
   // Loading screen
   if (loading) {
