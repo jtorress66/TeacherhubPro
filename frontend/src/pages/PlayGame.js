@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -24,6 +24,9 @@ const PlayGame = () => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [language, setLanguage] = useState('es');
+  
+  // Timer state for tracking time taken
+  const startTimeRef = useRef(null);
   
   // Game-specific state
   const [flashcardFlipped, setFlashcardFlipped] = useState(false);
@@ -97,17 +100,16 @@ const PlayGame = () => {
     }
     
     // Try to regenerate questions for anti-cheat
+    let questionsToUse = game?.questions || [];
+    
     try {
       const res = await axios.post(`${API}/games/${gameId}/regenerate-questions`, null, {
         params: { player_name: playerName }
       });
       
       if (res.data.regenerated && res.data.questions?.length > 0) {
-        // Update game with new questions
-        setGame(prev => ({
-          ...prev,
-          questions: res.data.questions
-        }));
+        // Use the newly generated questions
+        questionsToUse = res.data.questions;
         toast.success(language === 'es' ? '¡Nuevas preguntas generadas!' : 'New questions generated!');
       }
     } catch (error) {
@@ -115,6 +117,16 @@ const PlayGame = () => {
       console.log('Question regeneration not available, using existing questions');
     }
     
+    // Update game state with questions (new or existing) BEFORE starting
+    setGame(prev => ({
+      ...prev,
+      questions: questionsToUse
+    }));
+    
+    // Record start time for tracking how long the game takes
+    startTimeRef.current = Date.now();
+    
+    // Now start the game
     setGameStarted(true);
     setGameProgress({ current: 0, score: 0 });
   };
@@ -143,11 +155,16 @@ const PlayGame = () => {
 
   const submitScore = async () => {
     try {
+      // Calculate actual time taken in seconds
+      const timeTaken = startTimeRef.current 
+        ? Math.floor((Date.now() - startTimeRef.current) / 1000) 
+        : 0;
+      
       await axios.post(`${API}/games/${gameId}/score`, {
         player_name: playerName,
         score: gameProgress.score + (selectedAnswer === game.questions[gameProgress.current]?.correct_answer ? 1 : 0),
         total_questions: game.questions.length,
-        time_taken: 0
+        time_taken: timeTaken
       });
     } catch (error) {
       console.error('Error submitting score:', error);

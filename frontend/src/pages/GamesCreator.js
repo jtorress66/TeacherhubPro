@@ -2564,7 +2564,7 @@ const GamesCreator = () => {
                           <div className="flex-1">
                             <p className="font-semibold text-slate-800">{entry.player_name}</p>
                             <p className="text-xs text-slate-500">
-                              {new Date(entry.played_at).toLocaleDateString()}
+                              {entry.submitted_at ? new Date(entry.submitted_at).toLocaleDateString() : '—'}
                             </p>
                           </div>
                           <div className="text-right">
