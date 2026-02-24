@@ -1,6 +1,39 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-24 - Educational Games AGGRESSIVE Question Regeneration (VERIFIED)
+
+### Issues Fixed:
+
+**1. True/False Games Need COMPLETELY NEW Questions (Not Rephrased)**
+- Enhanced regeneration prompt with AGGRESSIVE variation instructions
+- For True/False: Creates statements about ENTIRELY DIFFERENT aspects of the topic
+- Lists ALL existing questions as "FORBIDDEN" to prevent AI from rephrasing them
+- Evidence: Original statements about dates/names → Regenerated statements about Third Estate, Marie Antoinette, Declaration of Rights, Reign of Terror, Robespierre
+
+**2. Old Games Without original_content Can Now Regenerate**
+- System now DERIVES content from existing questions if original_content is missing
+- Saves derived content to database for future regenerations
+- Works for quiz, true_false, flashcards, matching, fill_blanks game types
+
+**3. Time Tracking Shows 0s for Old Plays**
+- **EXPECTED BEHAVIOR**: Historical plays BEFORE the fix will show 0s
+- NEW plays after the fix correctly record time (11s, 13s, 18s, 45s, 133s, etc.)
+- Cannot retroactively add time data to old plays
+
+### Files Modified:
+- `/app/backend/routes/games.py`
+  - Lines 898-970: Added content derivation from existing questions
+  - Lines 980-1030: Added aggressive variation instructions (separate for True/False vs other types)
+
+### Test Results:
+- **Backend:** 100% - 8 passed, 1 skipped (subscription required)
+- **Test Report:** `/app/test_reports/iteration_30.json`
+- **True/False Evidence:**
+  - Original: "La Revolución Francesa comenzó en 1789", "Luis XVI fue el primer rey..."
+  - Regenerated: "El Tercer Estado representaba el 98%...", "María Antonieta era conocida..."
+
+---
 ## Update 2026-02-24 - Educational Games Question Regeneration FIX (VERIFIED)
 
 ### Critical Bug Fixed:
