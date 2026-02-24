@@ -90,10 +90,8 @@ const Landing = () => {
 
   const featureShowcase = [
     {
-      title: language === 'es' ? 'Planifica más rápido' : 'Plan faster',
-      desc: language === 'es' 
-        ? 'Crea planes de lección semanales en segundos con nuestro formato intuitivo.' 
-        : 'Create weekly lesson plans in seconds with our intuitive format.',
+      title: t('landingPlanFaster'),
+      desc: t('landingPlanFasterDesc'),
       visual: (
         <div className="bg-white rounded-xl shadow-2xl p-6 transform hover:scale-105 transition-all duration-500">
           <div className="flex items-center gap-3 mb-4">
@@ -101,7 +99,7 @@ const Landing = () => {
               <Calendar className="h-5 w-5 text-cyan-600" />
             </div>
             <div>
-              <div className="font-semibold text-slate-800">{language === 'es' ? 'Semana 1' : 'Week 1'}</div>
+              <div className="font-semibold text-slate-800">{t('landingWeek1')}</div>
               <div className="text-xs text-slate-500">Feb 10 - Feb 14</div>
             </div>
           </div>
@@ -117,10 +115,8 @@ const Landing = () => {
       )
     },
     {
-      title: language === 'es' ? 'Tu marca, tu estilo' : 'Your brand, your style',
-      desc: language === 'es' 
-        ? 'Personaliza con el logo y colores de tu escuela en todos los documentos.' 
-        : 'Customize with your school\'s logo and colors on all documents.',
+      title: t('landingYourBrand'),
+      desc: t('landingYourBrandDesc'),
       visual: (
         <div className="bg-white rounded-xl shadow-2xl p-6 transform hover:scale-105 transition-all duration-500">
           <div className="flex items-center gap-3 mb-4">
@@ -128,8 +124,8 @@ const Landing = () => {
               <School className="h-6 w-6 text-white" />
             </div>
             <div>
-              <div className="font-semibold text-slate-800">{language === 'es' ? 'Tu Escuela' : 'Your School'}</div>
-              <div className="text-xs text-slate-500">{language === 'es' ? 'Marca personalizada' : 'Custom branding'}</div>
+              <div className="font-semibold text-slate-800">{t('landingYourSchool')}</div>
+              <div className="text-xs text-slate-500">{t('landingCustomBranding')}</div>
             </div>
           </div>
           <div className="flex gap-2">
@@ -142,10 +138,8 @@ const Landing = () => {
       )
     },
     {
-      title: language === 'es' ? 'Exporta profesionalmente' : 'Export professionally',
-      desc: language === 'es' 
-        ? 'Genera PDFs listos para imprimir con el formato exacto de tu escuela.' 
-        : 'Generate print-ready PDFs with your school\'s exact format.',
+      title: t('landingExportPro'),
+      desc: t('landingExportProDesc'),
       visual: (
         <div className="bg-white rounded-xl shadow-2xl p-6 transform hover:scale-105 transition-all duration-500">
           <div className="flex items-center justify-between mb-4">
@@ -168,10 +162,8 @@ const Landing = () => {
       )
     },
     {
-      title: language === 'es' ? 'Asistente de IA' : 'AI Assistant',
-      desc: language === 'es' 
-        ? 'Genera materiales educativos basados en estándares nacionales al instante.' 
-        : 'Generate educational materials based on national standards instantly.',
+      title: t('landingAiAssistantTitle'),
+      desc: t('landingAiAssistantDesc'),
       visual: (
         <div className="bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl shadow-2xl p-6 transform hover:scale-105 transition-all duration-500 text-white">
           <div className="flex items-center gap-3 mb-4">
@@ -179,18 +171,18 @@ const Landing = () => {
               <Sparkles className="h-5 w-5 text-white" />
             </div>
             <div>
-              <div className="font-semibold">{language === 'es' ? 'Claude AI' : 'Claude AI'}</div>
+              <div className="font-semibold">{t('landingAiAssistant')}</div>
               <div className="text-xs text-white/70">{language === 'es' ? 'Powered by Anthropic' : 'Powered by Anthropic'}</div>
             </div>
           </div>
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2">
               <Zap className="h-4 w-4" />
-              <span>{language === 'es' ? 'Planes de lección' : 'Lesson plans'}</span>
+              <span>{t('landingLessonPlans')}</span>
             </div>
             <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2">
               <Brain className="h-4 w-4" />
-              <span>{language === 'es' ? 'Quizzes y exámenes' : 'Quizzes & tests'}</span>
+              <span>{t('landingQuizzesTests')}</span>
             </div>
           </div>
         </div>
