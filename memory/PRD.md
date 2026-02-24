@@ -1,6 +1,37 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-24 - Educational Games Question Regeneration FIX (VERIFIED)
+
+### Critical Bug Fixed:
+**Problem:** When students clicked "Play Again" after completing a game, they received THE SAME questions instead of new ones.
+
+**Root Cause:** The `resetGame()` function in `PlayGame.js` only reset the game state (score, current question, etc.) but did NOT call the question regeneration API.
+
+**Solution:**
+1. Modified `resetGame()` to be async and call `/api/games/{game_id}/regenerate-questions` BEFORE resetting state
+2. Added loading state (`regenerating`) to show "Preparando nuevas preguntas..." while regenerating
+3. Enhanced backend to pass existing questions to AI with instructions to generate DIFFERENT questions
+4. Added variation instructions to the regeneration prompt to ensure truly different questions
+
+### Files Modified:
+- `/app/frontend/src/pages/PlayGame.js`
+  - Lines 27: Added `regenerating` state
+  - Lines 174-223: Completely rewrote `resetGame()` to call regeneration API
+  - Lines 328-359: Updated "Play Again" button with loading state
+  - Lines 360-375: Added regenerating loading screen
+- `/app/backend/routes/games.py`
+  - Lines 943-1000: Enhanced regeneration to include existing questions and variation instructions
+
+### Test Results:
+- **Frontend E2E:** 100% - All 4 test criteria passed
+- **Test Report:** `/app/test_reports/iteration_29.json`
+- **Evidence:**
+  - First round questions: 5 math questions about multiplication
+  - Second round questions: 5 COMPLETELY DIFFERENT word problems
+  - Same questions: 0/5 (100% different)
+
+---
 ## Update 2026-02-24 - Educational Games Critical Bug Fixes (VERIFIED)
 
 ### Issues Fixed:
