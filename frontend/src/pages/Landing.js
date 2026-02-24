@@ -864,7 +864,7 @@ const Landing = () => {
                   {[
                     {
                       icon: Users,
-                      title: language === 'es' ? 'Importar Clases' : 'Import Classes',
+                      title: t('landingImportClasses'),
                       desc: t('landingImportClassesDesc')
                     },
                     {
