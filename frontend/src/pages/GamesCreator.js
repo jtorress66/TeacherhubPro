@@ -599,7 +599,7 @@ const GamesCreator = () => {
       // Include grade settings and original content for regeneration
       const gameToSave = {
         ...generatedGame,
-        original_content: content, // Store original content for question regeneration
+        original_content: lessonContent, // Store original content for question regeneration
         language: language,
         grade_settings: gradeSettings
       };
