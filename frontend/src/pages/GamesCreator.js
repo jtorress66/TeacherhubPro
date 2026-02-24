@@ -596,13 +596,54 @@ const GamesCreator = () => {
     if (!generatedGame) return;
     
     try {
-      const res = await axios.post(`${API}/games/save`, generatedGame, { withCredentials: true });
+      // Include grade settings and original content for regeneration
+      const gameToSave = {
+        ...generatedGame,
+        original_content: content, // Store original content for question regeneration
+        language: language,
+        grade_settings: gradeSettings
+      };
+      
+      const res = await axios.post(`${API}/games/save`, gameToSave, { withCredentials: true });
       toast.success(language === 'es' ? '¡Juego guardado!' : 'Game saved!');
       fetchSavedGames();
       setActiveTab('library');
+      
+      // Reset grade settings for next game
+      setGradeSettings({
+        count_as_grade: false,
+        grade_points: 100,
+        grade_method: 'best',
+        class_id: '',
+        assignment_name: ''
+      });
     } catch (error) {
       console.error('Error saving game:', error);
       toast.error(language === 'es' ? 'Error al guardar' : 'Error saving');
+    }
+  };
+  
+  // Update grade settings for an existing game
+  const updateGameGradeSettings = async (gameId) => {
+    try {
+      await axios.put(`${API}/games/${gameId}/grade-settings`, gradeSettings, { withCredentials: true });
+      toast.success(language === 'es' ? 'Configuración de calificación actualizada' : 'Grade settings updated');
+      fetchSavedGames();
+      setShowGradeSettings(false);
+    } catch (error) {
+      console.error('Error updating grade settings:', error);
+      toast.error(language === 'es' ? 'Error al actualizar' : 'Error updating');
+    }
+  };
+  
+  // Fetch student stats for a game
+  const fetchStudentStats = async (gameId) => {
+    try {
+      const res = await axios.get(`${API}/games/${gameId}/student-stats`, { withCredentials: true });
+      setSelectedStudentStats(res.data);
+    } catch (error) {
+      console.error('Error fetching student stats:', error);
+      toast.error(language === 'es' ? 'Error al cargar estadísticas' : 'Error loading statistics');
     }
   };
 
