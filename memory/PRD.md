@@ -3,6 +3,46 @@
 ---
 ## Update 2026-02-24 - Educational Games Analytics & Grade Integration
 
+### Issues Fixed (Round 2):
+
+**1. Student/Leaderboard Modals Not Showing**
+- Changed modals from inline Cards to fixed-position overlays
+- Now properly display as popup modals with dark backdrop
+- Click outside or X button to close
+
+**2. Grade Settings Button Added to Library**
+- Each saved game now has "Calificación" (Grade Settings) button
+- Opens a full modal with:
+  - Count as Grade toggle
+  - Total Points input
+  - Method selector (First/Best/Average)
+  - Class selector dropdown
+  - Assignment Name input
+- Games counting as grades show "📊 Cuenta como calificación" badge
+
+**3. Question Regeneration Now Working**
+- Fixed `original_content` storage in backend generate function
+- New games now store original lesson content
+- When student replays, AI generates fresh questions on same topic
+- Old games without original_content use existing questions (expected)
+
+### Test Results:
+- **Question Regeneration Verified:**
+  - Original: "¿Cuánto es 2 x 2?", "¿Cuál es el resultado de 5 x 5?"
+  - Regenerated: "¿Cuánto es 3 x 3?", "¿Cuál es el producto de 6 x 6?"
+  - Response: `"regenerated": true, "message": "New questions generated successfully"`
+
+- **Modals Verified:**
+  - Student Stats modal shows with proper data
+  - Leaderboard modal shows with proper data
+  - Grade Settings modal shows with all options
+
+### Files Modified:
+- `/app/backend/routes/games.py` - Added `original_content`, `language`, `question_count` storage
+- `/app/frontend/src/pages/GamesCreator.js` - Fixed modals, added Grade Settings button to Library
+- `/app/frontend/src/pages/PlayGame.js` - Calls regenerate-questions endpoint on game start
+
+---
 ### Features Implemented:
 
 **1. Enhanced Analytics System**
