@@ -966,6 +966,8 @@ const translations = {
     landingEverythingDesc: 'Une plateforme complète conçue spécialement pour les enseignants.',
     landingFeatures: 'Fonctionnalités',
     landingAiAssistant: 'Assistant IA',
+    landingPoweredBy: 'Propulsé par Anthropic',
+    landingActiveTeachers: 'enseignants actifs',
     landingHomeschool: 'École à la Maison',
     landingIntegrations: 'Intégrations',
     landingCustomization: 'Personnalisation',
