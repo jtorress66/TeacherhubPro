@@ -173,7 +173,8 @@ const PlayGame = () => {
   };
 
   const resetGame = async () => {
-    // Show loading state
+    // Show loading state while regenerating
+    setRegenerating(true);
     setShowResult(false);
     setSelectedAnswer(null);
     
@@ -216,6 +217,9 @@ const PlayGame = () => {
       const rightItems = newQuestions.map(q => q.match || q.correct_answer);
       setShuffledRight([...rightItems].sort(() => Math.random() - 0.5));
     }
+    
+    // Hide loading state
+    setRegenerating(false);
   };
 
   if (loading) {
