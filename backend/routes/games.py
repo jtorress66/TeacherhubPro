@@ -858,3 +858,201 @@ async def get_game_progress(
     )
     
     return progress or {"current_question": 0, "score": 0, "answers": {}}
+
+
+@router.put("/{game_id}/grade-settings")
+async def update_game_grade_settings(
+    game_id: str,
+    settings: GameGradeSettings,
+    user: dict = Depends(get_current_user)
+):
+    """Update grade settings for a game"""
+    teacher_id = user.get("user_id")
+    
+    # Verify ownership
+    game = await db.educational_games.find_one({
+        "game_id": game_id,
+        "teacher_id": teacher_id
+    })
+    
+    if not game:
+        raise HTTPException(status_code=404, detail="Game not found or unauthorized")
+    
+    await db.educational_games.update_one(
+        {"game_id": game_id},
+        {"$set": {
+            "count_as_grade": settings.count_as_grade,
+            "grade_points": settings.grade_points,
+            "grade_method": settings.grade_method,
+            "class_id": settings.class_id,
+            "assignment_name": settings.assignment_name,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"message": "Grade settings updated", "game_id": game_id}
+
+
+@router.post("/{game_id}/regenerate-questions")
+async def regenerate_game_questions(
+    game_id: str,
+    player_name: str = None
+):
+    """
+    Regenerate questions for a game to prevent memorization/cheating.
+    Uses AI to create new questions based on the original content.
+    Returns a new set of questions for this play session.
+    """
+    # Get the original game
+    game = await db.educational_games.find_one({"game_id": game_id}, {"_id": 0})
+    if not game:
+        raise HTTPException(status_code=404, detail="Game not found")
+    
+    original_content = game.get("original_content", "")
+    
+    # If no original content stored, return the existing questions
+    if not original_content:
+        return {
+            "questions": game.get("questions", []),
+            "regenerated": False,
+            "message": "Original content not available, using existing questions"
+        }
+    
+    # Check if AI access is available (this is a public endpoint, so we check game owner's access)
+    teacher_id = game.get("teacher_id")
+    if teacher_id:
+        teacher = await db.users.find_one({"user_id": teacher_id}, {"_id": 0})
+        if teacher:
+            # Check if teacher has active subscription
+            subscription = await db.subscriptions.find_one({"user_id": teacher_id, "status": "active"})
+            if not subscription:
+                # Check school subscription
+                school_id = teacher.get("school_id")
+                if school_id:
+                    school_sub = await db.subscriptions.find_one({"school_id": school_id, "status": "active"})
+                    if not school_sub:
+                        # No active subscription, return existing questions
+                        return {
+                            "questions": game.get("questions", []),
+                            "regenerated": False,
+                            "message": "Subscription required for question regeneration"
+                        }
+    
+    # Generate new questions using AI
+    try:
+        game_type = game.get("game_type", "quiz")
+        grade_level = game.get("grade_level", "3-5")
+        subject = game.get("subject", "other")
+        question_count = game.get("question_count", len(game.get("questions", []))) or 5
+        lang = game.get("language", "es")
+        
+        # Create a request for regeneration
+        regenerate_request = GameGenerateRequest(
+            content=original_content,
+            game_type=game_type,
+            grade_level=grade_level,
+            subject=subject,
+            question_count=question_count,
+            language=lang
+        )
+        
+        # Generate new questions
+        new_game_data = await generate_game_with_validation(regenerate_request)
+        
+        # Track this regeneration for analytics
+        await db.game_regenerations.insert_one({
+            "game_id": game_id,
+            "player_name": player_name,
+            "regenerated_at": datetime.now(timezone.utc).isoformat(),
+            "question_count": len(new_game_data.get("questions", []))
+        })
+        
+        return {
+            "questions": new_game_data.get("questions", []),
+            "regenerated": True,
+            "message": "New questions generated successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"Question regeneration failed: {str(e)}")
+        # Fallback to existing questions
+        return {
+            "questions": game.get("questions", []),
+            "regenerated": False,
+            "message": f"Regeneration failed, using existing questions: {str(e)}"
+        }
+
+
+@router.get("/{game_id}/student-stats")
+async def get_game_student_stats(
+    game_id: str,
+    user: dict = Depends(get_current_user)
+):
+    """Get detailed student statistics for a specific game"""
+    teacher_id = user.get("user_id")
+    
+    # Verify ownership
+    game = await db.educational_games.find_one({
+        "game_id": game_id,
+        "teacher_id": teacher_id
+    }, {"_id": 0})
+    
+    if not game:
+        raise HTTPException(status_code=404, detail="Game not found or unauthorized")
+    
+    # Get all scores for this game
+    scores = await db.game_scores.find(
+        {"game_id": game_id},
+        {"_id": 0}
+    ).sort("submitted_at", -1).to_list(1000)
+    
+    # Group scores by player
+    player_stats = {}
+    for score in scores:
+        player_key = score.get("student_id") or score.get("player_name")
+        if player_key:
+            if player_key not in player_stats:
+                player_stats[player_key] = {
+                    "player_name": score.get("player_name"),
+                    "student_id": score.get("student_id"),
+                    "attempts": [],
+                    "best_score": 0,
+                    "worst_score": 100,
+                    "total_attempts": 0,
+                    "first_attempt_date": score.get("submitted_at"),
+                    "last_attempt_date": score.get("submitted_at")
+                }
+            
+            pct = score.get("percentage", 0)
+            player_stats[player_key]["attempts"].append({
+                "score": score.get("score"),
+                "percentage": pct,
+                "time_taken": score.get("time_taken", 0),
+                "submitted_at": score.get("submitted_at")
+            })
+            player_stats[player_key]["total_attempts"] += 1
+            player_stats[player_key]["best_score"] = max(player_stats[player_key]["best_score"], pct)
+            player_stats[player_key]["worst_score"] = min(player_stats[player_key]["worst_score"], pct)
+            player_stats[player_key]["last_attempt_date"] = score.get("submitted_at")
+    
+    # Calculate averages
+    for player_key in player_stats:
+        attempts = player_stats[player_key]["attempts"]
+        if attempts:
+            player_stats[player_key]["average_score"] = round(
+                sum(a["percentage"] for a in attempts) / len(attempts), 1
+            )
+            player_stats[player_key]["average_time"] = round(
+                sum(a["time_taken"] for a in attempts) / len(attempts), 1
+            )
+    
+    return {
+        "game_id": game_id,
+        "game_title": game.get("title", ""),
+        "total_unique_players": len(player_stats),
+        "total_plays": len(scores),
+        "player_stats": list(player_stats.values()),
+        "count_as_grade": game.get("count_as_grade", False),
+        "grade_method": game.get("grade_method", "best")
+    }
+
