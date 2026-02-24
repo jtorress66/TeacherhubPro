@@ -354,7 +354,7 @@ const Landing = () => {
       <section className="py-12 border-y border-slate-100 bg-slate-50/50">
         <div className="max-w-7xl mx-auto px-6">
           <p className="text-center text-sm text-slate-500 mb-8">
-            {language === 'es' ? 'Usado por escuelas en Puerto Rico y más' : 'Used by schools in Puerto Rico and beyond'}
+            {t('landingUsedBySchools')}
           </p>
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-60">
             {partnerSchools.map((school, index) => (
@@ -372,12 +372,10 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-              {language === 'es' ? 'Todo lo que necesitas' : 'Everything you need'}
+              {t('landingEverythingYouNeed')}
             </h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              {language === 'es' 
-                ? 'Desde planificación hasta reportes, TeacherHubPro simplifica tu trabajo diario.' 
-                : 'From planning to reports, TeacherHubPro simplifies your daily work.'}
+              {t('landingEverythingDesc')}
             </p>
           </div>
 
