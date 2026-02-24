@@ -442,6 +442,10 @@ Output ONLY the JSON. No explanations."""
             game_data["grade_level"] = request.grade_level
             game_data["subject"] = request.subject
             game_data["validation_status"] = "passed"
+            # Store original content for question regeneration
+            game_data["original_content"] = request.content
+            game_data["language"] = request.language
+            game_data["question_count"] = request.question_count
             
             logger.info(f"Game generated successfully on attempt {attempt + 1}")
             return game_data
