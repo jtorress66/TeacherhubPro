@@ -518,15 +518,13 @@ const Landing = () => {
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 text-sm font-medium mb-4">
               <Wand2 className="h-4 w-4" />
-              {language === 'es' ? 'Funciones de IA Avanzadas' : 'Advanced AI Features'}
+              {t('landingAdvancedAiFeatures')}
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-              {language === 'es' ? 'Planificación inteligente con IA' : 'Intelligent planning with AI'}
+              {t('landingIntelligentPlanning')}
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              {language === 'es' 
-                ? 'Desde generar un plan completo hasta sugerencias diarias, la IA te ayuda en cada paso.' 
-                : 'From generating a complete plan to daily suggestions, AI helps you every step of the way.'}
+              {t('landingAiPlanningDesc')}
             </p>
           </div>
 
@@ -538,16 +536,14 @@ const Landing = () => {
                 <CalendarDays className="h-7 w-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">
-                {language === 'es' ? 'Genera Semana Completa' : 'Generate Full Week'}
+                {t('landingGenerateFullWeek')}
               </h3>
               <p className="text-slate-600 mb-4">
-                {language === 'es' 
-                  ? 'Con un clic, genera actividades para los 5 días con progresión pedagógica: introducción → práctica → dominio → evaluación.'
-                  : 'With one click, generate activities for all 5 days with pedagogical progression: intro → practice → mastery → assessment.'}
+                {t('landingGenerateFullWeekDesc')}
               </p>
               <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">5 {language === 'es' ? 'días' : 'days'}</span>
-                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">{language === 'es' ? 'Progresión' : 'Progression'}</span>
+                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">5 {t('landingDays')}</span>
+                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">{t('landingProgression')}</span>
               </div>
             </div>
 
@@ -557,16 +553,14 @@ const Landing = () => {
                 <Lightbulb className="h-7 w-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">
-                {language === 'es' ? 'Sugerencias por Día' : 'Daily Suggestions'}
+                {t('landingDailySuggestions')}
               </h3>
               <p className="text-slate-600 mb-4">
-                {language === 'es' 
-                  ? 'Cada día muestra su fase pedagógica (Introducción, Práctica, Dominio). Obtén sugerencias específicas para cada etapa.'
-                  : 'Each day shows its pedagogical phase (Introduction, Practice, Mastery). Get specific suggestions for each stage.'}
+                {t('landingDailySuggestionsDesc')}
               </p>
               <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">{language === 'es' ? 'Lunes → Viernes' : 'Mon → Fri'}</span>
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">{language === 'es' ? 'Contextual' : 'Contextual'}</span>
+                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">{t('landingMonFri')}</span>
+                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">{t('landingContextual')}</span>
               </div>
             </div>
 
@@ -576,16 +570,14 @@ const Landing = () => {
                 <Layers className="h-7 w-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">
-                {language === 'es' ? 'Plantillas Reutilizables' : 'Reusable Templates'}
+                {t('landingReusableTemplates')}
               </h3>
               <p className="text-slate-600 mb-4">
-                {language === 'es' 
-                  ? 'Guarda tus mejores planes como plantillas. Clona y personaliza para nuevos temas con un clic.'
-                  : 'Save your best plans as templates. Clone and customize for new topics with one click.'}
+                {t('landingReusableTemplatesDesc')}
               </p>
               <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs">{language === 'es' ? 'Guardar' : 'Save'}</span>
-                <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs">{language === 'es' ? 'Clonar' : 'Clone'}</span>
+                <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs">{t('landingSave')}</span>
+                <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs">{t('landingClone')}</span>
               </div>
             </div>
 
@@ -595,17 +587,15 @@ const Landing = () => {
                 <Star className="h-7 w-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">
-                {language === 'es' ? '5 Plantillas Iniciales' : '5 Starter Templates'}
+                {t('landing5StarterTemplates')}
               </h3>
               <p className="text-slate-600 mb-4">
-                {language === 'es' 
-                  ? 'Comienza inmediatamente con plantillas profesionales: Fracciones, Comprensión Lectora, Método Científico, Escritura y Multiplicación.'
-                  : 'Start immediately with pro templates: Fractions, Reading Comprehension, Scientific Method, Writing, and Multiplication.'}
+                {t('landing5StarterTemplatesDesc')}
               </p>
               <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-cyan-100 text-cyan-700 rounded text-xs">{language === 'es' ? 'Matemáticas' : 'Math'}</span>
-                <span className="px-2 py-1 bg-cyan-100 text-cyan-700 rounded text-xs">{language === 'es' ? 'Lectura' : 'ELA'}</span>
-                <span className="px-2 py-1 bg-cyan-100 text-cyan-700 rounded text-xs">{language === 'es' ? 'Ciencias' : 'Science'}</span>
+                <span className="px-2 py-1 bg-cyan-100 text-cyan-700 rounded text-xs">{t('landingMath')}</span>
+                <span className="px-2 py-1 bg-cyan-100 text-cyan-700 rounded text-xs">{t('landingELA')}</span>
+                <span className="px-2 py-1 bg-cyan-100 text-cyan-700 rounded text-xs">{t('landingScience')}</span>
               </div>
             </div>
 
@@ -615,16 +605,14 @@ const Landing = () => {
                 <Copy className="h-7 w-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">
-                {language === 'es' ? 'Adapta con IA' : 'AI Customize'}
+                {t('landingAiCustomize')}
               </h3>
               <p className="text-slate-600 mb-4">
-                {language === 'es' 
-                  ? 'Toma cualquier plantilla y adáptala a un nuevo tema. La IA mantiene la estructura exitosa mientras cambia el contenido.'
-                  : 'Take any template and adapt it to a new topic. AI keeps the successful structure while changing the content.'}
+                {t('landingAiCustomizeDesc')}
               </p>
               <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-pink-100 text-pink-700 rounded text-xs">{language === 'es' ? 'Nuevo tema' : 'New topic'}</span>
-                <span className="px-2 py-1 bg-pink-100 text-pink-700 rounded text-xs">{language === 'es' ? 'Misma estructura' : 'Same structure'}</span>
+                <span className="px-2 py-1 bg-pink-100 text-pink-700 rounded text-xs">{t('landingNewTopic')}</span>
+                <span className="px-2 py-1 bg-pink-100 text-pink-700 rounded text-xs">{t('landingSameStructure')}</span>
               </div>
             </div>
 
@@ -634,16 +622,14 @@ const Landing = () => {
                 <Sparkles className="h-7 w-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">
-                {language === 'es' ? 'Plantilla de la Semana' : 'Template of the Week'}
+                {t('landingTemplateOfWeek')}
               </h3>
               <p className="text-slate-600 mb-4">
-                {language === 'es' 
-                  ? 'Cada semana destacamos una plantilla diferente en tu dashboard con tips de personalización específicos.'
-                  : 'Each week we spotlight a different template on your dashboard with specific customization tips.'}
+                {t('landingTemplateOfWeekDesc')}
               </p>
               <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-violet-100 text-violet-700 rounded text-xs">{language === 'es' ? 'Rotación semanal' : 'Weekly rotation'}</span>
-                <span className="px-2 py-1 bg-violet-100 text-violet-700 rounded text-xs">{language === 'es' ? 'Tips' : 'Tips'}</span>
+                <span className="px-2 py-1 bg-violet-100 text-violet-700 rounded text-xs">{t('landingWeeklyRotation')}</span>
+                <span className="px-2 py-1 bg-violet-100 text-violet-700 rounded text-xs">{t('landingTips')}</span>
               </div>
             </div>
           </div>
@@ -656,7 +642,7 @@ const Landing = () => {
               onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
             >
               <Wand2 className="h-5 w-5 mr-2" />
-              {language === 'es' ? 'Prueba la IA gratis por 7 días' : 'Try AI free for 7 days'}
+              {t('landingTryAiFree7Days')}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
