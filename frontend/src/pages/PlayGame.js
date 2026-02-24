@@ -325,10 +325,42 @@ const PlayGame = () => {
                 ? (language === 'es' ? '¡Buen trabajo!' : 'Good job!')
                 : (language === 'es' ? '¡Sigue practicando!' : 'Keep practicing!')}
             </p>
-            <Button onClick={resetGame} className="bg-purple-600 hover:bg-purple-700">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              {language === 'es' ? 'Jugar de Nuevo' : 'Play Again'}
+            <Button 
+              onClick={resetGame} 
+              disabled={regenerating}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              {regenerating ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  {language === 'es' ? 'Generando nuevas preguntas...' : 'Generating new questions...'}
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  {language === 'es' ? 'Jugar de Nuevo' : 'Play Again'}
+                </>
+              )}
             </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Loading screen while regenerating questions
+  if (regenerating) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <CardContent className="p-8 text-center">
+            <Loader2 className="h-12 w-12 animate-spin text-purple-500 mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-slate-800 mb-2">
+              {language === 'es' ? 'Preparando nuevas preguntas...' : 'Preparing new questions...'}
+            </h2>
+            <p className="text-slate-600">
+              {language === 'es' ? 'Esto tomará solo un momento' : 'This will only take a moment'}
+            </p>
           </CardContent>
         </Card>
       </div>
