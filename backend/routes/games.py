@@ -785,8 +785,6 @@ async def get_games_analytics(user: dict = Depends(get_current_user)):
         if player_key:
             players_by_game[gid].add(player_key)
     
-    game_map = {g["game_id"]: g for g in games}
-    
     # Build game_stats array with detailed per-game statistics
     for game in games:
         gid = game["game_id"]
