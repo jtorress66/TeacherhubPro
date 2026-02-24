@@ -172,7 +172,7 @@ const Landing = () => {
             </div>
             <div>
               <div className="font-semibold">{t('landingAiAssistant')}</div>
-              <div className="text-xs text-white/70">{language === 'es' ? 'Powered by Anthropic' : 'Powered by Anthropic'}</div>
+              <div className="text-xs text-white/70">{t('landingPoweredBy')}</div>
             </div>
           </div>
           <div className="space-y-2 text-sm">
