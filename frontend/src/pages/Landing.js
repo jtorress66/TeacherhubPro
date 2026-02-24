@@ -1155,7 +1155,7 @@ const Landing = () => {
                   ))}
                 </div>
                 <div className="text-sm text-slate-600">
-                  <span className="font-semibold text-slate-800">500+</span> {language === 'es' ? 'maestros activos' : 'active teachers'}
+                  <span className="font-semibold text-slate-800">500+</span> {t('landingActiveTeachers')}
                 </div>
               </div>
             </div>
