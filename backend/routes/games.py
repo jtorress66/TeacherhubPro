@@ -619,20 +619,102 @@ async def delete_game(game_id: str, user: dict = Depends(get_current_user)):
 @router.post("/{game_id}/score")
 async def submit_game_score(game_id: str, request: GameScoreRequest):
     """Submit a score for a game (public endpoint)"""
+    percentage = round((request.score / request.total_questions) * 100) if request.total_questions > 0 else 0
+    
     score_entry = {
         "score_id": f"score_{uuid.uuid4().hex[:12]}",
         "game_id": game_id,
         "player_name": request.player_name,
+        "student_id": request.student_id,  # Can be None for unlinked plays
         "score": request.score,
         "total_questions": request.total_questions,
-        "percentage": round((request.score / request.total_questions) * 100) if request.total_questions > 0 else 0,
+        "percentage": percentage,
         "time_taken": request.time_taken,
         "submitted_at": datetime.now(timezone.utc).isoformat()
     }
     
     await db.game_scores.insert_one(score_entry)
     
-    return {"message": "Score submitted", "score_id": score_entry["score_id"]}
+    # Check if this game should count as a grade
+    game = await db.educational_games.find_one({"game_id": game_id}, {"_id": 0})
+    grade_created = False
+    
+    if game and game.get("count_as_grade") and request.student_id:
+        grade_method = game.get("grade_method", "best")
+        grade_points = game.get("grade_points", 100)
+        class_id = game.get("class_id")
+        
+        if class_id:
+            # Calculate the grade based on method
+            existing_scores = await db.game_scores.find({
+                "game_id": game_id,
+                "student_id": request.student_id
+            }).to_list(100)
+            
+            if grade_method == "first":
+                # Only count the first attempt
+                if len(existing_scores) == 1:  # This is the first
+                    final_grade = percentage
+                else:
+                    final_grade = None  # Don't update
+            elif grade_method == "best":
+                # Use the best score
+                all_percentages = [s.get("percentage", 0) for s in existing_scores]
+                final_grade = max(all_percentages) if all_percentages else percentage
+            elif grade_method == "average":
+                # Use the average
+                all_percentages = [s.get("percentage", 0) for s in existing_scores]
+                final_grade = round(sum(all_percentages) / len(all_percentages)) if all_percentages else percentage
+            else:
+                final_grade = percentage
+            
+            if final_grade is not None:
+                # Create or update the grade
+                assignment_name = game.get("assignment_name") or f"Game: {game.get('title', 'Educational Game')}"
+                assignment_id = f"game_assign_{game_id}"
+                
+                # Check if assignment exists, if not create it
+                existing_assignment = await db.assignments.find_one({"assignment_id": assignment_id})
+                if not existing_assignment:
+                    await db.assignments.insert_one({
+                        "assignment_id": assignment_id,
+                        "class_id": class_id,
+                        "title": assignment_name,
+                        "description": f"Educational Game - {game.get('game_type', 'quiz').title()}",
+                        "points": grade_points,
+                        "due_date": None,
+                        "created_at": datetime.now(timezone.utc).isoformat(),
+                        "game_id": game_id,
+                        "is_game_assignment": True
+                    })
+                
+                # Create or update the grade
+                grade_value = round((final_grade / 100) * grade_points, 1)
+                await db.grades.update_one(
+                    {
+                        "assignment_id": assignment_id,
+                        "student_id": request.student_id
+                    },
+                    {"$set": {
+                        "grade_id": f"grade_{uuid.uuid4().hex[:12]}",
+                        "assignment_id": assignment_id,
+                        "student_id": request.student_id,
+                        "score": grade_value,
+                        "percentage": final_grade,
+                        "grade_method": grade_method,
+                        "attempts": len(existing_scores),
+                        "updated_at": datetime.now(timezone.utc).isoformat()
+                    }},
+                    upsert=True
+                )
+                grade_created = True
+    
+    return {
+        "message": "Score submitted", 
+        "score_id": score_entry["score_id"],
+        "percentage": percentage,
+        "grade_created": grade_created
+    }
 
 
 @router.get("/{game_id}/leaderboard")
