@@ -194,14 +194,24 @@ const PlayToLearnTeacher = () => {
     quiz: Brain,
     time_attack: Zap,
     matching: Target,
-    flashcard: Sparkles
+    flashcard: Sparkles,
+    true_false: CheckCircle2,
+    fill_blank: Hash,
+    sequence: BarChart3,
+    word_search: Target,
+    memory: Brain
   };
 
   const gameModeNames = {
-    quiz: language === 'es' ? 'Quiz' : 'Quiz',
+    quiz: language === 'es' ? 'Quiz Clásico' : 'Classic Quiz',
     time_attack: language === 'es' ? 'Ataque de Tiempo' : 'Time Attack',
     matching: language === 'es' ? 'Emparejamiento' : 'Matching',
-    flashcard: language === 'es' ? 'Tarjetas Flash' : 'Flashcards'
+    flashcard: language === 'es' ? 'Tarjetas Flash' : 'Flashcards',
+    true_false: language === 'es' ? 'Verdadero/Falso' : 'True/False',
+    fill_blank: language === 'es' ? 'Completar' : 'Fill in Blank',
+    sequence: language === 'es' ? 'Ordenar' : 'Sequence',
+    word_search: language === 'es' ? 'Sopa de Letras' : 'Word Search',
+    memory: language === 'es' ? 'Memoria' : 'Memory Game'
   };
 
   const statusColors = {
