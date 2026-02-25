@@ -339,32 +339,84 @@ const PlayToLearnGame = () => {
   const handleGameComplete = async () => {
     setGameComplete(true);
     
-    try {
-      const res = await axios.post(
-        `${API}/play-to-learn/sessions/${sessionId}/complete?participant_id=${participantId}`
-      );
-      setResults(res.data);
-    } catch (err) {
-      console.error('Error completing session:', err);
-      // Calculate results locally
-      const questions = session?.game_payload?.questions || [];
-      setResults({
-        score,
-        total_questions: questions.length,
-        accuracy_percent: questions.length > 0 ? Math.round((score / questions.length) * 100) : 0,
-        best_streak: bestStreak
-      });
+    // Use local tracking as primary source
+    const questions = session?.game_payload?.questions || [];
+    const cards = session?.game_payload?.cards || [];
+    const totalQ = questions.length || cards.length;
+    
+    // Calculate local results first
+    const localResults = {
+      score: score,
+      total_questions: totalQ,
+      accuracy_percent: totalQ > 0 ? Math.round((score / totalQ) * 100) : 0,
+      best_streak: bestStreak,
+      average_response_time_ms: totalTime > 0 && answers.length > 0 ? Math.round(totalTime / answers.length) : 0,
+      missed_count: totalQ - score
+    };
+    
+    // Try to submit to server
+    if (participantId) {
+      try {
+        const res = await axios.post(
+          `${API}/play-to-learn/sessions/${sessionId}/complete?participant_id=${participantId}`
+        );
+        // Merge server results with local tracking (prefer local for accuracy)
+        setResults({
+          ...res.data,
+          score: localResults.score,
+          accuracy_percent: localResults.accuracy_percent,
+          best_streak: localResults.best_streak
+        });
+      } catch (err) {
+        console.error('Error completing session:', err);
+        setResults(localResults);
+      }
+    } else {
+      setResults(localResults);
     }
   };
 
-  const playAgain = () => {
-    // Navigate to create a new session with same assignment
-    navigate(`/play-to-learn?assignment=${session?.assignment_id}&mode=${session?.game_type}`);
-    toast.info(language === 'es' ? 'Creando nueva sesión...' : 'Creating new session...');
+  const playAgain = async () => {
+    // Create a new session with the same assignment and game type
+    toast.info(language === 'en' ? 'Creating new game...' : 'Creando nuevo juego...');
+    
+    try {
+      const res = await axios.post(`${API}/play-to-learn/sessions`, {
+        assignment_id: session?.assignment_id,
+        game_type: session?.game_type,
+        mode: 'SELF_PACED'
+      }, { withCredentials: true });
+      
+      // Navigate to the new session
+      navigate(`/play-to-learn/game/${res.data.session_id}`);
+      window.location.reload(); // Force reload to reset state
+    } catch (err) {
+      toast.error(language === 'en' ? 'Error creating new game' : 'Error al crear nuevo juego');
+    }
   };
 
   const tryDifferentMode = () => {
-    navigate(`/play-to-learn/select-mode/${session?.assignment_id}`);
+    // Show mode selection instead of navigating away
+    setShowModeSelection(true);
+    setGameComplete(false);
+  };
+
+  const selectNewMode = async (newGameType) => {
+    toast.info(language === 'en' ? 'Creating new game...' : 'Creando nuevo juego...');
+    
+    try {
+      const res = await axios.post(`${API}/play-to-learn/sessions`, {
+        assignment_id: session?.assignment_id,
+        game_type: newGameType,
+        mode: 'SELF_PACED'
+      }, { withCredentials: true });
+      
+      // Navigate to the new session
+      navigate(`/play-to-learn/game/${res.data.session_id}`);
+      window.location.reload(); // Force reload to reset state
+    } catch (err) {
+      toast.error(language === 'en' ? 'Error creating new game' : 'Error al crear nuevo juego');
+    }
   };
 
   // Handle matching game
