@@ -18,7 +18,7 @@ const WS_URL = process.env.REACT_APP_BACKEND_URL?.replace('https://', 'wss://').
 const PlayToLearnHost = () => {
   const { sessionId } = useParams();
   const navigate = useNavigate();
-  const { user, token } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const language = user?.language || 'es';
 
   // Session state
@@ -39,22 +39,24 @@ const PlayToLearnHost = () => {
   const wsRef = useRef(null);
   const [wsConnected, setWsConnected] = useState(false);
 
-  const getAuthHeaders = () => ({ Authorization: `Bearer ${token}` });
-
   useEffect(() => {
-    if (token) {
+    // Only fetch when auth is done loading and user exists
+    if (!authLoading && user) {
       fetchSession();
+    } else if (!authLoading && !user) {
+      setLoading(false);
+      setError('Not authenticated');
     }
     return () => {
       if (wsRef.current) {
         wsRef.current.close();
       }
     };
-  }, [sessionId, token]);
+  }, [sessionId, authLoading, user]);
 
   const fetchSession = async () => {
     try {
-      const res = await axios.get(`${API}/play-to-learn/sessions/${sessionId}`, { headers: getAuthHeaders() });
+      const res = await axios.get(`${API}/play-to-learn/sessions/${sessionId}`, { withCredentials: true });
       setSession(res.data);
       setPlayers(res.data.participants || []);
       setCurrentQuestionIndex(res.data.current_question_index || 0);
