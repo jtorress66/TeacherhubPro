@@ -1,6 +1,48 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-24 - Play Again AI REGENERATION (VERIFIED) 
+
+### Problem:
+Play Again was shuffling existing questions instead of generating NEW ones.
+
+### Solution:
+1. **REMOVED** subscription check from `/api/games/{game_id}/regenerate-questions`
+2. AI regeneration is now **ALWAYS available** - no subscription required
+3. **REMOVED** shuffle fallback from frontend - ONLY AI-generated questions used
+
+### Key Code Changes:
+
+**Backend (`games.py`):**
+- Deleted lines 961-979 (subscription check)
+- AI regeneration always proceeds to `generate_game_with_validation()`
+
+**Frontend (`PlayGame.js`):**
+- Removed `createQuestionVariation()` fallback
+- `resetGame()` now ONLY uses API response with `regenerated: true`
+
+### Test Evidence (All 7 Backend Tests + Frontend E2E PASSED):
+
+**True/False Game - 3 Consecutive Plays:**
+| Round | Question |
+|-------|----------|
+| 1 | "Galileo Galilei was the first astronomer to use a telescope..." |
+| 2 | "Ancient Greek philosopher Aristarchus proposed a heliocentric model..." |
+| 3 | "Ancient Greek philosopher Aristotle provided evidence for Earth's spherical shape..." |
+
+**Quiz Game - 3 Consecutive Plays:**
+| Round | Question |
+|-------|----------|
+| 1 | "María tiene un jardín cuadrado de 4 metros por cada lado..." |
+| 2 | "María tiene un jardín cuadrado donde cada lado mide 4 metros..." |
+| 3 | "María tiene 4 cajas con 4 dulces cada una..." |
+
+**ALL QUESTIONS ARE COMPLETELY NEW - NOT SHUFFLED**
+
+### Test Report: `/app/test_reports/iteration_33.json`
+### Test File: `/app/backend/tests/test_play_again_regeneration.py`
+
+---
 ## Update 2026-02-24 - Play Again GUARANTEED VARIATION (VERIFIED)
 
 ### Problem:
