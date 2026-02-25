@@ -455,10 +455,22 @@ const PlayToLearnTeacher = () => {
                                 {language === 'es' ? 'Ver Lobby' : 'View Lobby'}
                               </Button>
                             )}
+                            {session.status === 'ACTIVE' && (
+                              <Button
+                                onClick={() => closeSession(session.session_id)}
+                                size="sm"
+                                variant="outline"
+                                className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                              >
+                                <StopCircle className="h-4 w-4 mr-1" />
+                                {language === 'es' ? 'Cerrar' : 'Close'}
+                              </Button>
+                            )}
                             <Button
                               onClick={() => copyJoinLink(session.session_id, session.join_pin)}
                               variant="outline"
                               size="sm"
+                              title={language === 'es' ? 'Copiar enlace' : 'Copy link'}
                             >
                               <Copy className="h-4 w-4" />
                             </Button>
@@ -467,10 +479,20 @@ const PlayToLearnTeacher = () => {
                                 onClick={() => navigate(`/teacher/play-to-learn/host/${session.session_id}`)}
                                 variant="outline"
                                 size="sm"
+                                title={language === 'es' ? 'Abrir' : 'Open'}
                               >
                                 <ExternalLink className="h-4 w-4" />
                               </Button>
                             )}
+                            <Button
+                              onClick={() => deleteSession(session.session_id)}
+                              variant="outline"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              title={language === 'es' ? 'Eliminar' : 'Delete'}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         </div>
                       </CardContent>
