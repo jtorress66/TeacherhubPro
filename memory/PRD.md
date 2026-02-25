@@ -962,8 +962,8 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
 5. Implement seating chart drag/drop
 
 ## URLs
-- Frontend: https://classroom-central-4.preview.emergentagent.com
-- Backend API: https://classroom-central-4.preview.emergentagent.com/api
+- Frontend: https://eduplan-central-1.preview.emergentagent.com
+- Backend API: https://eduplan-central-1.preview.emergentagent.com/api
 
 ## Database Collections
 - users, user_sessions, schools
