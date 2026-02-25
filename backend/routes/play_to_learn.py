@@ -179,23 +179,26 @@ REQUIREMENTS:
 - Topic: {topic}
 - Difficulty: {difficulty}
 - Variant Seed: {variant_seed} (use this to create unique variations)
+- Language: {"ENGLISH ONLY" if language != "es" else "SPANISH ONLY"} - This is CRITICAL
 
 CRITICAL: Each question MUST have a unique item_id starting with "item_"
+CRITICAL: ALL text (questions, options, explanations, terms, definitions) MUST be in {"ENGLISH" if language != "es" else "SPANISH"}
 
 Return ONLY a valid JSON array with this structure:
 [
   {{
     "item_id": "item_001",
-    "question": "Question text here",
+    "question": "Question text here IN {language.upper()}",
     "options": ["Option A", "Option B", "Option C", "Option D"],
     "correct_answer": "Option A",
-    "explanation": "Brief explanation",
+    "explanation": "Brief explanation IN {language.upper()}",
     "term": "Key term for flashcards",
     "definition": "Definition for flashcards"
   }}
 ]
 
-Make questions engaging and age-appropriate. DO NOT include any text before or after the JSON."""
+Make questions engaging and age-appropriate. DO NOT include any text before or after the JSON.
+REMINDER: Generate ALL content in {"ENGLISH" if language != "es" else "SPANISH"} language."""
 
     try:
         chat = LlmChat(
@@ -204,8 +207,9 @@ Make questions engaging and age-appropriate. DO NOT include any text before or a
             system_message=system_prompt
         ).with_model("anthropic", "claude-sonnet-4-6")
         
+        lang_reminder = "IN ENGLISH" if language != "es" else "EN ESPAÑOL"
         user_message = UserMessage(
-            text=f"Generate {item_count} unique questions about {topic} for {grade_level} students studying {subject}. Use variant seed: {variant_seed}"
+            text=f"Generate {item_count} unique questions about {topic} for {grade_level} students studying {subject}. Language: {lang_reminder}. Variant seed: {variant_seed}. IMPORTANT: All content must be {lang_reminder}."
         )
         
         response = await chat.send_message(user_message)
