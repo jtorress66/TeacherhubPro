@@ -14,6 +14,14 @@ import uuid
 from datetime import datetime, timezone, timedelta
 import httpx
 import jwt
+
+# Fix bcrypt/passlib compatibility issue before importing passlib
+import bcrypt
+if not hasattr(bcrypt, '__about__'):
+    class About:
+        __version__ = getattr(bcrypt, '__version__', '4.0.1')
+    bcrypt.__about__ = About()
+
 from passlib.context import CryptContext
 import resend
 from emergentintegrations.llm.openai import OpenAITextToSpeech
