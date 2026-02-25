@@ -114,12 +114,28 @@ const PlayToLearnGame = () => {
       setSession(res.data);
       setIsLiveMode(res.data.mode === 'LIVE');
       
+      // Fetch assignment to get language setting
+      try {
+        const assignmentRes = await axios.get(`${API}/play-to-learn/assignments/${res.data.assignment_id}`);
+        setAssignment(assignmentRes.data);
+        // Set language from assignment
+        setLanguage(assignmentRes.data.language || 'en');
+      } catch (assignErr) {
+        console.log('Could not fetch assignment details');
+      }
+      
       if (res.data.mode === 'LIVE' && res.data.status === 'LOBBY') {
         connectWebSocket();
         setLobbyPlayers(res.data.participants || []);
       } else if (res.data.mode === 'SELF_PACED' || res.data.status === 'ACTIVE') {
-        setGameStarted(true);
-        startQuestion();
+        // For self-paced, check if we need to join first
+        if (!participantId && res.data.mode === 'SELF_PACED') {
+          // Auto-join with a generated nickname if none provided
+          await autoJoinSession(res.data);
+        } else {
+          setGameStarted(true);
+          startQuestion();
+        }
       }
       
       setError(null);
@@ -128,6 +144,51 @@ const PlayToLearnGame = () => {
       setError(err.response?.data?.detail || 'Session not found');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const autoJoinSession = async (sessionData) => {
+    // Generate a nickname if not provided
+    const playerNickname = nickname || `Player_${Math.random().toString(36).substring(2, 7)}`;
+    setNickname(playerNickname);
+    
+    try {
+      const res = await axios.post(`${API}/play-to-learn/sessions/${sessionId}/join`, {
+        nickname: playerNickname,
+        pin: sessionData.join_pin
+      });
+      
+      setParticipantId(res.data.participant_id);
+      setGameStarted(true);
+      startQuestion();
+    } catch (err) {
+      console.error('Error auto-joining session:', err);
+      // Show join form if auto-join fails
+      setNeedsToJoin(true);
+    }
+  };
+
+  const handleManualJoin = async () => {
+    if (!nickname.trim()) {
+      toast.error(language === 'en' ? 'Enter your name' : 'Ingresa tu nombre');
+      return;
+    }
+    
+    setJoining(true);
+    try {
+      const res = await axios.post(`${API}/play-to-learn/sessions/${sessionId}/join`, {
+        nickname: nickname.trim(),
+        pin: session?.join_pin
+      });
+      
+      setParticipantId(res.data.participant_id);
+      setNeedsToJoin(false);
+      setGameStarted(true);
+      startQuestion();
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Error joining');
+    } finally {
+      setJoining(false);
     }
   };
 
