@@ -20,8 +20,8 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const PlayToLearnTeacher = () => {
   const navigate = useNavigate();
-  const { user, token } = useAuth();
-  const [language, setLanguage] = useState(user?.language || 'es');
+  const { user, loading: authLoading } = useAuth();
+  const [language, setLanguage] = useState('es');
   
   // Assignments
   const [assignments, setAssignments] = useState([]);
@@ -51,18 +51,28 @@ const PlayToLearnTeacher = () => {
   const [selectedMode, setSelectedMode] = useState('LIVE');
   const [creatingSession, setCreatingSession] = useState(false);
 
-  const getAuthHeaders = () => ({ Authorization: `Bearer ${token}` });
+  // Update language when user loads
+  useEffect(() => {
+    if (user?.language) {
+      setLanguage(user.language);
+    }
+  }, [user]);
 
   useEffect(() => {
-    if (token) {
+    // Only fetch when auth is done loading and user exists
+    if (!authLoading && user) {
       fetchAssignments();
       fetchSessions();
+    } else if (!authLoading && !user) {
+      // Not logged in - stop loading
+      setLoadingAssignments(false);
+      setLoadingSessions(false);
     }
-  }, [token]);
+  }, [authLoading, user]);
 
   const fetchAssignments = async () => {
     try {
-      const res = await axios.get(`${API}/play-to-learn/assignments`, { headers: getAuthHeaders() });
+      const res = await axios.get(`${API}/play-to-learn/assignments`, { withCredentials: true });
       setAssignments(res.data.assignments || []);
     } catch (error) {
       console.error('Error fetching assignments:', error);
@@ -73,7 +83,7 @@ const PlayToLearnTeacher = () => {
 
   const fetchSessions = async () => {
     try {
-      const res = await axios.get(`${API}/play-to-learn/teacher/sessions`, { headers: getAuthHeaders() });
+      const res = await axios.get(`${API}/play-to-learn/teacher/sessions`, { withCredentials: true });
       setSessions(res.data.sessions || []);
     } catch (error) {
       console.error('Error fetching sessions:', error);
