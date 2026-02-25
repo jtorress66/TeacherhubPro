@@ -419,7 +419,7 @@ async def create_practice_assignment(
     )
 
 @router.get("/assignments")
-async def get_practice_assignments(request: Any = None):
+async def get_practice_assignments(request: Request):
     """Get all practice assignments for the current teacher"""
     user = await get_current_user(request)
     
