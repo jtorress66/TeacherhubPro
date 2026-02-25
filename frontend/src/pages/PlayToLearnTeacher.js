@@ -190,6 +190,34 @@ const PlayToLearnTeacher = () => {
     toast.success(language === 'es' ? 'Enlace copiado' : 'Link copied');
   };
 
+  const deleteSession = async (sessionId) => {
+    if (!window.confirm(language === 'es' ? '¿Eliminar esta sesión?' : 'Delete this session?')) {
+      return;
+    }
+
+    try {
+      await axios.delete(`${API}/play-to-learn/sessions/${sessionId}`, { withCredentials: true });
+      toast.success(language === 'es' ? 'Sesión eliminada' : 'Session deleted');
+      fetchSessions();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error deleting session');
+    }
+  };
+
+  const closeSession = async (sessionId) => {
+    if (!window.confirm(language === 'es' ? '¿Cerrar esta sesión?' : 'Close this session?')) {
+      return;
+    }
+
+    try {
+      await axios.post(`${API}/play-to-learn/sessions/${sessionId}/close`, {}, { withCredentials: true });
+      toast.success(language === 'es' ? 'Sesión cerrada' : 'Session closed');
+      fetchSessions();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error closing session');
+    }
+  };
+
   const gameModeIcons = {
     quiz: Brain,
     time_attack: Zap,
