@@ -477,10 +477,93 @@ const PlayToLearnGame = () => {
         <Card className="max-w-md bg-white/10 backdrop-blur-xl border-white/20 text-white">
           <CardContent className="p-8 text-center">
             <XCircle className="h-16 w-16 mx-auto text-red-400 mb-4" />
-            <h2 className="text-xl font-bold mb-2">{language === 'es' ? 'Error' : 'Error'}</h2>
+            <h2 className="text-xl font-bold mb-2">{language === 'en' ? 'Error' : 'Error'}</h2>
             <p className="text-white/70">{error}</p>
             <Button onClick={() => navigate('/play-to-learn')} className="mt-4">
-              {language === 'es' ? 'Volver al Inicio' : 'Back to Home'}
+              {language === 'en' ? 'Back to Home' : 'Volver al Inicio'}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Need to join (enter nickname)
+  if (needsToJoin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full bg-white/10 backdrop-blur-xl border-white/20 text-white">
+          <CardHeader className="text-center">
+            <Gamepad2 className="h-12 w-12 mx-auto text-yellow-400 mb-2" />
+            <CardTitle>{language === 'en' ? 'Enter Your Name' : 'Ingresa tu Nombre'}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder={language === 'en' ? 'Your nickname...' : 'Tu nombre...'}
+              className="bg-white/10 border-white/30 text-white placeholder:text-white/50"
+              onKeyPress={(e) => e.key === 'Enter' && handleManualJoin()}
+            />
+            <Button
+              onClick={handleManualJoin}
+              disabled={joining || !nickname.trim()}
+              className="w-full bg-gradient-to-r from-green-500 to-emerald-600"
+            >
+              {joining ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Play className="h-4 w-4 mr-2" />}
+              {language === 'en' ? 'Start Playing' : 'Comenzar a Jugar'}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Mode selection screen
+  if (showModeSelection) {
+    const gameModes = [
+      { id: 'quiz', icon: Brain, name: language === 'en' ? 'Classic Quiz' : 'Quiz Clásico', color: 'from-purple-500 to-indigo-600' },
+      { id: 'time_attack', icon: Zap, name: language === 'en' ? 'Time Attack' : 'Ataque de Tiempo', color: 'from-orange-500 to-red-600' },
+      { id: 'matching', icon: Target, name: language === 'en' ? 'Matching' : 'Emparejamiento', color: 'from-green-500 to-teal-600' },
+      { id: 'flashcard', icon: Sparkles, name: language === 'en' ? 'Flashcards' : 'Tarjetas Flash', color: 'from-pink-500 to-rose-600' }
+    ];
+    
+    // Filter to allowed modes if available
+    const allowedModes = assignment?.allowed_game_types || ['quiz', 'time_attack', 'matching', 'flashcard'];
+    const availableModes = gameModes.filter(m => allowedModes.includes(m.id));
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full bg-white/10 backdrop-blur-xl border-white/20 text-white">
+          <CardHeader className="text-center">
+            <Sparkles className="h-12 w-12 mx-auto text-yellow-400 mb-2" />
+            <CardTitle>{language === 'en' ? 'Choose a Game Mode' : 'Elige un Modo de Juego'}</CardTitle>
+            <p className="text-white/70 text-sm">{assignment?.topic || session?.game_type}</p>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {availableModes.map((mode) => (
+              <Button
+                key={mode.id}
+                onClick={() => selectNewMode(mode.id)}
+                className={`w-full bg-gradient-to-r ${mode.color} py-6 justify-start`}
+                disabled={mode.id === session?.game_type}
+              >
+                <mode.icon className="h-6 w-6 mr-3" />
+                <span className="text-lg">{mode.name}</span>
+                {mode.id === session?.game_type && (
+                  <Badge className="ml-auto bg-white/20">{language === 'en' ? 'Current' : 'Actual'}</Badge>
+                )}
+              </Button>
+            ))}
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setShowModeSelection(false);
+                setGameComplete(true);
+              }}
+              className="w-full text-white/70 hover:text-white hover:bg-white/10 mt-4"
+            >
+              {language === 'en' ? 'Back to Results' : 'Volver a Resultados'}
             </Button>
           </CardContent>
         </Card>
