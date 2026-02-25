@@ -3,7 +3,7 @@ Play to Learn - Kahoot-Style Live & Self-Paced Game Experience
 Completely separate module from Educational Games
 """
 
-from fastapi import APIRouter, HTTPException, Depends, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, Depends, WebSocket, WebSocketDisconnect, Request
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
