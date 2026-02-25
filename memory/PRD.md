@@ -1,6 +1,30 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-25 - Play Again AI Regeneration DEPLOYED TO PRODUCTION ✅
+
+### Issue Resolved:
+Play Again was showing the same questions instead of generating new ones.
+
+### Root Cause:
+The subscription check was blocking AI regeneration for games, causing fallback to shuffled (same) questions.
+
+### Solution Deployed:
+1. **Removed subscription check** from `/api/games/{game_id}/regenerate-questions`
+2. AI regeneration is now **ALWAYS available** for all games
+3. **Removed shuffle fallback** - only AI-generated questions are used
+4. System derives `original_content` from existing questions if not present
+
+### Production Verification:
+- User confirmed working in production environment (Classroom-Central-4)
+- Games like "Verb Tense Detective: True or False" now generate NEW questions on Play Again
+- All game types (True/False, Quiz, Word Search, Matching, etc.) now regenerate correctly
+
+### Technical Changes:
+- **Backend** (`/app/backend/routes/games.py`): Removed lines 961-979 (subscription check)
+- **Frontend** (`/app/frontend/src/pages/PlayGame.js`): Removed shuffle fallback in `resetGame()`
+
+---
 ## Update 2026-02-24 - Play Again AI REGENERATION (VERIFIED) 
 
 ### Problem:
