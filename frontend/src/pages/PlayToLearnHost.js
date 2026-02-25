@@ -121,7 +121,7 @@ const PlayToLearnHost = () => {
 
   const startGame = async () => {
     try {
-      await axios.post(`${API}/play-to-learn/sessions/${sessionId}/start`, {}, { headers: authHeaders });
+      await axios.post(`${API}/play-to-learn/sessions/${sessionId}/start`, {}, { headers: getAuthHeaders() });
       
       // Send via WebSocket
       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -137,7 +137,7 @@ const PlayToLearnHost = () => {
 
   const nextQuestion = async () => {
     try {
-      const res = await axios.post(`${API}/play-to-learn/sessions/${sessionId}/next-question`, {}, { headers: authHeaders });
+      const res = await axios.post(`${API}/play-to-learn/sessions/${sessionId}/next-question`, {}, { headers: getAuthHeaders() });
       
       // Send via WebSocket
       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
