@@ -258,10 +258,11 @@ const PlayToLearnLanding = () => {
               <Input
                 value={joinPin}
                 onChange={(e) => setJoinPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                placeholder="000000"
-                className="text-center text-xl tracking-widest font-mono bg-white/10 border-white/30 text-white placeholder:text-white/50"
+                placeholder="123456"
+                className="text-center text-xl tracking-widest font-mono bg-white/10 border-white/30 text-white placeholder:text-white/30"
                 maxLength={6}
                 onKeyPress={(e) => e.key === 'Enter' && handleJoinByPin()}
+                data-testid="pin-input"
               />
               <Button
                 onClick={handleJoinByPin}
