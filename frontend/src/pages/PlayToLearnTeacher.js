@@ -683,6 +683,90 @@ const PlayToLearnTeacher = () => {
             </Card>
           </div>
         )}
+
+        {/* Share Link Dialog */}
+        {showShareDialog && shareInfo && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <Card className="w-full max-w-lg">
+              <CardHeader className="text-center border-b">
+                <div className="w-16 h-16 mx-auto rounded-full bg-green-100 flex items-center justify-center mb-3">
+                  <CheckCircle2 className="h-8 w-8 text-green-600" />
+                </div>
+                <CardTitle className="text-xl">
+                  {language === 'es' ? '¡Juego Listo para Compartir!' : 'Game Ready to Share!'}
+                </CardTitle>
+                <p className="text-slate-500">{shareInfo.topic}</p>
+              </CardHeader>
+              <CardContent className="p-6 space-y-4">
+                {/* Game Link */}
+                <div>
+                  <label className="text-sm font-medium text-slate-700 mb-2 block">
+                    {language === 'es' ? 'Enlace del Juego' : 'Game Link'}
+                  </label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={shareInfo.joinUrl}
+                      readOnly
+                      className="flex-1 bg-slate-50"
+                    />
+                    <Button
+                      onClick={() => {
+                        navigator.clipboard.writeText(shareInfo.joinUrl);
+                        toast.success(language === 'es' ? 'Enlace copiado' : 'Link copied');
+                      }}
+                      variant="outline"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* PIN if available */}
+                {shareInfo.pin && (
+                  <div>
+                    <label className="text-sm font-medium text-slate-700 mb-2 block">
+                      PIN
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-slate-100 rounded-lg py-3 px-4 text-center font-mono text-2xl tracking-widest">
+                        {shareInfo.pin}
+                      </div>
+                      <Button
+                        onClick={() => {
+                          navigator.clipboard.writeText(shareInfo.pin);
+                          toast.success('PIN copied');
+                        }}
+                        variant="outline"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Quick Actions */}
+                <div className="border-t pt-4 mt-4 flex flex-col gap-2">
+                  <Button
+                    onClick={() => {
+                      window.open(shareInfo.joinUrl, '_blank');
+                    }}
+                    className="w-full bg-purple-600 hover:bg-purple-700"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    {language === 'es' ? 'Abrir Juego' : 'Open Game'}
+                  </Button>
+                  <Button
+                    onClick={() => setShowShareDialog(false)}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    {language === 'es' ? 'Cerrar' : 'Close'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </Layout>
   );
