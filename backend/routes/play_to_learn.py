@@ -825,7 +825,8 @@ async def complete_session(session_id: str, participant_id: str):
 @router.get("/insights/{assignment_id}")
 async def get_practice_insights(assignment_id: str, request: Any = None):
     """Get practice insights for an assignment (no grades)"""
-    user = await get_current_user(request)
+    # Verify user is authenticated (authorization check)
+    await get_current_user(request)
     
     # Get all sessions for this assignment
     sessions = await db.practice_sessions.find(
