@@ -961,7 +961,7 @@ const PlayGame = () => {
         {/* Game Card */}
         <Card className="border-2 border-purple-200">
           <CardContent className="p-8">
-            {gameData?.game_type !== 'matching' && (
+            {gameData?.game_type !== 'matching' && gameData?.game_type !== 'word_search' && (
               <div className="text-center mb-8">
                 <Badge className="mb-4 bg-purple-100 text-purple-700">
                   {language === 'es' ? 'Pregunta' : 'Question'} {gameProgress.current + 1}
