@@ -131,6 +131,15 @@ const PlayGame = () => {
     }
   }, [currentQuestions, sessionId]); // Re-run when session changes
 
+  // Initialize word search grid when questions change
+  useEffect(() => {
+    if (gameData?.game_type === 'word_search' && currentQuestions.length > 0) {
+      const words = currentQuestions.map(q => (q.word || q.question || q.term || '').toUpperCase());
+      setWordSearchGrid(generateWordSearchGrid(words));
+      setWordSearchFound([]);
+    }
+  }, [currentQuestions, gameData?.game_type, sessionId]); // Re-run when session changes
+
   // Check for match
   useEffect(() => {
     if (matchingSelected.left && matchingSelected.right && currentQuestions.length > 0) {
