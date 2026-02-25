@@ -39,20 +39,22 @@ const PlayToLearnHost = () => {
   const wsRef = useRef(null);
   const [wsConnected, setWsConnected] = useState(false);
 
-  const authHeaders = { Authorization: `Bearer ${token}` };
+  const getAuthHeaders = () => ({ Authorization: `Bearer ${token}` });
 
   useEffect(() => {
-    fetchSession();
+    if (token) {
+      fetchSession();
+    }
     return () => {
       if (wsRef.current) {
         wsRef.current.close();
       }
     };
-  }, [sessionId]);
+  }, [sessionId, token]);
 
   const fetchSession = async () => {
     try {
-      const res = await axios.get(`${API}/play-to-learn/sessions/${sessionId}`, { headers: authHeaders });
+      const res = await axios.get(`${API}/play-to-learn/sessions/${sessionId}`, { headers: getAuthHeaders() });
       setSession(res.data);
       setPlayers(res.data.participants || []);
       setCurrentQuestionIndex(res.data.current_question_index || 0);
