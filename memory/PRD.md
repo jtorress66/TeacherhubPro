@@ -1,6 +1,39 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-25 - Word Search & Play Again Fixes - VERIFIED ✅
+
+### Bugs Fixed:
+
+**1. Word Search "Tipo de juego no soportado" Error (FIXED)**
+- **Issue:** Student share links for Word Search games showed "Game type not supported" error
+- **Root Cause:** `PlayGame.js` didn't have Word Search game type implementation
+- **Solution:** Added complete Word Search rendering in `PlayGame.js` (lines 847-926)
+- **Features Added:**
+  - 12x12 grid generation with hidden words
+  - Word list display
+  - Cell selection/deselection
+  - "Terminé" (I'm Done) and "Reiniciar Selección" (Reset Selection) buttons
+  - Score calculation based on selected cells vs expected word letters
+
+**2. Play Again in Teacher's Game Library (VERIFIED WORKING)**
+- **Issue:** Teachers playing games from `/games` page weren't getting new questions on Play Again
+- **Status:** Previous agent already fixed this in `GamesCreator.js` (lines 832-922)
+- **Verification:** Testing agent confirmed:
+  - Console logs show: `[GamesCreator] NEW questions received: 2`
+  - API returns `regenerated: true` with new questions
+  - UI displays loading spinner during regeneration
+
+### Test Results (iteration_35.json):
+- **Backend:** 100% - 9/9 tests passed
+- **Frontend:** 100% - Both bugs verified fixed via Playwright
+- **Test Games Created:** test_word_search_1771598782, test_progress_game_1771598787
+
+### Code Changes:
+- `/app/frontend/src/pages/PlayGame.js` - Added `word_search` game type support
+- `GamesCreator.js` - Already had the fix, verified working
+
+---
 ## Update 2026-02-25 - Play Again Regeneration - PRODUCTION FIX
 
 ### Root Cause Found:
