@@ -205,8 +205,18 @@ const PlayToLearnHost = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-slate-900 p-4">
         <div className="max-w-4xl mx-auto space-y-6">
+          {/* Back Button */}
+          <Button
+            onClick={() => navigate('/teacher/play-to-learn')}
+            variant="ghost"
+            className="text-white/70 hover:text-white hover:bg-white/10"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            {language === 'es' ? 'Volver' : 'Back'}
+          </Button>
+
           {/* Header */}
-          <div className="text-center py-8">
+          <div className="text-center py-4">
             <h1 className="text-4xl font-bold text-white mb-2">
               {language === 'es' ? 'Sala de Espera' : 'Waiting Room'}
             </h1>
