@@ -51,16 +51,18 @@ const PlayToLearnTeacher = () => {
   const [selectedMode, setSelectedMode] = useState('LIVE');
   const [creatingSession, setCreatingSession] = useState(false);
 
-  const authHeaders = { Authorization: `Bearer ${token}` };
+  const getAuthHeaders = () => ({ Authorization: `Bearer ${token}` });
 
   useEffect(() => {
-    fetchAssignments();
-    fetchSessions();
-  }, []);
+    if (token) {
+      fetchAssignments();
+      fetchSessions();
+    }
+  }, [token]);
 
   const fetchAssignments = async () => {
     try {
-      const res = await axios.get(`${API}/play-to-learn/assignments`, { headers: authHeaders });
+      const res = await axios.get(`${API}/play-to-learn/assignments`, { headers: getAuthHeaders() });
       setAssignments(res.data.assignments || []);
     } catch (error) {
       console.error('Error fetching assignments:', error);
@@ -71,7 +73,7 @@ const PlayToLearnTeacher = () => {
 
   const fetchSessions = async () => {
     try {
-      const res = await axios.get(`${API}/play-to-learn/teacher/sessions`, { headers: authHeaders });
+      const res = await axios.get(`${API}/play-to-learn/teacher/sessions`, { headers: getAuthHeaders() });
       setSessions(res.data.sessions || []);
     } catch (error) {
       console.error('Error fetching sessions:', error);
@@ -88,7 +90,7 @@ const PlayToLearnTeacher = () => {
 
     setCreating(true);
     try {
-      await axios.post(`${API}/play-to-learn/assignments`, newAssignment, { headers: authHeaders });
+      await axios.post(`${API}/play-to-learn/assignments`, newAssignment, { headers: getAuthHeaders() });
       toast.success(language === 'es' ? '¡Asignación creada!' : 'Assignment created!');
       setShowCreateForm(false);
       setNewAssignment({
