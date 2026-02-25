@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/games", tags=["games"])
 
 # Configuration
-MAX_GENERATION_ATTEMPTS = 3
+MAX_GENERATION_ATTEMPTS = 5  # Increased from 3 for better reliability
 db = None
 _get_current_user_func = None
 EMERGENT_LLM_KEY = None
