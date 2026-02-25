@@ -26,7 +26,8 @@ const PlayToLearnLanding = () => {
   // Check if coming from a PIN link
   useEffect(() => {
     const pin = searchParams.get('pin');
-    if (pin) {
+    // Only set PIN if it's a valid 6-digit number (not "undefined" or null)
+    if (pin && pin !== 'undefined' && pin !== 'null' && /^\d{6}$/.test(pin)) {
       setJoinPin(pin);
       setShowJoinForm(true);
       lookupPin(pin);
