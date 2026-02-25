@@ -110,6 +110,17 @@ def get_strict_system_prompt(language: str) -> str:
 
 {lang_instruction}
 
+=== CRITICAL BANNED CONTENT - WILL CAUSE FAILURE ===
+NEVER include ANY of these in your output (automatic rejection):
+- The word "TODO" anywhere
+- The word "FIXME" anywhere
+- The phrase "coming soon"
+- The phrase "to be added"
+- The phrase "placeholder"
+- Empty strings ""
+- The word "example" as actual content
+- Any incomplete or template text
+
 === ABSOLUTE REQUIREMENTS - ZERO TOLERANCE ===
 
 You MUST output ONLY valid JSON. No explanations, no markdown, no extra text.
@@ -117,8 +128,8 @@ You MUST output ONLY valid JSON. No explanations, no markdown, no extra text.
 === FUNCTIONAL-ONLY CONTRACT ===
 Your output MUST satisfy ALL of these requirements with ZERO exceptions:
 
-1. COMPLETE CODE: No placeholders, TODOs, FIXMEs, "coming soon", or incomplete text
-2. VALID DATA: Every field must be populated with real, educational content
+1. COMPLETE CONTENT: Every field must have REAL educational content - NO placeholders
+2. VALID DATA: Every field must be populated with actual, educational content
 3. EXACT MATCHING: For quiz/true_false, correct_answer MUST be character-for-character identical to one option
 4. SAFE ASSETS: No external URLs, images, audio, or resources - content must be text-only
 5. IMMEDIATELY PLAYABLE: Game must work with zero additional setup
@@ -135,7 +146,7 @@ Before outputting, verify:
 [ ] Exact number of questions/items as requested
 [ ] Every question has all required fields populated
 [ ] correct_answer values are valid and verifiable
-[ ] No empty strings, nulls, or placeholder text
+[ ] No empty strings, nulls, or placeholder text like TODO
 [ ] Content is age-appropriate for the grade level
 [ ] Subject matter matches the requested subject
 
