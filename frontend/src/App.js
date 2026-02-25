@@ -260,6 +260,16 @@ const AppRouter = () => {
       <Route path="/student-learning/:token" element={<StudentLearning />} />
       {/* Play Game (Public - no auth required) */}
       <Route path="/play-game/:gameId" element={<PlayGame />} />
+      {/* Play to Learn - Kahoot-style (Public student routes) */}
+      <Route path="/play-to-learn" element={<PlayToLearnLanding />} />
+      <Route path="/play-to-learn/game/:sessionId" element={<PlayToLearnGame />} />
+      {/* Play to Learn - Teacher routes (Protected) */}
+      <Route path="/teacher/play-to-learn" element={
+        <ProtectedRoute><PlayToLearnTeacher /></ProtectedRoute>
+      } />
+      <Route path="/teacher/play-to-learn/host/:sessionId" element={
+        <ProtectedRoute><PlayToLearnHost /></ProtectedRoute>
+      } />
       {/* Setup Admin (Public - one-time use) */}
       <Route path="/setup-admin" element={<SetupAdmin />} />
       {/* Public SEO Marketing Pages */}
