@@ -29,7 +29,8 @@ import {
   GraduationCap,
   Brain,
   TrendingUp,
-  Gamepad2
+  Gamepad2,
+  Rocket
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
