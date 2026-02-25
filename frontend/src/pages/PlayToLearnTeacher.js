@@ -50,6 +50,10 @@ const PlayToLearnTeacher = () => {
   const [selectedGameType, setSelectedGameType] = useState('quiz');
   const [selectedMode, setSelectedMode] = useState('LIVE');
   const [creatingSession, setCreatingSession] = useState(false);
+  
+  // Share link dialog
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [shareInfo, setShareInfo] = useState(null);
 
   // Update language when user loads
   useEffect(() => {
