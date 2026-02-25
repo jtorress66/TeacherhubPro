@@ -419,6 +419,15 @@ Output ONLY the JSON. No explanations."""
                     lines = lines[:-1]
                 response_text = "\n".join(lines)
             
+            # Pre-validation: Check for banned tokens BEFORE parsing
+            # This allows us to reject and retry immediately
+            banned_check = response_text.upper()
+            if "TODO" in banned_check or "FIXME" in banned_check or "PLACEHOLDER" in banned_check:
+                last_error = "AI response contains banned tokens (TODO/FIXME/PLACEHOLDER)"
+                logger.warning(f"Attempt {attempt + 1}: {last_error}")
+                user_prompt += "\n\n=== CRITICAL ERROR ===\nYour response contained the word 'TODO' or 'PLACEHOLDER' which is FORBIDDEN. You MUST generate REAL content. Do NOT use placeholders."
+                continue
+            
             # Parse JSON
             game_data = json.loads(response_text)
             
