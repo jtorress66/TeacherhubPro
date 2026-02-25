@@ -100,7 +100,7 @@ const PlayToLearnTeacher = () => {
 
     setCreating(true);
     try {
-      await axios.post(`${API}/play-to-learn/assignments`, newAssignment, { headers: getAuthHeaders() });
+      await axios.post(`${API}/play-to-learn/assignments`, newAssignment, { withCredentials: true });
       toast.success(language === 'es' ? '¡Asignación creada!' : 'Assignment created!');
       setShowCreateForm(false);
       setNewAssignment({
@@ -127,7 +127,7 @@ const PlayToLearnTeacher = () => {
     }
 
     try {
-      await axios.delete(`${API}/play-to-learn/assignments/${assignmentId}`, { headers: getAuthHeaders() });
+      await axios.delete(`${API}/play-to-learn/assignments/${assignmentId}`, { withCredentials: true });
       toast.success(language === 'es' ? 'Asignación eliminada' : 'Assignment deleted');
       fetchAssignments();
     } catch (error) {
@@ -142,7 +142,7 @@ const PlayToLearnTeacher = () => {
         assignment_id: assignment.assignment_id,
         game_type: selectedGameType,
         mode: selectedMode
-      }, { headers: getAuthHeaders() });
+      }, { withCredentials: true });
 
       toast.success(language === 'es' ? '¡Sesión creada!' : 'Session created!');
       
