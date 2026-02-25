@@ -459,7 +459,7 @@ async def delete_practice_assignment(assignment_id: str, request: Request):
 # ---------- SESSION ENDPOINTS ----------
 
 @router.post("/sessions")
-async def create_practice_session(session: SessionCreate, request: Any = None):
+async def create_practice_session(session: SessionCreate, request: Request):
     """Create a new practice session (generates unique questions)"""
     user = await get_current_user(request)
     
