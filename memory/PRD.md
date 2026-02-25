@@ -1,6 +1,78 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-25 - Play to Learn (Kahoot-Style) Module - NEW FEATURE ✅
+
+### Feature Summary:
+Built a comprehensive Kahoot-style live and self-paced game experience called "Play to Learn" for studying and engagement (NOT grading).
+
+### Architecture Implemented (3-Layer System):
+
+**A) Assignment Layer (PracticeAssignment)**
+- Defines WHAT students practice (subject, grade, topic, difficulty, item count)
+- Allows configuring multiple allowed game types per assignment
+- Supports English/Spanish languages
+
+**B) Session Layer (PracticeSession)**
+- Defines HOW students practice (LIVE or SELF_PACED mode)
+- LIVE mode: PIN-based joining, teacher controls pace, real-time WebSocket sync
+- SELF_PACED: Immediate start, students play at their own pace
+- Each session gets unique session_id, question_set_id, variant_seed
+
+**C) Question Generation Layer**
+- AI-powered generation using Claude Sonnet 4.6 via Emergent LLM key
+- `generateBaseItems()` creates questions aligned to assignment scope
+- `transformItemsToGameMode()` converts base items to game-specific format
+- Anti-repeat enforcement: Every session gets fresh questions
+
+### Game Modes Implemented:
+1. **Quiz (Classic MCQ)** - Multiple choice with 30s timer
+2. **Time Attack** - Typed answers with 15s timer
+3. **Matching** - Connect terms with definitions
+4. **Flashcard** - Interactive study cards with flip animation
+
+### Real-Time Features (WebSocket):
+- Player join/leave notifications
+- Synchronized question progression in LIVE mode
+- Live answer submission tracking
+- Real-time leaderboard updates
+
+### Test Results (iteration_36.json):
+- **Backend:** 100% - 20/20 tests passed
+- **Frontend:** 100% - All pages functional
+- **Anti-repeat:** VERIFIED - Each session generates unique IDs
+- **AI Integration:** WORKING - Real AI generation (not mocked)
+
+### New Files Created:
+- `/app/backend/routes/play_to_learn.py` - All API endpoints
+- `/app/frontend/src/pages/PlayToLearnLanding.js` - Student landing page
+- `/app/frontend/src/pages/PlayToLearnGame.js` - Game playing UI
+- `/app/frontend/src/pages/PlayToLearnTeacher.js` - Teacher dashboard
+- `/app/frontend/src/pages/PlayToLearnHost.js` - Live game hosting
+- `/app/backend/tests/test_play_to_learn.py` - Backend tests
+
+### Routes Added:
+- `/play-to-learn` - Student landing page (public)
+- `/play-to-learn/game/:sessionId` - Game screen (public)
+- `/teacher/play-to-learn` - Teacher dashboard (protected)
+- `/teacher/play-to-learn/host/:sessionId` - Live hosting (protected)
+
+### API Endpoints:
+- `POST /api/play-to-learn/assignments` - Create practice assignment
+- `GET /api/play-to-learn/assignments` - List teacher's assignments
+- `DELETE /api/play-to-learn/assignments/{id}` - Delete assignment
+- `POST /api/play-to-learn/sessions` - Create session (generates unique questions)
+- `GET /api/play-to-learn/sessions/{id}` - Get session details
+- `GET /api/play-to-learn/join/{pin}` - Join by PIN
+- `POST /api/play-to-learn/sessions/{id}/join` - Join as participant
+- `POST /api/play-to-learn/sessions/{id}/start` - Start LIVE session
+- `POST /api/play-to-learn/sessions/{id}/next-question` - Advance question
+- `POST /api/play-to-learn/sessions/{id}/submit-answer` - Submit answer
+- `POST /api/play-to-learn/sessions/{id}/complete` - Mark complete
+- `GET /api/play-to-learn/insights/{assignment_id}` - Practice insights
+- `WS /api/play-to-learn/ws/{sessionId}` - WebSocket endpoint
+
+---
 ## Update 2026-02-25 - Word Search & Play Again Fixes - VERIFIED ✅
 
 ### Bugs Fixed:
