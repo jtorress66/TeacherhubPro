@@ -30,6 +30,61 @@ const hashQuestions = (questions) => {
   return hash.toString(16);
 };
 
+// Generate word search grid
+const generateWordSearchGrid = (words) => {
+  const gridSize = 12;
+  const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
+  const directions = [[0,1], [1,0], [1,1], [0,-1], [-1,0], [-1,-1], [1,-1], [-1,1]];
+  
+  // Place words
+  words.forEach(word => {
+    if (!word) return;
+    const wordArr = word.split('');
+    let placed = false;
+    let attempts = 0;
+    
+    while (!placed && attempts < 100) {
+      const dir = directions[Math.floor(Math.random() * directions.length)];
+      const startRow = Math.floor(Math.random() * gridSize);
+      const startCol = Math.floor(Math.random() * gridSize);
+      
+      // Check if word fits
+      let canPlace = true;
+      for (let i = 0; i < wordArr.length; i++) {
+        const newRow = startRow + (dir[0] * i);
+        const newCol = startCol + (dir[1] * i);
+        if (newRow < 0 || newRow >= gridSize || newCol < 0 || newCol >= gridSize) {
+          canPlace = false;
+          break;
+        }
+        if (grid[newRow][newCol] !== '' && grid[newRow][newCol] !== wordArr[i]) {
+          canPlace = false;
+          break;
+        }
+      }
+      
+      if (canPlace) {
+        for (let i = 0; i < wordArr.length; i++) {
+          grid[startRow + (dir[0] * i)][startCol + (dir[1] * i)] = wordArr[i];
+        }
+        placed = true;
+      }
+      attempts++;
+    }
+  });
+  
+  // Fill empty cells with random letters
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for (let r = 0; r < gridSize; r++) {
+    for (let c = 0; c < gridSize; c++) {
+      if (grid[r][c] === '') {
+        grid[r][c] = alphabet[Math.floor(Math.random() * alphabet.length)];
+      }
+    }
+  }
+  return grid;
+};
+
 const PlayGame = () => {
   const { gameId } = useParams();
   
