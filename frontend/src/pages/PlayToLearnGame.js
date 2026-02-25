@@ -525,11 +525,15 @@ const PlayToLearnGame = () => {
       { id: 'quiz', icon: Brain, name: language === 'en' ? 'Classic Quiz' : 'Quiz Clásico', color: 'from-purple-500 to-indigo-600' },
       { id: 'time_attack', icon: Zap, name: language === 'en' ? 'Time Attack' : 'Ataque de Tiempo', color: 'from-orange-500 to-red-600' },
       { id: 'matching', icon: Target, name: language === 'en' ? 'Matching' : 'Emparejamiento', color: 'from-green-500 to-teal-600' },
-      { id: 'flashcard', icon: Sparkles, name: language === 'en' ? 'Flashcards' : 'Tarjetas Flash', color: 'from-pink-500 to-rose-600' }
+      { id: 'flashcard', icon: Sparkles, name: language === 'en' ? 'Flashcards' : 'Tarjetas Flash', color: 'from-pink-500 to-rose-600' },
+      { id: 'true_false', icon: CheckCircle2, name: language === 'en' ? 'True/False' : 'Verdadero/Falso', color: 'from-blue-500 to-cyan-600' },
+      { id: 'fill_blank', icon: Target, name: language === 'en' ? 'Fill in Blank' : 'Completar', color: 'from-amber-500 to-yellow-600' },
+      { id: 'word_search', icon: Target, name: language === 'en' ? 'Word Search' : 'Sopa de Letras', color: 'from-emerald-500 to-green-600' },
+      { id: 'memory', icon: Brain, name: language === 'en' ? 'Memory Game' : 'Juego de Memoria', color: 'from-violet-500 to-purple-600' }
     ];
     
     // Filter to allowed modes if available
-    const allowedModes = assignment?.allowed_game_types || ['quiz', 'time_attack', 'matching', 'flashcard'];
+    const allowedModes = assignment?.allowed_game_types || ['quiz', 'time_attack', 'matching', 'flashcard', 'true_false', 'fill_blank', 'word_search', 'memory'];
     const availableModes = gameModes.filter(m => allowedModes.includes(m.id));
     
     return (
