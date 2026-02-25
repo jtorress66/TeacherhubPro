@@ -43,6 +43,11 @@ import HomeschoolPortal from "./pages/HomeschoolPortal";
 import GamesCreator from "./pages/GamesCreator";
 import StudentLearning from "./pages/StudentLearning";
 import PlayGame from "./pages/PlayGame";
+// Play to Learn (Kahoot-style) Pages
+import PlayToLearnLanding from "./pages/PlayToLearnLanding";
+import PlayToLearnGame from "./pages/PlayToLearnGame";
+import PlayToLearnTeacher from "./pages/PlayToLearnTeacher";
+import PlayToLearnHost from "./pages/PlayToLearnHost";
 // Public SEO Marketing Pages
 import FeaturesPage from "./pages/FeaturesPage";
 import AIAssistantMarketing from "./pages/AIAssistantMarketing";
