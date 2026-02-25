@@ -161,10 +161,16 @@ const PlayToLearnTeacher = () => {
         // Navigate to host dashboard
         navigate(`/teacher/play-to-learn/host/${res.data.session_id}`);
       } else {
-        // For self-paced, show the join link
+        // For self-paced, show the share dialog
         const joinUrl = `${window.location.origin}/play-to-learn/game/${res.data.session_id}`;
-        navigator.clipboard.writeText(joinUrl);
-        toast.success(language === 'es' ? 'Enlace copiado al portapapeles' : 'Link copied to clipboard');
+        setShareInfo({
+          sessionId: res.data.session_id,
+          joinUrl: joinUrl,
+          pin: res.data.join_pin,
+          gameType: selectedGameType,
+          topic: assignment.topic
+        });
+        setShowShareDialog(true);
         fetchSessions();
       }
       
