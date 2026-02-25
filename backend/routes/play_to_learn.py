@@ -1010,6 +1010,46 @@ async def get_teacher_sessions(request: Request):
     
     return {"sessions": sessions}
 
+@router.delete("/sessions/{session_id}")
+async def delete_practice_session(session_id: str, request: Request):
+    """Delete/close a practice session (Teacher only)"""
+    user = await get_current_user(request)
+    
+    session = await db.practice_sessions.find_one({"session_id": session_id})
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    # Only the creator or admin can delete
+    if session["teacher_id"] != user["user_id"] and user.get('role') not in ['admin', 'super_admin']:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this session")
+    
+    await db.practice_sessions.delete_one({"session_id": session_id})
+    
+    # Also delete related results
+    await db.practice_results.delete_many({"session_id": session_id})
+    
+    return {"message": "Session deleted", "session_id": session_id}
+
+@router.post("/sessions/{session_id}/close")
+async def close_practice_session(session_id: str, request: Request):
+    """Close/end a practice session (mark as COMPLETE)"""
+    user = await get_current_user(request)
+    
+    session = await db.practice_sessions.find_one({"session_id": session_id})
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    if session["teacher_id"] != user["user_id"] and user.get('role') not in ['admin', 'super_admin']:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    await db.practice_sessions.update_one(
+        {"session_id": session_id},
+        {"$set": {"status": "COMPLETE", "completed_at": now}}
+    )
+    
+    return {"message": "Session closed", "session_id": session_id, "status": "COMPLETE"}
+
 # ---------- WEBSOCKET ENDPOINT ----------
 
 @router.websocket("/ws/{session_id}")
