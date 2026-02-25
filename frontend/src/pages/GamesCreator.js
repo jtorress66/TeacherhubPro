@@ -827,17 +827,62 @@ const GamesCreator = () => {
     }
   };
 
-  const resetGame = () => {
+  const [isRegenerating, setIsRegenerating] = useState(false);
+
+  const resetGame = async () => {
     // Clear the timer first
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
     
+    // Show loading state
+    setIsRegenerating(true);
+    setShowResult(false);
+    
+    // Try to regenerate questions via AI
+    let newQuestions = null;
+    if (playingGame?.game_id) {
+      try {
+        console.log('[GamesCreator] Regenerating questions for game:', playingGame.game_id);
+        const res = await axios.post(`${API}/games/${playingGame.game_id}/regenerate-questions`, null, {
+          params: { 
+            player_name: playerName || 'Player',
+            timestamp: Date.now()
+          },
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          }
+        });
+        
+        console.log('[GamesCreator] Regeneration response:', res.data.regenerated, res.data.message);
+        
+        if (res.data.regenerated === true && res.data.questions?.length > 0) {
+          newQuestions = res.data.questions;
+          console.log('[GamesCreator] NEW questions received:', newQuestions.length);
+          toast.success(language === 'es' ? '¡Nuevas preguntas generadas!' : 'New questions generated!');
+        } else {
+          console.warn('[GamesCreator] Regeneration failed:', res.data.message);
+          toast.error(language === 'es' ? 'No se pudieron generar nuevas preguntas' : 'Could not generate new questions');
+        }
+      } catch (error) {
+        console.error('[GamesCreator] Regeneration error:', error);
+        toast.error(language === 'es' ? 'Error al regenerar preguntas' : 'Error regenerating questions');
+      }
+    }
+    
+    // Update playingGame with new questions if available
+    if (newQuestions && newQuestions.length > 0) {
+      setPlayingGame(prev => ({
+        ...prev,
+        questions: newQuestions
+      }));
+    }
+    
     // Reset core game progress
     setGameProgress({ current: 0, score: 0, streak: 0, bestStreak: 0, answers: [] });
     setSelectedAnswer(null);
-    setShowResult(false);
     setGameStartTime(Date.now());
     setGameTimer(0);
     setShowConfetti(false);
@@ -851,25 +896,29 @@ const GamesCreator = () => {
     setCrosswordAnswers({});
     setDraggingItem(null);
     
-    // Re-initialize based on game type
-    if (playingGame) {
-      if (playingGame.game_type === 'matching' && playingGame.questions) {
-        const rightItems = playingGame.questions.map(q => q.match || q.correct_answer || q.right);
+    // Re-initialize based on game type with new questions
+    const questionsToUse = newQuestions || playingGame?.questions;
+    if (questionsToUse) {
+      if (playingGame?.game_type === 'matching') {
+        const rightItems = questionsToUse.map(q => q.match || q.correct_answer || q.right);
         setShuffledRight([...rightItems].sort(() => Math.random() - 0.5));
       }
       
-      if (playingGame.game_type === 'word_search' && playingGame.questions) {
-        const words = playingGame.questions.map(q => (q.word || '').toUpperCase());
+      if (playingGame?.game_type === 'word_search') {
+        const words = questionsToUse.map(q => (q.word || '').toUpperCase());
         setWordSearchGrid(generateWordSearchGrid(words));
       }
       
-      if (playingGame.game_type === 'drag_drop' && playingGame.questions?.length > 0) {
-        const items = playingGame.questions[0].items || playingGame.questions[0].options || [];
+      if (playingGame?.game_type === 'drag_drop' && questionsToUse.length > 0) {
+        const items = questionsToUse[0].items || questionsToUse[0].options || [];
         if (items.length > 0) {
           setDragDropOrder([...items].sort(() => Math.random() - 0.5));
         }
       }
     }
+    
+    // Hide loading state
+    setIsRegenerating(false);
   };
 
   const exitGame = () => {
