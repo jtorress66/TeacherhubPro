@@ -875,7 +875,7 @@ async def get_practice_insights(assignment_id: str, request: Request):
     }
 
 @router.get("/teacher/sessions")
-async def get_teacher_sessions(request: Any = None):
+async def get_teacher_sessions(request: Request):
     """Get all sessions created by the teacher"""
     user = await get_current_user(request)
     
