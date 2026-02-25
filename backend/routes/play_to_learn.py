@@ -344,6 +344,89 @@ def transform_items_to_game_mode(base_items: List[dict], game_type: str) -> dict
             ]
         }
     
+    elif game_type == "true_false":
+        # True/False questions - convert MCQ to True/False statements
+        return {
+            "game_type": "true_false",
+            "questions": [
+                {
+                    "item_id": item["item_id"],
+                    "statement": f"{item['question']} The answer is {item['correct_answer']}.",
+                    "is_true": True,  # We'll mix with false statements in the frontend
+                    "explanation": item.get("explanation", ""),
+                    "time_limit_seconds": 20
+                }
+                for item in base_items
+            ]
+        }
+    
+    elif game_type == "fill_blank":
+        # Fill in the blank - hide key words in the answer
+        return {
+            "game_type": "fill_blank",
+            "questions": [
+                {
+                    "item_id": item["item_id"],
+                    "sentence": item["question"].replace(item["correct_answer"], "_____") if item["correct_answer"] in item["question"] else f"_____ is the answer to: {item['question']}",
+                    "blank_answer": item["correct_answer"],
+                    "hint": item.get("term", item["options"][0] if item.get("options") else ""),
+                    "explanation": item.get("explanation", ""),
+                    "time_limit_seconds": 25
+                }
+                for item in base_items
+            ]
+        }
+    
+    elif game_type == "sequence":
+        # Sequence/Ordering - put items in correct order
+        import random as seq_random
+        shuffled_items = base_items.copy()
+        seq_random.shuffle(shuffled_items)
+        return {
+            "game_type": "sequence",
+            "items": [
+                {
+                    "item_id": item["item_id"],
+                    "text": item.get("term", item["question"]),
+                    "correct_position": idx
+                }
+                for idx, item in enumerate(base_items)
+            ],
+            "shuffled_order": [item["item_id"] for item in shuffled_items]
+        }
+    
+    elif game_type == "word_search":
+        # Word Search - find words in a grid
+        words = [item.get("term", item["correct_answer"]).upper().replace(" ", "") for item in base_items[:8]]  # Limit to 8 words
+        return {
+            "game_type": "word_search",
+            "words": words,
+            "hints": [
+                {
+                    "item_id": item["item_id"],
+                    "word": item.get("term", item["correct_answer"]).upper().replace(" ", ""),
+                    "hint": item.get("definition", item["question"])
+                }
+                for item in base_items[:8]
+            ],
+            "grid_size": 12
+        }
+    
+    elif game_type == "memory":
+        # Memory/Concentration - flip cards to find matches
+        pairs = []
+        for item in base_items[:8]:  # Limit to 8 pairs (16 cards)
+            pairs.append({
+                "pair_id": item["item_id"],
+                "card_a": item.get("term", item["question"]),
+                "card_b": item.get("definition", item["correct_answer"])
+            })
+        return {
+            "game_type": "memory",
+            "pairs": pairs,
+            "total_pairs": len(pairs)
+        }
+    
     else:
         raise ValueError(f"Unknown game type: {game_type}")
 
