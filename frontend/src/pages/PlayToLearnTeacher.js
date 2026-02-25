@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { 
   Gamepad2, Plus, Play, Users, Zap, Brain, Trophy, Target, Sparkles,
   Clock, Settings, Trash2, Copy, ExternalLink, BarChart3, Loader2,
-  ChevronRight, Hash, RefreshCw
+  ChevronRight, Hash, RefreshCw, CheckCircle2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
