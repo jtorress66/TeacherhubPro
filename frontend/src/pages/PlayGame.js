@@ -368,7 +368,7 @@ const PlayGame = () => {
     setDragDropOrder([]);
     setDraggingItem(null);
     
-    // Set new AI-generated questions
+    // Set new AI-generated questions OR show error if regeneration failed
     if (newQuestions && newQuestions.length > 0) {
       setCurrentQuestions(newQuestions);
       
@@ -377,6 +377,12 @@ const PlayGame = () => {
         const rightItems = newQuestions.map(q => q.match || q.correct_answer);
         setShuffledRight(shuffleArray(rightItems));
       }
+    } else {
+      // Regeneration failed - inform user and keep current questions
+      console.warn('[PlayGame] Regeneration failed, keeping current questions');
+      toast.warning(language === 'es' 
+        ? 'No se pudieron generar nuevas preguntas. Intenta de nuevo.' 
+        : 'Could not generate new questions. Please try again.');
     }
     
     // Reset timer
