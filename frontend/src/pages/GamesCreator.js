@@ -1724,9 +1724,23 @@ const GamesCreator = () => {
                 )}
                 
                 <div className="flex justify-center gap-4">
-                  <Button onClick={resetGame} variant="outline" className="hover:scale-105 transition-transform">
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    {language === 'es' ? 'Jugar de Nuevo' : 'Play Again'}
+                  <Button 
+                    onClick={resetGame} 
+                    variant="outline" 
+                    className="hover:scale-105 transition-transform"
+                    disabled={isRegenerating}
+                  >
+                    {isRegenerating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        {language === 'es' ? 'Generando...' : 'Generating...'}
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        {language === 'es' ? 'Jugar de Nuevo' : 'Play Again'}
+                      </>
+                    )}
                   </Button>
                   <Button onClick={exitGame} className="bg-purple-600 hover:bg-purple-700 hover:scale-105 transition-transform">
                     {language === 'es' ? 'Volver' : 'Back'}
