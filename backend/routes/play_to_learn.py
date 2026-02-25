@@ -161,10 +161,13 @@ async def generate_base_items(assignment: dict, variant_seed: str) -> List[dict]
     topic = assignment.get('topic', 'General Knowledge')
     difficulty = assignment.get('difficulty', 'medium')
     item_count = assignment.get('item_count', 10)
-    language = assignment.get('language', 'es')
+    language = assignment.get('language', 'en')  # Default to English
     
-    # Build AI prompt
-    lang_instruction = "Respond in Spanish" if language == "es" else "Respond in English"
+    # Build AI prompt - be explicit about language
+    if language == "es":
+        lang_instruction = "IMPORTANT: Generate ALL content in Spanish. Questions, options, explanations - everything must be in Spanish."
+    else:
+        lang_instruction = "IMPORTANT: Generate ALL content in English. Questions, options, explanations - everything must be in English."
     
     system_prompt = f"""You are an expert educational content creator. Generate {item_count} unique educational questions.
 
