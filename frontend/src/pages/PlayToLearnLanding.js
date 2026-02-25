@@ -113,6 +113,34 @@ const PlayToLearnLanding = () => {
       name: language === 'es' ? 'Tarjetas Flash' : 'Flashcards',
       description: language === 'es' ? 'Estudia con tarjetas interactivas' : 'Study with interactive cards',
       color: 'from-pink-500 to-rose-600'
+    },
+    {
+      id: 'true_false',
+      icon: Brain,
+      name: language === 'es' ? 'Verdadero/Falso' : 'True/False',
+      description: language === 'es' ? 'Decide si es verdadero o falso' : 'Decide if statements are true or false',
+      color: 'from-blue-500 to-cyan-600'
+    },
+    {
+      id: 'fill_blank',
+      icon: Target,
+      name: language === 'es' ? 'Completar' : 'Fill in Blank',
+      description: language === 'es' ? 'Completa las oraciones' : 'Complete the sentences',
+      color: 'from-amber-500 to-yellow-600'
+    },
+    {
+      id: 'word_search',
+      icon: Target,
+      name: language === 'es' ? 'Sopa de Letras' : 'Word Search',
+      description: language === 'es' ? 'Encuentra las palabras ocultas' : 'Find hidden words in the grid',
+      color: 'from-emerald-500 to-green-600'
+    },
+    {
+      id: 'memory',
+      icon: Brain,
+      name: language === 'es' ? 'Memoria' : 'Memory Game',
+      description: language === 'es' ? 'Encuentra los pares de cartas' : 'Find matching card pairs',
+      color: 'from-violet-500 to-purple-600'
     }
   ];
 
