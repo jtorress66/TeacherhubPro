@@ -843,6 +843,89 @@ const PlayGame = () => {
       );
     }
 
+    // Word Search
+    if (gameType === 'word_search') {
+      const words = currentQuestions.map(q => (q.word || q.question || q.term || '').toUpperCase());
+      
+      // Use pre-generated grid from state, or generate if not available
+      const grid = wordSearchGrid.length > 0 ? wordSearchGrid : generateWordSearchGrid(words);
+
+      const handleCellClick = (row, col) => {
+        const cellKey = `${row}-${col}`;
+        if (wordSearchFound.includes(cellKey)) {
+          setWordSearchFound(wordSearchFound.filter(k => k !== cellKey));
+        } else {
+          setWordSearchFound([...wordSearchFound, cellKey]);
+        }
+      };
+
+      const handleWordSearchComplete = () => {
+        // Calculate score based on number of selected cells vs expected
+        const totalLetters = words.reduce((sum, word) => sum + word.length, 0);
+        const score = Math.min(wordSearchFound.length, totalLetters) > 0 
+          ? Math.round((Math.min(wordSearchFound.length, totalLetters) / totalLetters) * words.length) 
+          : 0;
+        setGameProgress(prev => ({ ...prev, score }));
+        setShowResult(true);
+        submitScore();
+      };
+
+      return (
+        <div className="space-y-6">
+          <div className="bg-slate-50 p-4 rounded-xl">
+            <p className="text-sm font-medium text-slate-600 mb-3">
+              {language === 'es' ? 'Encuentra estas palabras:' : 'Find these words:'}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {words.map((word, idx) => (
+                <Badge key={idx} variant="outline" className="px-3 py-1 text-base">
+                  {word}
+                </Badge>
+              ))}
+            </div>
+          </div>
+          
+          {/* Word Grid */}
+          <div className="flex justify-center overflow-x-auto">
+            <div 
+              className="inline-grid gap-1 p-4 bg-white rounded-xl border-2 border-slate-200" 
+              style={{ gridTemplateColumns: `repeat(${grid[0]?.length || 12}, 1fr)` }}
+            >
+              {grid.map((row, rowIdx) => 
+                row.map((letter, colIdx) => {
+                  const cellKey = `${rowIdx}-${colIdx}`;
+                  const isSelected = wordSearchFound.includes(cellKey);
+                  return (
+                    <button
+                      key={cellKey}
+                      onClick={() => handleCellClick(rowIdx, colIdx)}
+                      className={`w-8 h-8 flex items-center justify-center font-mono font-bold rounded cursor-pointer transition-all ${
+                        isSelected 
+                          ? 'bg-purple-500 text-white' 
+                          : 'text-slate-700 bg-slate-50 hover:bg-purple-100'
+                      }`}
+                      data-testid={`word-cell-${rowIdx}-${colIdx}`}
+                    >
+                      {letter}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          </div>
+          
+          <div className="flex justify-center gap-3">
+            <Button variant="outline" onClick={() => setWordSearchFound([])}>
+              {language === 'es' ? 'Reiniciar Selección' : 'Reset Selection'}
+            </Button>
+            <Button onClick={handleWordSearchComplete} className="bg-purple-600 hover:bg-purple-700">
+              {language === 'es' ? 'Terminé' : "I'm Done"}
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
     // Default fallback
     return (
       <div className="text-center p-8">
