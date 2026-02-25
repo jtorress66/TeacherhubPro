@@ -347,28 +347,62 @@ def transform_items_to_game_mode(base_items: List[dict], game_type: str) -> dict
 # ==================== DEPENDENCY INJECTION ====================
 
 async def get_current_user(request: Request):
-    """Get current user from JWT token"""
-    auth_header = request.headers.get('Authorization', '')
-    if not auth_header.startswith('Bearer '):
+    """Get current user from session cookie or JWT token"""
+    from datetime import datetime, timezone
+    
+    # Check cookie first (Google OAuth sessions)
+    session_token = request.cookies.get("session_token")
+    
+    # Check Authorization header as fallback (JWT)
+    if not session_token:
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            session_token = auth_header.split(" ")[1]
+    
+    if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
-    token = auth_header.split(' ')[1]
+    JWT_SECRET = os.environ.get('JWT_SECRET', 'teacherhub-secret-key-change-in-production')
+    
+    # Try session token first (Google OAuth)
+    session_doc = await db.user_sessions.find_one(
+        {"session_token": session_token},
+        {"_id": 0}
+    )
+    
+    if session_doc:
+        # Check expiry
+        expires_at = session_doc.get("expires_at")
+        if isinstance(expires_at, str):
+            expires_at = datetime.fromisoformat(expires_at)
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if expires_at < datetime.now(timezone.utc):
+            raise HTTPException(status_code=401, detail="Session expired")
+        
+        user = await db.users.find_one(
+            {"user_id": session_doc["user_id"]},
+            {"_id": 0}
+        )
+        if user:
+            return user
+    
+    # Try JWT token (email/password auth)
     try:
         import jwt
-        payload = jwt.decode(token, os.environ.get('JWT_SECRET', 'teacherhub-secret-key-change-in-production'), algorithms=["HS256"])
-        user_id = payload.get('user_id')
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        
-        user = await db.users.find_one({"user_id": user_id})
-        if not user:
-            raise HTTPException(status_code=401, detail="User not found")
-        
-        return user
+        payload = jwt.decode(session_token, JWT_SECRET, algorithms=["HS256"])
+        user = await db.users.find_one(
+            {"user_id": payload["user_id"]},
+            {"_id": 0}
+        )
+        if user:
+            return user
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        pass
+    
+    raise HTTPException(status_code=401, detail="Invalid credentials")
 
 # ==================== API ENDPOINTS ====================
 
