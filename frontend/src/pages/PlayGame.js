@@ -57,6 +57,7 @@ const PlayGame = () => {
   const [matchedPairs, setMatchedPairs] = useState([]);
   const [shuffledRight, setShuffledRight] = useState([]);
   const [wordSearchFound, setWordSearchFound] = useState([]);
+  const [wordSearchGrid, setWordSearchGrid] = useState([]);
   const [crosswordAnswers, setCrosswordAnswers] = useState({});
   const [dragDropOrder, setDragDropOrder] = useState([]);
   const [draggingItem, setDraggingItem] = useState(null);
