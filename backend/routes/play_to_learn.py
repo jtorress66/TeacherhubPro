@@ -442,7 +442,7 @@ async def get_practice_assignment(assignment_id: str):
     return assignment
 
 @router.delete("/assignments/{assignment_id}")
-async def delete_practice_assignment(assignment_id: str, request: Any = None):
+async def delete_practice_assignment(assignment_id: str, request: Request):
     """Delete a practice assignment"""
     user = await get_current_user(request)
     
