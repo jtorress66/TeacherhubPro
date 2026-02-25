@@ -96,7 +96,7 @@ class ConnectionManager:
             for websocket, _, _ in self.active_connections[session_id]:
                 try:
                     await websocket.send_json(message)
-                except:
+                except Exception:
                     pass
     
     async def send_to_host(self, session_id: str, message: dict):
@@ -106,7 +106,7 @@ class ConnectionManager:
                 if role == "host":
                     try:
                         await websocket.send_json(message)
-                    except:
+                    except Exception:
                         pass
     
     async def send_to_player(self, session_id: str, participant_id: str, message: dict):
@@ -116,7 +116,7 @@ class ConnectionManager:
                 if pid == participant_id:
                     try:
                         await websocket.send_json(message)
-                    except:
+                    except Exception:
                         pass
     
     def get_player_count(self, session_id: str) -> int:
