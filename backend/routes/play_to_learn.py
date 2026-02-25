@@ -635,7 +635,7 @@ async def join_session(session_id: str, join_request: JoinSessionRequest):
     }
 
 @router.post("/sessions/{session_id}/start")
-async def start_live_session(session_id: str, request: Any = None):
+async def start_live_session(session_id: str, request: Request):
     """Start a live session (Teacher/Host only)"""
     user = await get_current_user(request)
     
