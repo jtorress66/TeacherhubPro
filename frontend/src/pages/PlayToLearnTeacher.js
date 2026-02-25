@@ -41,8 +41,8 @@ const PlayToLearnTeacher = () => {
     standard: '',
     difficulty: 'medium',
     item_count: 10,
-    allowed_game_types: ['quiz', 'time_attack', 'matching', 'flashcard'],
-    language: 'es'
+    allowed_game_types: ['quiz', 'time_attack', 'matching', 'flashcard', 'true_false', 'fill_blank', 'word_search', 'memory'],
+    language: 'en'
   });
   
   // Host session
