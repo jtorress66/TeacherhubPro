@@ -820,7 +820,7 @@ async def complete_session(session_id: str, participant_id: str):
 # ---------- INSIGHTS ENDPOINTS ----------
 
 @router.get("/insights/{assignment_id}")
-async def get_practice_insights(assignment_id: str, request: Any = None):
+async def get_practice_insights(assignment_id: str, request: Request):
     """Get practice insights for an assignment (no grades)"""
     # Verify user is authenticated (authorization check)
     await get_current_user(request)
