@@ -665,7 +665,7 @@ async def start_live_session(session_id: str, request: Request):
     return {"message": "Session started", "status": "ACTIVE"}
 
 @router.post("/sessions/{session_id}/next-question")
-async def advance_to_next_question(session_id: str, request: Any = None):
+async def advance_to_next_question(session_id: str, request: Request):
     """Advance to the next question (Live mode - Host only)"""
     user = await get_current_user(request)
     
