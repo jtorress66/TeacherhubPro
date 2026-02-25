@@ -1,10 +1,18 @@
 """Authentication utilities"""
 from fastapi import HTTPException, Request
-from passlib.context import CryptContext
 from datetime import datetime, timezone, timedelta
 import jwt
 import uuid
 import os
+
+# Fix bcrypt/passlib compatibility issue before importing passlib
+import bcrypt
+if not hasattr(bcrypt, '__about__'):
+    class About:
+        __version__ = getattr(bcrypt, '__version__', '4.0.1')
+    bcrypt.__about__ = About()
+
+from passlib.context import CryptContext
 
 from utils.database import db
 
