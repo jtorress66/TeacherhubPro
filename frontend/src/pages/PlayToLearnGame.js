@@ -23,12 +23,20 @@ const PlayToLearnGame = () => {
   // Session & participant info
   const [participantId, setParticipantId] = useState(searchParams.get('participant') || '');
   const [nickname, setNickname] = useState(decodeURIComponent(searchParams.get('nickname') || ''));
-  const [language, setLanguage] = useState('es');
+  const [language, setLanguage] = useState('en'); // Default to English
   
   // Session state
   const [session, setSession] = useState(null);
+  const [assignment, setAssignment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Join flow for self-paced
+  const [needsToJoin, setNeedsToJoin] = useState(false);
+  const [joining, setJoining] = useState(false);
+  
+  // Mode selection
+  const [showModeSelection, setShowModeSelection] = useState(false);
   
   // Game state
   const [gameStarted, setGameStarted] = useState(false);
