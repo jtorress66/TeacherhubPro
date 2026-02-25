@@ -240,7 +240,7 @@ def generate_fallback_items(assignment: dict, variant_seed: str, question_set_id
     """Generate fallback items if AI fails"""
     item_count = assignment.get('item_count', 10)
     topic = assignment.get('topic', 'General')
-    language = assignment.get('language', 'es')
+    language = assignment.get('language', 'en')  # Default to English
     
     items = []
     for i in range(item_count):
