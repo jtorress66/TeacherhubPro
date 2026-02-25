@@ -346,9 +346,8 @@ def transform_items_to_game_mode(base_items: List[dict], game_type: str) -> dict
 
 # ==================== DEPENDENCY INJECTION ====================
 
-async def get_current_user(request):
+async def get_current_user(request: Request):
     """Get current user from JWT token"""
-    from fastapi import Request
     auth_header = request.headers.get('Authorization', '')
     if not auth_header.startswith('Bearer '):
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -378,11 +377,9 @@ async def get_current_user(request):
 @router.post("/assignments", response_model=PracticeAssignmentResponse)
 async def create_practice_assignment(
     assignment: PracticeAssignmentCreate,
-    request: Any = None
+    request: Request
 ):
     """Create a new practice assignment (Teacher only)"""
-    from fastapi import Request
-    # Get user from request
     user = await get_current_user(request)
     if user.get('role') not in ['teacher', 'admin', 'super_admin']:
         raise HTTPException(status_code=403, detail="Only teachers can create assignments")
