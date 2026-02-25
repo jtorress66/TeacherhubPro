@@ -1,6 +1,44 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-25 - Play Again Regeneration - PRODUCTION FIX
+
+### Root Cause Found:
+From production logs: AI was generating "TODO" tokens which failed validation, causing silent fallback to existing questions.
+
+### Fixes Applied:
+
+**1. Enhanced AI System Prompt** (`games.py` lines 113-130):
+```
+=== CRITICAL BANNED CONTENT - WILL CAUSE FAILURE ===
+NEVER include ANY of these in your output (automatic rejection):
+- The word "TODO" anywhere
+- The word "FIXME" anywhere
+- The phrase "placeholder"
+...
+```
+
+**2. Pre-validation Check** (`games.py` lines 422-429):
+- Check for banned tokens BEFORE JSON parsing
+- Immediately retry with corrective prompt if found
+
+**3. Increased Retry Attempts** (`games.py` line 27):
+- Changed from 3 to 5 attempts for better reliability
+
+**4. Better Error Handling** (`PlayGame.js` lines 383-386):
+- Shows warning toast when regeneration fails
+- User knows to try again instead of silently getting same questions
+
+### Test Results:
+- **Backend:** 100% (13/13 tests passed)
+- **Frontend:** 100% 
+- **3 consecutive Play Again:** All DIFFERENT questions
+- **No TODO tokens:** Verified across 6 tests
+
+### Action Required:
+Click **"Re-Deploy"** in Emergent to push these fixes to teacherhubpro.com
+
+---
 ## Update 2026-02-25 - Play Again AI Regeneration DEPLOYED TO PRODUCTION ✅
 
 ### Issue Resolved:
