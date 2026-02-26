@@ -101,7 +101,14 @@ const PlayToLearnHost = () => {
         setPlayers(data.participants || []);
         break;
       case 'player_joined':
-        setPlayers(prev => [...prev, data.participant]);
+        // Prevent duplicate players
+        setPlayers(prev => {
+          const exists = prev.some(p => p.participant_id === data.participant.participant_id || p.nickname === data.participant.nickname);
+          if (exists) {
+            return prev;
+          }
+          return [...prev, data.participant];
+        });
         toast.success(`${data.participant.nickname} ${language === 'es' ? 'se unió' : 'joined'}!`);
         break;
       case 'player_disconnected':
@@ -111,6 +118,14 @@ const PlayToLearnHost = () => {
         setAnswersReceived(prev => prev + 1);
         if (data.is_correct) {
           setCorrectAnswers(prev => prev + 1);
+        }
+        // Update player score in the players list
+        if (data.participant_id) {
+          setPlayers(prev => prev.map(p => 
+            p.participant_id === data.participant_id 
+              ? { ...p, score: (p.score || 0) + (data.is_correct ? 1 : 0) }
+              : p
+          ));
         }
         break;
       case 'game_complete':
