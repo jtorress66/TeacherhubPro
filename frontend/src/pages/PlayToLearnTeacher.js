@@ -273,7 +273,7 @@ const PlayToLearnTeacher = () => {
           </Button>
         </div>
 
-        {/* Quick Start Guide */}
+        {/* Quick Start Guide - Updated for clarity */}
         <Card className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200">
           <CardContent className="py-4">
             <div className="flex items-center gap-6 text-sm">
@@ -284,12 +284,12 @@ const PlayToLearnTeacher = () => {
               <ChevronRight className="h-4 w-4 text-purple-400" />
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">2</div>
-                <span>{language === 'es' ? 'Elegir Modo' : 'Choose Mode'}</span>
+                <span>{language === 'es' ? 'Iniciar Sesión' : 'Start Session'}</span>
               </div>
               <ChevronRight className="h-4 w-4 text-purple-400" />
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">3</div>
-                <span>{language === 'es' ? 'Compartir Enlace' : 'Share Link'}</span>
+                <span>{language === 'es' ? 'Compartir PIN/Enlace' : 'Share PIN/Link'}</span>
               </div>
               <ChevronRight className="h-4 w-4 text-purple-400" />
               <div className="flex items-center gap-2">
