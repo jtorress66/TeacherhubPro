@@ -823,13 +823,17 @@ async def join_session(session_id: str, join_request: JoinSessionRequest):
         {"$push": {"participants": participant}}
     )
     
-    # Broadcast to live session
+    # Broadcast to live session with full participant data
     if session["mode"] == "LIVE":
         await manager.broadcast_to_session(session_id, {
             "type": "player_joined",
             "participant": {
                 "participant_id": participant_id,
-                "nickname": join_request.nickname
+                "nickname": join_request.nickname,
+                "score": 0,
+                "streak": 0,
+                "selected_mode": None,
+                "answers": []
             },
             "player_count": manager.get_player_count(session_id) + 1
         })
