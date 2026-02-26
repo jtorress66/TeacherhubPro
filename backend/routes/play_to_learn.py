@@ -763,7 +763,50 @@ async def join_session(session_id: str, join_request: JoinSessionRequest):
         "nickname": join_request.nickname,
         "session_id": session_id,
         "status": session["status"],
-        "game_type": session["game_type"]
+        "game_type": session["game_type"],
+        "allowed_game_types": session.get("allowed_game_types", [session["game_type"]])
+    }
+
+class SelectModeRequest(BaseModel):
+    """Model for selecting game mode"""
+    game_type: str
+    participant_id: str
+
+@router.post("/sessions/{session_id}/select-mode")
+async def select_game_mode(session_id: str, mode_request: SelectModeRequest):
+    """Select game mode for 'all_modes' sessions - updates game payload for this participant"""
+    session = await db.practice_sessions.find_one({"session_id": session_id})
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    allowed_types = session.get("allowed_game_types", [])
+    if mode_request.game_type not in allowed_types:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Game type '{mode_request.game_type}' not allowed for this session"
+        )
+    
+    # Transform base items to the selected game mode
+    base_items = session.get("base_items", [])
+    new_game_payload = transform_items_to_game_mode(base_items, mode_request.game_type)
+    
+    # Update the participant's selected mode and update the session's game payload
+    # Note: In a more sophisticated implementation, each participant could have their own payload
+    await db.practice_sessions.update_one(
+        {"session_id": session_id},
+        {
+            "$set": {
+                "game_type": mode_request.game_type,
+                "game_payload": new_game_payload
+            }
+        }
+    )
+    
+    return {
+        "session_id": session_id,
+        "game_type": mode_request.game_type,
+        "game_payload": new_game_payload,
+        "message": "Game mode selected"
     }
 
 @router.post("/sessions/{session_id}/start")
