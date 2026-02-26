@@ -54,6 +54,11 @@ const PlayToLearnTeacher = () => {
   // Share link dialog
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [shareInfo, setShareInfo] = useState(null);
+  
+  // Insights
+  const [selectedInsightAssignment, setSelectedInsightAssignment] = useState(null);
+  const [insights, setInsights] = useState(null);
+  const [loadingInsights, setLoadingInsights] = useState(false);
 
   // Update language when user loads
   useEffect(() => {
