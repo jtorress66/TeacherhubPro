@@ -1016,6 +1016,370 @@ const PlayToLearnGame = () => {
                 </div>
               </div>
             )}
+
+            {/* True/False Mode */}
+            {session?.game_type === 'true_false' && currentQ && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <Badge className="mb-4 bg-cyan-500/50 text-white">
+                    {language === 'es' ? 'Verdadero o Falso' : 'True or False'}
+                  </Badge>
+                  <h3 className="text-xl md:text-2xl font-semibold text-white">
+                    {currentQ.statement || currentQ.question}
+                  </h3>
+                </div>
+                
+                {!showFeedback ? (
+                  <div className="flex justify-center gap-4">
+                    <Button
+                      onClick={() => {
+                        setSelectedAnswer('true');
+                        submitAnswer('true');
+                      }}
+                      className="bg-green-500 hover:bg-green-600 py-8 px-12 text-xl"
+                    >
+                      <CheckCircle2 className="h-6 w-6 mr-2" />
+                      {language === 'es' ? 'Verdadero' : 'True'}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setSelectedAnswer('false');
+                        submitAnswer('false');
+                      }}
+                      className="bg-red-500 hover:bg-red-600 py-8 px-12 text-xl"
+                    >
+                      <XCircle className="h-6 w-6 mr-2" />
+                      {language === 'es' ? 'Falso' : 'False'}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className={`text-center p-4 rounded-xl ${isCorrect ? 'bg-green-500/30' : 'bg-red-500/30'}`}>
+                      {isCorrect ? (
+                        <CheckCircle2 className="h-12 w-12 mx-auto text-green-400 mb-2" />
+                      ) : (
+                        <XCircle className="h-12 w-12 mx-auto text-red-400 mb-2" />
+                      )}
+                      <p className="text-white font-medium">
+                        {language === 'es' ? 'Respuesta correcta:' : 'Correct answer:'} {currentQ.is_true ? (language === 'es' ? 'Verdadero' : 'True') : (language === 'es' ? 'Falso' : 'False')}
+                      </p>
+                    </div>
+                    {explanation && (
+                      <div className="bg-white/10 rounded-xl p-4 text-white/80 text-sm">
+                        {explanation}
+                      </div>
+                    )}
+                    <Button
+                      onClick={nextQuestion}
+                      className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 py-6"
+                    >
+                      {currentQuestionIndex < totalQuestions - 1 ? (
+                        <>{language === 'es' ? 'Siguiente' : 'Next'} <ArrowRight className="ml-2 h-5 w-5" /></>
+                      ) : (
+                        <>{language === 'es' ? 'Ver Resultados' : 'See Results'} <Trophy className="ml-2 h-5 w-5" /></>
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Fill in the Blank Mode */}
+            {session?.game_type === 'fill_blank' && currentQ && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <Badge className="mb-4 bg-orange-500/50 text-white">
+                    {language === 'es' ? 'Completar' : 'Fill in the Blank'}
+                  </Badge>
+                  <h3 className="text-xl md:text-2xl font-semibold text-white">
+                    {currentQ.sentence || currentQ.question}
+                  </h3>
+                  {currentQ.hint && (
+                    <p className="text-white/60 mt-2 text-sm">
+                      {language === 'es' ? 'Pista:' : 'Hint:'} {currentQ.hint}
+                    </p>
+                  )}
+                </div>
+                
+                {!showFeedback ? (
+                  <div className="flex gap-2 max-w-md mx-auto">
+                    <Input
+                      value={typedAnswer}
+                      onChange={(e) => setTypedAnswer(e.target.value)}
+                      placeholder={language === 'es' ? 'Escribe tu respuesta...' : 'Type your answer...'}
+                      className="flex-1 bg-white/10 border-white/30 text-white placeholder:text-white/50"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && typedAnswer.trim()) {
+                          setSelectedAnswer(typedAnswer);
+                          submitAnswer(typedAnswer);
+                        }
+                      }}
+                      autoFocus
+                    />
+                    <Button
+                      onClick={() => {
+                        setSelectedAnswer(typedAnswer);
+                        submitAnswer(typedAnswer);
+                      }}
+                      disabled={!typedAnswer.trim()}
+                      className="bg-orange-500 hover:bg-orange-600"
+                    >
+                      <ArrowRight className="h-5 w-5" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className={`text-center p-4 rounded-xl ${isCorrect ? 'bg-green-500/30' : 'bg-red-500/30'}`}>
+                      {isCorrect ? (
+                        <CheckCircle2 className="h-12 w-12 mx-auto text-green-400 mb-2" />
+                      ) : (
+                        <XCircle className="h-12 w-12 mx-auto text-red-400 mb-2" />
+                      )}
+                      <p className="text-white font-medium">
+                        {language === 'es' ? 'Respuesta correcta:' : 'Correct answer:'} {currentQ.blank_answer || currentQ.correct_answer}
+                      </p>
+                    </div>
+                    {explanation && (
+                      <div className="bg-white/10 rounded-xl p-4 text-white/80 text-sm">
+                        {explanation}
+                      </div>
+                    )}
+                    <Button
+                      onClick={nextQuestion}
+                      className="w-full bg-gradient-to-r from-orange-500 to-amber-500 py-6"
+                    >
+                      {currentQuestionIndex < totalQuestions - 1 ? (
+                        <>{language === 'es' ? 'Siguiente' : 'Next'} <ArrowRight className="ml-2 h-5 w-5" /></>
+                      ) : (
+                        <>{language === 'es' ? 'Ver Resultados' : 'See Results'} <Trophy className="ml-2 h-5 w-5" /></>
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Word Search Mode */}
+            {session?.game_type === 'word_search' && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <Badge className="mb-4 bg-green-500/50 text-white">
+                    {language === 'es' ? 'Sopa de Letras' : 'Word Search'}
+                  </Badge>
+                  <p className="text-white/80">
+                    {language === 'es' ? 'Encuentra las palabras ocultas' : 'Find the hidden words'}
+                  </p>
+                </div>
+                
+                {/* Words to find */}
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {session.game_payload?.words?.map((word, idx) => (
+                    <Badge 
+                      key={idx} 
+                      className={`text-sm py-1 px-3 ${
+                        matchedPairs.includes(word) 
+                          ? 'bg-green-500/50 line-through' 
+                          : 'bg-white/20'
+                      }`}
+                    >
+                      {word}
+                    </Badge>
+                  ))}
+                </div>
+
+                {/* Hints */}
+                <div className="space-y-2 max-w-md mx-auto">
+                  <p className="text-white/60 text-sm text-center">
+                    {language === 'es' ? 'Pistas:' : 'Hints:'}
+                  </p>
+                  {session.game_payload?.hints?.slice(0, 4).map((hint, idx) => (
+                    <div key={idx} className="bg-white/10 rounded-lg p-2 text-sm text-white/80">
+                      • {hint.hint}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Word input */}
+                <div className="flex gap-2 max-w-md mx-auto">
+                  <Input
+                    value={typedAnswer}
+                    onChange={(e) => setTypedAnswer(e.target.value.toUpperCase())}
+                    placeholder={language === 'es' ? 'Escribe una palabra...' : 'Type a word...'}
+                    className="flex-1 bg-white/10 border-white/30 text-white placeholder:text-white/50 uppercase"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && typedAnswer.trim()) {
+                        const word = typedAnswer.trim().toUpperCase();
+                        if (session.game_payload?.words?.includes(word) && !matchedPairs.includes(word)) {
+                          setMatchedPairs(prev => [...prev, word]);
+                          setScore(prev => prev + 1);
+                          setStreak(prev => prev + 1);
+                          toast.success(language === 'es' ? '¡Encontrado!' : 'Found!');
+                          
+                          // Check if all words found
+                          if (matchedPairs.length + 1 >= session.game_payload?.words?.length) {
+                            handleGameComplete();
+                          }
+                        } else if (matchedPairs.includes(word)) {
+                          toast.info(language === 'es' ? 'Ya encontrada' : 'Already found');
+                        } else {
+                          toast.error(language === 'es' ? 'No está en la lista' : 'Not in the list');
+                          setStreak(0);
+                        }
+                        setTypedAnswer('');
+                      }
+                    }}
+                  />
+                  <Button
+                    onClick={() => {
+                      const word = typedAnswer.trim().toUpperCase();
+                      if (session.game_payload?.words?.includes(word) && !matchedPairs.includes(word)) {
+                        setMatchedPairs(prev => [...prev, word]);
+                        setScore(prev => prev + 1);
+                        setStreak(prev => prev + 1);
+                        toast.success(language === 'es' ? '¡Encontrado!' : 'Found!');
+                        
+                        if (matchedPairs.length + 1 >= session.game_payload?.words?.length) {
+                          handleGameComplete();
+                        }
+                      }
+                      setTypedAnswer('');
+                    }}
+                    className="bg-green-500 hover:bg-green-600"
+                  >
+                    <CheckCircle2 className="h-5 w-5" />
+                  </Button>
+                </div>
+
+                <p className="text-center text-white/60 text-sm">
+                  {matchedPairs.length} / {session.game_payload?.words?.length || 0} {language === 'es' ? 'encontradas' : 'found'}
+                </p>
+              </div>
+            )}
+
+            {/* Sequence Mode */}
+            {session?.game_type === 'sequence' && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <Badge className="mb-4 bg-violet-500/50 text-white">
+                    {language === 'es' ? 'Ordenar' : 'Sequence'}
+                  </Badge>
+                  <p className="text-white/80">
+                    {language === 'es' ? 'Ordena los elementos correctamente' : 'Put the items in the correct order'}
+                  </p>
+                </div>
+                
+                {/* Items to order */}
+                <div className="space-y-2 max-w-md mx-auto">
+                  {(session.game_payload?.shuffled_order || []).map((itemId, idx) => {
+                    const item = session.game_payload?.items?.find(i => i.item_id === itemId);
+                    return (
+                      <div
+                        key={itemId}
+                        className="flex items-center gap-3 bg-white/10 border-2 border-white/30 rounded-xl p-4 text-white"
+                      >
+                        <span className="w-8 h-8 rounded-full bg-violet-500/50 flex items-center justify-center text-sm font-bold">
+                          {idx + 1}
+                        </span>
+                        <span className="flex-1">{item?.text}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="text-center">
+                  <Button
+                    onClick={() => {
+                      // Simple check - in a real implementation you'd have drag-and-drop
+                      toast.info(language === 'es' ? 'Arrastra para reordenar (próximamente)' : 'Drag to reorder (coming soon)');
+                      // For now, auto-complete with partial score
+                      handleGameComplete();
+                    }}
+                    className="bg-violet-500 hover:bg-violet-600"
+                  >
+                    {language === 'es' ? 'Verificar Orden' : 'Check Order'}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Memory Game Mode */}
+            {session?.game_type === 'memory' && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <Badge className="mb-4 bg-pink-500/50 text-white">
+                    {language === 'es' ? 'Memoria' : 'Memory Game'}
+                  </Badge>
+                  <p className="text-white/80">
+                    {language === 'es' ? 'Encuentra los pares' : 'Find the matching pairs'}
+                  </p>
+                </div>
+                
+                {/* Memory cards grid */}
+                <div className="grid grid-cols-4 gap-2 max-w-lg mx-auto">
+                  {session.game_payload?.pairs?.flatMap((pair, idx) => [
+                    { id: `${pair.pair_id}_a`, text: pair.card_a, pairId: pair.pair_id },
+                    { id: `${pair.pair_id}_b`, text: pair.card_b, pairId: pair.pair_id }
+                  ]).sort(() => Math.random() - 0.5).map((card, idx) => {
+                    const isMatched = matchedPairs.includes(card.pairId);
+                    const isSelected = matchingSelected.term?.id === card.id || matchingSelected.definition?.id === card.id;
+                    
+                    return (
+                      <button
+                        key={card.id}
+                        onClick={() => {
+                          if (isMatched) return;
+                          
+                          if (!matchingSelected.term) {
+                            setMatchingSelected({ term: card, definition: null });
+                          } else if (matchingSelected.term.id !== card.id) {
+                            // Check if match
+                            if (matchingSelected.term.pairId === card.pairId) {
+                              setMatchedPairs(prev => [...prev, card.pairId]);
+                              setScore(prev => prev + 1);
+                              setStreak(prev => prev + 1);
+                              toast.success(language === 'es' ? '¡Par encontrado!' : 'Match found!');
+                              
+                              if (matchedPairs.length + 1 >= session.game_payload?.pairs?.length) {
+                                setTimeout(() => handleGameComplete(), 500);
+                              }
+                            } else {
+                              setStreak(0);
+                              toast.error(language === 'es' ? 'No es par' : 'Not a match');
+                            }
+                            setTimeout(() => setMatchingSelected({ term: null, definition: null }), 300);
+                          }
+                        }}
+                        disabled={isMatched}
+                        className={`aspect-square rounded-lg p-2 text-xs font-medium transition-all ${
+                          isMatched
+                            ? 'bg-green-500/30 border-green-400 text-green-200'
+                            : isSelected
+                            ? 'bg-pink-500/50 border-pink-400 text-white'
+                            : 'bg-white/10 border-white/30 text-white hover:bg-white/20'
+                        } border-2`}
+                      >
+                        {isMatched || isSelected ? card.text : '?'}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <p className="text-center text-white/60 text-sm">
+                  {matchedPairs.length} / {session.game_payload?.pairs?.length || 0} {language === 'es' ? 'pares encontrados' : 'pairs found'}
+                </p>
+              </div>
+            )}
+
+            {/* Fallback for unknown game types */}
+            {!['quiz', 'time_attack', 'matching', 'flashcard', 'true_false', 'fill_blank', 'word_search', 'sequence', 'memory'].includes(session?.game_type) && (
+              <div className="text-center text-white/60 py-12">
+                <Gamepad2 className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                <p>{language === 'es' ? 'Modo de juego no soportado' : 'Game mode not supported'}: {session?.game_type}</p>
+                <Button onClick={() => navigate('/play-to-learn')} className="mt-4">
+                  {language === 'es' ? 'Volver' : 'Go Back'}
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
