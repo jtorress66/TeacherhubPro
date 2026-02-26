@@ -6,7 +6,7 @@ import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
 import { 
   Gamepad2, Users, Play, Hash, Copy, CheckCircle2, XCircle,
-  ArrowRight, ArrowLeft, Loader2, Trophy, Clock, BarChart3, Pause, StopCircle, Trash2
+  ArrowRight, ArrowLeft, Loader2, Trophy, Clock, BarChart3, Pause, StopCircle, Trash2, Wifi, WifiOff, Zap
 } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
@@ -38,6 +38,7 @@ const PlayToLearnHost = () => {
   // WebSocket
   const wsRef = useRef(null);
   const [wsConnected, setWsConnected] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState(null); // Track last real-time update
 
   useEffect(() => {
     // Only fetch when auth is done loading and user exists
