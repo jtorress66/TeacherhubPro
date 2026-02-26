@@ -1,6 +1,36 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-26 (Batch 8) - Real-Time WebSocket Host Dashboard - VERIFIED ✅
+
+### Feature Implemented: Real-Time WebSocket Updates for Host Dashboard
+
+**Objective:** Replace polling mechanism with real-time WebSocket updates for instant teacher view updates when students select modes or submit answers.
+
+**Changes Made:**
+
+**Backend (`/app/backend/routes/play_to_learn.py`):**
+1. Enhanced `connected` WebSocket message (line 1263-1282) to send full participant data:
+   - `participant_id`, `nickname`, `score`, `streak`, `selected_mode`, `answers`
+2. Enhanced `player_joined` broadcast (line 828-839) to include all participant fields
+3. Enhanced `answer_submitted` broadcast (line 1074-1088) to include:
+   - `score`, `streak`, `answers_count`, `correct_count`, `selected_mode`, `nickname`
+
+**Frontend (`/app/frontend/src/pages/PlayToLearnHost.js`):**
+1. Added "Real-time" badge with Zap icon (line 470-476) when WebSocket connected
+2. Added WiFi/WifiOff icons for connection status
+3. Enhanced `handleWebSocketMessage` to show toast notifications for:
+   - Player joins: "Player joined!"
+   - Answer submissions: "✓ Correct" or "✗ Incorrect"
+4. Merged WebSocket `connected` data with existing state to preserve full info (line 170-184)
+5. Reduced polling to 15-second fallback only when WebSocket disconnects (line 62-98)
+
+**Test Results (iteration_44.json):**
+- Backend: 100% - All 12 tests passed
+- Frontend: 100% - All 6 features verified
+- All WebSocket messages verified: `connected`, `player_joined`, `player_mode_selected`, `answer_submitted`
+
+---
 ## Update 2026-02-26 (Batch 7) - P0 Bug Fixes for ALL_MODES - ALL VERIFIED ✅
 
 ### Issues Fixed:
