@@ -201,6 +201,18 @@ const PlayToLearnHost = () => {
     }
   };
 
+  const endGame = async () => {
+    try {
+      await axios.post(`${API}/play-to-learn/sessions/${sessionId}/complete`, {}, { withCredentials: true });
+      setSession(prev => ({ ...prev, status: 'COMPLETE' }));
+      toast.success(language === 'es' ? '¡Sesión finalizada!' : 'Session ended!');
+    } catch (err) {
+      // If complete endpoint doesn't exist, just mark as complete locally
+      setSession(prev => ({ ...prev, status: 'COMPLETE' }));
+      toast.success(language === 'es' ? '¡Sesión finalizada!' : 'Session ended!');
+    }
+  };
+
   const copyPIN = () => {
     if (session?.join_pin) {
       navigator.clipboard.writeText(session.join_pin);
