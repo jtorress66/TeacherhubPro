@@ -455,6 +455,11 @@ const PlayToLearnHost = () => {
                   <CardTitle className="text-white text-lg flex items-center gap-2">
                     <Users className="h-5 w-5" />
                     {language === 'es' ? 'Jugadores en Vivo' : 'Live Players'}
+                    {session?.game_type === 'all_modes' && (
+                      <Badge className="ml-2 bg-purple-500/50 text-xs">
+                        {language === 'es' ? 'Modos Múltiples' : 'Multi-Mode'}
+                      </Badge>
+                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="max-h-[400px] overflow-y-auto">
@@ -482,9 +487,21 @@ const PlayToLearnHost = () => {
                           }`}>
                             {idx + 1}
                           </div>
-                          <span className="flex-1 text-white text-sm truncate">
-                            {player.nickname}
-                          </span>
+                          <div className="flex-1 min-w-0">
+                            <span className="text-white text-sm truncate block">
+                              {player.nickname}
+                            </span>
+                            {/* Show selected mode for all_modes sessions */}
+                            {(session?.game_type === 'all_modes' || player.selected_mode) && (
+                              <span className="text-xs text-purple-300">
+                                {player.selected_mode ? (
+                                  <>🎮 {player.selected_mode.replace('_', ' ').toUpperCase()}</>
+                                ) : (
+                                  <span className="text-white/40">{language === 'es' ? 'Eligiendo modo...' : 'Choosing mode...'}</span>
+                                )}
+                              </span>
+                            )}
+                          </div>
                           <span className="text-white font-bold text-sm">
                             {player.score || 0}
                           </span>
