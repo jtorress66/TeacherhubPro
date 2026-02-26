@@ -737,7 +737,26 @@ async def join_session(session_id: str, join_request: JoinSessionRequest):
     if session["mode"] == "LIVE" and session.get("join_pin") != join_request.pin:
         raise HTTPException(status_code=400, detail="Invalid PIN")
     
-    # Create participant record
+    # Check if participant with same nickname already exists (prevent duplicates)
+    existing_participants = session.get("participants", [])
+    existing_participant = next(
+        (p for p in existing_participants if p["nickname"].lower() == join_request.nickname.lower()),
+        None
+    )
+    
+    if existing_participant:
+        # Return existing participant info instead of creating duplicate
+        print(f"[Play to Learn] Participant '{join_request.nickname}' already exists, returning existing ID")
+        return {
+            "participant_id": existing_participant["participant_id"],
+            "nickname": existing_participant["nickname"],
+            "session_id": session_id,
+            "status": session["status"],
+            "game_type": session["game_type"],
+            "allowed_game_types": session.get("allowed_game_types", [session["game_type"]])
+        }
+    
+    # Create new participant record
     participant_id = f"part_{uuid.uuid4().hex[:12]}"
     participant = {
         "participant_id": participant_id,
