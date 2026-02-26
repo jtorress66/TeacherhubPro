@@ -157,12 +157,13 @@ const PlayToLearnHost = () => {
   };
 
   const handleWebSocketMessage = (data) => {
+    console.log('[Host] WebSocket message:', data.type, data);
     switch (data.type) {
       case 'connected':
         setPlayers(data.participants || []);
         break;
       case 'player_joined':
-        // Prevent duplicate players
+        // Add new player with full data
         setPlayers(prev => {
           const exists = prev.some(p => p.participant_id === data.participant.participant_id || p.nickname === data.participant.nickname);
           if (exists) {
@@ -176,7 +177,7 @@ const PlayToLearnHost = () => {
         setPlayers(prev => prev.filter(p => p.participant_id !== data.participant_id));
         break;
       case 'player_mode_selected':
-        // Update player's selected mode
+        // Update player's selected mode instantly via WebSocket
         setPlayers(prev => prev.map(p => 
           p.participant_id === data.participant_id 
             ? { ...p, selected_mode: data.selected_mode }
@@ -185,15 +186,22 @@ const PlayToLearnHost = () => {
         toast.info(`${data.nickname} ${language === 'es' ? 'eligió' : 'chose'} ${data.selected_mode.replace('_', ' ')}`);
         break;
       case 'answer_submitted':
+        // Update stats with real-time data from WebSocket
         setAnswersReceived(prev => prev + 1);
         if (data.is_correct) {
           setCorrectAnswers(prev => prev + 1);
         }
-        // Update player score in the players list
+        // Update player with full stats from WebSocket message
         if (data.participant_id) {
           setPlayers(prev => prev.map(p => 
             p.participant_id === data.participant_id 
-              ? { ...p, score: (p.score || 0) + (data.is_correct ? 1 : 0) }
+              ? { 
+                  ...p, 
+                  score: data.score ?? (p.score || 0) + (data.is_correct ? 1 : 0),
+                  streak: data.streak ?? p.streak,
+                  selected_mode: data.selected_mode ?? p.selected_mode,
+                  answers: p.answers ? [...p.answers, { is_correct: data.is_correct }] : [{ is_correct: data.is_correct }]
+                }
               : p
           ));
         }
