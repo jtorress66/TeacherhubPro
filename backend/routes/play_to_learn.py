@@ -990,8 +990,19 @@ async def submit_answer(session_id: str, answer: AnswerSubmission, participant_i
     if session["status"] != "ACTIVE":
         raise HTTPException(status_code=400, detail="Session not active")
     
-    game_type = session.get("game_type", "quiz")
-    game_payload = session.get("game_payload", {})
+    # CRITICAL: For ALL_MODES sessions, use the PARTICIPANT's selected mode and game_payload
+    participant = next((p for p in session.get("participants", []) if p["participant_id"] == participant_id), None)
+    if not participant:
+        raise HTTPException(status_code=400, detail="Participant not found")
+    
+    # Get the game_type - prefer participant's selected_mode for all_modes sessions
+    session_game_type = session.get("game_type", "quiz")
+    if session_game_type == "all_modes" and participant.get("selected_mode"):
+        game_type = participant.get("selected_mode")
+        game_payload = participant.get("game_payload", session.get("game_payload", {}))
+    else:
+        game_type = session_game_type
+        game_payload = session.get("game_payload", {})
     
     # Find the correct answer based on game type
     base_items = session.get("base_items", [])
