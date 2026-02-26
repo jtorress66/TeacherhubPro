@@ -1066,13 +1066,22 @@ async def submit_answer(session_id: str, answer: AnswerSubmission, participant_i
         {"$set": {"participants": participants}}
     )
     
-    # Broadcast to live session
+    # Broadcast to live session with full participant data for real-time dashboard
     if session["mode"] == "LIVE":
-        await manager.send_to_host(session_id, {
-            "type": "answer_submitted",
-            "participant_id": participant_id,
-            "is_correct": is_correct
-        })
+        # Get updated participant data for the host
+        updated_participant = next((p for p in participants if p["participant_id"] == participant_id), None)
+        if updated_participant:
+            await manager.send_to_host(session_id, {
+                "type": "answer_submitted",
+                "participant_id": participant_id,
+                "nickname": updated_participant.get("nickname", "Unknown"),
+                "is_correct": is_correct,
+                "score": updated_participant.get("score", 0),
+                "streak": updated_participant.get("streak", 0),
+                "answers_count": len(updated_participant.get("answers", [])),
+                "correct_count": sum(1 for a in updated_participant.get("answers", []) if a.get("is_correct")),
+                "selected_mode": updated_participant.get("selected_mode")
+            })
     
     return {
         "is_correct": is_correct,
