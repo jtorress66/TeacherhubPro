@@ -147,13 +147,7 @@ def generate_variant_seed() -> str:
     return f"seed_{uuid.uuid4().hex[:12]}_{int(datetime.now(timezone.utc).timestamp())}"
 
 async def generate_base_items(assignment: dict, variant_seed: str) -> List[dict]:
-    """
-    Generate base question items using AI
-    This creates questions aligned to the assignment scope
-    """
-    from emergentintegrations.llm.chat import LlmChat, UserMessage
-    
-    # Create unique question set ID
+    """Generate unique base items for a practice session using AI"""
     question_set_id = f"qs_{uuid.uuid4().hex[:16]}"
     
     subject = assignment.get('subject', 'General')
@@ -161,55 +155,67 @@ async def generate_base_items(assignment: dict, variant_seed: str) -> List[dict]
     topic = assignment.get('topic', 'General Knowledge')
     difficulty = assignment.get('difficulty', 'medium')
     item_count = assignment.get('item_count', 10)
-    language = assignment.get('language', 'en')  # Default to English
+    language = assignment.get('language', 'en')
     
-    # Build AI prompt - be explicit about language
-    if language == "es":
-        lang_instruction = "IMPORTANT: Generate ALL content in Spanish. Questions, options, explanations - everything must be in Spanish."
-    else:
-        lang_instruction = "IMPORTANT: Generate ALL content in English. Questions, options, explanations - everything must be in English."
+    # EXPLICIT LANGUAGE DETERMINATION
+    is_english = language != 'es'
+    lang_name = "ENGLISH" if is_english else "SPANISH"
+    lang_example = "What is 2+2? Answer: 4" if is_english else "¿Cuál es 2+2? Respuesta: 4"
     
-    system_prompt = f"""You are an expert educational content creator. Generate {item_count} unique educational questions.
+    system_prompt = f"""You are a professional educational content creator. You MUST generate ALL content in {lang_name} ONLY.
 
-{lang_instruction}
+CRITICAL LANGUAGE REQUIREMENT: Every single word, question, option, term, definition, and explanation MUST be in {lang_name}.
+DO NOT use any other language. If the topic is from another language (like a Spanish topic for an English class), translate appropriately.
 
-REQUIREMENTS:
-- Subject: {subject}
-- Grade Level: {grade_level}
-- Topic: {topic}
-- Difficulty: {difficulty}
-- Variant Seed: {variant_seed} (use this to create unique variations)
-- Language: {"ENGLISH ONLY" if language != "es" else "SPANISH ONLY"} - This is CRITICAL
+Example of {lang_name} content: "{lang_example}"
 
-CRITICAL: Each question MUST have a unique item_id starting with "item_"
-CRITICAL: ALL text (questions, options, explanations, terms, definitions) MUST be in {"ENGLISH" if language != "es" else "SPANISH"}
+Generate exactly {item_count} unique educational items as a JSON array.
+Topic: {topic}
+Subject: {subject}
+Grade Level: {grade_level}
+Difficulty: {difficulty}
 
-Return ONLY a valid JSON array with this structure:
+REQUIRED JSON FORMAT (ALL TEXT IN {lang_name}):
 [
   {{
-    "item_id": "item_001",
-    "question": "Question text here IN {language.upper()}",
-    "options": ["Option A", "Option B", "Option C", "Option D"],
-    "correct_answer": "Option A",
-    "explanation": "Brief explanation IN {language.upper()}",
-    "term": "Key term for flashcards",
-    "definition": "Definition for flashcards"
+    "question": "{lang_name} question here",
+    "options": ["{lang_name} option A", "{lang_name} option B", "{lang_name} option C", "{lang_name} option D"],
+    "correct_answer": "{lang_name} correct option (must match one of the options exactly)",
+    "explanation": "{lang_name} explanation of why this is correct",
+    "term": "{lang_name} key term or concept",
+    "definition": "{lang_name} definition of the term"
   }}
 ]
 
-Make questions engaging and age-appropriate. DO NOT include any text before or after the JSON.
-REMINDER: Generate ALL content in {"ENGLISH" if language != "es" else "SPANISH"} language."""
+IMPORTANT RULES:
+1. ALL TEXT MUST BE IN {lang_name} - NO EXCEPTIONS
+2. Each question must be unique with different content
+3. Correct answer must exactly match one option
+4. Make questions engaging and age-appropriate
+5. DO NOT include any text before or after the JSON array
+6. If the subject or topic name is in a different language, generate questions ABOUT that topic but IN {lang_name}"""
 
     try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"ptl_{variant_seed}",
             system_message=system_prompt
         ).with_model("anthropic", "claude-sonnet-4-6")
         
-        lang_reminder = "IN ENGLISH" if language != "es" else "EN ESPAÑOL"
         user_message = UserMessage(
-            text=f"Generate {item_count} unique questions about {topic} for {grade_level} students studying {subject}. Language: {lang_reminder}. Variant seed: {variant_seed}. IMPORTANT: All content must be {lang_reminder}."
+            text=f"""Generate {item_count} educational questions about "{topic}" for {grade_level} {subject} students.
+
+MANDATORY: Write EVERYTHING in {lang_name}. This includes:
+- Questions
+- All answer options
+- Explanations
+- Terms and definitions
+
+Variant seed for uniqueness: {variant_seed}
+
+Return ONLY a valid JSON array with no additional text."""
         )
         
         response = await chat.send_message(user_message)
