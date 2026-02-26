@@ -178,22 +178,26 @@ Difficulty: {difficulty}
 REQUIRED JSON FORMAT (ALL TEXT IN {lang_name}):
 [
   {{
-    "question": "{lang_name} question here",
+    "question": "{lang_name} question that contains the answer word somewhere in the sentence",
     "options": ["{lang_name} option A", "{lang_name} option B", "{lang_name} option C", "{lang_name} option D"],
     "correct_answer": "{lang_name} correct option (must match one of the options exactly)",
     "explanation": "{lang_name} explanation of why this is correct",
-    "term": "{lang_name} key term or concept",
-    "definition": "{lang_name} definition of the term"
+    "term": "{lang_name} key term or concept (a single word or short phrase)",
+    "definition": "{lang_name} complete sentence definition of the term",
+    "fill_sentence": "{lang_name} complete sentence with the answer word included naturally - example: 'The NOUN in the sentence is the word that names a person, place, or thing.'"
   }}
 ]
 
-IMPORTANT RULES:
+IMPORTANT RULES FOR QUALITY CONTENT:
 1. ALL TEXT MUST BE IN {lang_name} - NO EXCEPTIONS
 2. Each question must be unique with different content
 3. Correct answer must exactly match one option
-4. Make questions engaging and age-appropriate
-5. DO NOT include any text before or after the JSON array
-6. If the subject or topic name is in a different language, generate questions ABOUT that topic but IN {lang_name}"""
+4. The "term" should be a key vocabulary word from the topic
+5. The "definition" should define that term in a complete sentence
+6. The "fill_sentence" MUST be a grammatically correct sentence that naturally contains the correct_answer
+7. Make questions engaging and age-appropriate for {grade_level}
+8. DO NOT include any text before or after the JSON array
+9. If the subject or topic name is in a different language, generate questions ABOUT that topic but IN {lang_name}"""
 
     try:
         from emergentintegrations.llm.chat import LlmChat, UserMessage
