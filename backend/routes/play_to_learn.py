@@ -379,30 +379,38 @@ def transform_items_to_game_mode(base_items: List[dict], game_type: str) -> dict
         questions = []
         for item in base_items:
             answer = item["correct_answer"]
-            original_question = item["question"]
             
-            # Create a proper fill-in-the-blank sentence
-            # If the answer appears in the question, replace it with blanks
-            if answer.lower() in original_question.lower():
-                # Find and replace the answer (case-insensitive) with blank
+            # Use fill_sentence if available, otherwise construct from other fields
+            fill_sentence = item.get("fill_sentence", "")
+            
+            if fill_sentence and answer.lower() in fill_sentence.lower():
+                # Replace answer with blanks in the fill_sentence
                 import re
                 pattern = re.compile(re.escape(answer), re.IGNORECASE)
-                sentence = pattern.sub("_____", original_question, count=1)
+                sentence = pattern.sub("_____", fill_sentence, count=1)
+            elif answer.lower() in item["question"].lower():
+                # Replace answer in question if it appears there
+                import re
+                pattern = re.compile(re.escape(answer), re.IGNORECASE)
+                sentence = pattern.sub("_____", item["question"], count=1)
             else:
-                # Create a sentence using the term and definition
+                # Use term/definition format
                 term = item.get("term", "")
                 definition = item.get("definition", "")
-                if term and definition:
-                    sentence = f"The definition of '{term}' is: _____"
+                if definition and answer.lower() in definition.lower():
+                    import re
+                    pattern = re.compile(re.escape(answer), re.IGNORECASE)
+                    sentence = pattern.sub("_____", definition, count=1)
+                elif term:
+                    sentence = f"Complete: _____ is the correct answer for: {item['question'][:80]}"
                 else:
-                    # Fallback: use the question with a simpler format
-                    sentence = f"Complete: The answer is _____ ({item.get('explanation', 'Think about it')[:50]})"
+                    sentence = f"Fill in the blank: The answer is _____ ({item.get('explanation', '')[:40]}...)"
             
             questions.append({
                 "item_id": item["item_id"],
                 "sentence": sentence,
                 "blank_answer": answer,
-                "hint": item.get("term", "") or item.get("options", [""])[0] if item.get("options") else "",
+                "hint": item.get("term", "") or (item.get("options", [""])[0] if item.get("options") else ""),
                 "explanation": item.get("explanation", ""),
                 "time_limit_seconds": 25
             })
