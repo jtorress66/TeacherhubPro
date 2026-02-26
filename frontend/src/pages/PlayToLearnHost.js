@@ -316,9 +316,12 @@ const PlayToLearnHost = () => {
 
   // Active Game View
   if (session?.status === 'ACTIVE') {
+    // Sort players by score for leaderboard view
+    const sortedPlayers = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
+    
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-4">
-        <div className="max-w-5xl mx-auto space-y-6">
+        <div className="max-w-6xl mx-auto space-y-6">
           {/* Progress Header */}
           <Card className="bg-gradient-to-r from-purple-600 to-pink-600 border-0 text-white">
             <CardContent className="p-4">
@@ -326,83 +329,139 @@ const PlayToLearnHost = () => {
                 <span className="font-medium">
                   {language === 'es' ? 'Pregunta' : 'Question'} {currentQuestionIndex + 1} / {totalQuestions}
                 </span>
-                <Badge className="bg-white/20">{session?.game_type?.toUpperCase()}</Badge>
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-400' : 'bg-red-400'} animate-pulse`} />
+                  <Badge className="bg-white/20">{session?.game_type?.toUpperCase()}</Badge>
+                </div>
               </div>
               <Progress value={((currentQuestionIndex + 1) / totalQuestions) * 100} className="h-2 bg-white/20" />
             </CardContent>
           </Card>
 
-          {/* Current Question Display */}
-          <Card className="bg-white/10 backdrop-blur-xl border-white/20">
-            <CardContent className="p-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-8">
-                {currentQuestion?.question}
-              </h2>
-              
-              {currentQuestion?.options && (
-                <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
-                  {currentQuestion.options.map((option, idx) => (
-                    <div
-                      key={idx}
-                      className="bg-gradient-to-r from-purple-500/50 to-pink-500/50 rounded-xl p-4 text-white text-center"
-                    >
-                      <span className="inline-block w-8 h-8 rounded-full bg-white/20 mr-2 text-sm font-bold leading-8">
-                        {String.fromCharCode(65 + idx)}
-                      </span>
-                      {option}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left column - Question and controls */}
+            <div className="lg:col-span-2 space-y-4">
+              {/* Current Question Display */}
+              <Card className="bg-white/10 backdrop-blur-xl border-white/20">
+                <CardContent className="p-8">
+                  <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-8">
+                    {currentQuestion?.question || currentQuestion?.statement || (language === 'es' ? 'Cargando pregunta...' : 'Loading question...')}
+                  </h2>
+                  
+                  {currentQuestion?.options && (
+                    <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
+                      {currentQuestion.options.map((option, idx) => (
+                        <div
+                          key={idx}
+                          className="bg-gradient-to-r from-purple-500/50 to-pink-500/50 rounded-xl p-4 text-white text-center"
+                        >
+                          <span className="inline-block w-8 h-8 rounded-full bg-white/20 mr-2 text-sm font-bold leading-8">
+                            {String.fromCharCode(65 + idx)}
+                          </span>
+                          {option}
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                  )}
+                </CardContent>
+              </Card>
 
-          {/* Live Stats */}
-          <div className="grid grid-cols-3 gap-4">
-            <Card className="bg-blue-500/20 border-blue-400/30">
-              <CardContent className="p-4 text-center">
-                <Users className="h-8 w-8 mx-auto text-blue-400 mb-1" />
-                <div className="text-2xl font-bold text-white">{players.length}</div>
-                <p className="text-blue-200 text-sm">{language === 'es' ? 'Jugadores' : 'Players'}</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-green-500/20 border-green-400/30">
-              <CardContent className="p-4 text-center">
-                <CheckCircle2 className="h-8 w-8 mx-auto text-green-400 mb-1" />
-                <div className="text-2xl font-bold text-white">{answersReceived}</div>
-                <p className="text-green-200 text-sm">{language === 'es' ? 'Respuestas' : 'Answers'}</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-yellow-500/20 border-yellow-400/30">
-              <CardContent className="p-4 text-center">
-                <Trophy className="h-8 w-8 mx-auto text-yellow-400 mb-1" />
-                <div className="text-2xl font-bold text-white">
-                  {answersReceived > 0 ? Math.round((correctAnswers / answersReceived) * 100) : 0}%
-                </div>
-                <p className="text-yellow-200 text-sm">{language === 'es' ? 'Precisión' : 'Accuracy'}</p>
-              </CardContent>
-            </Card>
-          </div>
+              {/* Live Stats */}
+              <div className="grid grid-cols-3 gap-4">
+                <Card className="bg-blue-500/20 border-blue-400/30">
+                  <CardContent className="p-4 text-center">
+                    <Users className="h-8 w-8 mx-auto text-blue-400 mb-1" />
+                    <div className="text-2xl font-bold text-white">{players.length}</div>
+                    <p className="text-blue-200 text-sm">{language === 'es' ? 'Jugadores' : 'Players'}</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-green-500/20 border-green-400/30">
+                  <CardContent className="p-4 text-center">
+                    <CheckCircle2 className="h-8 w-8 mx-auto text-green-400 mb-1" />
+                    <div className="text-2xl font-bold text-white">{answersReceived}</div>
+                    <p className="text-green-200 text-sm">{language === 'es' ? 'Respuestas' : 'Answers'}</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-yellow-500/20 border-yellow-400/30">
+                  <CardContent className="p-4 text-center">
+                    <Trophy className="h-8 w-8 mx-auto text-yellow-400 mb-1" />
+                    <div className="text-2xl font-bold text-white">
+                      {answersReceived > 0 ? Math.round((correctAnswers / answersReceived) * 100) : 0}%
+                    </div>
+                    <p className="text-yellow-200 text-sm">{language === 'es' ? 'Precisión' : 'Accuracy'}</p>
+                  </CardContent>
+                </Card>
+              </div>
 
-          {/* Control Button */}
-          <div className="text-center">
-            <Button
-              onClick={nextQuestion}
-              size="lg"
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-xl px-12 py-6"
-            >
-              {currentQuestionIndex < totalQuestions - 1 ? (
-                <>
-                  {language === 'es' ? 'Siguiente Pregunta' : 'Next Question'}
-                  <ArrowRight className="h-6 w-6 ml-2" />
-                </>
-              ) : (
-                <>
-                  {language === 'es' ? 'Terminar Juego' : 'End Game'}
-                  <Trophy className="h-6 w-6 ml-2" />
-                </>
-              )}
-            </Button>
+              {/* Control Button */}
+              <div className="text-center">
+                <Button
+                  onClick={nextQuestion}
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-xl px-12 py-6"
+                >
+                  {currentQuestionIndex < totalQuestions - 1 ? (
+                    <>
+                      {language === 'es' ? 'Siguiente Pregunta' : 'Next Question'}
+                      <ArrowRight className="h-6 w-6 ml-2" />
+                    </>
+                  ) : (
+                    <>
+                      {language === 'es' ? 'Terminar Juego' : 'End Game'}
+                      <Trophy className="h-6 w-6 ml-2" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            {/* Right column - Live player list */}
+            <div className="space-y-4">
+              <Card className="bg-white/10 backdrop-blur-xl border-white/20">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-white text-lg flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    {language === 'es' ? 'Jugadores en Vivo' : 'Live Players'}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="max-h-[400px] overflow-y-auto">
+                  {sortedPlayers.length === 0 ? (
+                    <p className="text-white/50 text-center py-4">
+                      {language === 'es' ? 'Esperando jugadores...' : 'Waiting for players...'}
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {sortedPlayers.map((player, idx) => (
+                        <div
+                          key={player.participant_id || idx}
+                          className={`flex items-center gap-3 p-2 rounded-lg ${
+                            idx === 0 ? 'bg-yellow-500/20' :
+                            idx === 1 ? 'bg-slate-300/20' :
+                            idx === 2 ? 'bg-orange-500/20' :
+                            'bg-white/5'
+                          }`}
+                        >
+                          <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold ${
+                            idx === 0 ? 'bg-yellow-500 text-yellow-900' :
+                            idx === 1 ? 'bg-slate-300 text-slate-700' :
+                            idx === 2 ? 'bg-orange-500 text-orange-900' :
+                            'bg-white/20 text-white'
+                          }`}>
+                            {idx + 1}
+                          </div>
+                          <span className="flex-1 text-white text-sm truncate">
+                            {player.nickname}
+                          </span>
+                          <span className="text-white font-bold text-sm">
+                            {player.score || 0}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
