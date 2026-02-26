@@ -523,19 +523,160 @@ const PlayToLearnTeacher = () => {
 
           {/* Insights Tab */}
           <TabsContent value="insights">
-            <Card>
-              <CardContent className="py-12 text-center">
-                <BarChart3 className="h-16 w-16 mx-auto text-slate-300 mb-4" />
-                <h3 className="text-lg font-medium text-slate-600">
-                  {language === 'es' ? 'Estadísticas de Práctica' : 'Practice Insights'}
-                </h3>
-                <p className="text-slate-400 max-w-md mx-auto mt-2">
-                  {language === 'es' 
-                    ? 'Aquí verás estadísticas de participación y áreas de práctica. Sin calificaciones.'
-                    : 'View participation stats and practice areas here. No grades.'}
-                </p>
-              </CardContent>
-            </Card>
+            <div className="space-y-6">
+              {/* Assignment Selector */}
+              <Card>
+                <CardContent className="pt-6">
+                  <label className="text-sm font-medium text-slate-700 mb-2 block">
+                    {language === 'es' ? 'Selecciona una Asignación' : 'Select an Assignment'}
+                  </label>
+                  <div className="flex gap-2">
+                    <Select 
+                      value={selectedInsightAssignment || ''} 
+                      onValueChange={(value) => fetchInsights(value)}
+                    >
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder={language === 'es' ? 'Elegir asignación...' : 'Choose assignment...'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {assignments.map((a) => (
+                          <SelectItem key={a.assignment_id} value={a.assignment_id}>
+                            {a.topic} ({a.subject})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {selectedInsightAssignment && (
+                      <Button 
+                        variant="outline" 
+                        onClick={() => fetchInsights(selectedInsightAssignment)}
+                        disabled={loadingInsights}
+                      >
+                        <RefreshCw className={`h-4 w-4 ${loadingInsights ? 'animate-spin' : ''}`} />
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Insights Display */}
+              {loadingInsights ? (
+                <Card>
+                  <CardContent className="py-12 text-center">
+                    <Loader2 className="h-8 w-8 mx-auto animate-spin text-purple-500" />
+                    <p className="mt-2 text-slate-500">{language === 'es' ? 'Cargando...' : 'Loading...'}</p>
+                  </CardContent>
+                </Card>
+              ) : insights ? (
+                <div className="space-y-4">
+                  {/* Summary Stats */}
+                  <div className="grid grid-cols-4 gap-4">
+                    <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
+                      <CardContent className="pt-6 text-center">
+                        <Users className="h-8 w-8 mx-auto text-purple-500 mb-2" />
+                        <div className="text-3xl font-bold text-purple-700">{insights.total_participants}</div>
+                        <p className="text-purple-600 text-sm">{language === 'es' ? 'Participantes' : 'Participants'}</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
+                      <CardContent className="pt-6 text-center">
+                        <Gamepad2 className="h-8 w-8 mx-auto text-blue-500 mb-2" />
+                        <div className="text-3xl font-bold text-blue-700">{insights.total_sessions}</div>
+                        <p className="text-blue-600 text-sm">{language === 'es' ? 'Sesiones' : 'Sessions'}</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="bg-gradient-to-br from-green-50 to-teal-50 border-green-200">
+                      <CardContent className="pt-6 text-center">
+                        <CheckCircle2 className="h-8 w-8 mx-auto text-green-500 mb-2" />
+                        <div className="text-3xl font-bold text-green-700">{insights.total_answers}</div>
+                        <p className="text-green-600 text-sm">{language === 'es' ? 'Respuestas' : 'Answers'}</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200">
+                      <CardContent className="pt-6 text-center">
+                        <Trophy className="h-8 w-8 mx-auto text-yellow-500 mb-2" />
+                        <div className="text-3xl font-bold text-yellow-700">{insights.overall_accuracy_percent}%</div>
+                        <p className="text-yellow-600 text-sm">{language === 'es' ? 'Precisión' : 'Accuracy'}</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Game Type Breakdown */}
+                  {insights.game_type_breakdown && Object.keys(insights.game_type_breakdown).length > 0 && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">
+                          {language === 'es' ? 'Modos de Juego Usados' : 'Game Modes Used'}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex flex-wrap gap-2">
+                          {Object.entries(insights.game_type_breakdown).map(([mode, count]) => (
+                            <Badge key={mode} variant="secondary" className="px-3 py-1">
+                              {mode.replace('_', ' ').toUpperCase()}: {count} {language === 'es' ? 'sesiones' : 'sessions'}
+                            </Badge>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Most Missed Items */}
+                  {insights.most_missed_items && insights.most_missed_items.length > 0 && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <Target className="h-5 w-5 text-red-500" />
+                          {language === 'es' ? 'Preguntas Más Difíciles' : 'Most Challenging Questions'}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          {insights.most_missed_items.map((item, idx) => (
+                            <div key={item.item_id} className="flex items-center justify-between p-2 bg-red-50 rounded-lg">
+                              <span className="text-sm text-slate-700">
+                                {language === 'es' ? 'Pregunta' : 'Question'} {item.item_id.slice(-4)}
+                              </span>
+                              <Badge variant="destructive">
+                                {item.miss_count} {language === 'es' ? 'errores' : 'misses'}
+                              </Badge>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* No Data State */}
+                  {insights.total_participants === 0 && (
+                    <Card>
+                      <CardContent className="py-8 text-center">
+                        <BarChart3 className="h-12 w-12 mx-auto text-slate-300 mb-2" />
+                        <p className="text-slate-500">
+                          {language === 'es' 
+                            ? 'Aún no hay datos. Los estudiantes necesitan completar juegos primero.'
+                            : 'No data yet. Students need to complete games first.'}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              ) : (
+                <Card>
+                  <CardContent className="py-12 text-center">
+                    <BarChart3 className="h-16 w-16 mx-auto text-slate-300 mb-4" />
+                    <h3 className="text-lg font-medium text-slate-600">
+                      {language === 'es' ? 'Estadísticas de Práctica' : 'Practice Insights'}
+                    </h3>
+                    <p className="text-slate-400 max-w-md mx-auto mt-2">
+                      {language === 'es' 
+                        ? 'Selecciona una asignación arriba para ver las estadísticas de participación.'
+                        : 'Select an assignment above to view participation stats.'}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </TabsContent>
         </Tabs>
 
