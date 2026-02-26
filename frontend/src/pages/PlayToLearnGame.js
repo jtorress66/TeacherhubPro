@@ -1976,48 +1976,21 @@ const PlayToLearnGame = () => {
 
             {/* Sequence Mode */}
             {session?.game_type === 'sequence' && (
-              <div className="space-y-6">
-                <div className="text-center">
-                  <Badge className="mb-4 bg-violet-500/50 text-white">
-                    {language === 'es' ? 'Ordenar' : 'Sequence'}
-                  </Badge>
-                  <p className="text-white/80">
-                    {language === 'es' ? 'Ordena los elementos correctamente' : 'Put the items in the correct order'}
-                  </p>
-                </div>
-                
-                {/* Items to order */}
-                <div className="space-y-2 max-w-md mx-auto">
-                  {(session.game_payload?.shuffled_order || []).map((itemId, idx) => {
-                    const item = session.game_payload?.items?.find(i => i.item_id === itemId);
-                    return (
-                      <div
-                        key={itemId}
-                        className="flex items-center gap-3 bg-white/10 border-2 border-white/30 rounded-xl p-4 text-white"
-                      >
-                        <span className="w-8 h-8 rounded-full bg-violet-500/50 flex items-center justify-center text-sm font-bold">
-                          {idx + 1}
-                        </span>
-                        <span className="flex-1">{item?.text}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="text-center">
-                  <Button
-                    onClick={() => {
-                      // Simple check - in a real implementation you'd have drag-and-drop
-                      toast.info(language === 'es' ? 'Arrastra para reordenar (próximamente)' : 'Drag to reorder (coming soon)');
-                      // For now, auto-complete with partial score
-                      handleGameComplete();
-                    }}
-                    className="bg-violet-500 hover:bg-violet-600"
-                  >
-                    {language === 'es' ? 'Verificar Orden' : 'Check Order'}
-                  </Button>
-                </div>
-              </div>
+              <SequenceGameComponent 
+                session={session}
+                language={language}
+                setScore={setScore}
+                setStreak={setStreak}
+                handleGameComplete={handleGameComplete}
+                submitAnswer={(itemId, answer, isCorrect) => {
+                  // Submit to backend
+                  axios.post(`${API}/play-to-learn/sessions/${session.session_id}/submit-answer?participant_id=${participantId}`, {
+                    item_id: itemId,
+                    answer: answer,
+                    time_taken_ms: 0
+                  }, { withCredentials: true }).catch(console.error);
+                }}
+              />
             )}
 
             {/* Memory Game Mode */}
