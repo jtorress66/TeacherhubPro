@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -14,6 +14,113 @@ import axios from 'axios';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const WS_URL = process.env.REACT_APP_BACKEND_URL?.replace('https://', 'wss://').replace('http://', 'ws://');
+
+// Memory Game Component - separate to prevent reshuffling on every render
+const MemoryGameComponent = ({ session, language, matchedPairs, setMatchedPairs, setScore, setStreak, handleGameComplete }) => {
+  const [selectedCards, setSelectedCards] = useState([]);
+  const [isChecking, setIsChecking] = useState(false);
+  
+  // Shuffle cards ONCE when component mounts or pairs change
+  const shuffledCards = useMemo(() => {
+    const pairs = session?.game_payload?.pairs || [];
+    const cards = pairs.flatMap((pair) => [
+      { id: `${pair.pair_id}_a`, text: pair.card_a, pairId: pair.pair_id, type: 'term' },
+      { id: `${pair.pair_id}_b`, text: pair.card_b, pairId: pair.pair_id, type: 'definition' }
+    ]);
+    // Fisher-Yates shuffle
+    for (let i = cards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cards[i], cards[j]] = [cards[j], cards[i]];
+    }
+    return cards;
+  }, [session?.game_payload?.pairs]);
+  
+  const handleCardClick = (card) => {
+    if (isChecking || matchedPairs.includes(card.pairId) || selectedCards.find(c => c.id === card.id)) {
+      return;
+    }
+    
+    const newSelected = [...selectedCards, card];
+    setSelectedCards(newSelected);
+    
+    if (newSelected.length === 2) {
+      setIsChecking(true);
+      
+      // Check if match
+      setTimeout(() => {
+        if (newSelected[0].pairId === newSelected[1].pairId) {
+          setMatchedPairs(prev => [...prev, card.pairId]);
+          setScore(prev => prev + 1);
+          setStreak(prev => prev + 1);
+          toast.success(language === 'es' ? '¡Par encontrado!' : 'Match found!');
+          
+          // Check if game complete
+          const totalPairs = session?.game_payload?.pairs?.length || 0;
+          if (matchedPairs.length + 1 >= totalPairs) {
+            setTimeout(() => handleGameComplete(), 500);
+          }
+        } else {
+          setStreak(0);
+          toast.error(language === 'es' ? 'No es par' : 'Not a match');
+        }
+        setSelectedCards([]);
+        setIsChecking(false);
+      }, 800);
+    }
+  };
+  
+  const totalPairs = session?.game_payload?.pairs?.length || 0;
+  
+  return (
+    <div className="space-y-6">
+      <div className="text-center">
+        <Badge className="mb-4 bg-pink-500/50 text-white">
+          {language === 'es' ? 'Memoria' : 'Memory Game'}
+        </Badge>
+        <p className="text-white/80">
+          {language === 'es' ? 'Encuentra los pares haciendo clic en las cartas' : 'Find matching pairs by clicking cards'}
+        </p>
+      </div>
+      
+      {/* Memory cards grid */}
+      <div className="grid grid-cols-4 gap-3 max-w-lg mx-auto">
+        {shuffledCards.map((card) => {
+          const isMatched = matchedPairs.includes(card.pairId);
+          const isSelected = selectedCards.find(c => c.id === card.id);
+          const isRevealed = isMatched || isSelected;
+          
+          return (
+            <button
+              key={card.id}
+              onClick={() => handleCardClick(card)}
+              disabled={isMatched || isChecking}
+              className={`aspect-square rounded-xl p-2 text-sm font-medium transition-all duration-300 transform ${
+                isMatched
+                  ? 'bg-green-500/40 border-green-400 text-green-100 scale-95'
+                  : isSelected
+                  ? 'bg-pink-500/60 border-pink-400 text-white scale-105 shadow-lg'
+                  : 'bg-white/10 border-white/30 text-white hover:bg-white/20 hover:scale-102'
+              } border-2 flex items-center justify-center`}
+            >
+              {isRevealed ? (
+                <span className="text-center break-words">{card.text}</span>
+              ) : (
+                <span className="text-3xl">?</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="text-center space-y-2">
+        <p className="text-white text-lg font-semibold">
+          {matchedPairs.length} / {totalPairs} {language === 'es' ? 'pares encontrados' : 'pairs found'}
+        </p>
+        <Progress value={(matchedPairs.length / totalPairs) * 100} className="max-w-xs mx-auto h-3" />
+      </div>
+    </div>
+  );
+};
 
 const PlayToLearnGame = () => {
   const { sessionId } = useParams();
