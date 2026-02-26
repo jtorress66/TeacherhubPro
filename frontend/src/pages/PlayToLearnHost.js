@@ -54,40 +54,45 @@ const PlayToLearnHost = () => {
     };
   }, [sessionId, authLoading, user]);
 
-  // Polling to refresh player data every 3 seconds for ACTIVE sessions
+  // Fallback polling every 15 seconds (WebSocket handles real-time updates)
+  // This ensures data consistency if WebSocket messages are missed
   useEffect(() => {
     let pollInterval;
     
     if (session?.status === 'ACTIVE') {
       pollInterval = setInterval(async () => {
-        try {
-          const res = await axios.get(`${API}/play-to-learn/sessions/${sessionId}`, { withCredentials: true });
-          
-          // De-duplicate and update players with their selected modes
-          const participants = res.data.participants || [];
-          const uniqueParticipants = participants.reduce((acc, p) => {
-            const existingIdx = acc.findIndex(existing => 
-              existing.nickname.toLowerCase() === p.nickname.toLowerCase()
-            );
-            if (existingIdx === -1) {
-              acc.push(p);
-            } else {
-              // Merge data, keeping the most recent info
-              acc[existingIdx] = { ...acc[existingIdx], ...p };
+        // Only poll if WebSocket is disconnected
+        if (!wsConnected) {
+          console.log('[Host] WebSocket disconnected, using fallback polling...');
+          try {
+            const res = await axios.get(`${API}/play-to-learn/sessions/${sessionId}`, { withCredentials: true });
+            
+            // De-duplicate and update players with their selected modes
+            const participants = res.data.participants || [];
+            const uniqueParticipants = participants.reduce((acc, p) => {
+              const existingIdx = acc.findIndex(existing => 
+                existing.nickname.toLowerCase() === p.nickname.toLowerCase()
+              );
+              if (existingIdx === -1) {
+                acc.push(p);
+              } else {
+                // Merge data, keeping the most recent info
+                acc[existingIdx] = { ...acc[existingIdx], ...p };
+              }
+              return acc;
+            }, []);
+            
+            setPlayers(uniqueParticipants);
+            
+            // Update session if status changed
+            if (res.data.status !== session?.status) {
+              setSession(res.data);
             }
-            return acc;
-          }, []);
-          
-          setPlayers(uniqueParticipants);
-          
-          // Update session if status changed
-          if (res.data.status !== session?.status) {
-            setSession(res.data);
+          } catch (err) {
+            console.error('[Host] Polling error:', err);
           }
-        } catch (err) {
-          console.error('[Host] Polling error:', err);
         }
-      }, 3000);
+      }, 15000); // Poll every 15 seconds as fallback
     }
     
     return () => {
@@ -95,7 +100,7 @@ const PlayToLearnHost = () => {
         clearInterval(pollInterval);
       }
     };
-  }, [session?.status, sessionId]);
+  }, [session?.status, sessionId, wsConnected]);
 
   const fetchSession = async () => {
     try {
