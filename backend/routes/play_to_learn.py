@@ -644,7 +644,7 @@ async def create_practice_session(session: SessionCreate, request: Request):
     await db.practice_sessions.insert_one(session_doc)
     
     # Log for anti-repeat verification
-    print(f"[Play to Learn] NEW SESSION CREATED:")
+    print("[Play to Learn] NEW SESSION CREATED:")
     print(f"  - session_id: {session_id}")
     print(f"  - question_set_id: {question_set_id}")
     print(f"  - variant_seed: {variant_seed}")
