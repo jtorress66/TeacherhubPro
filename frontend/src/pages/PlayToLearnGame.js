@@ -1955,99 +1955,23 @@ const PlayToLearnGame = () => {
 
             {/* Word Search Mode */}
             {session?.game_type === 'word_search' && (
-              <div className="space-y-6">
-                <div className="text-center">
-                  <Badge className="mb-4 bg-green-500/50 text-white">
-                    {language === 'es' ? 'Sopa de Letras' : 'Word Search'}
-                  </Badge>
-                  <p className="text-white/80">
-                    {language === 'es' ? 'Encuentra las palabras ocultas' : 'Find the hidden words'}
-                  </p>
-                </div>
-                
-                {/* Words to find */}
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {session.game_payload?.words?.map((word, idx) => (
-                    <Badge 
-                      key={idx} 
-                      className={`text-sm py-1 px-3 ${
-                        matchedPairs.includes(word) 
-                          ? 'bg-green-500/50 line-through' 
-                          : 'bg-white/20'
-                      }`}
-                    >
-                      {word}
-                    </Badge>
-                  ))}
-                </div>
-
-                {/* Hints */}
-                <div className="space-y-2 max-w-md mx-auto">
-                  <p className="text-white/60 text-sm text-center">
-                    {language === 'es' ? 'Pistas:' : 'Hints:'}
-                  </p>
-                  {session.game_payload?.hints?.slice(0, 4).map((hint, idx) => (
-                    <div key={idx} className="bg-white/10 rounded-lg p-2 text-sm text-white/80">
-                      • {hint.hint}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Word input */}
-                <div className="flex gap-2 max-w-md mx-auto">
-                  <Input
-                    value={typedAnswer}
-                    onChange={(e) => setTypedAnswer(e.target.value.toUpperCase())}
-                    placeholder={language === 'es' ? 'Escribe una palabra...' : 'Type a word...'}
-                    className="flex-1 bg-white/10 border-white/30 text-white placeholder:text-white/50 uppercase"
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' && typedAnswer.trim()) {
-                        const word = typedAnswer.trim().toUpperCase();
-                        if (session.game_payload?.words?.includes(word) && !matchedPairs.includes(word)) {
-                          setMatchedPairs(prev => [...prev, word]);
-                          setScore(prev => prev + 1);
-                          setStreak(prev => prev + 1);
-                          toast.success(language === 'es' ? '¡Encontrado!' : 'Found!');
-                          
-                          // Check if all words found
-                          if (matchedPairs.length + 1 >= session.game_payload?.words?.length) {
-                            handleGameComplete();
-                          }
-                        } else if (matchedPairs.includes(word)) {
-                          toast.info(language === 'es' ? 'Ya encontrada' : 'Already found');
-                        } else {
-                          toast.error(language === 'es' ? 'No está en la lista' : 'Not in the list');
-                          setStreak(0);
-                        }
-                        setTypedAnswer('');
-                      }
-                    }}
-                  />
-                  <Button
-                    onClick={() => {
-                      const word = typedAnswer.trim().toUpperCase();
-                      if (session.game_payload?.words?.includes(word) && !matchedPairs.includes(word)) {
-                        setMatchedPairs(prev => [...prev, word]);
-                        setScore(prev => prev + 1);
-                        setStreak(prev => prev + 1);
-                        toast.success(language === 'es' ? '¡Encontrado!' : 'Found!');
-                        
-                        if (matchedPairs.length + 1 >= session.game_payload?.words?.length) {
-                          handleGameComplete();
-                        }
-                      }
-                      setTypedAnswer('');
-                    }}
-                    className="bg-green-500 hover:bg-green-600"
-                  >
-                    <CheckCircle2 className="h-5 w-5" />
-                  </Button>
-                </div>
-
-                <p className="text-center text-white/60 text-sm">
-                  {matchedPairs.length} / {session.game_payload?.words?.length || 0} {language === 'es' ? 'encontradas' : 'found'}
-                </p>
-              </div>
+              <WordSearchGameComponent 
+                session={session}
+                language={language}
+                matchedPairs={matchedPairs}
+                setMatchedPairs={setMatchedPairs}
+                setScore={setScore}
+                setStreak={setStreak}
+                handleGameComplete={handleGameComplete}
+                submitAnswer={(itemId, answer, isCorrect) => {
+                  // Submit to backend
+                  axios.post(`${API}/play-to-learn/sessions/${session.session_id}/submit-answer?participant_id=${participantId}`, {
+                    item_id: itemId,
+                    answer: answer,
+                    time_taken_ms: 0
+                  }, { withCredentials: true }).catch(console.error);
+                }}
+              />
             )}
 
             {/* Sequence Mode */}
