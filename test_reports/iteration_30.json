@@ -23,7 +23,7 @@
     "frontend": "N/A - Backend only testing"
   },
   "test_credentials": {
-    "API_URL": "https://classroom-games-2.preview.emergentagent.com",
+    "API_URL": "https://edu-game-platform.preview.emergentagent.com",
     "test_quiz_game": "game_f1ca4b814708",
     "test_true_false_game": "game_fd1995473e78",
     "admin_email": "admin@teacherhubpro.com"

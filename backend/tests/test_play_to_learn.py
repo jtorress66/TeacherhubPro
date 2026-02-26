@@ -9,7 +9,7 @@ import os
 import json
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://classroom-games-2.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://edu-game-platform.preview.emergentagent.com')
 
 class TestPlayToLearnAPI:
     """Test suite for Play to Learn API endpoints"""
