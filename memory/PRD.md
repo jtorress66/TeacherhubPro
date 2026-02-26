@@ -1,6 +1,46 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-26 - Play to Learn Critical Bug Fixes - ALL P0 ISSUES RESOLVED ✅
+
+### Issues Fixed:
+
+**Issue 1: Student blank page after entering name (P0) - FIXED**
+- **Root Cause:** Frontend `PlayToLearnGame.js` only had rendering logic for 4 game modes (quiz, time_attack, matching, flashcard). New modes (fill_blank, true_false, word_search, sequence, memory) had no UI rendering code.
+- **Solution:** Added complete rendering implementation for all 8 game modes in `PlayToLearnGame.js`
+- **Evidence:** Testing agent verified fill_blank and true_false modes render correctly with proper question display, answer inputs, timers, and scoring.
+
+**Issue 2: "All Modes" option for assignments (P0) - IMPLEMENTED**
+- **Root Cause:** No way for teachers to let students choose their preferred game mode.
+- **Solution:** 
+  - Backend: Added "all_modes" as valid game_type in session creation
+  - Backend: Added `POST /api/play-to-learn/sessions/{id}/select-mode` endpoint
+  - Frontend: Added "All Modes (Student Chooses)" option in teacher's Host Session modal
+  - Frontend: Added mode selection screen in `PlayToLearnGame.js` when game_type is "all_modes"
+- **Evidence:** Students now see "Choose How to Play!" screen with all available game modes
+
+**Issue 3: Host cannot see game content or students (P0) - FIXED**
+- **Root Cause:** Host view for ACTIVE status only showed question but no player list
+- **Solution:** Enhanced `PlayToLearnHost.js` active game view with:
+  - Live player leaderboard panel on the right side
+  - Player rankings with scores
+  - WebSocket connection status indicator
+- **Evidence:** Teachers can now see live player list with scores during active games
+
+**Issue 4: Back button not visible in host lobby (P1) - FIXED**
+- **Root Cause:** Back button was already in code but may have been hidden
+- **Solution:** Verified back button is prominently displayed at top left of lobby view
+- **Evidence:** Back button clearly visible in host lobby screenshots
+
+### New API Endpoints Added:
+- `POST /api/play-to-learn/sessions/{id}/select-mode` - For students to select game mode when session allows multiple
+
+### Test Results (iteration_37.json):
+- **Backend:** 100% - 12/12 tests passed
+- **Frontend:** 100% - 6/6 Playwright tests passed
+- **All 8 Features Verified:** Mode selection, quiz rendering, fill_blank rendering, true_false rendering, host back button, host PIN/players display, API allowed_game_types, API select-mode
+
+---
 ## Update 2026-02-25 - Play to Learn (Kahoot-Style) Module - NEW FEATURE ✅
 
 ### Feature Summary:
