@@ -371,20 +371,41 @@ def transform_items_to_game_mode(base_items: List[dict], game_type: str) -> dict
         }
     
     elif game_type == "fill_blank":
-        # Fill in the blank - hide key words in the answer
+        # Fill in the blank - type the answer
+        questions = []
+        for item in base_items:
+            answer = item["correct_answer"]
+            original_question = item["question"]
+            
+            # Create a proper fill-in-the-blank sentence
+            # If the answer appears in the question, replace it with blanks
+            if answer.lower() in original_question.lower():
+                # Find and replace the answer (case-insensitive) with blank
+                import re
+                pattern = re.compile(re.escape(answer), re.IGNORECASE)
+                sentence = pattern.sub("_____", original_question, count=1)
+            else:
+                # Create a sentence using the term and definition
+                term = item.get("term", "")
+                definition = item.get("definition", "")
+                if term and definition:
+                    sentence = f"The definition of '{term}' is: _____"
+                else:
+                    # Fallback: use the question with a simpler format
+                    sentence = f"Complete: The answer is _____ ({item.get('explanation', 'Think about it')[:50]})"
+            
+            questions.append({
+                "item_id": item["item_id"],
+                "sentence": sentence,
+                "blank_answer": answer,
+                "hint": item.get("term", "") or item.get("options", [""])[0] if item.get("options") else "",
+                "explanation": item.get("explanation", ""),
+                "time_limit_seconds": 25
+            })
+        
         return {
             "game_type": "fill_blank",
-            "questions": [
-                {
-                    "item_id": item["item_id"],
-                    "sentence": item["question"].replace(item["correct_answer"], "_____") if item["correct_answer"] in item["question"] else f"_____ is the answer to: {item['question']}",
-                    "blank_answer": item["correct_answer"],
-                    "hint": item.get("term", item["options"][0] if item.get("options") else ""),
-                    "explanation": item.get("explanation", ""),
-                    "time_limit_seconds": 25
-                }
-                for item in base_items
-            ]
+            "questions": questions
         }
     
     elif game_type == "sequence":
