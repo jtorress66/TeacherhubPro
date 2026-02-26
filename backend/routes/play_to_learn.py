@@ -1257,7 +1257,7 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str, participant_
     await manager.connect(websocket, session_id, participant_id, role)
     
     try:
-        # Send current game state
+        # Send current game state with full participant data
         session = await db.practice_sessions.find_one({"session_id": session_id})
         if session:
             await websocket.send_json({
@@ -1266,7 +1266,14 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str, participant_
                 "status": session["status"],
                 "current_question_index": session.get("current_question_index", 0),
                 "participants": [
-                    {"nickname": p["nickname"], "score": p["score"]}
+                    {
+                        "participant_id": p.get("participant_id"),
+                        "nickname": p.get("nickname"),
+                        "score": p.get("score", 0),
+                        "streak": p.get("streak", 0),
+                        "selected_mode": p.get("selected_mode"),
+                        "answers": p.get("answers", [])
+                    }
                     for p in session.get("participants", [])
                 ]
             })
