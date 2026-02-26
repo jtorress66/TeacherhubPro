@@ -144,6 +144,19 @@ const PlayToLearnTeacher = () => {
     }
   };
 
+  const fetchInsights = async (assignmentId) => {
+    setLoadingInsights(true);
+    try {
+      const res = await axios.get(`${API}/play-to-learn/insights/${assignmentId}`, { withCredentials: true });
+      setInsights(res.data);
+      setSelectedInsightAssignment(assignmentId);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error fetching insights');
+    } finally {
+      setLoadingInsights(false);
+    }
+  };
+
   const createSession = async (assignment) => {
     setCreatingSession(true);
     try {
