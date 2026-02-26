@@ -1,6 +1,38 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-26 (Batch 3) - LIVE Mode Critical Bug Fixes - ALL VERIFIED ✅
+
+### Issues Fixed:
+
+**Issue 10: Student stuck on "Waiting" after teacher starts game (P0) - FIXED**
+- **Root Cause:** Students weren't connecting to WebSocket after joining, and no fallback mechanism existed
+- **Solution:** 
+  1. Added WebSocket connection in `handleManualJoin()` for LIVE mode
+  2. Added polling fallback every 2 seconds to check if game status changed to ACTIVE
+  3. When late-joining an ACTIVE game, frontend immediately starts the game
+- **Evidence:** Testing agent verified: late join shows quiz directly, polling detects game started
+
+**Issue 11: Duplicate player entries (P0) - FIXED**
+- **Root Cause:** Join endpoint didn't check if participant with same nickname already existed
+- **Solution:** 
+  1. Backend join endpoint now checks for existing participant with same nickname (case-insensitive)
+  2. Returns existing participant_id instead of creating duplicate
+  3. Frontend Host view de-duplicates players in `fetchSession()` and WebSocket handler
+- **Evidence:** Joining twice with "DuplicateTestPlayer" returns same `part_24af13e8efc9`
+
+### Test Results (iteration_39.json):
+- **Backend:** 100% - 14/14 tests passed
+- **Frontend:** 100% - All Playwright tests passed
+- **All 6 LIVE Mode Bugs Verified Fixed:**
+  1. Duplicate prevention
+  2. Late join to ACTIVE
+  3. Polling fallback
+  4. Host de-duplication
+  5. English questions
+  6. True/False validation
+
+---
 ## Update 2026-02-26 (Batch 2) - Play to Learn Additional Bug Fixes - ALL VERIFIED ✅
 
 ### Issues Fixed:
