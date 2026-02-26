@@ -199,8 +199,17 @@ const PlayToLearnGame = () => {
       
       setParticipantId(res.data.participant_id);
       setNeedsToJoin(false);
-      setGameStarted(true);
-      startQuestion();
+      
+      // Check if student should select mode
+      const allowedModes = res.data.allowed_game_types || session?.allowed_game_types || [];
+      const isAllModes = session?.game_type === 'all_modes' || allowedModes.length > 1;
+      
+      if (isAllModes && session?.game_type === 'all_modes') {
+        setShowModeSelection(true);
+      } else {
+        setGameStarted(true);
+        startQuestion();
+      }
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Error joining');
     } finally {
