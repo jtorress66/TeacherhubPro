@@ -124,6 +124,10 @@ const PlayToLearnGame = () => {
         console.log('Could not fetch assignment details');
       }
       
+      // Check if this is an "all_modes" session where student should pick
+      const isAllModes = res.data.game_type === 'all_modes' || 
+                         (res.data.allowed_game_types && res.data.allowed_game_types.length > 1);
+      
       if (res.data.mode === 'LIVE' && res.data.status === 'LOBBY') {
         connectWebSocket();
         setLobbyPlayers(res.data.participants || []);
@@ -131,7 +135,10 @@ const PlayToLearnGame = () => {
         // For self-paced, check if we need to join first
         if (!participantId && res.data.mode === 'SELF_PACED') {
           // Auto-join with a generated nickname if none provided
-          await autoJoinSession(res.data);
+          await autoJoinSession(res.data, isAllModes);
+        } else if (isAllModes && res.data.game_type === 'all_modes') {
+          // Show mode selection if "all_modes" and student hasn't selected yet
+          setShowModeSelection(true);
         } else {
           setGameStarted(true);
           startQuestion();
@@ -147,7 +154,7 @@ const PlayToLearnGame = () => {
     }
   };
 
-  const autoJoinSession = async (sessionData) => {
+  const autoJoinSession = async (sessionData, shouldShowModeSelection = false) => {
     // Generate a nickname if not provided
     const playerNickname = nickname || `Player_${Math.random().toString(36).substring(2, 7)}`;
     setNickname(playerNickname);
@@ -159,8 +166,17 @@ const PlayToLearnGame = () => {
       });
       
       setParticipantId(res.data.participant_id);
-      setGameStarted(true);
-      startQuestion();
+      
+      // Check if student should select mode
+      const allowedModes = res.data.allowed_game_types || sessionData.allowed_game_types || [];
+      const isAllModes = sessionData.game_type === 'all_modes' || allowedModes.length > 1;
+      
+      if (isAllModes && sessionData.game_type === 'all_modes') {
+        setShowModeSelection(true);
+      } else {
+        setGameStarted(true);
+        startQuestion();
+      }
     } catch (err) {
       console.error('Error auto-joining session:', err);
       // Show join form if auto-join fails
