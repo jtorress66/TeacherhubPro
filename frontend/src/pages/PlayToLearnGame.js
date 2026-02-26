@@ -1432,12 +1432,28 @@ const PlayToLearnGame = () => {
             )}
 
             {/* Fallback for unknown game types */}
-            {!['quiz', 'time_attack', 'matching', 'flashcard', 'true_false', 'fill_blank', 'word_search', 'sequence', 'memory'].includes(session?.game_type) && (
+            {!['quiz', 'time_attack', 'matching', 'flashcard', 'true_false', 'fill_blank', 'word_search', 'sequence', 'memory', 'all_modes'].includes(session?.game_type) && (
               <div className="text-center text-white/60 py-12">
                 <Gamepad2 className="h-16 w-16 mx-auto mb-4 opacity-50" />
                 <p>{language === 'es' ? 'Modo de juego no soportado' : 'Game mode not supported'}: {session?.game_type}</p>
                 <Button onClick={() => navigate('/play-to-learn')} className="mt-4">
                   {language === 'es' ? 'Volver' : 'Go Back'}
+                </Button>
+              </div>
+            )}
+
+            {/* Mode Selection Required - when game_type is all_modes */}
+            {session?.game_type === 'all_modes' && !showModeSelection && (
+              <div className="text-center py-12 space-y-4">
+                <Sparkles className="h-16 w-16 mx-auto text-yellow-400" />
+                <h3 className="text-2xl font-bold text-white">
+                  {language === 'es' ? '¡Elige un modo de juego!' : 'Choose a game mode!'}
+                </h3>
+                <Button 
+                  onClick={() => setShowModeSelection(true)}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-6 text-xl"
+                >
+                  {language === 'es' ? 'Seleccionar Modo' : 'Select Mode'}
                 </Button>
               </div>
             )}
