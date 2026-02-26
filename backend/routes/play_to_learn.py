@@ -686,6 +686,8 @@ async def get_practice_session(session_id: str):
         "game_payload": session["game_payload"],
         "participants": session.get("participants", []),
         "current_question_index": session.get("current_question_index", 0),
+        "allowed_game_types": session.get("allowed_game_types", [session["game_type"]]),
+        "join_pin": session.get("join_pin"),
         "created_at": session["created_at"]
     }
 
