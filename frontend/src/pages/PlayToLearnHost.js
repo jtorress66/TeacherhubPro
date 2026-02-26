@@ -646,9 +646,28 @@ const PlayToLearnHost = () => {
               <ArrowLeft className="h-5 w-5 mr-2" />
               {language === 'es' ? 'Volver' : 'Back'}
             </Button>
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-400' : 'bg-red-400'} animate-pulse`} />
-              <span className="text-white/60 text-sm">{wsConnected ? (language === 'es' ? 'Conectado' : 'Connected') : (language === 'es' ? 'Reconectando...' : 'Reconnecting...')}</span>
+            <div className="flex items-center gap-3">
+              {/* Real-time indicator */}
+              {wsConnected && (
+                <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/20 border border-green-400/30">
+                  <Zap className="h-3 w-3 text-green-400" />
+                  <span className="text-green-300 text-xs font-medium">
+                    {language === 'es' ? 'Tiempo Real' : 'Real-time'}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                {wsConnected ? (
+                  <Wifi className="h-4 w-4 text-green-400" />
+                ) : (
+                  <WifiOff className="h-4 w-4 text-red-400 animate-pulse" />
+                )}
+                <span className="text-white/60 text-sm">
+                  {wsConnected 
+                    ? (language === 'es' ? 'Conectado' : 'Connected') 
+                    : (language === 'es' ? 'Reconectando...' : 'Reconnecting...')}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -660,7 +679,6 @@ const PlayToLearnHost = () => {
                   {language === 'es' ? 'Pregunta' : 'Question'} {currentQuestionIndex + 1} / {totalQuestions}
                 </span>
                 <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-400' : 'bg-red-400'} animate-pulse`} />
                   <Badge className="bg-white/20">{session?.game_type?.toUpperCase()}</Badge>
                 </div>
               </div>
