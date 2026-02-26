@@ -1,7 +1,53 @@
 # TeacherHub - Product Requirements Document
 
 ---
-## Update 2026-02-26 - Play to Learn Critical Bug Fixes - ALL P0 ISSUES RESOLVED ✅
+## Update 2026-02-26 (Batch 2) - Play to Learn Additional Bug Fixes - ALL VERIFIED ✅
+
+### Issues Fixed:
+
+**Issue 5: "all_modes" showing error instead of mode selection (P0) - FIXED**
+- **Root Cause:** Fallback error check in `PlayToLearnGame.js` didn't include `all_modes` in allowed types list
+- **Solution:** Added `all_modes` to the allowed game types list in the fallback check
+- **Evidence:** Mode selection screen now shows correctly without "Game mode not supported" error
+
+**Issue 6: Questions in Spanish for English class (P0) - FIXED (RECURRING)**
+- **Root Cause:** AI prompt wasn't explicit enough about language requirements
+- **Solution:** Completely rewrote AI prompt in `generate_base_items()`:
+  - Added explicit language determination with `is_english` boolean
+  - Added concrete examples in target language
+  - Made "CRITICAL LANGUAGE REQUIREMENT" prominent
+  - Added rules about translating cross-language topics
+- **Evidence:** English assignment "Parts of Speech - Nouns and Verbs" generates English questions like "Which word in the following sentence is a NOUN?"
+
+**Issue 7: True/False always showing wrong answer (P0) - FIXED**
+- **Root Cause:** Answer validation checked student's "true"/"false" response against the original question's `correct_answer` instead of the boolean `is_true`
+- **Solution:** Updated `submit_answer()` endpoint to:
+  - Detect `game_type === "true_false"`
+  - Check if student's answer matches the expected `is_true` boolean
+  - Return "True" or "False" as the correct_answer string
+- **Evidence:** Selecting "True" for a true statement now shows green checkmark and "Correct!"
+
+**Issue 8: Confusing workflow - "Choose Mode" step (P1) - FIXED**
+- **Root Cause:** Quick Start Guide showed redundant "Choose Mode" step since modes are already selected during assignment creation
+- **Solution:** Updated Quick Start Guide to: "1. Create Assignment → 2. Start Session → 3. Share PIN/Link → ✓ Students Play!"
+- **Evidence:** Teacher dashboard now shows clear workflow
+
+**Issue 9: Student stuck on "waiting" after teacher starts (P1) - FIXED**
+- **Root Cause:** WebSocket `game_started` message wasn't triggering proper state transitions
+- **Solution:** Enhanced `handleWebSocketMessage()` and `fetchSession()` to:
+  - Log WebSocket messages for debugging
+  - Handle `ACTIVE` status when connecting
+  - Re-fetch session after game_started to get game_payload
+  - Show toast notification when game starts
+- **Evidence:** WebSocket now properly notifies students when game starts
+
+### Test Results (iteration_38.json):
+- **Backend:** 100% - 13/13 tests passed
+- **Frontend:** 100% - All Playwright tests passed
+- **All 6 Bugs Verified Fixed:** all_modes, English questions, True/False validation, workflow steps, fill_blank rendering, score tracking
+
+---
+## Update 2026-02-26 (Batch 1) - Play to Learn Critical Bug Fixes - ALL P0 ISSUES RESOLVED ✅
 
 ### Issues Fixed:
 
