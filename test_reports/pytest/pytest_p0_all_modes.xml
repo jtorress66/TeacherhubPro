@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="9" time="1.401" timestamp="2026-02-26T22:56:42.341191+00:00" hostname="agent-env-5c35ca6d-07f0-4a57-86a4-01532ef65972"><testcase classname="backend.tests.test_p0_all_modes_fixes.TestP0FillBlankInAllModes" name="test_all_modes_session_exists_and_active" time="0.177" /><testcase classname="backend.tests.test_p0_all_modes_fixes.TestP0FillBlankInAllModes" name="test_participant_has_selected_mode_stored" time="0.137" /><testcase classname="backend.tests.test_p0_all_modes_fixes.TestP0FillBlankInAllModes" name="test_fill_blank_answer_validation_in_all_modes" time="0.115"><failure message="AssertionError: Failed to join: {&quot;detail&quot;:&quot;Invalid PIN&quot;}&#10;assert 400 == 200&#10; +  where 400 = &lt;Response [400]&gt;.status_code">backend/tests/test_p0_all_modes_fixes.py:82: in test_fill_blank_answer_validation_in_all_modes
+    assert join_response.status_code == 200, f"Failed to join: {join_response.text}"
+E   AssertionError: Failed to join: {"detail":"Invalid PIN"}
+E   assert 400 == 200
+E    +  where 400 = &lt;Response [400]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_p0_all_modes_fixes.TestP0FillBlankInAllModes" name="test_fill_blank_case_insensitive_validation" time="0.123"><failure message="assert 400 == 200&#10; +  where 400 = &lt;Response [400]&gt;.status_code">backend/tests/test_p0_all_modes_fixes.py:141: in test_fill_blank_case_insensitive_validation
+    assert join_response.status_code == 200
+E   assert 400 == 200
+E    +  where 400 = &lt;Response [400]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_p0_all_modes_fixes.TestP0HostViewSelectedMode" name="test_session_returns_selected_mode_for_participants" time="0.118" /><testcase classname="backend.tests.test_p0_all_modes_fixes.TestP0HostViewSelectedMode" name="test_select_mode_stores_mode_in_participant" time="0.127"><failure message="assert 400 == 200&#10; +  where 400 = &lt;Response [400]&gt;.status_code">backend/tests/test_p0_all_modes_fixes.py:212: in test_select_mode_stores_mode_in_participant
+    assert join_response.status_code == 200
+E   assert 400 == 200
+E    +  where 400 = &lt;Response [400]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_p0_all_modes_fixes.TestAllModesSessionFlow" name="test_join_select_mode_play_flow" time="0.111"><failure message="assert 400 == 200&#10; +  where 400 = &lt;Response [400]&gt;.status_code">backend/tests/test_p0_all_modes_fixes.py:255: in test_join_select_mode_play_flow
+    assert join_response.status_code == 200
+E   assert 400 == 200
+E    +  where 400 = &lt;Response [400]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_p0_all_modes_fixes.TestTrueFalseValidation" name="test_true_false_correct_answer" time="0.160"><failure message="assert 400 == 200&#10; +  where 400 = &lt;Response [400]&gt;.status_code">backend/tests/test_p0_all_modes_fixes.py:315: in test_true_false_correct_answer
+    assert join_response.status_code == 200
+E   assert 400 == 200
+E    +  where 400 = &lt;Response [400]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_p0_all_modes_fixes.TestQuizValidation" name="test_quiz_correct_answer" time="0.213"><failure message="assert 400 == 200&#10; +  where 400 = &lt;Response [400]&gt;.status_code">backend/tests/test_p0_all_modes_fixes.py:365: in test_quiz_correct_answer
+    assert join_response.status_code == 200
+E   assert 400 == 200
+E    +  where 400 = &lt;Response [400]&gt;.status_code</failure></testcase></testsuite></testsuites>
