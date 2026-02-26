@@ -547,53 +547,89 @@ const PlayToLearnGame = () => {
   // Mode selection screen
   if (showModeSelection) {
     const gameModes = [
-      { id: 'quiz', icon: Brain, name: language === 'en' ? 'Classic Quiz' : 'Quiz Clásico', color: 'from-purple-500 to-indigo-600' },
-      { id: 'time_attack', icon: Zap, name: language === 'en' ? 'Time Attack' : 'Ataque de Tiempo', color: 'from-orange-500 to-red-600' },
-      { id: 'matching', icon: Target, name: language === 'en' ? 'Matching' : 'Emparejamiento', color: 'from-green-500 to-teal-600' },
-      { id: 'flashcard', icon: Sparkles, name: language === 'en' ? 'Flashcards' : 'Tarjetas Flash', color: 'from-pink-500 to-rose-600' },
-      { id: 'true_false', icon: CheckCircle2, name: language === 'en' ? 'True/False' : 'Verdadero/Falso', color: 'from-blue-500 to-cyan-600' },
-      { id: 'fill_blank', icon: Target, name: language === 'en' ? 'Fill in Blank' : 'Completar', color: 'from-amber-500 to-yellow-600' },
-      { id: 'word_search', icon: Target, name: language === 'en' ? 'Word Search' : 'Sopa de Letras', color: 'from-emerald-500 to-green-600' },
-      { id: 'memory', icon: Brain, name: language === 'en' ? 'Memory Game' : 'Juego de Memoria', color: 'from-violet-500 to-purple-600' }
+      { id: 'quiz', icon: Brain, name: language === 'en' ? 'Classic Quiz' : 'Quiz Clásico', color: 'from-purple-500 to-indigo-600', desc: language === 'en' ? 'Multiple choice questions' : 'Preguntas de opción múltiple' },
+      { id: 'time_attack', icon: Zap, name: language === 'en' ? 'Time Attack' : 'Ataque de Tiempo', color: 'from-orange-500 to-red-600', desc: language === 'en' ? 'Answer quickly!' : '¡Responde rápido!' },
+      { id: 'matching', icon: Target, name: language === 'en' ? 'Matching' : 'Emparejamiento', color: 'from-green-500 to-teal-600', desc: language === 'en' ? 'Connect pairs' : 'Conecta pares' },
+      { id: 'flashcard', icon: Sparkles, name: language === 'en' ? 'Flashcards' : 'Tarjetas Flash', color: 'from-pink-500 to-rose-600', desc: language === 'en' ? 'Study cards' : 'Tarjetas de estudio' },
+      { id: 'true_false', icon: CheckCircle2, name: language === 'en' ? 'True/False' : 'Verdadero/Falso', color: 'from-blue-500 to-cyan-600', desc: language === 'en' ? 'Is it true?' : '¿Es verdadero?' },
+      { id: 'fill_blank', icon: Target, name: language === 'en' ? 'Fill in Blank' : 'Completar', color: 'from-amber-500 to-yellow-600', desc: language === 'en' ? 'Complete sentences' : 'Completa oraciones' },
+      { id: 'word_search', icon: Target, name: language === 'en' ? 'Word Search' : 'Sopa de Letras', color: 'from-emerald-500 to-green-600', desc: language === 'en' ? 'Find words' : 'Encuentra palabras' },
+      { id: 'memory', icon: Brain, name: language === 'en' ? 'Memory Game' : 'Juego de Memoria', color: 'from-violet-500 to-purple-600', desc: language === 'en' ? 'Match cards' : 'Empareja cartas' }
     ];
     
     // Filter to allowed modes if available
-    const allowedModes = assignment?.allowed_game_types || ['quiz', 'time_attack', 'matching', 'flashcard', 'true_false', 'fill_blank', 'word_search', 'memory'];
+    const allowedModes = session?.allowed_game_types || assignment?.allowed_game_types || ['quiz', 'time_attack', 'matching', 'flashcard', 'true_false', 'fill_blank', 'word_search', 'memory'];
     const availableModes = gameModes.filter(m => allowedModes.includes(m.id));
+    
+    // Check if this is initial selection (game_type is 'all_modes') or post-game selection
+    const isInitialSelection = session?.game_type === 'all_modes';
+    
+    // Function to handle initial mode selection
+    const handleInitialModeSelect = async (modeId) => {
+      toast.info(language === 'en' ? 'Loading game...' : 'Cargando juego...');
+      try {
+        const res = await axios.post(`${API}/play-to-learn/sessions/${sessionId}/select-mode`, {
+          game_type: modeId,
+          participant_id: participantId
+        });
+        
+        // Update session with new payload
+        setSession(prev => ({
+          ...prev,
+          game_type: modeId,
+          game_payload: res.data.game_payload
+        }));
+        
+        setShowModeSelection(false);
+        setGameStarted(true);
+        startQuestion();
+      } catch (err) {
+        toast.error(err.response?.data?.detail || 'Error selecting mode');
+      }
+    };
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
-        <Card className="max-w-md w-full bg-white/10 backdrop-blur-xl border-white/20 text-white">
+        <Card className="max-w-lg w-full bg-white/10 backdrop-blur-xl border-white/20 text-white">
           <CardHeader className="text-center">
             <Sparkles className="h-12 w-12 mx-auto text-yellow-400 mb-2" />
-            <CardTitle>{language === 'en' ? 'Choose a Game Mode' : 'Elige un Modo de Juego'}</CardTitle>
-            <p className="text-white/70 text-sm">{assignment?.topic || session?.game_type}</p>
+            <CardTitle className="text-2xl">
+              {language === 'en' ? 'Choose How to Play!' : '¡Elige Cómo Jugar!'}
+            </CardTitle>
+            <p className="text-white/70 text-sm mt-2">
+              {assignment?.topic || session?.topic || ''}
+            </p>
+            {nickname && (
+              <Badge className="mt-2 bg-purple-500/50">{nickname}</Badge>
+            )}
           </CardHeader>
           <CardContent className="space-y-3">
-            {availableModes.map((mode) => (
+            <div className="grid grid-cols-2 gap-3">
+              {availableModes.map((mode) => (
+                <Button
+                  key={mode.id}
+                  onClick={() => isInitialSelection ? handleInitialModeSelect(mode.id) : selectNewMode(mode.id)}
+                  className={`w-full bg-gradient-to-r ${mode.color} py-8 flex-col h-auto gap-1 hover:scale-105 transition-transform`}
+                  disabled={!isInitialSelection && mode.id === session?.game_type}
+                >
+                  <mode.icon className="h-8 w-8" />
+                  <span className="text-sm font-bold">{mode.name}</span>
+                  <span className="text-xs opacity-80">{mode.desc}</span>
+                </Button>
+              ))}
+            </div>
+            {!isInitialSelection && (
               <Button
-                key={mode.id}
-                onClick={() => selectNewMode(mode.id)}
-                className={`w-full bg-gradient-to-r ${mode.color} py-6 justify-start`}
-                disabled={mode.id === session?.game_type}
+                variant="ghost"
+                onClick={() => {
+                  setShowModeSelection(false);
+                  setGameComplete(true);
+                }}
+                className="w-full text-white/70 hover:text-white hover:bg-white/10 mt-4"
               >
-                <mode.icon className="h-6 w-6 mr-3" />
-                <span className="text-lg">{mode.name}</span>
-                {mode.id === session?.game_type && (
-                  <Badge className="ml-auto bg-white/20">{language === 'en' ? 'Current' : 'Actual'}</Badge>
-                )}
+                {language === 'en' ? 'Back to Results' : 'Volver a Resultados'}
               </Button>
-            ))}
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setShowModeSelection(false);
-                setGameComplete(true);
-              }}
-              className="w-full text-white/70 hover:text-white hover:bg-white/10 mt-4"
-            >
-              {language === 'en' ? 'Back to Results' : 'Volver a Resultados'}
-            </Button>
+            )}
           </CardContent>
         </Card>
       </div>
