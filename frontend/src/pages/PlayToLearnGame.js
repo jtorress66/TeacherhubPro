@@ -7,13 +7,545 @@ import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
 import { 
   Gamepad2, Users, Zap, Brain, Trophy, Play, CheckCircle2, XCircle,
-  Clock, Target, Sparkles, RefreshCw, ArrowRight, Loader2, Timer, Flame
+  Clock, Target, Sparkles, RefreshCw, ArrowRight, Loader2, Timer, Flame,
+  GripVertical, ArrowUp, ArrowDown, Search
 } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const WS_URL = process.env.REACT_APP_BACKEND_URL?.replace('https://', 'wss://').replace('http://', 'ws://');
+
+// Word Search Game Component - interactive grid-based word search
+const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPairs, setScore, setStreak, handleGameComplete, submitAnswer }) => {
+  const [grid, setGrid] = useState([]);
+  const [selectedCells, setSelectedCells] = useState([]);
+  const [isSelecting, setIsSelecting] = useState(false);
+  const [foundWords, setFoundWords] = useState([]);
+  const [wordPositions, setWordPositions] = useState({});
+  const gridRef = useRef(null);
+  
+  const words = session?.game_payload?.words || [];
+  const hints = session?.game_payload?.hints || [];
+  const gridSize = session?.game_payload?.grid_size || 12;
+  
+  // Generate grid with words placed
+  useEffect(() => {
+    if (words.length === 0) return;
+    
+    const newGrid = generateWordSearchGrid(words, gridSize);
+    setGrid(newGrid.grid);
+    setWordPositions(newGrid.positions);
+  }, [words, gridSize]);
+  
+  // Generate word search grid with words placed in various directions
+  const generateWordSearchGrid = (wordsToPlace, size) => {
+    const gridArr = Array(size).fill(null).map(() => Array(size).fill(''));
+    const positions = {};
+    const directions = [
+      [0, 1],   // right
+      [1, 0],   // down
+      [1, 1],   // diagonal down-right
+      [-1, 1],  // diagonal up-right
+      [0, -1],  // left
+      [-1, 0],  // up
+    ];
+    
+    // Sort words by length (longer first for better placement)
+    const sortedWords = [...wordsToPlace].sort((a, b) => b.length - a.length);
+    
+    sortedWords.forEach(word => {
+      let placed = false;
+      let attempts = 0;
+      
+      while (!placed && attempts < 100) {
+        const dir = directions[Math.floor(Math.random() * directions.length)];
+        const startRow = Math.floor(Math.random() * size);
+        const startCol = Math.floor(Math.random() * size);
+        
+        // Check if word fits
+        const endRow = startRow + dir[0] * (word.length - 1);
+        const endCol = startCol + dir[1] * (word.length - 1);
+        
+        if (endRow >= 0 && endRow < size && endCol >= 0 && endCol < size) {
+          // Check if path is clear
+          let canPlace = true;
+          for (let i = 0; i < word.length; i++) {
+            const r = startRow + dir[0] * i;
+            const c = startCol + dir[1] * i;
+            if (gridArr[r][c] !== '' && gridArr[r][c] !== word[i]) {
+              canPlace = false;
+              break;
+            }
+          }
+          
+          if (canPlace) {
+            // Place the word
+            const wordCells = [];
+            for (let i = 0; i < word.length; i++) {
+              const r = startRow + dir[0] * i;
+              const c = startCol + dir[1] * i;
+              gridArr[r][c] = word[i];
+              wordCells.push({ row: r, col: c });
+            }
+            positions[word] = wordCells;
+            placed = true;
+          }
+        }
+        attempts++;
+      }
+    });
+    
+    // Fill empty cells with random letters
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        if (gridArr[r][c] === '') {
+          gridArr[r][c] = letters[Math.floor(Math.random() * letters.length)];
+        }
+      }
+    }
+    
+    return { grid: gridArr, positions };
+  };
+  
+  // Handle cell selection
+  const handleCellMouseDown = (row, col) => {
+    setIsSelecting(true);
+    setSelectedCells([{ row, col }]);
+  };
+  
+  const handleCellMouseEnter = (row, col) => {
+    if (!isSelecting) return;
+    
+    // Only allow straight lines (horizontal, vertical, diagonal)
+    const start = selectedCells[0];
+    if (!start) return;
+    
+    const dRow = row - start.row;
+    const dCol = col - start.col;
+    
+    // Determine direction
+    let stepRow = dRow === 0 ? 0 : dRow / Math.abs(dRow);
+    let stepCol = dCol === 0 ? 0 : dCol / Math.abs(dCol);
+    
+    // Check if it's a valid direction (straight line)
+    if (Math.abs(dRow) !== Math.abs(dCol) && dRow !== 0 && dCol !== 0) {
+      return; // Not a valid diagonal
+    }
+    
+    // Build path
+    const newCells = [];
+    let r = start.row;
+    let c = start.col;
+    const maxSteps = Math.max(Math.abs(dRow), Math.abs(dCol));
+    
+    for (let i = 0; i <= maxSteps; i++) {
+      newCells.push({ row: r, col: c });
+      r += stepRow;
+      c += stepCol;
+    }
+    
+    setSelectedCells(newCells);
+  };
+  
+  const handleCellMouseUp = () => {
+    if (!isSelecting) return;
+    setIsSelecting(false);
+    
+    // Check if selected cells form a word
+    const selectedWord = selectedCells.map(c => grid[c.row]?.[c.col] || '').join('');
+    const reversedWord = selectedWord.split('').reverse().join('');
+    
+    const matchedWord = words.find(w => w === selectedWord || w === reversedWord);
+    
+    if (matchedWord && !foundWords.includes(matchedWord)) {
+      setFoundWords(prev => [...prev, matchedWord]);
+      setMatchedPairs(prev => [...prev, matchedWord]);
+      setScore(prev => prev + 1);
+      setStreak(prev => prev + 1);
+      toast.success(`${language === 'es' ? '¡Encontrado!' : 'Found!'} ${matchedWord}`);
+      
+      // Submit answer to backend
+      const hint = hints.find(h => h.word === matchedWord);
+      if (hint && submitAnswer) {
+        submitAnswer(hint.item_id, matchedWord, true);
+      }
+      
+      // Check if all words found
+      if (foundWords.length + 1 >= words.length) {
+        setTimeout(() => handleGameComplete(), 1000);
+      }
+    }
+    
+    setSelectedCells([]);
+  };
+  
+  const isCellSelected = (row, col) => {
+    return selectedCells.some(c => c.row === row && c.col === col);
+  };
+  
+  const isCellFound = (row, col) => {
+    return foundWords.some(word => {
+      const positions_for_word = wordPositions[word];
+      return positions_for_word?.some(p => p.row === row && p.col === col);
+    });
+  };
+  
+  if (grid.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-white" />
+      </div>
+    );
+  }
+  
+  return (
+    <div className="space-y-6">
+      <div className="text-center">
+        <Badge className="mb-4 bg-emerald-500/50 text-white">
+          <Search className="h-3 w-3 mr-1" />
+          {language === 'es' ? 'Sopa de Letras' : 'Word Search'}
+        </Badge>
+        <p className="text-white/80 text-sm">
+          {language === 'es' ? 'Arrastra para seleccionar palabras' : 'Drag to select words'}
+        </p>
+      </div>
+      
+      {/* Words to find */}
+      <div className="flex flex-wrap gap-2 justify-center">
+        {words.map((word, idx) => (
+          <Badge 
+            key={idx} 
+            className={`text-sm py-1 px-3 transition-all duration-300 ${
+              foundWords.includes(word) 
+                ? 'bg-green-500 line-through opacity-60' 
+                : 'bg-white/20 hover:bg-white/30'
+            }`}
+          >
+            {word}
+          </Badge>
+        ))}
+      </div>
+      
+      {/* Grid */}
+      <div 
+        ref={gridRef}
+        className="flex flex-col items-center select-none"
+        onMouseLeave={() => {
+          if (isSelecting) {
+            setIsSelecting(false);
+            setSelectedCells([]);
+          }
+        }}
+      >
+        <div 
+          className="grid gap-0.5 bg-white/5 p-2 rounded-xl"
+          style={{ gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))` }}
+        >
+          {grid.map((row, rowIdx) => (
+            row.map((letter, colIdx) => (
+              <div
+                key={`${rowIdx}-${colIdx}`}
+                onMouseDown={() => handleCellMouseDown(rowIdx, colIdx)}
+                onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx)}
+                onMouseUp={handleCellMouseUp}
+                className={`
+                  w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-sm sm:text-base font-bold rounded cursor-pointer
+                  transition-all duration-150
+                  ${isCellFound(rowIdx, colIdx) 
+                    ? 'bg-green-500 text-white scale-95' 
+                    : isCellSelected(rowIdx, colIdx)
+                      ? 'bg-yellow-400 text-slate-900 scale-110'
+                      : 'bg-white/10 text-white hover:bg-white/20'
+                  }
+                `}
+              >
+                {letter}
+              </div>
+            ))
+          ))}
+        </div>
+      </div>
+      
+      {/* Hints */}
+      <div className="space-y-2 max-w-md mx-auto">
+        <p className="text-white/60 text-sm text-center font-medium">
+          {language === 'es' ? '💡 Pistas:' : '💡 Hints:'}
+        </p>
+        <div className="grid gap-2">
+          {hints.slice(0, 4).map((hint, idx) => (
+            <div 
+              key={idx} 
+              className={`bg-white/10 rounded-lg p-2 text-sm transition-all ${
+                foundWords.includes(hint.word) ? 'opacity-50 line-through' : 'text-white/80'
+              }`}
+            >
+              • {hint.hint}
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* Progress */}
+      <div className="text-center">
+        <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-2">
+          <Trophy className="h-4 w-4 text-yellow-400" />
+          <span className="text-white font-medium">
+            {foundWords.length} / {words.length} {language === 'es' ? 'encontradas' : 'found'}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Sequence Game Component - drag and drop ordering
+const SequenceGameComponent = ({ session, language, setScore, setStreak, handleGameComplete, submitAnswer }) => {
+  const [items, setItems] = useState([]);
+  const [draggedItem, setDraggedItem] = useState(null);
+  const [isChecked, setIsChecked] = useState(false);
+  const [results, setResults] = useState(null);
+  
+  // Initialize items from shuffled order
+  useEffect(() => {
+    if (session?.game_payload?.shuffled_order && session?.game_payload?.items) {
+      const orderedItems = session.game_payload.shuffled_order.map(itemId => {
+        return session.game_payload.items.find(i => i.item_id === itemId);
+      }).filter(Boolean);
+      setItems(orderedItems);
+    }
+  }, [session?.game_payload]);
+  
+  const handleDragStart = (e, index) => {
+    setDraggedItem(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    if (draggedItem === null || draggedItem === index) return;
+    
+    // Reorder items
+    const newItems = [...items];
+    const draggedItemContent = newItems[draggedItem];
+    newItems.splice(draggedItem, 1);
+    newItems.splice(index, 0, draggedItemContent);
+    setItems(newItems);
+    setDraggedItem(index);
+  };
+  
+  const handleDragEnd = () => {
+    setDraggedItem(null);
+  };
+  
+  const moveItem = (fromIndex, toIndex) => {
+    if (toIndex < 0 || toIndex >= items.length) return;
+    const newItems = [...items];
+    const item = newItems[fromIndex];
+    newItems.splice(fromIndex, 1);
+    newItems.splice(toIndex, 0, item);
+    setItems(newItems);
+  };
+  
+  const checkOrder = () => {
+    if (isChecked) return;
+    
+    // Check each item's position
+    const itemResults = items.map((item, currentIndex) => ({
+      ...item,
+      currentPosition: currentIndex,
+      isCorrect: item.correct_position === currentIndex
+    }));
+    
+    const correctCount = itemResults.filter(r => r.isCorrect).length;
+    const totalItems = items.length;
+    const accuracy = Math.round((correctCount / totalItems) * 100);
+    
+    setResults({ items: itemResults, correctCount, totalItems, accuracy });
+    setIsChecked(true);
+    
+    // Update score based on correct placements
+    setScore(prev => prev + correctCount);
+    if (correctCount === totalItems) {
+      setStreak(prev => prev + 1);
+      toast.success(language === 'es' ? '¡Perfecto! ¡Todo en orden!' : 'Perfect! All in order!');
+    } else if (correctCount > 0) {
+      toast.info(`${correctCount}/${totalItems} ${language === 'es' ? 'correctos' : 'correct'}`);
+    } else {
+      setStreak(0);
+      toast.error(language === 'es' ? 'Intenta de nuevo' : 'Try again');
+    }
+    
+    // Submit answers to backend
+    items.forEach((item, idx) => {
+      if (submitAnswer) {
+        submitAnswer(item.item_id, String(idx), item.correct_position === idx);
+      }
+    });
+    
+    // Auto-complete after showing results
+    setTimeout(() => handleGameComplete(), 2000);
+  };
+  
+  const resetOrder = () => {
+    // Re-shuffle
+    const shuffled = [...items].sort(() => Math.random() - 0.5);
+    setItems(shuffled);
+    setIsChecked(false);
+    setResults(null);
+  };
+  
+  if (items.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-white" />
+      </div>
+    );
+  }
+  
+  return (
+    <div className="space-y-6">
+      <div className="text-center">
+        <Badge className="mb-4 bg-violet-500/50 text-white">
+          <GripVertical className="h-3 w-3 mr-1" />
+          {language === 'es' ? 'Ordenar Secuencia' : 'Sequence Order'}
+        </Badge>
+        <p className="text-white/80 text-sm">
+          {language === 'es' 
+            ? 'Arrastra los elementos al orden correcto' 
+            : 'Drag items to the correct order'}
+        </p>
+      </div>
+      
+      {/* Items to order */}
+      <div className="space-y-2 max-w-lg mx-auto">
+        {items.map((item, idx) => {
+          const result = results?.items?.find(r => r.item_id === item.item_id);
+          
+          return (
+            <div
+              key={item.item_id}
+              draggable={!isChecked}
+              onDragStart={(e) => handleDragStart(e, idx)}
+              onDragOver={(e) => handleDragOver(e, idx)}
+              onDragEnd={handleDragEnd}
+              className={`
+                flex items-center gap-3 rounded-xl p-4 transition-all duration-300
+                ${isChecked 
+                  ? result?.isCorrect 
+                    ? 'bg-green-500/30 border-2 border-green-400' 
+                    : 'bg-red-500/30 border-2 border-red-400'
+                  : draggedItem === idx
+                    ? 'bg-violet-500/50 border-2 border-violet-400 scale-105'
+                    : 'bg-white/10 border-2 border-white/30 hover:border-white/50 cursor-grab active:cursor-grabbing'
+                }
+              `}
+            >
+              {/* Position number */}
+              <div className={`
+                w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold
+                ${isChecked 
+                  ? result?.isCorrect 
+                    ? 'bg-green-500 text-white' 
+                    : 'bg-red-500 text-white'
+                  : 'bg-violet-500/50 text-white'
+                }
+              `}>
+                {idx + 1}
+              </div>
+              
+              {/* Drag handle */}
+              {!isChecked && (
+                <GripVertical className="h-5 w-5 text-white/40" />
+              )}
+              
+              {/* Item text */}
+              <span className="flex-1 text-white">{item.text}</span>
+              
+              {/* Move buttons (for touch/accessibility) */}
+              {!isChecked && (
+                <div className="flex flex-col gap-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0 text-white/60 hover:text-white hover:bg-white/10"
+                    onClick={() => moveItem(idx, idx - 1)}
+                    disabled={idx === 0}
+                  >
+                    <ArrowUp className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0 text-white/60 hover:text-white hover:bg-white/10"
+                    onClick={() => moveItem(idx, idx + 1)}
+                    disabled={idx === items.length - 1}
+                  >
+                    <ArrowDown className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+              
+              {/* Result indicator */}
+              {isChecked && (
+                <div className="ml-2">
+                  {result?.isCorrect ? (
+                    <CheckCircle2 className="h-6 w-6 text-green-400" />
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      <XCircle className="h-6 w-6 text-red-400" />
+                      <span className="text-xs text-red-300">→ {result?.correct_position + 1}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      
+      {/* Results summary */}
+      {results && (
+        <div className="text-center">
+          <div className={`inline-flex items-center gap-2 rounded-full px-6 py-3 ${
+            results.accuracy === 100 ? 'bg-green-500/30' : results.accuracy >= 50 ? 'bg-yellow-500/30' : 'bg-red-500/30'
+          }`}>
+            <Trophy className={`h-5 w-5 ${
+              results.accuracy === 100 ? 'text-green-400' : results.accuracy >= 50 ? 'text-yellow-400' : 'text-red-400'
+            }`} />
+            <span className="text-white font-bold text-lg">
+              {results.correctCount} / {results.totalItems} {language === 'es' ? 'correctos' : 'correct'}
+            </span>
+            <span className="text-white/60">({results.accuracy}%)</span>
+          </div>
+        </div>
+      )}
+      
+      {/* Action buttons */}
+      <div className="flex justify-center gap-3">
+        {!isChecked ? (
+          <Button
+            onClick={checkOrder}
+            className="bg-violet-500 hover:bg-violet-600 px-8"
+          >
+            <CheckCircle2 className="h-5 w-5 mr-2" />
+            {language === 'es' ? 'Verificar Orden' : 'Check Order'}
+          </Button>
+        ) : (
+          <Button
+            onClick={resetOrder}
+            variant="outline"
+            className="border-white/30 text-white hover:bg-white/10"
+          >
+            <RefreshCw className="h-5 w-5 mr-2" />
+            {language === 'es' ? 'Intentar de Nuevo' : 'Try Again'}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+};
 
 // Memory Game Component - separate to prevent reshuffling on every render
 const MemoryGameComponent = ({ session, language, matchedPairs, setMatchedPairs, setScore, setStreak, handleGameComplete }) => {
