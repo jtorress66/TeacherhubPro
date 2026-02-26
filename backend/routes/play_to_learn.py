@@ -592,8 +592,11 @@ async def create_practice_session(session: SessionCreate, request: Request):
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
     
-    # Validate game type
-    if session.game_type not in assignment.get("allowed_game_types", []):
+    # Validate game type - "all_modes" is a special case
+    allowed_types = assignment.get("allowed_game_types", [])
+    is_all_modes = session.game_type == "all_modes"
+    
+    if not is_all_modes and session.game_type not in allowed_types:
         raise HTTPException(
             status_code=400, 
             detail=f"Game type '{session.game_type}' not allowed for this assignment"
@@ -607,8 +610,10 @@ async def create_practice_session(session: SessionCreate, request: Request):
     # Generate fresh questions
     base_items = await generate_base_items(assignment, variant_seed)
     
-    # Transform to game mode
-    game_payload = transform_items_to_game_mode(base_items, session.game_type)
+    # For "all_modes", don't transform yet - student will choose
+    # Use quiz as default payload but student will select mode
+    effective_game_type = "quiz" if is_all_modes else session.game_type
+    game_payload = transform_items_to_game_mode(base_items, effective_game_type)
     
     # Generate PIN for live mode
     join_pin = generate_pin() if session.mode == "LIVE" else None
@@ -620,7 +625,7 @@ async def create_practice_session(session: SessionCreate, request: Request):
         "assignment_id": session.assignment_id,
         "teacher_id": user["user_id"],
         "school_id": user.get("school_id"),
-        "game_type": session.game_type,
+        "game_type": session.game_type,  # Store original (could be "all_modes")
         "mode": session.mode,
         "question_set_id": question_set_id,
         "variant_seed": variant_seed,
@@ -628,6 +633,7 @@ async def create_practice_session(session: SessionCreate, request: Request):
         "status": "LOBBY" if session.mode == "LIVE" else "ACTIVE",
         "base_items": base_items,
         "game_payload": game_payload,
+        "allowed_game_types": allowed_types if is_all_modes else [session.game_type],  # For mode selection
         "participants": [],
         "current_question_index": 0,
         "created_at": now,
@@ -642,6 +648,7 @@ async def create_practice_session(session: SessionCreate, request: Request):
     print(f"  - session_id: {session_id}")
     print(f"  - question_set_id: {question_set_id}")
     print(f"  - variant_seed: {variant_seed}")
+    print(f"  - game_type: {session.game_type} (all_modes: {is_all_modes})")
     print(f"  - item_ids: {[item['item_id'] for item in base_items[:3]]}...")
     
     return {
@@ -654,6 +661,7 @@ async def create_practice_session(session: SessionCreate, request: Request):
         "join_pin": join_pin,
         "status": session_doc["status"],
         "item_ids": [item["item_id"] for item in base_items],
+        "allowed_game_types": session_doc["allowed_game_types"],
         "created_at": now
     }
 
