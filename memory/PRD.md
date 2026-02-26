@@ -1,6 +1,42 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-26 (Batch 6) - Fill in the Blank & Practice Insights - ALL VERIFIED ✅
+
+### Issues Fixed:
+
+**Issue 19: Fill in the Blank Not Making Sense (P0) - FIXED**
+- **Before:** "Complete: _____ is the correct answer for: What does a preposition do?" (Answer: full sentence!)
+- **After:** "A _____ sentence is a type of sentence that makes a statement..." (Answer: **Declarative** - single word!)
+- **Solution:**
+  1. Rewritten transformation to use `term` field as single-word answer
+  2. Creates proper sentences by replacing term in definition with _____
+  3. Helpful hints: "Starts with 'D', 11 letters" (tells first letter and word length)
+- **Evidence:** Testing agent verified all 3 aspects working correctly
+
+**Issue 20: Practice Insights Empty (P1) - FIXED**
+- **Before:** Empty placeholder with just "Practice Insights" text
+- **After:** Fully functional insights dashboard with real data
+- **Solution:** Implemented complete Insights tab with:
+  1. Assignment dropdown selector
+  2. Summary stats: Participants, Sessions, Answers, Accuracy
+  3. Game Modes Used breakdown (e.g., "ALL_MODES: 3 sessions, QUIZ: 4 sessions")
+  4. Most Challenging Questions with miss counts
+- **Evidence:** Screenshot shows "11 Participants, 7 Sessions, 15 Answers, 86.7% Accuracy"
+
+### Test Results (iteration_42.json):
+- **Backend:** 100% - All 11 tests passed
+- **Frontend:** 100% - All 7 features verified
+- **All Features Working:**
+  1. ✅ Fill in Blank single word answers
+  2. ✅ "Starts with X, N letters" hints
+  3. ✅ Proper sentences with _____
+  4. ✅ Insights assignment dropdown
+  5. ✅ Insights summary counts
+  6. ✅ Insights game modes breakdown
+  7. ✅ Insights challenging questions
+
+---
 ## Update 2026-02-26 (Batch 5) - ALL_MODES Host Dashboard Redesign - VERIFIED ✅
 
 ### Issues Fixed:
