@@ -672,7 +672,10 @@ const PlayToLearnGame = () => {
             <CardTitle className="text-2xl">
               {language === 'es' ? 'Sala de Espera' : 'Waiting Room'}
             </CardTitle>
-            <p className="text-white/70">
+            {nickname && (
+              <Badge className="mt-2 bg-green-500">{nickname}</Badge>
+            )}
+            <p className="text-white/70 mt-2">
               {language === 'es' ? 'Esperando que el maestro inicie el juego...' : 'Waiting for teacher to start the game...'}
             </p>
           </CardHeader>
@@ -690,14 +693,19 @@ const PlayToLearnGame = () => {
                       {player.nickname?.charAt(0).toUpperCase()}
                     </div>
                     <span>{player.nickname}</span>
+                    {player.nickname === nickname && (
+                      <Badge className="ml-auto text-xs bg-yellow-500/50">
+                        {language === 'es' ? 'Tú' : 'You'}
+                      </Badge>
+                    )}
                   </div>
                 ))}
               </div>
               
               <div className="flex items-center justify-center gap-2 mt-4">
-                <Loader2 className="h-4 w-4 animate-spin text-white/50" />
+                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                 <span className="text-white/50 text-sm">
-                  {language === 'es' ? 'Conectado' : 'Connected'}
+                  {language === 'es' ? 'Conectado al juego' : 'Connected to game'}
                 </span>
               </div>
             </div>
