@@ -1020,17 +1020,10 @@ async def submit_answer(session_id: str, answer: AnswerSubmission, participant_i
     elif game_type == "fill_blank":
         # For fill in the blank, check against blank_answer
         questions = game_payload.get("questions", [])
-        print(f"[PTL DEBUG] fill_blank - game_payload has {len(questions)} questions")
         q = next((q for q in questions if q["item_id"] == answer.item_id), None)
         if q:
             correct_answer = q.get("blank_answer", item["correct_answer"])
-            print(f"[PTL DEBUG] fill_blank - found question, blank_answer: '{correct_answer}'")
-            print(f"[PTL DEBUG] fill_blank - student answer: '{answer.answer}'")
-        else:
-            print(f"[PTL DEBUG] fill_blank - WARNING: question NOT found in game_payload for item_id {answer.item_id}")
-            print(f"[PTL DEBUG] fill_blank - game_payload question item_ids: {[q['item_id'] for q in questions[:3]]}...")
         is_correct = answer.answer.lower().strip() == correct_answer.lower().strip()
-        print(f"[PTL DEBUG] fill_blank - is_correct: {is_correct}")
     elif game_type == "time_attack":
         # For time attack, accept any of the acceptable answers
         questions = game_payload.get("questions", [])
