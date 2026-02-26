@@ -375,44 +375,69 @@ def transform_items_to_game_mode(base_items: List[dict], game_type: str) -> dict
         }
     
     elif game_type == "fill_blank":
-        # Fill in the blank - type the answer
+        # Fill in the blank - MUST use single word answers
+        # Strategy: Use the "term" as the blank answer, and create a sentence using the definition
         questions = []
         for item in base_items:
+            # Prefer using term as the single-word answer
+            term = item.get("term", "")
+            definition = item.get("definition", "")
             answer = item["correct_answer"]
             
-            # Use fill_sentence if available, otherwise construct from other fields
-            fill_sentence = item.get("fill_sentence", "")
-            
-            if fill_sentence and answer.lower() in fill_sentence.lower():
-                # Replace answer with blanks in the fill_sentence
-                import re
-                pattern = re.compile(re.escape(answer), re.IGNORECASE)
-                sentence = pattern.sub("_____", fill_sentence, count=1)
-            elif answer.lower() in item["question"].lower():
-                # Replace answer in question if it appears there
-                import re
-                pattern = re.compile(re.escape(answer), re.IGNORECASE)
-                sentence = pattern.sub("_____", item["question"], count=1)
-            else:
-                # Use term/definition format
-                term = item.get("term", "")
-                definition = item.get("definition", "")
-                if definition and answer.lower() in definition.lower():
+            # Try to use term as the blank answer (single word/phrase)
+            if term and definition:
+                # Check if term appears in definition - create sentence with blank
+                if term.lower() in definition.lower():
                     import re
-                    pattern = re.compile(re.escape(answer), re.IGNORECASE)
+                    pattern = re.compile(re.escape(term), re.IGNORECASE)
                     sentence = pattern.sub("_____", definition, count=1)
-                elif term:
-                    sentence = f"Complete: _____ is the correct answer for: {item['question'][:80]}"
+                    blank_answer = term
                 else:
-                    sentence = f"Fill in the blank: The answer is _____ ({item.get('explanation', '')[:40]}...)"
+                    # Definition doesn't contain term, use format: "The definition of _____ is: [definition]"
+                    sentence = f"The word _____ is defined as: {definition[:100]}"
+                    blank_answer = term
+            elif term:
+                # Has term but no definition - use the explanation
+                explanation = item.get("explanation", "")
+                if explanation and term.lower() in explanation.lower():
+                    import re
+                    pattern = re.compile(re.escape(term), re.IGNORECASE)
+                    sentence = pattern.sub("_____", explanation[:150], count=1)
+                    blank_answer = term
+                else:
+                    # Fallback: "What is the answer? _____"
+                    sentence = f"The term is _____. ({explanation[:60]}...)"
+                    blank_answer = term
+            else:
+                # No term available - try to extract a KEY WORD from the answer
+                # If answer is a phrase, use the first significant word
+                words = answer.split()
+                if len(words) > 3:
+                    # Answer is too long - use the first noun-like word
+                    key_word = words[0]
+                    blank_answer = key_word
+                    sentence = f"Fill in: _____ ({item['question'][:80]})"
+                else:
+                    # Answer is short enough to use directly
+                    blank_answer = answer
+                    question = item["question"]
+                    if answer.lower() in question.lower():
+                        import re
+                        pattern = re.compile(re.escape(answer), re.IGNORECASE)
+                        sentence = pattern.sub("_____", question, count=1)
+                    else:
+                        sentence = f"Fill in: _____ ({question[:80]})"
+            
+            # Generate helpful hint - just the first letter + length
+            hint_text = f"Starts with '{blank_answer[0].upper()}', {len(blank_answer)} letters"
             
             questions.append({
                 "item_id": item["item_id"],
                 "sentence": sentence,
-                "blank_answer": answer,
-                "hint": item.get("term", "") or (item.get("options", [""])[0] if item.get("options") else ""),
+                "blank_answer": blank_answer,
+                "hint": hint_text,
                 "explanation": item.get("explanation", ""),
-                "time_limit_seconds": 25
+                "time_limit_seconds": 30  # Give more time for fill in blank
             })
         
         return {
