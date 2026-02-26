@@ -360,10 +360,202 @@ const PlayToLearnHost = () => {
   if (session?.status === 'ACTIVE') {
     // Sort players by score for leaderboard view
     const sortedPlayers = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
+    const isAllModes = session?.game_type === 'all_modes';
     
+    // For ALL_MODES sessions, show a player progress dashboard instead of quiz questions
+    if (isAllModes) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-4">
+          <div className="max-w-6xl mx-auto space-y-6">
+            {/* Header with back button */}
+            <div className="flex items-center justify-between">
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/teacher/play-to-learn')}
+                className="text-white hover:bg-white/10"
+              >
+                <ArrowLeft className="h-5 w-5 mr-2" />
+                {language === 'es' ? 'Volver' : 'Back'}
+              </Button>
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-400' : 'bg-red-400'} animate-pulse`} />
+                <span className="text-white/60 text-sm">{wsConnected ? (language === 'es' ? 'Conectado' : 'Connected') : (language === 'es' ? 'Reconectando...' : 'Reconnecting...')}</span>
+              </div>
+            </div>
+
+            {/* All Modes Dashboard Header */}
+            <Card className="bg-gradient-to-r from-purple-600 to-pink-600 border-0 text-white">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Badge className="bg-white/20 mb-2">ALL MODES</Badge>
+                    <h1 className="text-2xl font-bold">
+                      {language === 'es' ? 'Tablero de Progreso en Vivo' : 'Live Progress Dashboard'}
+                    </h1>
+                    <p className="text-white/70">
+                      {language === 'es' ? 'Los estudiantes juegan a su propio ritmo con el modo que eligieron' : 'Students play at their own pace with their chosen mode'}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-bold">{players.length}</div>
+                    <div className="text-white/70">{language === 'es' ? 'Jugadores' : 'Players'}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Live Stats Summary */}
+            <div className="grid grid-cols-4 gap-4">
+              <Card className="bg-blue-500/20 border-blue-400/30">
+                <CardContent className="p-4 text-center">
+                  <Users className="h-8 w-8 mx-auto text-blue-400 mb-1" />
+                  <div className="text-2xl font-bold text-white">{players.filter(p => p.selected_mode).length}</div>
+                  <p className="text-blue-200 text-sm">{language === 'es' ? 'Jugando' : 'Playing'}</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-yellow-500/20 border-yellow-400/30">
+                <CardContent className="p-4 text-center">
+                  <Clock className="h-8 w-8 mx-auto text-yellow-400 mb-1" />
+                  <div className="text-2xl font-bold text-white">{players.filter(p => !p.selected_mode).length}</div>
+                  <p className="text-yellow-200 text-sm">{language === 'es' ? 'Eligiendo' : 'Choosing'}</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-green-500/20 border-green-400/30">
+                <CardContent className="p-4 text-center">
+                  <CheckCircle2 className="h-8 w-8 mx-auto text-green-400 mb-1" />
+                  <div className="text-2xl font-bold text-white">{answersReceived}</div>
+                  <p className="text-green-200 text-sm">{language === 'es' ? 'Respuestas' : 'Answers'}</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-purple-500/20 border-purple-400/30">
+                <CardContent className="p-4 text-center">
+                  <Trophy className="h-8 w-8 mx-auto text-purple-400 mb-1" />
+                  <div className="text-2xl font-bold text-white">
+                    {answersReceived > 0 ? Math.round((correctAnswers / answersReceived) * 100) : 0}%
+                  </div>
+                  <p className="text-purple-200 text-sm">{language === 'es' ? 'Precisión' : 'Accuracy'}</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Player Progress Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {sortedPlayers.map((player, idx) => {
+                const answeredCount = player.answers?.length || 0;
+                const correctCount = player.answers?.filter(a => a.is_correct)?.length || 0;
+                const progress = answeredCount > 0 ? (answeredCount / totalQuestions) * 100 : 0;
+                
+                const modeColors = {
+                  'quiz': 'from-purple-500 to-indigo-600',
+                  'true_false': 'from-blue-500 to-cyan-600',
+                  'fill_blank': 'from-orange-500 to-amber-600',
+                  'matching': 'from-green-500 to-teal-600',
+                  'flashcard': 'from-pink-500 to-rose-600',
+                  'memory': 'from-violet-500 to-purple-600'
+                };
+                
+                const modeNames = {
+                  'quiz': language === 'es' ? 'Quiz' : 'Quiz',
+                  'true_false': language === 'es' ? 'V/F' : 'T/F',
+                  'fill_blank': language === 'es' ? 'Completar' : 'Fill',
+                  'matching': language === 'es' ? 'Parejas' : 'Match',
+                  'flashcard': language === 'es' ? 'Tarjetas' : 'Flash',
+                  'memory': language === 'es' ? 'Memoria' : 'Memory'
+                };
+                
+                return (
+                  <Card 
+                    key={player.participant_id || idx} 
+                    className={`bg-white/10 backdrop-blur-xl border-white/20 ${idx === 0 ? 'ring-2 ring-yellow-400' : ''}`}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          {idx === 0 && <Trophy className="h-5 w-5 text-yellow-400" />}
+                          <span className="text-white font-semibold">{player.nickname}</span>
+                        </div>
+                        <span className="text-2xl font-bold text-white">{player.score || 0}</span>
+                      </div>
+                      
+                      {/* Mode Badge */}
+                      {player.selected_mode ? (
+                        <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-white text-sm font-medium bg-gradient-to-r ${modeColors[player.selected_mode] || 'from-gray-500 to-gray-600'}`}>
+                          <Gamepad2 className="h-3 w-3" />
+                          {modeNames[player.selected_mode] || player.selected_mode}
+                        </div>
+                      ) : (
+                        <Badge className="bg-white/20 text-white/60">
+                          {language === 'es' ? '⏳ Eligiendo modo...' : '⏳ Choosing mode...'}
+                        </Badge>
+                      )}
+                      
+                      {/* Progress */}
+                      {player.selected_mode && (
+                        <div className="mt-3 space-y-1">
+                          <div className="flex justify-between text-xs text-white/60">
+                            <span>{answeredCount} / {totalQuestions} {language === 'es' ? 'respondidas' : 'answered'}</span>
+                            <span>{correctCount} {language === 'es' ? 'correctas' : 'correct'}</span>
+                          </div>
+                          <Progress value={progress} className="h-2" />
+                        </div>
+                      )}
+                      
+                      {/* Streak indicator */}
+                      {(player.streak || 0) > 1 && (
+                        <div className="mt-2 flex items-center gap-1 text-orange-400 text-sm">
+                          <span>🔥</span>
+                          <span>{player.streak} {language === 'es' ? 'racha' : 'streak'}</span>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+              
+              {players.length === 0 && (
+                <div className="col-span-full text-center py-12 text-white/50">
+                  <Users className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                  <p>{language === 'es' ? 'Esperando que se unan jugadores...' : 'Waiting for players to join...'}</p>
+                </div>
+              )}
+            </div>
+
+            {/* End Game Button */}
+            <div className="text-center">
+              <Button
+                onClick={endGame}
+                variant="outline"
+                className="border-white/30 text-white hover:bg-white/10"
+              >
+                <StopCircle className="h-5 w-5 mr-2" />
+                {language === 'es' ? 'Finalizar Sesión' : 'End Session'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    // Regular single-mode game view (non-ALL_MODES)
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-4">
         <div className="max-w-6xl mx-auto space-y-6">
+          {/* Header with back button */}
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/teacher/play-to-learn')}
+              className="text-white hover:bg-white/10"
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              {language === 'es' ? 'Volver' : 'Back'}
+            </Button>
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-400' : 'bg-red-400'} animate-pulse`} />
+              <span className="text-white/60 text-sm">{wsConnected ? (language === 'es' ? 'Conectado' : 'Connected') : (language === 'es' ? 'Reconectando...' : 'Reconnecting...')}</span>
+            </div>
+          </div>
+
           {/* Progress Header */}
           <Card className="bg-gradient-to-r from-purple-600 to-pink-600 border-0 text-white">
             <CardContent className="p-4">
@@ -464,11 +656,6 @@ const PlayToLearnHost = () => {
                   <CardTitle className="text-white text-lg flex items-center gap-2">
                     <Users className="h-5 w-5" />
                     {language === 'es' ? 'Jugadores en Vivo' : 'Live Players'}
-                    {session?.game_type === 'all_modes' && (
-                      <Badge className="ml-2 bg-purple-500/50 text-xs">
-                        {language === 'es' ? 'Modos Múltiples' : 'Multi-Mode'}
-                      </Badge>
-                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="max-h-[400px] overflow-y-auto">
@@ -496,21 +683,9 @@ const PlayToLearnHost = () => {
                           }`}>
                             {idx + 1}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <span className="text-white text-sm truncate block">
-                              {player.nickname}
-                            </span>
-                            {/* Show selected mode for all_modes sessions */}
-                            {(session?.game_type === 'all_modes' || player.selected_mode) && (
-                              <span className="text-xs text-purple-300">
-                                {player.selected_mode ? (
-                                  <>🎮 {player.selected_mode.replace('_', ' ').toUpperCase()}</>
-                                ) : (
-                                  <span className="text-white/40">{language === 'es' ? 'Eligiendo modo...' : 'Choosing mode...'}</span>
-                                )}
-                              </span>
-                            )}
-                          </div>
+                          <span className="flex-1 text-white text-sm truncate">
+                            {player.nickname}
+                          </span>
                           <span className="text-white font-bold text-sm">
                             {player.score || 0}
                           </span>
