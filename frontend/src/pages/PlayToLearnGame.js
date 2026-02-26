@@ -91,6 +91,36 @@ const PlayToLearnGame = () => {
     };
   }, [sessionId]);
 
+  // Poll for status changes in LIVE mode lobby (fallback if WebSocket misses message)
+  useEffect(() => {
+    let pollInterval;
+    
+    if (isLiveMode && !gameStarted && session?.status === 'LOBBY') {
+      pollInterval = setInterval(async () => {
+        try {
+          const res = await axios.get(`${API}/play-to-learn/sessions/${sessionId}`);
+          if (res.data.status === 'ACTIVE') {
+            console.log('[PTL] Polling detected game started!');
+            setSession(res.data);
+            setGameStarted(true);
+            startQuestion();
+            clearInterval(pollInterval);
+          }
+          // Update player list
+          setLobbyPlayers(res.data.participants || []);
+        } catch (err) {
+          console.error('[PTL] Polling error:', err);
+        }
+      }, 2000); // Poll every 2 seconds
+    }
+    
+    return () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
+    };
+  }, [isLiveMode, gameStarted, session?.status, sessionId]);
+
   // Timer effect
   useEffect(() => {
     if (timerActive && timeLeft > 0) {
