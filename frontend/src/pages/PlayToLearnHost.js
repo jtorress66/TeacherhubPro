@@ -132,6 +132,15 @@ const PlayToLearnHost = () => {
       case 'player_disconnected':
         setPlayers(prev => prev.filter(p => p.participant_id !== data.participant_id));
         break;
+      case 'player_mode_selected':
+        // Update player's selected mode
+        setPlayers(prev => prev.map(p => 
+          p.participant_id === data.participant_id 
+            ? { ...p, selected_mode: data.selected_mode }
+            : p
+        ));
+        toast.info(`${data.nickname} ${language === 'es' ? 'eligió' : 'chose'} ${data.selected_mode.replace('_', ' ')}`);
+        break;
       case 'answer_submitted':
         setAnswersReceived(prev => prev + 1);
         if (data.is_correct) {
