@@ -164,6 +164,9 @@ const PlayToLearnHost = () => {
 
   const handleWebSocketMessage = (data) => {
     console.log('[Host] WebSocket message:', data.type, data);
+    // Track last update time for real-time indicator
+    setLastUpdate(new Date());
+    
     switch (data.type) {
       case 'connected':
         setPlayers(data.participants || []);
@@ -210,6 +213,11 @@ const PlayToLearnHost = () => {
                 }
               : p
           ));
+          // Show real-time toast for answer
+          toast(data.is_correct ? '✓' : '✗', {
+            description: `${data.nickname || 'Player'} - ${data.is_correct ? (language === 'es' ? 'Correcto' : 'Correct') : (language === 'es' ? 'Incorrecto' : 'Incorrect')}`,
+            duration: 2000
+          });
         }
         break;
       case 'game_complete':
