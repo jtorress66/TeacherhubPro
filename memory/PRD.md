@@ -1,6 +1,36 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-26 (Batch 7) - P0 Bug Fixes for ALL_MODES - ALL VERIFIED ✅
+
+### Issues Fixed:
+
+**Issue 21: Fill in the Blank marks correct answers as incorrect in ALL_MODES (P0) - FIXED**
+- **Root Cause:** `submit-answer` endpoint was using the SESSION's `game_payload` (defaulted to 'quiz' format) instead of the PARTICIPANT's `game_payload` (which has 'fill_blank' format with `blank_answer` field)
+- **Solution:** Modified `submit-answer` endpoint (line 983-995) to:
+  1. Check if session is `all_modes` and participant has `selected_mode`
+  2. Use participant's `game_payload` which contains the correct `blank_answer` field
+  3. Case-insensitive comparison: `answer.answer.lower().strip() == correct_answer.lower().strip()`
+- **Evidence:** Testing agent verified - answer 'product' correctly marked as CORRECT for question "A _____ is the result you get when you multiply two or more numbers together"
+
+**Issue 22: Teacher Host View doesn't show correct mode for all players (P0) - VERIFIED WORKING**
+- **Investigation Result:** Backend was already correctly storing and returning `selected_mode` for each participant
+- **Verification:** Polling every 3 seconds fetches fresh session data, updates player list with mode badges
+- **Evidence:** Testing agent screenshot shows Pedro with 'Fill' badge, Maria with 'Quiz' badge, FlowTest with 'T/F' badge
+
+### Test Results (iteration_43.json):
+- **Backend:** 100% - All 9 tests passed
+- **Frontend:** 100% - All 7 features verified
+- **All Features Working:**
+  1. ✅ Fill in Blank validation in ALL_MODES (uses blank_answer field)
+  2. ✅ Host View shows selected_mode badges
+  3. ✅ Mode selection UI with 3 game types
+  4. ✅ ALL_MODES session flow: join → select → play
+  5. ✅ True/False validation
+  6. ✅ Quiz validation
+  7. ✅ Fill in Blank UI with hints
+
+---
 ## Update 2026-02-26 (Batch 6) - Fill in the Blank & Practice Insights - ALL VERIFIED ✅
 
 ### Issues Fixed:
