@@ -24,6 +24,7 @@ TEST_TEACHER_PASSWORD = "testpassword"
 
 # Existing ALL_MODES session with participants
 ALL_MODES_SESSION = "ps_4e12196eafae47cb"
+ALL_MODES_SESSION_PIN = "416057"  # PIN for LIVE mode
 
 
 class TestP0FillBlankInAllModes:
@@ -77,7 +78,7 @@ class TestP0FillBlankInAllModes:
         nickname = f"FillBlankTest_{int(time.time())}"
         join_response = self.session.post(
             f"{BASE_URL}/api/play-to-learn/sessions/{ALL_MODES_SESSION}/join",
-            json={"nickname": nickname}
+            json={"nickname": nickname, "pin": ALL_MODES_SESSION_PIN}
         )
         assert join_response.status_code == 200, f"Failed to join: {join_response.text}"
         participant_id = join_response.json()["participant_id"]
@@ -136,7 +137,7 @@ class TestP0FillBlankInAllModes:
         nickname = f"CaseTest_{int(time.time())}"
         join_response = self.session.post(
             f"{BASE_URL}/api/play-to-learn/sessions/{ALL_MODES_SESSION}/join",
-            json={"nickname": nickname}
+            json={"nickname": nickname, "pin": ALL_MODES_SESSION_PIN}
         )
         assert join_response.status_code == 200
         participant_id = join_response.json()["participant_id"]
@@ -207,7 +208,7 @@ class TestP0HostViewSelectedMode:
         nickname = f"ModeStoreTest_{int(time.time())}"
         join_response = self.session.post(
             f"{BASE_URL}/api/play-to-learn/sessions/{ALL_MODES_SESSION}/join",
-            json={"nickname": nickname}
+            json={"nickname": nickname, "pin": ALL_MODES_SESSION_PIN}
         )
         assert join_response.status_code == 200
         participant_id = join_response.json()["participant_id"]
@@ -250,7 +251,7 @@ class TestAllModesSessionFlow:
         nickname = f"FlowTest_{int(time.time())}"
         join_response = self.session.post(
             f"{BASE_URL}/api/play-to-learn/sessions/{ALL_MODES_SESSION}/join",
-            json={"nickname": nickname}
+            json={"nickname": nickname, "pin": ALL_MODES_SESSION_PIN}
         )
         assert join_response.status_code == 200
         participant_id = join_response.json()["participant_id"]
@@ -310,7 +311,7 @@ class TestTrueFalseValidation:
         nickname = f"TFTest_{int(time.time())}"
         join_response = self.session.post(
             f"{BASE_URL}/api/play-to-learn/sessions/{ALL_MODES_SESSION}/join",
-            json={"nickname": nickname}
+            json={"nickname": nickname, "pin": ALL_MODES_SESSION_PIN}
         )
         assert join_response.status_code == 200
         participant_id = join_response.json()["participant_id"]
@@ -360,7 +361,7 @@ class TestQuizValidation:
         nickname = f"QuizTest_{int(time.time())}"
         join_response = self.session.post(
             f"{BASE_URL}/api/play-to-learn/sessions/{ALL_MODES_SESSION}/join",
-            json={"nickname": nickname}
+            json={"nickname": nickname, "pin": ALL_MODES_SESSION_PIN}
         )
         assert join_response.status_code == 200
         participant_id = join_response.json()["participant_id"]
