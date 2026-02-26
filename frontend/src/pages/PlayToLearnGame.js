@@ -213,18 +213,48 @@ const PlayToLearnGame = () => {
         pin: session?.join_pin
       });
       
-      setParticipantId(res.data.participant_id);
+      const newParticipantId = res.data.participant_id;
+      setParticipantId(newParticipantId);
       setNeedsToJoin(false);
       
-      // Check if student should select mode
-      const allowedModes = res.data.allowed_game_types || session?.allowed_game_types || [];
-      const isAllModes = session?.game_type === 'all_modes' || allowedModes.length > 1;
-      
-      if (isAllModes && session?.game_type === 'all_modes') {
-        setShowModeSelection(true);
+      // For LIVE mode, connect to WebSocket AFTER joining
+      if (session?.mode === 'LIVE') {
+        // Connect WebSocket with the new participant ID
+        const ws = new WebSocket(`${WS_URL}/api/play-to-learn/ws/${sessionId}?participant_id=${newParticipantId}&role=player`);
+        
+        ws.onopen = () => {
+          console.log('[PTL] WebSocket connected after manual join');
+        };
+        
+        ws.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          handleWebSocketMessage(data);
+        };
+        
+        ws.onclose = () => {
+          console.log('[PTL] WebSocket disconnected');
+        };
+        
+        wsRef.current = ws;
+        
+        // Check if game already started (player joined late)
+        if (res.data.status === 'ACTIVE') {
+          console.log('[PTL] Game already active, starting immediately');
+          setGameStarted(true);
+          startQuestion();
+        }
+        // Otherwise stay in lobby waiting for game_started message
       } else {
-        setGameStarted(true);
-        startQuestion();
+        // Self-paced mode
+        const allowedModes = res.data.allowed_game_types || session?.allowed_game_types || [];
+        const isAllModes = session?.game_type === 'all_modes';
+        
+        if (isAllModes) {
+          setShowModeSelection(true);
+        } else {
+          setGameStarted(true);
+          startQuestion();
+        }
       }
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Error joining');
