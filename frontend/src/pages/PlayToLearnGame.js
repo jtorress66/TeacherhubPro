@@ -1459,70 +1459,15 @@ const PlayToLearnGame = () => {
 
             {/* Memory Game Mode */}
             {session?.game_type === 'memory' && (
-              <div className="space-y-6">
-                <div className="text-center">
-                  <Badge className="mb-4 bg-pink-500/50 text-white">
-                    {language === 'es' ? 'Memoria' : 'Memory Game'}
-                  </Badge>
-                  <p className="text-white/80">
-                    {language === 'es' ? 'Encuentra los pares' : 'Find the matching pairs'}
-                  </p>
-                </div>
-                
-                {/* Memory cards grid */}
-                <div className="grid grid-cols-4 gap-2 max-w-lg mx-auto">
-                  {session.game_payload?.pairs?.flatMap((pair, idx) => [
-                    { id: `${pair.pair_id}_a`, text: pair.card_a, pairId: pair.pair_id },
-                    { id: `${pair.pair_id}_b`, text: pair.card_b, pairId: pair.pair_id }
-                  ]).sort(() => Math.random() - 0.5).map((card, idx) => {
-                    const isMatched = matchedPairs.includes(card.pairId);
-                    const isSelected = matchingSelected.term?.id === card.id || matchingSelected.definition?.id === card.id;
-                    
-                    return (
-                      <button
-                        key={card.id}
-                        onClick={() => {
-                          if (isMatched) return;
-                          
-                          if (!matchingSelected.term) {
-                            setMatchingSelected({ term: card, definition: null });
-                          } else if (matchingSelected.term.id !== card.id) {
-                            // Check if match
-                            if (matchingSelected.term.pairId === card.pairId) {
-                              setMatchedPairs(prev => [...prev, card.pairId]);
-                              setScore(prev => prev + 1);
-                              setStreak(prev => prev + 1);
-                              toast.success(language === 'es' ? '¡Par encontrado!' : 'Match found!');
-                              
-                              if (matchedPairs.length + 1 >= session.game_payload?.pairs?.length) {
-                                setTimeout(() => handleGameComplete(), 500);
-                              }
-                            } else {
-                              setStreak(0);
-                              toast.error(language === 'es' ? 'No es par' : 'Not a match');
-                            }
-                            setTimeout(() => setMatchingSelected({ term: null, definition: null }), 300);
-                          }
-                        }}
-                        disabled={isMatched}
-                        className={`aspect-square rounded-lg p-2 text-xs font-medium transition-all ${
-                          isMatched
-                            ? 'bg-green-500/30 border-green-400 text-green-200'
-                            : isSelected
-                            ? 'bg-pink-500/50 border-pink-400 text-white'
-                            : 'bg-white/10 border-white/30 text-white hover:bg-white/20'
-                        } border-2`}
-                      >
-                        {isMatched || isSelected ? card.text : '?'}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <p className="text-center text-white/60 text-sm">
-                  {matchedPairs.length} / {session.game_payload?.pairs?.length || 0} {language === 'es' ? 'pares encontrados' : 'pairs found'}
-                </p>
-              </div>
+              <MemoryGameComponent 
+                session={session}
+                language={language}
+                matchedPairs={matchedPairs}
+                setMatchedPairs={setMatchedPairs}
+                setScore={setScore}
+                setStreak={setStreak}
+                handleGameComplete={handleGameComplete}
+              />
             )}
 
             {/* Fallback for unknown game types */}
