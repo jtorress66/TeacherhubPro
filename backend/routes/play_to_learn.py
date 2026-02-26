@@ -713,7 +713,8 @@ async def join_by_pin(pin: str):
         "mode": session["mode"],
         "status": session["status"],
         "topic": assignment.get("topic", "Practice") if assignment else "Practice",
-        "subject": assignment.get("subject", "") if assignment else ""
+        "subject": assignment.get("subject", "") if assignment else "",
+        "allowed_game_types": session.get("allowed_game_types", [session["game_type"]])
     }
 
 @router.post("/sessions/{session_id}/join")
