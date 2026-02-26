@@ -990,12 +990,9 @@ async def submit_answer(session_id: str, answer: AnswerSubmission, participant_i
     if session_game_type == "all_modes" and participant.get("selected_mode"):
         game_type = participant.get("selected_mode")
         game_payload = participant.get("game_payload", session.get("game_payload", {}))
-        print(f"[PTL DEBUG] ALL_MODES session - participant selected_mode: {game_type}")
-        print(f"[PTL DEBUG] participant has game_payload: {bool(participant.get('game_payload'))}")
     else:
         game_type = session_game_type
         game_payload = session.get("game_payload", {})
-        print(f"[PTL DEBUG] Non-ALL_MODES or no selected_mode - using session game_type: {game_type}")
     
     # Find the correct answer based on game type
     base_items = session.get("base_items", [])
