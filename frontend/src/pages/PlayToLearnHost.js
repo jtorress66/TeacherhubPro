@@ -58,7 +58,25 @@ const PlayToLearnHost = () => {
     try {
       const res = await axios.get(`${API}/play-to-learn/sessions/${sessionId}`, { withCredentials: true });
       setSession(res.data);
-      setPlayers(res.data.participants || []);
+      
+      // De-duplicate players by nickname (case-insensitive)
+      const participants = res.data.participants || [];
+      const uniqueParticipants = participants.reduce((acc, p) => {
+        const existingIdx = acc.findIndex(existing => 
+          existing.nickname.toLowerCase() === p.nickname.toLowerCase()
+        );
+        if (existingIdx === -1) {
+          acc.push(p);
+        } else {
+          // Keep the one with higher score or more recent
+          if ((p.score || 0) > (acc[existingIdx].score || 0)) {
+            acc[existingIdx] = p;
+          }
+        }
+        return acc;
+      }, []);
+      
+      setPlayers(uniqueParticipants);
       setCurrentQuestionIndex(res.data.current_question_index || 0);
       
       // Connect WebSocket
