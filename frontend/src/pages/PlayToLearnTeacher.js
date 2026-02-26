@@ -686,6 +686,17 @@ const PlayToLearnTeacher = () => {
                     {language === 'es' ? 'Modo de Juego' : 'Game Mode'}
                   </label>
                   <div className="grid grid-cols-2 gap-2">
+                    {/* All Modes option - let students choose */}
+                    {hostingAssignment.allowed_game_types?.length > 1 && (
+                      <Button
+                        variant={selectedGameType === 'all_modes' ? 'default' : 'outline'}
+                        onClick={() => setSelectedGameType('all_modes')}
+                        className={`col-span-2 ${selectedGameType === 'all_modes' ? 'bg-gradient-to-r from-purple-600 to-pink-600' : 'border-dashed border-2'}`}
+                      >
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        {language === 'es' ? '🎲 Todos los Modos (Estudiante Elige)' : '🎲 All Modes (Student Chooses)'}
+                      </Button>
+                    )}
                     {hostingAssignment.allowed_game_types?.map((mode) => {
                       const Icon = gameModeIcons[mode];
                       return (
