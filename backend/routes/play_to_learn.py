@@ -52,7 +52,7 @@ class PracticeAssignmentResponse(BaseModel):
 class SessionCreate(BaseModel):
     """Model for creating a practice session"""
     assignment_id: str
-    game_type: str  # quiz, time_attack, matching, flashcard, true_false, fill_blank, sequence, word_search, memory
+    game_type: str  # quiz, time_attack, matching, flashcard, true_false, fill_blank, sequence, word_search, memory, all_modes
     mode: str = "SELF_PACED"  # LIVE or SELF_PACED
 
 class JoinSessionRequest(BaseModel):
