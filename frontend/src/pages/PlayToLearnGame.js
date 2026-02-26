@@ -237,9 +237,16 @@ const PlayToLearnGame = () => {
   };
 
   const handleWebSocketMessage = (data) => {
+    console.log('[PTL] WebSocket message received:', data.type, data);
     switch (data.type) {
       case 'connected':
         setLobbyPlayers(data.participants || []);
+        // If game is already active, start playing
+        if (data.status === 'ACTIVE') {
+          setGameStarted(true);
+          setCurrentQuestionIndex(data.current_question_index || 0);
+          startQuestion();
+        }
         break;
       case 'player_joined':
         setLobbyPlayers(prev => [...prev, data.participant]);
@@ -249,9 +256,12 @@ const PlayToLearnGame = () => {
         setLobbyPlayers(prev => prev.filter(p => p.participant_id !== data.participant_id));
         break;
       case 'game_started':
+        console.log('[PTL] Game started! Transitioning to game view...');
+        toast.success(language === 'en' ? 'Game starting!' : '¡El juego comienza!');
         setGameStarted(true);
         setCurrentQuestionIndex(data.current_question_index || 0);
-        startQuestion();
+        // Re-fetch session to get game_payload
+        fetchSession();
         break;
       case 'next_question':
         setCurrentQuestionIndex(data.current_question_index);
