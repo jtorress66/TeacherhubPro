@@ -126,11 +126,27 @@ const PlayToLearnGame = () => {
       
       // Check if this is an "all_modes" session where student should pick
       const isAllModes = res.data.game_type === 'all_modes' || 
-                         (res.data.allowed_game_types && res.data.allowed_game_types.length > 1);
+                         (res.data.allowed_game_types && res.data.allowed_game_types.length > 1 && res.data.game_type === 'all_modes');
       
-      if (res.data.mode === 'LIVE' && res.data.status === 'LOBBY') {
+      if (res.data.mode === 'LIVE') {
+        // For LIVE mode, always connect to WebSocket
         connectWebSocket();
         setLobbyPlayers(res.data.participants || []);
+        
+        // If game is already ACTIVE, start immediately
+        if (res.data.status === 'ACTIVE') {
+          if (!participantId) {
+            // Need to join first
+            setNeedsToJoin(true);
+          } else {
+            setGameStarted(true);
+            setCurrentQuestionIndex(res.data.current_question_index || 0);
+            startQuestion();
+          }
+        } else if (res.data.status === 'LOBBY' && !participantId) {
+          // Need to join the lobby
+          setNeedsToJoin(true);
+        }
       } else if (res.data.mode === 'SELF_PACED' || res.data.status === 'ACTIVE') {
         // For self-paced, check if we need to join first
         if (!participantId && res.data.mode === 'SELF_PACED') {
