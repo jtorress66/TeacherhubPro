@@ -896,20 +896,57 @@ async def submit_answer(session_id: str, answer: AnswerSubmission, participant_i
     if session["status"] != "ACTIVE":
         raise HTTPException(status_code=400, detail="Session not active")
     
-    # Find the correct answer
+    game_type = session.get("game_type", "quiz")
+    game_payload = session.get("game_payload", {})
+    
+    # Find the correct answer based on game type
     base_items = session.get("base_items", [])
     item = next((i for i in base_items if i["item_id"] == answer.item_id), None)
     if not item:
         raise HTTPException(status_code=400, detail="Invalid item_id")
     
-    # Check answer
-    is_correct = answer.answer.lower().strip() == item["correct_answer"].lower().strip()
+    # Check answer based on game type
+    is_correct = False
+    correct_answer = item["correct_answer"]
+    
+    if game_type == "true_false":
+        # For True/False, the answer is "true" or "false"
+        # The question statement says "The answer is X" which is always TRUE
+        # So correct answer is always "true" for these transformed questions
+        questions = game_payload.get("questions", [])
+        q = next((q for q in questions if q["item_id"] == answer.item_id), None)
+        if q:
+            expected_answer = "true" if q.get("is_true", True) else "false"
+            is_correct = answer.answer.lower().strip() == expected_answer
+            correct_answer = "True" if q.get("is_true", True) else "False"
+        else:
+            is_correct = answer.answer.lower().strip() == "true"
+            correct_answer = "True"
+    elif game_type == "fill_blank":
+        # For fill in the blank, check against blank_answer
+        questions = game_payload.get("questions", [])
+        q = next((q for q in questions if q["item_id"] == answer.item_id), None)
+        if q:
+            correct_answer = q.get("blank_answer", item["correct_answer"])
+        is_correct = answer.answer.lower().strip() == correct_answer.lower().strip()
+    elif game_type == "time_attack":
+        # For time attack, accept any of the acceptable answers
+        questions = game_payload.get("questions", [])
+        q = next((q for q in questions if q["item_id"] == answer.item_id), None)
+        if q:
+            acceptable = q.get("acceptable_answers", [correct_answer.lower()])
+            is_correct = answer.answer.lower().strip() in [a.lower().strip() for a in acceptable]
+        else:
+            is_correct = answer.answer.lower().strip() == correct_answer.lower().strip()
+    else:
+        # For quiz and other modes, check against correct_answer
+        is_correct = answer.answer.lower().strip() == item["correct_answer"].lower().strip()
     
     # Update participant
     answer_record = {
         "item_id": answer.item_id,
         "answer": answer.answer,
-        "correct_answer": item["correct_answer"],
+        "correct_answer": correct_answer,
         "is_correct": is_correct,
         "time_taken_ms": answer.time_taken_ms,
         "submitted_at": datetime.now(timezone.utc).isoformat()
@@ -944,7 +981,7 @@ async def submit_answer(session_id: str, answer: AnswerSubmission, participant_i
     
     return {
         "is_correct": is_correct,
-        "correct_answer": item["correct_answer"],
+        "correct_answer": correct_answer,
         "explanation": item.get("explanation", ""),
         "score": next((p["score"] for p in participants if p["participant_id"] == participant_id), 0),
         "streak": next((p["streak"] for p in participants if p["participant_id"] == participant_id), 0)
