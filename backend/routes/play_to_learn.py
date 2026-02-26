@@ -375,69 +375,59 @@ def transform_items_to_game_mode(base_items: List[dict], game_type: str) -> dict
         }
     
     elif game_type == "fill_blank":
-        # Fill in the blank - MUST use single word answers
-        # Strategy: Use the "term" as the blank answer, and create a sentence using the definition
+        # Fill in the blank - MUST use single word answers for better gameplay
+        # Strategy: Extract key word from term or answer
         questions = []
         for item in base_items:
-            # Prefer using term as the single-word answer
             term = item.get("term", "")
             definition = item.get("definition", "")
             answer = item["correct_answer"]
             
-            # Try to use term as the blank answer (single word/phrase)
-            if term and definition:
-                # Check if term appears in definition - create sentence with blank
-                if term.lower() in definition.lower():
-                    import re
-                    pattern = re.compile(re.escape(term), re.IGNORECASE)
-                    sentence = pattern.sub("_____", definition, count=1)
-                    blank_answer = term
-                else:
-                    # Definition doesn't contain term, use format: "The definition of _____ is: [definition]"
-                    sentence = f"The word _____ is defined as: {definition[:100]}"
-                    blank_answer = term
-            elif term:
-                # Has term but no definition - use the explanation
-                explanation = item.get("explanation", "")
-                if explanation and term.lower() in explanation.lower():
-                    import re
-                    pattern = re.compile(re.escape(term), re.IGNORECASE)
-                    sentence = pattern.sub("_____", explanation[:150], count=1)
-                    blank_answer = term
-                else:
-                    # Fallback: "What is the answer? _____"
-                    sentence = f"The term is _____. ({explanation[:60]}...)"
-                    blank_answer = term
+            # Get a single-word answer
+            # Priority: first word of term > first significant word of answer
+            if term:
+                # Extract first word from term (if it's a phrase)
+                term_words = term.strip().split()
+                key_word = term_words[0] if term_words else term
             else:
-                # No term available - try to extract a KEY WORD from the answer
-                # If answer is a phrase, use the first significant word
-                words = answer.split()
-                if len(words) > 3:
-                    # Answer is too long - use the first noun-like word
-                    key_word = words[0]
-                    blank_answer = key_word
-                    sentence = f"Fill in: _____ ({item['question'][:80]})"
-                else:
-                    # Answer is short enough to use directly
-                    blank_answer = answer
-                    question = item["question"]
-                    if answer.lower() in question.lower():
-                        import re
-                        pattern = re.compile(re.escape(answer), re.IGNORECASE)
-                        sentence = pattern.sub("_____", question, count=1)
-                    else:
-                        sentence = f"Fill in: _____ ({question[:80]})"
+                # Use first word of answer if no term
+                answer_words = answer.strip().split()
+                key_word = answer_words[0] if answer_words else answer
             
-            # Generate helpful hint - just the first letter + length
-            hint_text = f"Starts with '{blank_answer[0].upper()}', {len(blank_answer)} letters"
+            # Only use first word if it's at least 3 characters
+            if len(key_word) < 3 and term:
+                # Try the second word
+                term_words = term.strip().split()
+                if len(term_words) > 1:
+                    key_word = term_words[1]
+            
+            # Create sentence with blank for the key_word
+            if definition:
+                # Try to find key_word in definition
+                if key_word.lower() in definition.lower():
+                    import re
+                    pattern = re.compile(r'\b' + re.escape(key_word) + r'\b', re.IGNORECASE)
+                    sentence = pattern.sub("_____", definition, count=1)
+                else:
+                    # Definition doesn't contain key_word, use: "[Definition]. The key term starts with ___."
+                    sentence = f"{definition[:120]}. The key term is _____."
+            elif term and term.lower() in answer.lower():
+                # Term is in answer, create sentence
+                sentence = f"The answer _____ is correct for: {item['question'][:80]}"
+            else:
+                # Fallback
+                sentence = f"Fill in: _____ ({item['question'][:60]})"
+            
+            # Generate helpful hint - first letter + length
+            hint_text = f"Starts with '{key_word[0].upper()}', {len(key_word)} letters"
             
             questions.append({
                 "item_id": item["item_id"],
                 "sentence": sentence,
-                "blank_answer": blank_answer,
+                "blank_answer": key_word,
                 "hint": hint_text,
                 "explanation": item.get("explanation", ""),
-                "time_limit_seconds": 30  # Give more time for fill in blank
+                "time_limit_seconds": 30
             })
         
         return {
