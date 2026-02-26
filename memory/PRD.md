@@ -1,6 +1,42 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-26 (Batch 5) - ALL_MODES Host Dashboard Redesign - VERIFIED ✅
+
+### Issues Fixed:
+
+**Issue 16: Teacher sees quiz questions for ALL_MODES sessions (P0) - FIXED**
+- **Root Cause:** Host view for ACTIVE sessions showed quiz questions regardless of game_type
+- **Solution:** Created completely new dashboard view for `game_type === 'all_modes'`:
+  - "Live Progress Dashboard" header with ALL MODES badge
+  - Summary stat cards: Playing, Choosing, Answers, Accuracy
+  - Individual player progress cards with mode badges
+  - Progress bars showing X/6 answered, X correct
+  - Real-time updates via 3-second polling
+- **Evidence:** Screenshot shows dashboard with Maria-Memory, Jose-Quiz, Linda-Fill
+
+**Issue 17: Teacher page not updating properly (P1) - FIXED**
+- **Root Cause:** WebSocket messages were occasionally missed, no fallback mechanism
+- **Solution:** Added 3-second polling that fetches session data and updates player list
+- **Evidence:** Testing agent verified: "Updated Maria's score from 3 to 5 in database, Host view reflected change after polling"
+
+**Issue 18: Missing Back button on Host page (P1) - FIXED**
+- **Solution:** Added Back button at top left of both LOBBY and ACTIVE views
+- **Evidence:** Testing agent verified: "Back button visible at top left, clicking navigates to /teacher/play-to-learn"
+
+### Test Results (iteration_41.json):
+- **Frontend:** 100% - All 8 features verified
+- **Features Verified:**
+  1. ✅ Live Progress Dashboard
+  2. ✅ Player Mode Badges
+  3. ✅ Player Progress
+  4. ✅ Back Button
+  5. ✅ Connection Status
+  6. ✅ Summary Stats
+  7. ✅ Polling Updates
+  8. ✅ End Session Button
+
+---
 ## Update 2026-02-26 (Batch 4) - ALL Game Modes Fixed - COMPREHENSIVE TESTING PASSED ✅
 
 ### Issues Fixed:
