@@ -169,7 +169,21 @@ const PlayToLearnHost = () => {
     
     switch (data.type) {
       case 'connected':
-        setPlayers(data.participants || []);
+        // Merge WebSocket data with existing data to preserve full participant info
+        setPlayers(prev => {
+          const wsParticipants = data.participants || [];
+          if (prev.length === 0) {
+            return wsParticipants;
+          }
+          // Merge: prefer existing data but update with WebSocket data
+          return prev.map(existing => {
+            const wsMatch = wsParticipants.find(p => 
+              p.participant_id === existing.participant_id || 
+              p.nickname?.toLowerCase() === existing.nickname?.toLowerCase()
+            );
+            return wsMatch ? { ...existing, ...wsMatch } : existing;
+          });
+        });
         break;
       case 'player_joined':
         // Add new player with full data
