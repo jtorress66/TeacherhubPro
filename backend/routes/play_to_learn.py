@@ -882,16 +882,15 @@ async def select_game_mode(session_id: str, mode_request: SelectModeRequest):
         }
     )
     
-    # Broadcast to live session that a player selected a mode
-    if session["mode"] == "LIVE":
-        participant = next((p for p in session.get("participants", []) if p["participant_id"] == mode_request.participant_id), None)
-        if participant:
-            await manager.send_to_host(session_id, {
-                "type": "player_mode_selected",
-                "participant_id": mode_request.participant_id,
-                "nickname": participant.get("nickname", "Unknown"),
-                "selected_mode": mode_request.game_type
-            })
+    # Broadcast to session that a player selected a mode (both LIVE and SELF_PACED)
+    participant = next((p for p in session.get("participants", []) if p["participant_id"] == mode_request.participant_id), None)
+    if participant:
+        await manager.send_to_host(session_id, {
+            "type": "player_mode_selected",
+            "participant_id": mode_request.participant_id,
+            "nickname": participant.get("nickname", "Unknown"),
+            "selected_mode": mode_request.game_type
+        })
     
     return {
         "session_id": session_id,
