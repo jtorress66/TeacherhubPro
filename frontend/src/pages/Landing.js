@@ -1,18 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Card, CardContent } from '../components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { 
   Clock, CheckCircle, ArrowRight, BookOpen, BarChart3, Users, 
   ClipboardList, Sparkles, Brain, Calendar, GraduationCap, Home, 
-  Play, Target, Award
+  Play, Target, Award, LogIn
 } from 'lucide-react';
-import { toast } from 'sonner';
 import LanguageSelector from '../components/LanguageSelector';
 
 // Animation hook for scroll reveal
@@ -60,55 +54,7 @@ const AnimatedSection = ({ children, className = '', delay = 0 }) => {
 };
 
 const Landing = () => {
-  const navigate = useNavigate();
-  const { login, register } = useAuth();
-  const { language } = useLanguage();
-  const [isLoading, setIsLoading] = useState(false);
-  
-  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
-  const [registerForm, setRegisterForm] = useState({ 
-    email: '', 
-    password: '', 
-    name: '',
-    language: language
-  });
-
-  const handleGoogleLogin = () => {
-    const redirectUrl = window.location.origin + '/auth/callback';
-    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      await login(loginForm.email, loginForm.password);
-      toast.success('Welcome back!');
-      navigate('/dashboard');
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      await register({
-        ...registerForm,
-        role: 'teacher',
-        language: language
-      });
-      toast.success('Account created successfully!');
-      navigate('/dashboard');
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { t } = useLanguage();
 
   // Target audience data
   const targetAudience = [
@@ -167,6 +113,14 @@ const Landing = () => {
     rose: 'bg-rose-50 text-rose-600 group-hover:bg-rose-100',
   };
 
+  // Images
+  const images = {
+    hero: 'https://images.unsplash.com/photo-1758685848226-eedca8f6bce7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzB8MHwxfHNlYXJjaHwyfHx0ZWFjaGVyJTIwY2xhc3Nyb29tJTIwbGFwdG9wJTIwZWR1Y2F0aW9uJTIwcHJvZmVzc2lvbmFsfGVufDB8fHx8MTc3MjIzMzIxN3ww&ixlib=rb-4.1.0&q=85&w=800',
+    students: 'https://images.unsplash.com/photo-1759143101324-d375443f1955?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwzfHxzdHVkZW50cyUyMGNsYXNzcm9vbSUyMGxlYXJuaW5nJTIwaGFwcHklMjBjaGlsZHJlbnxlbnwwfHx8fDE3NzIyMzQ0OTh8MA&ixlib=rb-4.1.0&q=85&w=600',
+    teaching: 'https://images.unsplash.com/photo-1758685733926-00cba008215b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwxfHx0ZWFjaGVyJTIwaGVscGluZyUyMHN0dWRlbnRzJTIwZWR1Y2F0aW9ufGVufDB8fHx8MTc3MjIzNDUwMnww&ixlib=rb-4.1.0&q=85&w=600',
+    collaboration: 'https://images.unsplash.com/photo-1770096679916-2cd9c720d400?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwzfHx0ZWFjaGVyJTIwaGVscGluZyUyMHN0dWRlbnRzJTIwZWR1Y2F0aW9ufGVufDB8fHx8MTc3MjIzNDUwMnww&ixlib=rb-4.1.0&q=85&w=600',
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -206,15 +160,26 @@ const Landing = () => {
             </Link>
           </nav>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSelector variant="compact" dropdownPosition="down" />
-            <Button 
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 sm:px-6 shadow-sm hover:shadow-md transition-all"
-              onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
-              data-testid="header-cta"
-            >
-              Start Free
-            </Button>
+            <Link to="/auth?mode=login">
+              <Button 
+                variant="ghost"
+                className="text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 px-3 sm:px-4"
+                data-testid="header-login"
+              >
+                <LogIn className="h-4 w-4 mr-1.5" />
+                <span className="hidden sm:inline">Log In</span>
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button 
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 sm:px-6 shadow-sm hover:shadow-md transition-all"
+                data-testid="header-cta"
+              >
+                Start Free
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -251,15 +216,16 @@ const Landing = () => {
                 className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start"
                 style={{ animation: 'fadeInUp 0.6s ease-out 0.3s both' }}
               >
-                <Button 
-                  size="lg" 
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 sm:px-8 h-12 sm:h-14 text-base sm:text-lg shadow-lg shadow-emerald-200/50 hover:shadow-xl hover:shadow-emerald-200/50 transition-all group"
-                  onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
-                  data-testid="hero-primary-cta"
-                >
-                  Start Free — No Credit Card Required
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                <Link to="/auth">
+                  <Button 
+                    size="lg" 
+                    className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-6 sm:px-8 h-12 sm:h-14 text-base sm:text-lg shadow-lg shadow-emerald-200/50 hover:shadow-xl hover:shadow-emerald-200/50 transition-all group"
+                    data-testid="hero-primary-cta"
+                  >
+                    Start Free — No Credit Card Required
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
                 <Button 
                   size="lg" 
                   variant="outline" 
@@ -275,61 +241,50 @@ const Landing = () => {
 
             {/* Right - Hero Image */}
             <div 
-              className="hidden lg:block relative"
+              className="relative mt-8 lg:mt-0"
               style={{ animation: 'fadeInRight 0.8s ease-out 0.2s both' }}
             >
               <div className="relative">
-                {/* Main Image with overlay cards */}
+                {/* Main Image */}
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                   <img 
-                    src="https://images.unsplash.com/photo-1758685848226-eedca8f6bce7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzB8MHwxfHNlYXJjaHwyfHx0ZWFjaGVyJTIwY2xhc3Nyb29tJTIwbGFwdG9wJTIwZWR1Y2F0aW9uJTIwcHJvZmVzc2lvbmFsfGVufDB8fHx8MTc3MjIzMzIxN3ww&ixlib=rb-4.1.0&q=85"
+                    src={images.hero}
                     alt="Teacher using TeacherHubPro"
-                    className="w-full h-[400px] object-cover"
+                    className="w-full h-[300px] sm:h-[350px] lg:h-[400px] object-cover object-top"
                     data-testid="hero-image"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 to-transparent"></div>
                 </div>
 
                 {/* Floating card - Top Left */}
                 <div 
-                  className="absolute -top-4 -left-6 bg-white rounded-xl shadow-lg border border-slate-100 p-4 animate-float"
+                  className="absolute -top-3 -left-3 sm:-top-4 sm:-left-6 bg-white rounded-xl shadow-lg border border-slate-100 p-3 sm:p-4 animate-float hidden sm:block"
                   style={{ animationDelay: '0s' }}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <BarChart3 className="h-5 w-5 text-blue-600" />
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                     </div>
                     <div>
                       <div className="text-xs text-slate-500 font-medium">Class Average</div>
-                      <div className="text-lg font-bold text-slate-900">87%</div>
+                      <div className="text-base sm:text-lg font-bold text-slate-900">87%</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Floating card - Bottom Right */}
                 <div 
-                  className="absolute -bottom-4 -right-6 bg-white rounded-xl shadow-lg border border-slate-100 p-4 animate-float"
+                  className="absolute -bottom-3 -right-3 sm:-bottom-4 sm:-right-6 bg-white rounded-xl shadow-lg border border-slate-100 p-3 sm:p-4 animate-float hidden sm:block"
                   style={{ animationDelay: '1.5s' }}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                      <Sparkles className="h-5 w-5 text-emerald-600" />
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                      <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
                     </div>
                     <div>
                       <div className="text-xs text-slate-500 font-medium">AI Generated</div>
-                      <div className="text-lg font-bold text-slate-900">3 Lessons</div>
+                      <div className="text-base sm:text-lg font-bold text-slate-900">3 Lessons</div>
                     </div>
-                  </div>
-                </div>
-
-                {/* Floating card - Middle Right */}
-                <div 
-                  className="absolute top-1/2 -right-4 transform -translate-y-1/2 bg-white rounded-xl shadow-lg border border-slate-100 p-3 animate-float"
-                  style={{ animationDelay: '0.75s' }}
-                >
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-5 w-5 text-emerald-500" />
-                    <span className="text-sm font-medium text-slate-700">Attendance saved</span>
                   </div>
                 </div>
               </div>
@@ -370,47 +325,81 @@ const Landing = () => {
             </p>
           </AnimatedSection>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {solutionFeatures.map((feature, idx) => (
-              <AnimatedSection key={idx} delay={idx * 100}>
-                <div 
-                  className="group flex items-start gap-4 p-5 sm:p-6 rounded-xl bg-slate-50 hover:bg-white hover:shadow-lg border border-transparent hover:border-slate-200 transition-all duration-300 cursor-default"
-                  data-testid={`feature-${idx}`}
-                >
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${featureColors[feature.color]}`}>
-                    <feature.icon className="h-6 w-6" />
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-12">
+            {/* Left - Feature List */}
+            <div className="grid sm:grid-cols-1 gap-4">
+              {solutionFeatures.map((feature, idx) => (
+                <AnimatedSection key={idx} delay={idx * 100}>
+                  <div 
+                    className="group flex items-start gap-4 p-5 sm:p-6 rounded-xl bg-slate-50 hover:bg-white hover:shadow-lg border border-transparent hover:border-slate-200 transition-all duration-300 cursor-default"
+                    data-testid={`feature-${idx}`}
+                  >
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${featureColors[feature.color]}`}>
+                      <feature.icon className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className="text-slate-800 font-medium text-base sm:text-lg leading-snug">{feature.title}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-slate-800 font-medium text-base sm:text-lg leading-snug">{feature.title}</p>
-                  </div>
-                </div>
-              </AnimatedSection>
-            ))}
+                </AnimatedSection>
+              ))}
+            </div>
+
+            {/* Right - Image */}
+            <AnimatedSection delay={200} className="hidden lg:block">
+              <div className="relative rounded-2xl overflow-hidden shadow-xl">
+                <img 
+                  src={images.teaching}
+                  alt="Teacher helping student"
+                  className="w-full h-[400px] object-cover"
+                  data-testid="solution-image"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/20 to-transparent"></div>
+              </div>
+            </AnimatedSection>
           </div>
         </div>
       </section>
 
       {/* Real Outcomes Section */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 bg-emerald-50">
-        <div className="max-w-5xl mx-auto">
-          <AnimatedSection className="text-center mb-10 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              What Teachers Experience
-            </h2>
-          </AnimatedSection>
+        <div className="max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            {/* Left - Image */}
+            <AnimatedSection className="order-2 lg:order-1">
+              <div className="relative rounded-2xl overflow-hidden shadow-xl">
+                <img 
+                  src={images.students}
+                  alt="Happy students in classroom"
+                  className="w-full h-[300px] sm:h-[350px] object-cover"
+                  data-testid="outcomes-image"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/20 to-transparent"></div>
+              </div>
+            </AnimatedSection>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            {outcomes.map((outcome, idx) => (
-              <AnimatedSection key={idx} delay={idx * 75}>
-                <div 
-                  className="flex items-center gap-3 bg-white rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow border border-emerald-100"
-                  data-testid={`outcome-${idx}`}
-                >
-                  <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500 flex-shrink-0" />
-                  <span className="text-slate-700 font-medium text-sm sm:text-base">{outcome}</span>
-                </div>
+            {/* Right - Content */}
+            <div className="order-1 lg:order-2">
+              <AnimatedSection className="mb-8">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                  What Teachers Experience
+                </h2>
               </AnimatedSection>
-            ))}
+
+              <div className="space-y-3 sm:space-y-4">
+                {outcomes.map((outcome, idx) => (
+                  <AnimatedSection key={idx} delay={idx * 75}>
+                    <div 
+                      className="flex items-center gap-3 bg-white rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow border border-emerald-100"
+                      data-testid={`outcome-${idx}`}
+                    >
+                      <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500 flex-shrink-0" />
+                      <span className="text-slate-700 font-medium text-sm sm:text-base">{outcome}</span>
+                    </div>
+                  </AnimatedSection>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -472,40 +461,27 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Final CTA + Auth Section */}
-      <section id="get-started" className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-b from-white to-emerald-50">
+      {/* Collaboration Image Section */}
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-white">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
-            {/* Left - CTA Copy */}
-            <AnimatedSection className="text-center lg:text-left">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            {/* Left - Content */}
+            <AnimatedSection>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                Ready to Simplify Your Teaching Life?
+                Join Thousands of Teachers
               </h2>
-              <p className="text-lg sm:text-xl text-slate-600 mb-8">
-                Start your free account today and experience how much time you can save this week.
+              <p className="text-base sm:text-lg text-slate-600 mb-6 leading-relaxed">
+                Educators across the country are already using TeacherHubPro to streamline their workflow, 
+                spend more time with students, and reclaim their evenings.
               </p>
-
-              <div className="space-y-3 sm:space-y-4 mb-8">
-                {[
-                  'No credit card required',
-                  'Set up in under 2 minutes',
-                  'Cancel anytime',
-                  'Full access to all features',
-                ].map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-3 justify-center lg:justify-start">
-                    <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" />
-                    <span className="text-slate-600 text-sm sm:text-base">{item}</span>
-                  </div>
-                ))}
-              </div>
-
+              
               {/* Trust indicators */}
-              <div className="flex items-center gap-4 justify-center lg:justify-start">
+              <div className="flex items-center gap-4">
                 <div className="flex -space-x-2">
-                  {['M', 'J', 'L', 'A'].map((letter, i) => (
+                  {['M', 'J', 'L', 'A', 'S'].map((letter, i) => (
                     <div 
                       key={i} 
-                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 border-2 border-white flex items-center justify-center text-white text-xs sm:text-sm font-bold shadow-sm"
+                      className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 border-2 border-white flex items-center justify-center text-white text-sm font-bold shadow-sm"
                     >
                       {letter}
                     </div>
@@ -517,157 +493,58 @@ const Landing = () => {
               </div>
             </AnimatedSection>
 
-            {/* Right - Auth Form */}
-            <AnimatedSection delay={150}>
-              <Card className="shadow-2xl border-0 bg-white overflow-hidden">
-                <CardContent className="p-0">
-                  <Tabs defaultValue="register" className="w-full">
-                    <TabsList className="w-full rounded-none border-b bg-slate-50 p-0 h-auto">
-                      <TabsTrigger 
-                        value="register"
-                        className="flex-1 py-3.5 sm:py-4 rounded-none data-[state=active]:bg-white data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-emerald-500 font-medium text-sm sm:text-base transition-colors"
-                        data-testid="register-tab"
-                      >
-                        Create Free Account
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="login" 
-                        className="flex-1 py-3.5 sm:py-4 rounded-none data-[state=active]:bg-white data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-emerald-500 font-medium text-sm sm:text-base transition-colors"
-                        data-testid="login-tab"
-                      >
-                        Sign In
-                      </TabsTrigger>
-                    </TabsList>
-
-                    <div className="p-6 sm:p-8">
-                      {/* Google Auth */}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full h-11 sm:h-12 mb-5 sm:mb-6 border-slate-300 hover:bg-slate-50 hover:border-slate-400 transition-all"
-                        onClick={handleGoogleLogin}
-                        data-testid="google-login-btn"
-                      >
-                        <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                        </svg>
-                        Continue with Google
-                      </Button>
-
-                      <div className="relative mb-5 sm:mb-6">
-                        <div className="absolute inset-0 flex items-center">
-                          <div className="w-full border-t border-slate-200"></div>
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                          <span className="px-4 bg-white text-slate-500">or with email</span>
-                        </div>
-                      </div>
-
-                      <TabsContent value="register" className="mt-0">
-                        <form onSubmit={handleRegister} className="space-y-4">
-                          <div>
-                            <Label htmlFor="register-name" className="text-slate-700 text-sm">Full Name</Label>
-                            <Input
-                              id="register-name"
-                              type="text"
-                              value={registerForm.name}
-                              onChange={(e) => setRegisterForm({...registerForm, name: e.target.value})}
-                              placeholder="Your name"
-                              className="mt-1.5 h-11 sm:h-12"
-                              required
-                              data-testid="register-name"
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="register-email" className="text-slate-700 text-sm">Email</Label>
-                            <Input
-                              id="register-email"
-                              type="email"
-                              value={registerForm.email}
-                              onChange={(e) => setRegisterForm({...registerForm, email: e.target.value})}
-                              placeholder="you@school.edu"
-                              className="mt-1.5 h-11 sm:h-12"
-                              required
-                              data-testid="register-email"
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="register-password" className="text-slate-700 text-sm">Password</Label>
-                            <Input
-                              id="register-password"
-                              type="password"
-                              value={registerForm.password}
-                              onChange={(e) => setRegisterForm({...registerForm, password: e.target.value})}
-                              placeholder="Create a password"
-                              className="mt-1.5 h-11 sm:h-12"
-                              required
-                              data-testid="register-password"
-                            />
-                          </div>
-                          <Button 
-                            type="submit" 
-                            className="w-full h-11 sm:h-12 bg-emerald-600 hover:bg-emerald-700 text-white text-base sm:text-lg shadow-lg shadow-emerald-200/50 hover:shadow-xl transition-all"
-                            disabled={isLoading}
-                            data-testid="register-submit"
-                          >
-                            {isLoading ? 'Creating account...' : 'Start Free Today'}
-                          </Button>
-                          <p className="text-xs text-center text-slate-500 mt-4">
-                            By signing up, you agree to our{' '}
-                            <Link to="/terms-of-use" className="text-emerald-600 hover:underline">Terms</Link>
-                            {' '}and{' '}
-                            <Link to="/privacy-policy" className="text-emerald-600 hover:underline">Privacy Policy</Link>
-                          </p>
-                        </form>
-                      </TabsContent>
-
-                      <TabsContent value="login" className="mt-0">
-                        <form onSubmit={handleLogin} className="space-y-4">
-                          <div>
-                            <Label htmlFor="login-email" className="text-slate-700 text-sm">Email</Label>
-                            <Input
-                              id="login-email"
-                              type="email"
-                              value={loginForm.email}
-                              onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
-                              placeholder="you@school.edu"
-                              className="mt-1.5 h-11 sm:h-12"
-                              required
-                              data-testid="login-email"
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="login-password" className="text-slate-700 text-sm">Password</Label>
-                            <Input
-                              id="login-password"
-                              type="password"
-                              value={loginForm.password}
-                              onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
-                              className="mt-1.5 h-11 sm:h-12"
-                              required
-                              data-testid="login-password"
-                            />
-                          </div>
-                          <Button 
-                            type="submit" 
-                            className="w-full h-11 sm:h-12 bg-emerald-600 hover:bg-emerald-700 text-white text-base shadow-lg shadow-emerald-200/50 hover:shadow-xl transition-all"
-                            disabled={isLoading}
-                            data-testid="login-submit"
-                          >
-                            {isLoading ? 'Signing in...' : 'Sign In'}
-                          </Button>
-                        </form>
-                      </TabsContent>
-                    </div>
-                  </Tabs>
-                </CardContent>
-              </Card>
+            {/* Right - Image */}
+            <AnimatedSection delay={200}>
+              <div className="relative rounded-2xl overflow-hidden shadow-xl">
+                <img 
+                  src={images.collaboration}
+                  alt="Teacher and student collaboration"
+                  className="w-full h-[300px] sm:h-[350px] object-cover"
+                  data-testid="collaboration-image"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent"></div>
+              </div>
             </AnimatedSection>
           </div>
         </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-b from-emerald-50 to-white">
+        <AnimatedSection className="max-w-3xl mx-auto text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+            Ready to Simplify Your Teaching Life?
+          </h2>
+          <p className="text-lg sm:text-xl text-slate-600 mb-8">
+            Start your free account today and experience how much time you can save this week.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <Link to="/auth">
+              <Button 
+                size="lg" 
+                className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-8 h-14 text-lg shadow-lg shadow-emerald-200/50 hover:shadow-xl transition-all group"
+                data-testid="final-cta"
+              >
+                Start Free Today
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+            {[
+              'No credit card required',
+              'Set up in under 2 minutes',
+              'Cancel anytime',
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" />
+                <span className="text-slate-600 text-sm sm:text-base">{item}</span>
+              </div>
+            ))}
+          </div>
+        </AnimatedSection>
       </section>
 
       {/* Footer */}
