@@ -1425,8 +1425,8 @@ const PlayToLearnGame = () => {
     ];
     
     // Filter to allowed modes if available
-    // Check assignment first (most reliable source), then session, then default
-    const allowedModes = assignment?.allowed_game_types || session?.allowed_game_types || ['quiz', 'time_attack', 'matching', 'flashcard', 'true_false', 'fill_blank', 'word_search', 'memory'];
+    // Priority: originalAllowedModes (saved on first load) > assignment > session > default
+    const allowedModes = originalAllowedModes || assignment?.allowed_game_types || session?.allowed_game_types || ['quiz', 'time_attack', 'matching', 'flashcard', 'true_false', 'fill_blank', 'word_search', 'memory'];
     const availableModes = gameModes.filter(m => allowedModes.includes(m.id));
     
     // Check if this is initial selection (originalGameType is 'all_modes' AND current game_type is still 'all_modes')
