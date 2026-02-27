@@ -1,6 +1,32 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-27 (Batch 14) - HOST DASHBOARD REAL-TIME FIXES - VERIFIED ✅
+
+### Bug Fixes:
+
+**Bug 1: Dashboard not updating for SELF_PACED sessions (FIXED)**
+- **Root Cause:** WebSocket `answer_submitted` broadcast was only sent for `LIVE` sessions
+- **Fix:** Removed `if session["mode"] == "LIVE"` check - broadcasts now sent for all sessions
+
+**Bug 2: Aggregate stats showing wrong numbers (FIXED)**
+- **Root Cause:** `answersReceived` and `correctAnswers` state only updated via WebSocket, not from polling
+- **Fix:** Aggregate stats now calculated from actual player data: `totalAnswers = sum(p.answers.length)`, `totalCorrect = sum(correct answers)`
+
+**Bug 3: Player card showing wrong X/N progress (FIXED)**
+- **Root Cause:** `totalQuestions` was always using `questions.length`, but Word Search uses `words`, Memory uses `pairs`, etc.
+- **Fix:** Added `getTotalQuestions()` and `getPlayerTotalQuestions()` functions that return correct total based on game type:
+  - `word_search` → `words.length`
+  - `memory/matching` → `pairs.length`
+  - `sequence` → `items.length`
+  - `flashcard` → `cards.length`
+
+**Test Results (iteration_50.json):**
+- Backend: 100% - 9/9 tests passed
+- Frontend: 100% - All Host Dashboard elements verified
+- Evidence: Word Search shows 1/5 (not 1/10), ALL_MODES shows 13 Answers, 85% (calculated from player data)
+
+---
 ## Update 2026-02-27 (Batch 13) - TRY DIFFERENT MODE SHOWING ALL MODES - VERIFIED ✅
 
 ### Bug Fix:
