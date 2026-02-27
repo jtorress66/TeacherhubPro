@@ -1150,9 +1150,22 @@ const PlayToLearnGame = () => {
     setGameComplete(true);
     
     // Use local tracking as primary source
+    // Support different game payload structures
     const questions = session?.game_payload?.questions || [];
     const cards = session?.game_payload?.cards || [];
-    const totalQ = questions.length || cards.length;
+    const words = session?.game_payload?.words || [];
+    const pairs = session?.game_payload?.pairs || [];
+    const seqItems = session?.game_payload?.items || [];
+    
+    // Calculate total based on game type
+    let totalQ = questions.length || cards.length;
+    if (session?.game_type === 'word_search') {
+      totalQ = words.length;
+    } else if (session?.game_type === 'memory' || session?.game_type === 'matching') {
+      totalQ = pairs.length;
+    } else if (session?.game_type === 'sequence') {
+      totalQ = seqItems.length;
+    }
     
     // Calculate local results first
     const localResults = {
@@ -1161,7 +1174,7 @@ const PlayToLearnGame = () => {
       accuracy_percent: totalQ > 0 ? Math.round((score / totalQ) * 100) : 0,
       best_streak: bestStreak,
       average_response_time_ms: totalTime > 0 && answers.length > 0 ? Math.round(totalTime / answers.length) : 0,
-      missed_count: totalQ - score
+      missed_count: Math.max(0, totalQ - score)
     };
     
     // Try to submit to server
@@ -1174,8 +1187,10 @@ const PlayToLearnGame = () => {
         setResults({
           ...res.data,
           score: localResults.score,
+          total_questions: localResults.total_questions,
           accuracy_percent: localResults.accuracy_percent,
-          best_streak: localResults.best_streak
+          best_streak: localResults.best_streak,
+          missed_count: localResults.missed_count
         });
       } catch (err) {
         console.error('Error completing session:', err);
