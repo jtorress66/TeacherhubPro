@@ -1,6 +1,24 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-27 (Batch 13) - TRY DIFFERENT MODE SHOWING ALL MODES - VERIFIED ✅
+
+### Bug Fix:
+
+**Bug: Try Different Mode only showing Classic Quiz (FIXED)**
+- **Root Cause:** After selecting a mode in an ALL_MODES session, `session.allowed_game_types` was sometimes lost or not preserved. The mode selection was falling back to only showing one mode.
+- **Fix:** 
+  - Added `originalAllowedModes` state to track allowed modes from initial session load
+  - Updated `fetchSession` to save allowed modes from both session and assignment
+  - Updated mode selection UI to use priority: `originalAllowedModes > assignment.allowed_game_types > session.allowed_game_types > default`
+- **Result:** "Try Different Mode" now correctly shows all allowed modes (Quiz, Fill Blank, True/False) with the previously played mode disabled
+
+**Test Results (iteration_49.json):**
+- Frontend: 100% - Bug fix verified
+- Console logs confirm: `originalAllowedModes: [quiz, fill_blank, true_false]`
+- Post-game mode selection shows all 3 modes
+
+---
 ## Update 2026-02-27 (Batch 12) - TRY DIFFERENT MODE & MEMORY GAME FIXES - VERIFIED ✅
 
 ### Bug Fixes:
