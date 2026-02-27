@@ -1036,6 +1036,40 @@ async def submit_answer(session_id: str, answer: AnswerSubmission, participant_i
             is_correct = answer.answer.lower().strip() in [a.lower().strip() for a in acceptable]
         else:
             is_correct = answer.answer.lower().strip() == correct_answer.lower().strip()
+    elif game_type == "word_search":
+        # For word search, check if the submitted word matches the expected word for this item
+        hints = game_payload.get("hints", [])
+        hint = next((h for h in hints if h["item_id"] == answer.item_id), None)
+        if hint:
+            expected_word = hint.get("word", "").upper()
+            correct_answer = expected_word
+            is_correct = answer.answer.upper().strip() == expected_word
+        else:
+            # Fallback: check if the answer matches any of the words
+            words = game_payload.get("words", [])
+            is_correct = answer.answer.upper().strip() in words
+            correct_answer = answer.answer.upper().strip() if is_correct else words[0] if words else ""
+    elif game_type == "sequence":
+        # For sequence, the answer is the position index - check if it matches correct_position
+        seq_items = game_payload.get("items", [])
+        seq_item = next((i for i in seq_items if i["item_id"] == answer.item_id), None)
+        if seq_item:
+            correct_position = seq_item.get("correct_position", -1)
+            try:
+                submitted_position = int(answer.answer)
+                is_correct = submitted_position == correct_position
+                correct_answer = str(correct_position)
+            except ValueError:
+                is_correct = False
+                correct_answer = str(correct_position) if seq_item else "0"
+        else:
+            is_correct = False
+            correct_answer = "0"
+    elif game_type == "memory":
+        # For memory, the answer validation is handled by the frontend
+        # Just mark as correct since memory matches are already validated client-side
+        is_correct = True
+        correct_answer = answer.answer
     else:
         # For quiz and other modes, check against correct_answer
         is_correct = answer.answer.lower().strip() == item["correct_answer"].lower().strip()
