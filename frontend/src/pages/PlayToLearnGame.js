@@ -2138,6 +2138,7 @@ const PlayToLearnGame = () => {
                 setScore={setScore}
                 setStreak={setStreak}
                 handleGameComplete={handleGameComplete}
+                participantId={participantId}
               />
             )}
 
