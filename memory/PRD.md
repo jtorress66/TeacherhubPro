@@ -1,6 +1,35 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-27 (Batch 17) - HOMEPAGE v3 - Multi-Language & Feature Sections - VERIFIED ✅
+
+### Changes Made:
+
+**1. Multi-Language Support for Landing Page:**
+- Added 80+ new translation keys for landing page copy in Spanish
+- All hero content, section titles, features, outcomes, and CTAs now translate
+- Language selector now changes landing page content (not just app interface)
+
+**2. Logo Header on All Public Pages:**
+- Updated `/app/frontend/src/pages/Auth.js` - TeacherHubPro logo + name in header
+- Updated `/app/frontend/src/pages/Help.js` - TeacherHubPro logo + name in header
+- Updated `/app/frontend/src/pages/Contact.js` - TeacherHubPro logo + name in header
+- Updated `/app/frontend/src/pages/PrivacyPolicy.js` - TeacherHubPro logo + name in header
+- Updated `/app/frontend/src/pages/TermsOfUse.js` - TeacherHubPro logo + name in header
+
+**3. New Feature Sections Added to Landing Page:**
+- **Play to Learn:** Kahoot-style live games section with indigo color scheme, image, and 4 feature bullets
+- **Educational Games:** Interactive learning activities section with orange color scheme, image, and 4 feature bullets
+- **Adaptive Learning:** AI-powered personalized paths section with pink color scheme, image, and 4 feature bullets
+
+**Test Results (iteration_53.json):**
+- Frontend: 100% - All 14 features verified
+- Language switching: English ↔ Spanish works on landing page
+- All pages display logo header
+- All three new feature sections display with images
+- Login functionality confirmed working
+
+---
 ## Update 2026-02-27 (Batch 16) - HOMEPAGE REDESIGN v2 - VERIFIED ✅
 
 ### Fixes Applied:
