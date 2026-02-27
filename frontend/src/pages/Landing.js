@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { 
   Clock, CheckCircle, ArrowRight, BookOpen, BarChart3, Users, 
   ClipboardList, Sparkles, Brain, Calendar, GraduationCap, Home, 
-  Play, Target, Award, LogIn
+  Play, Target, Award, LogIn, Rocket, Gamepad2, Zap
 } from 'lucide-react';
 import LanguageSelector from '../components/LanguageSelector';
 
@@ -58,49 +58,49 @@ const Landing = () => {
 
   // Target audience data
   const targetAudience = [
-    { icon: GraduationCap, label: 'Elementary Teachers' },
-    { icon: BookOpen, label: 'Middle School Educators' },
-    { icon: Target, label: 'High School Teachers' },
-    { icon: Home, label: 'Homeschool Educators' },
-    { icon: Award, label: 'Instructional Coaches' },
+    { icon: GraduationCap, labelKey: 'landingElementaryTeachers' },
+    { icon: BookOpen, labelKey: 'landingMiddleSchoolEducators' },
+    { icon: Target, labelKey: 'landingHighSchoolTeachers' },
+    { icon: Home, labelKey: 'landingHomeschoolEducators' },
+    { icon: Award, labelKey: 'landingInstructionalCoaches' },
   ];
 
   // Outcomes data
   const outcomes = [
-    'Faster weekly lesson planning',
-    'Less time grading',
-    'Better organization',
-    'More classroom confidence',
-    'More personal time after school',
+    'landingFasterPlanning',
+    'landingLessTimeGrading',
+    'landingBetterOrganization',
+    'landingMoreConfidence',
+    'landingMorePersonalTime',
   ];
 
   // Solution features
   const solutionFeatures = [
-    { icon: Calendar, title: 'Generate structured lesson plans in minutes', color: 'emerald' },
-    { icon: BarChart3, title: 'Track grades with an easy-to-use digital gradebook', color: 'blue' },
-    { icon: ClipboardList, title: 'Record attendance quickly', color: 'purple' },
-    { icon: Users, title: 'Organize class data in one dashboard', color: 'amber' },
-    { icon: Brain, title: 'Use AI tools to speed up prep work', color: 'rose' },
+    { icon: Calendar, titleKey: 'landingGenerateLessons', color: 'emerald' },
+    { icon: BarChart3, titleKey: 'landingTrackGrades', color: 'blue' },
+    { icon: ClipboardList, titleKey: 'landingRecordAttendance', color: 'purple' },
+    { icon: Users, titleKey: 'landingOrganizeData', color: 'amber' },
+    { icon: Brain, titleKey: 'landingUseAiTools', color: 'rose' },
   ];
 
   // How it works steps
   const howItWorksSteps = [
     { 
       step: '1', 
-      title: 'Create Your Classes', 
-      desc: 'Set up your classes and add students in seconds',
+      titleKey: 'landingCreateClasses', 
+      descKey: 'landingCreateClassesDesc',
       icon: Users 
     },
     { 
       step: '2', 
-      title: 'Generate Lessons with AI', 
-      desc: 'Create comprehensive lesson plans with AI assistance',
+      titleKey: 'landingGenerateWithAi', 
+      descKey: 'landingGenerateWithAiDesc',
       icon: Sparkles 
     },
     { 
       step: '3', 
-      title: 'Manage Grades and Attendance Effortlessly', 
-      desc: 'Track everything from one intuitive dashboard',
+      titleKey: 'landingManageGradesAttendance', 
+      descKey: 'landingManageGradesAttendanceDesc',
       icon: BarChart3 
     },
   ];
@@ -119,6 +119,9 @@ const Landing = () => {
     students: 'https://images.unsplash.com/photo-1759143101324-d375443f1955?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwzfHxzdHVkZW50cyUyMGNsYXNzcm9vbSUyMGxlYXJuaW5nJTIwaGFwcHklMjBjaGlsZHJlbnxlbnwwfHx8fDE3NzIyMzQ0OTh8MA&ixlib=rb-4.1.0&q=85&w=600',
     teaching: 'https://images.unsplash.com/photo-1758685733926-00cba008215b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwxfHx0ZWFjaGVyJTIwaGVscGluZyUyMHN0dWRlbnRzJTIwZWR1Y2F0aW9ufGVufDB8fHx8MTc3MjIzNDUwMnww&ixlib=rb-4.1.0&q=85&w=600',
     collaboration: 'https://images.unsplash.com/photo-1770096679916-2cd9c720d400?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwzfHx0ZWFjaGVyJTIwaGVscGluZyUyMHN0dWRlbnRzJTIwZWR1Y2F0aW9ufGVufDB8fHx8MTc3MjIzNDUwMnww&ixlib=rb-4.1.0&q=85&w=600',
+    playToLearn: 'https://images.unsplash.com/photo-1719159381916-062fa9f435a6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwyfHxzdHVkZW50cyUyMHBsYXlpbmclMjBlZHVjYXRpb25hbCUyMGdhbWUlMjBxdWl6JTIwY2xhc3Nyb29tfGVufDB8fHx8MTc3MjIzNTczOXww&ixlib=rb-4.1.0&q=85&w=600',
+    games: 'https://images.unsplash.com/photo-1770096679844-57ca92c2b64b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwzfHxzdHVkZW50cyUyMHBsYXlpbmclMjBlZHVjYXRpb25hbCUyMGdhbWUlMjBxdWl6JTIwY2xhc3Nyb29tfGVufDB8fHx8MTc3MjIzNTczOXww&ixlib=rb-4.1.0&q=85&w=600',
+    adaptive: 'https://images.unsplash.com/photo-1638452033979-14fba9e17fbb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTJ8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwdXNpbmclMjBjb21wdXRlciUyMGludGVyYWN0aXZlJTIwbGVhcm5pbmd8ZW58MHx8fHwxNzcyMjM1NzgwfDA&ixlib=rb-4.1.0&q=85&w=600',
   };
 
   return (
@@ -142,21 +145,21 @@ const Landing = () => {
               className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors"
               data-testid="nav-features"
             >
-              Features
+              {t('landingFeatures') || 'Features'}
             </a>
             <a 
               href="#how-it-works" 
               className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors"
               data-testid="nav-how-it-works"
             >
-              How It Works
+              {t('landingSeeHowItWorks') || 'How It Works'}
             </a>
             <Link 
               to="/pricing" 
               className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors"
               data-testid="nav-pricing"
             >
-              Pricing
+              {t('landingPricing') || 'Pricing'}
             </Link>
           </nav>
           
@@ -169,7 +172,7 @@ const Landing = () => {
                 data-testid="header-login"
               >
                 <LogIn className="h-4 w-4 mr-1.5" />
-                <span className="hidden sm:inline">Log In</span>
+                <span className="hidden sm:inline">{t('landingLogIn') || 'Log In'}</span>
               </Button>
             </Link>
             <Link to="/auth">
@@ -177,7 +180,7 @@ const Landing = () => {
                 className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 sm:px-6 shadow-sm hover:shadow-md transition-all"
                 data-testid="header-cta"
               >
-                Start Free
+                {t('landingStartFreeCta') || 'Start Free'}
               </Button>
             </Link>
           </div>
@@ -195,21 +198,21 @@ const Landing = () => {
                 style={{ animation: 'fadeInUp 0.6s ease-out' }}
               >
                 <Clock className="h-4 w-4" />
-                Built for busy teachers
+                {t('landingBuiltForBusyTeachers') || 'Built for busy teachers'}
               </div>
               
               <h1 
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-slate-900 leading-[1.15] mb-6"
                 style={{ animation: 'fadeInUp 0.6s ease-out 0.1s both' }}
               >
-                Save <span className="text-emerald-600">5+ Hours</span> Every Week on Planning, Grading, and Classroom Admin
+                {t('landingSave5HoursTitle') || 'Save 5+ Hours Every Week on Planning, Grading, and Classroom Admin'}
               </h1>
               
               <p 
                 className="text-base sm:text-lg text-slate-600 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0"
                 style={{ animation: 'fadeInUp 0.6s ease-out 0.2s both' }}
               >
-                TeacherHubPro helps busy educators create lesson plans, manage grades, track attendance, and use AI to simplify daily classroom work — all in one place.
+                {t('landingSave5HoursSubtitle') || 'TeacherHubPro helps busy educators create lesson plans, manage grades, track attendance, and use AI to simplify daily classroom work — all in one place.'}
               </p>
               
               <div 
@@ -222,7 +225,7 @@ const Landing = () => {
                     className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-6 sm:px-8 h-12 sm:h-14 text-base sm:text-lg shadow-lg shadow-emerald-200/50 hover:shadow-xl hover:shadow-emerald-200/50 transition-all group"
                     data-testid="hero-primary-cta"
                   >
-                    Start Free — No Credit Card Required
+                    {t('landingStartFreeNoCreditCard') || 'Start Free — No Credit Card Required'}
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
@@ -234,7 +237,7 @@ const Landing = () => {
                   data-testid="hero-secondary-cta"
                 >
                   <Play className="mr-2 h-5 w-5" />
-                  See How It Works
+                  {t('landingSeeHowItWorks') || 'See How It Works'}
                 </Button>
               </div>
             </div>
@@ -297,17 +300,17 @@ const Landing = () => {
       <section className="py-16 sm:py-20 px-4 sm:px-6 bg-slate-900 text-white">
         <AnimatedSection className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6">
-            Teaching Is More Than Teaching
+            {t('landingTeachingIsMore') || 'Teaching Is More Than Teaching'}
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-slate-300 mb-10 leading-relaxed max-w-3xl mx-auto">
-            Between lesson planning, grading, attendance, reporting, and communication — most teachers spend hours every week on tasks that steal time from students and personal life.
+            {t('landingTeachingIsMoreDesc') || 'Between lesson planning, grading, attendance, reporting, and communication — most teachers spend hours every week on tasks that steal time from students and personal life.'}
           </p>
           <div className="border-t border-slate-700 pt-8 max-w-2xl mx-auto">
             <p className="text-xl sm:text-2xl font-semibold text-emerald-400 mb-2">
-              You became a teacher to educate.
+              {t('landingYouBecameTeacher') || 'You became a teacher to educate.'}
             </p>
             <p className="text-lg sm:text-xl text-slate-400">
-              Not to drown in paperwork.
+              {t('landingNotToDrown') || 'Not to drown in paperwork.'}
             </p>
           </div>
         </AnimatedSection>
@@ -318,10 +321,10 @@ const Landing = () => {
         <div className="max-w-6xl mx-auto">
           <AnimatedSection className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Everything You Need. One Simple Platform.
+              {t('landingEverythingSimple') || 'Everything You Need. One Simple Platform.'}
             </h2>
             <p className="text-lg sm:text-xl text-slate-600">
-              Less busywork. More teaching.
+              {t('landingLessBusywork') || 'Less busywork. More teaching.'}
             </p>
           </AnimatedSection>
 
@@ -338,7 +341,7 @@ const Landing = () => {
                       <feature.icon className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="text-slate-800 font-medium text-base sm:text-lg leading-snug">{feature.title}</p>
+                      <p className="text-slate-800 font-medium text-base sm:text-lg leading-snug">{t(feature.titleKey)}</p>
                     </div>
                   </div>
                 </AnimatedSection>
@@ -358,6 +361,176 @@ const Landing = () => {
               </div>
             </AnimatedSection>
           </div>
+        </div>
+      </section>
+
+      {/* Engage Students Section - Play to Learn, Educational Games, Adaptive Learning */}
+      <section id="engage" className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-b from-indigo-50 to-white">
+        <div className="max-w-6xl mx-auto">
+          <AnimatedSection className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              {t('landingEngageStudents') || 'Engage Students Like Never Before'}
+            </h2>
+            <p className="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto">
+              {t('landingEngageStudentsDesc') || 'Transform your classroom with interactive games, adaptive learning, and live quizzes that keep students motivated and learning.'}
+            </p>
+          </AnimatedSection>
+
+          {/* Play to Learn */}
+          <AnimatedSection className="mb-16">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              <div className="relative rounded-2xl overflow-hidden shadow-xl">
+                <img 
+                  src={images.playToLearn}
+                  alt="Play to Learn - Live quiz games"
+                  className="w-full h-[300px] sm:h-[350px] object-cover"
+                  data-testid="play-to-learn-image"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/40 to-transparent"></div>
+                <div className="absolute bottom-4 left-4 right-4">
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 text-indigo-700 text-sm font-medium">
+                    <Rocket className="h-4 w-4" />
+                    {t('landingPlayToLearnSubtitle') || 'Kahoot-Style Live Games'}
+                  </span>
+                </div>
+              </div>
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-100 text-indigo-700 text-sm font-medium mb-4">
+                  <Rocket className="h-4 w-4" />
+                  NEW
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
+                  {t('landingPlayToLearnTitle') || 'Play to Learn'}
+                </h3>
+                <p className="text-slate-600 mb-6 leading-relaxed">
+                  {t('landingPlayToLearnDesc') || 'Host live quiz games or assign self-paced activities. Students join with a PIN and compete in real-time with instant feedback.'}
+                </p>
+                <ul className="space-y-3 mb-6">
+                  {[
+                    t('landingPlayToLearnFeature1') || 'Live multiplayer quizzes',
+                    t('landingPlayToLearnFeature2') || 'Self-paced assignments',
+                    t('landingPlayToLearnFeature3') || 'Real-time leaderboards',
+                    t('landingPlayToLearnFeature4') || '9+ game modes',
+                  ].map((feature, idx) => (
+                    <li key={idx} className="flex items-center gap-3">
+                      <CheckCircle className="h-5 w-5 text-indigo-500 flex-shrink-0" />
+                      <span className="text-slate-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/auth">
+                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                    {t('landingExploreFeature') || 'Explore'} Play to Learn
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </AnimatedSection>
+
+          {/* Educational Games */}
+          <AnimatedSection className="mb-16">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              <div className="order-2 lg:order-1">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-100 text-orange-700 text-sm font-medium mb-4">
+                  <Gamepad2 className="h-4 w-4" />
+                  INTERACTIVE
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
+                  {t('landingEducationalGamesTitle') || 'Educational Games'}
+                </h3>
+                <p className="text-slate-600 mb-6 leading-relaxed">
+                  {t('landingEducationalGamesDesc') || 'Create custom games for any subject. Share with students via link or Google Classroom. Track engagement and progress.'}
+                </p>
+                <ul className="space-y-3 mb-6">
+                  {[
+                    t('landingEducationalGamesFeature1') || 'Customizable game templates',
+                    t('landingEducationalGamesFeature2') || 'Share via link or QR code',
+                    t('landingEducationalGamesFeature3') || 'Student progress tracking',
+                    t('landingEducationalGamesFeature4') || 'Works on any device',
+                  ].map((feature, idx) => (
+                    <li key={idx} className="flex items-center gap-3">
+                      <CheckCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
+                      <span className="text-slate-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/auth">
+                  <Button className="bg-orange-600 hover:bg-orange-700 text-white">
+                    {t('landingExploreFeature') || 'Explore'} {t('landingEducationalGamesTitle') || 'Educational Games'}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+              <div className="order-1 lg:order-2 relative rounded-2xl overflow-hidden shadow-xl">
+                <img 
+                  src={images.games}
+                  alt="Educational Games"
+                  className="w-full h-[300px] sm:h-[350px] object-cover"
+                  data-testid="games-image"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-orange-900/40 to-transparent"></div>
+                <div className="absolute bottom-4 left-4 right-4">
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 text-orange-700 text-sm font-medium">
+                    <Gamepad2 className="h-4 w-4" />
+                    {t('landingEducationalGamesSubtitle') || 'Fun Learning Activities'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </AnimatedSection>
+
+          {/* Adaptive Learning */}
+          <AnimatedSection>
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              <div className="relative rounded-2xl overflow-hidden shadow-xl">
+                <img 
+                  src={images.adaptive}
+                  alt="Adaptive Learning"
+                  className="w-full h-[300px] sm:h-[350px] object-cover"
+                  data-testid="adaptive-image"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-pink-900/40 to-transparent"></div>
+                <div className="absolute bottom-4 left-4 right-4">
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 text-pink-700 text-sm font-medium">
+                    <Brain className="h-4 w-4" />
+                    {t('landingAdaptiveLearningSubtitle') || 'Personalized Learning Paths'}
+                  </span>
+                </div>
+              </div>
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-100 text-pink-700 text-sm font-medium mb-4">
+                  <Zap className="h-4 w-4" />
+                  AI-POWERED
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
+                  {t('landingAdaptiveLearningTitle') || 'Adaptive Learning'}
+                </h3>
+                <p className="text-slate-600 mb-6 leading-relaxed">
+                  {t('landingAdaptiveLearningDesc') || "AI-powered learning paths that adapt to each student's pace and level. Identify gaps and provide targeted practice."}
+                </p>
+                <ul className="space-y-3 mb-6">
+                  {[
+                    t('landingAdaptiveLearningFeature1') || 'AI-powered recommendations',
+                    t('landingAdaptiveLearningFeature2') || 'Personalized practice',
+                    t('landingAdaptiveLearningFeature3') || 'Progress analytics',
+                    t('landingAdaptiveLearningFeature4') || 'Automatic difficulty adjustment',
+                  ].map((feature, idx) => (
+                    <li key={idx} className="flex items-center gap-3">
+                      <CheckCircle className="h-5 w-5 text-pink-500 flex-shrink-0" />
+                      <span className="text-slate-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/auth">
+                  <Button className="bg-pink-600 hover:bg-pink-700 text-white">
+                    {t('landingExploreFeature') || 'Explore'} {t('landingAdaptiveLearningTitle') || 'Adaptive Learning'}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </AnimatedSection>
         </div>
       </section>
 
@@ -382,19 +555,19 @@ const Landing = () => {
             <div className="order-1 lg:order-2">
               <AnimatedSection className="mb-8">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                  What Teachers Experience
+                  {t('landingWhatTeachersExperience') || 'What Teachers Experience'}
                 </h2>
               </AnimatedSection>
 
               <div className="space-y-3 sm:space-y-4">
-                {outcomes.map((outcome, idx) => (
+                {outcomes.map((outcomeKey, idx) => (
                   <AnimatedSection key={idx} delay={idx * 75}>
                     <div 
                       className="flex items-center gap-3 bg-white rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow border border-emerald-100"
                       data-testid={`outcome-${idx}`}
                     >
                       <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500 flex-shrink-0" />
-                      <span className="text-slate-700 font-medium text-sm sm:text-base">{outcome}</span>
+                      <span className="text-slate-700 font-medium text-sm sm:text-base">{t(outcomeKey)}</span>
                     </div>
                   </AnimatedSection>
                 ))}
@@ -409,10 +582,10 @@ const Landing = () => {
         <div className="max-w-5xl mx-auto">
           <AnimatedSection className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Get Started in 3 Simple Steps
+              {t('landing3SimpleSteps') || 'Get Started in 3 Simple Steps'}
             </h2>
             <p className="text-lg sm:text-xl text-slate-600">
-              You'll see value in minutes — not hours.
+              {t('landingValueInMinutes') || "You'll see value in minutes — not hours."}
             </p>
           </AnimatedSection>
 
@@ -427,8 +600,8 @@ const Landing = () => {
                     {item.step}
                   </div>
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">{item.title}</h3>
-                <p className="text-slate-600 text-sm sm:text-base">{item.desc}</p>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">{t(item.titleKey)}</h3>
+                <p className="text-slate-600 text-sm sm:text-base">{t(item.descKey)}</p>
               </AnimatedSection>
             ))}
           </div>
@@ -440,7 +613,7 @@ const Landing = () => {
         <div className="max-w-5xl mx-auto">
           <AnimatedSection className="text-center mb-10 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Built Specifically for Educators
+              {t('landingBuiltForEducators') || 'Built Specifically for Educators'}
             </h2>
           </AnimatedSection>
 
@@ -453,7 +626,7 @@ const Landing = () => {
                   data-testid={`audience-${idx}`}
                 >
                   <audience.icon className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
-                  <span className="text-slate-700 font-medium text-sm sm:text-base">{audience.label}</span>
+                  <span className="text-slate-700 font-medium text-sm sm:text-base">{t(audience.labelKey)}</span>
                 </div>
               ))}
             </div>
@@ -468,11 +641,10 @@ const Landing = () => {
             {/* Left - Content */}
             <AnimatedSection>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                Join Thousands of Teachers
+                {t('landingJoinThousands') || 'Join Thousands of Teachers'}
               </h2>
               <p className="text-base sm:text-lg text-slate-600 mb-6 leading-relaxed">
-                Educators across the country are already using TeacherHubPro to streamline their workflow, 
-                spend more time with students, and reclaim their evenings.
+                {t('landingJoinThousandsDesc') || 'Educators across the country are already using TeacherHubPro to streamline their workflow, spend more time with students, and reclaim their evenings.'}
               </p>
               
               {/* Trust indicators */}
@@ -488,7 +660,7 @@ const Landing = () => {
                   ))}
                 </div>
                 <div className="text-sm text-slate-600">
-                  <span className="font-semibold text-slate-800">500+</span> teachers already using TeacherHubPro
+                  <span className="font-semibold text-slate-800">500+</span> {t('landingTeachersUsing') || 'teachers already using TeacherHubPro'}
                 </div>
               </div>
             </AnimatedSection>
@@ -513,10 +685,10 @@ const Landing = () => {
       <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-b from-emerald-50 to-white">
         <AnimatedSection className="max-w-3xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-            Ready to Simplify Your Teaching Life?
+            {t('landingReadyToSimplify') || 'Ready to Simplify Your Teaching Life?'}
           </h2>
           <p className="text-lg sm:text-xl text-slate-600 mb-8">
-            Start your free account today and experience how much time you can save this week.
+            {t('landingExperienceTimeSaved') || 'Start your free account today and experience how much time you can save this week.'}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
@@ -526,7 +698,7 @@ const Landing = () => {
                 className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-8 h-14 text-lg shadow-lg shadow-emerald-200/50 hover:shadow-xl transition-all group"
                 data-testid="final-cta"
               >
-                Start Free Today
+                {t('landingStartFreeToday') || 'Start Free Today'}
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
@@ -534,9 +706,9 @@ const Landing = () => {
 
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
             {[
-              'No credit card required',
-              'Set up in under 2 minutes',
-              'Cancel anytime',
+              t('landingNoCreditCardRequired') || 'No credit card required',
+              t('landingSetupIn2Minutes') || 'Set up in under 2 minutes',
+              t('landingCancelAnytime') || 'Cancel anytime',
             ].map((item, idx) => (
               <div key={idx} className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" />
@@ -561,38 +733,38 @@ const Landing = () => {
                 <span className="font-bold text-base sm:text-lg">TeacherHubPro</span>
               </div>
               <p className="text-slate-400 text-sm">
-                Simplifying teaching, one classroom at a time.
+                {t('landingSimplifyingTeaching') || 'Simplifying teaching, one classroom at a time.'}
               </p>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4 text-sm sm:text-base">Product</h4>
+              <h4 className="font-semibold mb-4 text-sm sm:text-base">{t('landingProductLabel') || 'Product'}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><a href="#solution" className="hover:text-white transition-colors">Features</a></li>
-                <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
-                <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
+                <li><a href="#solution" className="hover:text-white transition-colors">{t('landingFeatures') || 'Features'}</a></li>
+                <li><Link to="/pricing" className="hover:text-white transition-colors">{t('landingPricing') || 'Pricing'}</Link></li>
+                <li><a href="#how-it-works" className="hover:text-white transition-colors">{t('landingSeeHowItWorks') || 'How It Works'}</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4 text-sm sm:text-base">Company</h4>
+              <h4 className="font-semibold mb-4 text-sm sm:text-base">{t('landingCompanyLabel') || 'Company'}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
-                <li><Link to="/help" className="hover:text-white transition-colors">Help Center</Link></li>
+                <li><Link to="/contact" className="hover:text-white transition-colors">{t('landingContact') || 'Contact'}</Link></li>
+                <li><Link to="/help" className="hover:text-white transition-colors">{t('landingHelpCenter') || 'Help Center'}</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4 text-sm sm:text-base">Legal</h4>
+              <h4 className="font-semibold mb-4 text-sm sm:text-base">{t('landingLegalLabel') || 'Legal'}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-                <li><Link to="/terms-of-use" className="hover:text-white transition-colors">Terms of Service</Link></li>
+                <li><Link to="/privacy-policy" className="hover:text-white transition-colors">{t('landingPrivacyPolicyLink') || 'Privacy Policy'}</Link></li>
+                <li><Link to="/terms-of-use" className="hover:text-white transition-colors">{t('landingTermsOfServiceLink') || 'Terms of Service'}</Link></li>
               </ul>
             </div>
           </div>
 
           <div className="border-t border-slate-800 pt-8 text-center text-sm text-slate-500">
-            © {new Date().getFullYear()} TeacherHubPro. All rights reserved.
+            © {new Date().getFullYear()} TeacherHubPro. {t('landingAllRightsReserved') || 'All rights reserved.'}
           </div>
         </div>
       </footer>
