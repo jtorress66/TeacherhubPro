@@ -303,7 +303,7 @@ const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPa
       >
         <div 
           className="grid gap-0.5 bg-white/5 p-2 rounded-xl"
-          style={{ gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))` }}
+          style={{ gridTemplateColumns: `repeat(${gridSizeUsed}, minmax(0, 1fr))` }}
         >
           {grid.map((row, rowIdx) => (
             row.map((letter, colIdx) => (
@@ -313,7 +313,7 @@ const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPa
                 onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx)}
                 onMouseUp={handleCellMouseUp}
                 className={`
-                  w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-sm sm:text-base font-bold rounded cursor-pointer
+                  w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center text-xs sm:text-sm font-bold rounded cursor-pointer
                   transition-all duration-150
                   ${isCellFound(rowIdx, colIdx) 
                     ? 'bg-green-500 text-white scale-95' 
@@ -330,13 +330,13 @@ const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPa
         </div>
       </div>
       
-      {/* Hints */}
+      {/* Hints - only show hints for placed words */}
       <div className="space-y-2 max-w-md mx-auto">
         <p className="text-white/60 text-sm text-center font-medium">
           {language === 'es' ? '💡 Pistas:' : '💡 Hints:'}
         </p>
         <div className="grid gap-2">
-          {hints.slice(0, 4).map((hint, idx) => (
+          {hints.filter(h => actualWords.includes(h.word)).slice(0, 4).map((hint, idx) => (
             <div 
               key={idx} 
               className={`bg-white/10 rounded-lg p-2 text-sm transition-all ${
@@ -354,7 +354,7 @@ const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPa
         <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-2">
           <Trophy className="h-4 w-4 text-yellow-400" />
           <span className="text-white font-medium">
-            {foundWords.length} / {words.length} {language === 'es' ? 'encontradas' : 'found'}
+            {foundWords.length} / {actualWords.length} {language === 'es' ? 'encontradas' : 'found'}
           </span>
         </div>
       </div>
