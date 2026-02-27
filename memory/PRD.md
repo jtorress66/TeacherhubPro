@@ -1,6 +1,32 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-27 (Batch 12) - TRY DIFFERENT MODE & MEMORY GAME FIXES - VERIFIED ✅
+
+### Bug Fixes:
+
+**Bug 1: Try Different Mode creates new session (FIXED)**
+- **Root Cause:** `selectNewMode()` was always creating a new session via POST /sessions
+- **Fix:** 
+  - Added `originalGameType` state to track if session started as ALL_MODES
+  - `tryDifferentMode()` now resets score/streak/answers/matchedPairs to 0
+  - `selectNewMode()` checks if session is ALL_MODES → calls `/select-mode` endpoint instead
+  - Same participant stays in same session with new game mode
+- **Result:** Host dashboard shows single player with updated mode badge (not duplicates)
+
+**Bug 2: Memory Game 200% accuracy / 16/8 score (FIXED)**
+- **Root Cause:** Score wasn't reset when switching modes, so Quiz score (8) + Memory score (8) = 16
+- **Fix:**
+  - `tryDifferentMode()` calls `setScore(0)` before showing mode selection
+  - `selectNewMode()` calls `setScore(0)` before switching modes
+  - Memory game only increments score on successful pair match
+- **Result:** Memory game now correctly shows 8/8 = 100% (not 16/8 = 200%)
+
+**Test Results (iteration_48.json):**
+- Frontend: 100% - Both bug fixes verified
+- Key verification: Same session ID maintained, score reset to 0 on mode switch
+
+---
 ## Update 2026-02-27 (Batch 11) - WORD SEARCH SCORING FIXES - VERIFIED ✅
 
 ### Critical Bug Fixes:
