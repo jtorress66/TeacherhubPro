@@ -40,15 +40,20 @@ const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPa
   
   // Generate word search grid with words placed in various directions
   const generateWordSearchGrid = (wordsToPlace, size) => {
-    const gridArr = Array(size).fill(null).map(() => Array(size).fill(''));
+    // Ensure grid is large enough for the longest word
+    const longestWordLength = Math.max(...wordsToPlace.map(w => w.length));
+    const effectiveSize = Math.max(size, longestWordLength + 2);
+    
+    const gridArr = Array(effectiveSize).fill(null).map(() => Array(effectiveSize).fill(''));
     const positions = {};
+    const placedWords = [];
+    const failedWords = [];
+    
+    // Use only directions that work well for word search
     const directions = [
       [0, 1],   // right
       [1, 0],   // down
       [1, 1],   // diagonal down-right
-      [-1, 1],  // diagonal up-right
-      [0, -1],  // left
-      [-1, 0],  // up
     ];
     
     // Sort words by length (longer first for better placement)
@@ -57,17 +62,18 @@ const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPa
     sortedWords.forEach(word => {
       let placed = false;
       let attempts = 0;
+      const maxAttempts = 500; // More attempts for difficult placements
       
-      while (!placed && attempts < 100) {
+      while (!placed && attempts < maxAttempts) {
         const dir = directions[Math.floor(Math.random() * directions.length)];
-        const startRow = Math.floor(Math.random() * size);
-        const startCol = Math.floor(Math.random() * size);
+        const startRow = Math.floor(Math.random() * effectiveSize);
+        const startCol = Math.floor(Math.random() * effectiveSize);
         
         // Check if word fits
         const endRow = startRow + dir[0] * (word.length - 1);
         const endCol = startCol + dir[1] * (word.length - 1);
         
-        if (endRow >= 0 && endRow < size && endCol >= 0 && endCol < size) {
+        if (endRow >= 0 && endRow < effectiveSize && endCol >= 0 && endCol < effectiveSize) {
           // Check if path is clear
           let canPlace = true;
           for (let i = 0; i < word.length; i++) {
@@ -89,22 +95,68 @@ const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPa
               wordCells.push({ row: r, col: c });
             }
             positions[word] = wordCells;
+            placedWords.push(word);
             placed = true;
           }
         }
         attempts++;
       }
+      
+      if (!placed) {
+        // Force placement: find any valid position
+        for (let dir of directions) {
+          if (placed) break;
+          for (let startRow = 0; startRow < effectiveSize && !placed; startRow++) {
+            for (let startCol = 0; startCol < effectiveSize && !placed; startCol++) {
+              const endRow = startRow + dir[0] * (word.length - 1);
+              const endCol = startCol + dir[1] * (word.length - 1);
+              
+              if (endRow >= 0 && endRow < effectiveSize && endCol >= 0 && endCol < effectiveSize) {
+                let canPlace = true;
+                for (let i = 0; i < word.length; i++) {
+                  const r = startRow + dir[0] * i;
+                  const c = startCol + dir[1] * i;
+                  if (gridArr[r][c] !== '' && gridArr[r][c] !== word[i]) {
+                    canPlace = false;
+                    break;
+                  }
+                }
+                
+                if (canPlace) {
+                  const wordCells = [];
+                  for (let i = 0; i < word.length; i++) {
+                    const r = startRow + dir[0] * i;
+                    const c = startCol + dir[1] * i;
+                    gridArr[r][c] = word[i];
+                    wordCells.push({ row: r, col: c });
+                  }
+                  positions[word] = wordCells;
+                  placedWords.push(word);
+                  placed = true;
+                }
+              }
+            }
+          }
+        }
+        
+        if (!placed) {
+          console.error(`[WordSearch] Could not place word: ${word}`);
+          failedWords.push(word);
+        }
+      }
     });
     
     // Fill empty cells with random letters
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    for (let r = 0; r < size; r++) {
-      for (let c = 0; c < size; c++) {
+    for (let r = 0; r < effectiveSize; r++) {
+      for (let c = 0; c < effectiveSize; c++) {
         if (gridArr[r][c] === '') {
           gridArr[r][c] = letters[Math.floor(Math.random() * letters.length)];
         }
       }
     }
+    
+    return { grid: gridArr, positions, placedWords, failedWords, effectiveSize };
     
     return { grid: gridArr, positions };
   };
