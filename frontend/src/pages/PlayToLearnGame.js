@@ -764,6 +764,7 @@ const PlayToLearnGame = () => {
   
   // Track original game type to know if we started in ALL_MODES
   const [originalGameType, setOriginalGameType] = useState(null);
+  const [originalAllowedModes, setOriginalAllowedModes] = useState(null);
   
   // Matching game specific state
   const [matchingSelected, setMatchingSelected] = useState({ term: null, definition: null });
