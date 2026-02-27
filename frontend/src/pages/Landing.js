@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -10,15 +10,59 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { 
   Clock, CheckCircle, ArrowRight, BookOpen, BarChart3, Users, 
   ClipboardList, Sparkles, Brain, Calendar, GraduationCap, Home, 
-  Shield, Play, ChevronRight, Target, Award, FileText
+  Play, Target, Award
 } from 'lucide-react';
 import { toast } from 'sonner';
 import LanguageSelector from '../components/LanguageSelector';
 
+// Animation hook for scroll reveal
+const useScrollReveal = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  return [ref, isVisible];
+};
+
+// Animated Section Component
+const AnimatedSection = ({ children, className = '', delay = 0 }) => {
+  const [ref, isVisible] = useScrollReveal();
+  
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ease-out ${className}`}
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+        transitionDelay: `${delay}ms`
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
 const Landing = () => {
   const navigate = useNavigate();
   const { login, register } = useAuth();
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
@@ -66,7 +110,7 @@ const Landing = () => {
     }
   };
 
-  // Target audience
+  // Target audience data
   const targetAudience = [
     { icon: GraduationCap, label: 'Elementary Teachers' },
     { icon: BookOpen, label: 'Middle School Educators' },
@@ -75,40 +119,99 @@ const Landing = () => {
     { icon: Award, label: 'Instructional Coaches' },
   ];
 
-  // Real outcomes
+  // Outcomes data
   const outcomes = [
     'Faster weekly lesson planning',
     'Less time grading',
     'Better organization',
-    'More confidence in classroom management',
+    'More classroom confidence',
     'More personal time after school',
   ];
+
+  // Solution features
+  const solutionFeatures = [
+    { icon: Calendar, title: 'Generate structured lesson plans in minutes', color: 'emerald' },
+    { icon: BarChart3, title: 'Track grades with an easy-to-use digital gradebook', color: 'blue' },
+    { icon: ClipboardList, title: 'Record attendance quickly', color: 'purple' },
+    { icon: Users, title: 'Organize class data in one dashboard', color: 'amber' },
+    { icon: Brain, title: 'Use AI tools to speed up prep work', color: 'rose' },
+  ];
+
+  // How it works steps
+  const howItWorksSteps = [
+    { 
+      step: '1', 
+      title: 'Create Your Classes', 
+      desc: 'Set up your classes and add students in seconds',
+      icon: Users 
+    },
+    { 
+      step: '2', 
+      title: 'Generate Lessons with AI', 
+      desc: 'Create comprehensive lesson plans with AI assistance',
+      icon: Sparkles 
+    },
+    { 
+      step: '3', 
+      title: 'Manage Grades and Attendance Effortlessly', 
+      desc: 'Track everything from one intuitive dashboard',
+      icon: BarChart3 
+    },
+  ];
+
+  const featureColors = {
+    emerald: 'bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100',
+    blue: 'bg-blue-50 text-blue-600 group-hover:bg-blue-100',
+    purple: 'bg-purple-50 text-purple-600 group-hover:bg-purple-100',
+    amber: 'bg-amber-50 text-amber-600 group-hover:bg-amber-100',
+    rose: 'bg-rose-50 text-rose-600 group-hover:bg-rose-100',
+  };
 
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img 
               src="https://customer-assets.emergentagent.com/job_teachersuite/artifacts/swlef12w_ChatGPT%20Image%20Feb%2015%2C%202026%2C%2009_08_36%20PM.png"
               alt="TeacherHubPro Logo"
-              className="h-10 w-10 sm:h-12 sm:w-12 object-contain"
+              className="h-10 w-10 sm:h-11 sm:w-11 object-contain"
+              data-testid="header-logo"
             />
-            <span className="text-xl sm:text-2xl font-bold text-slate-900">TeacherHubPro</span>
+            <span className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">TeacherHubPro</span>
           </div>
           
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#solution" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Features</a>
-            <a href="#how-it-works" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">How It Works</a>
-            <Link to="/pricing" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Pricing</Link>
-          </div>
+          <nav className="hidden md:flex items-center gap-8">
+            <a 
+              href="#solution" 
+              className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors"
+              data-testid="nav-features"
+            >
+              Features
+            </a>
+            <a 
+              href="#how-it-works" 
+              className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors"
+              data-testid="nav-how-it-works"
+            >
+              How It Works
+            </a>
+            <Link 
+              to="/pricing" 
+              className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors"
+              data-testid="nav-pricing"
+            >
+              Pricing
+            </Link>
+          </nav>
           
           <div className="flex items-center gap-3">
             <LanguageSelector variant="compact" dropdownPosition="down" />
             <Button 
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 sm:px-6"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 sm:px-6 shadow-sm hover:shadow-md transition-all"
               onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
+              data-testid="header-cta"
             >
               Start Free
             </Button>
@@ -117,38 +220,52 @@ const Landing = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-28 pb-20 px-6 bg-gradient-to-b from-slate-50 to-white">
+      <section className="pt-24 pb-16 sm:pt-28 sm:pb-20 px-4 sm:px-6 bg-gradient-to-b from-slate-50 via-white to-white overflow-hidden">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left - Main Copy */}
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium mb-6">
+            <div className="text-center lg:text-left">
+              <div 
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium mb-6 border border-emerald-100"
+                style={{ animation: 'fadeInUp 0.6s ease-out' }}
+              >
                 <Clock className="h-4 w-4" />
                 Built for busy teachers
               </div>
               
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6">
+              <h1 
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-slate-900 leading-[1.15] mb-6"
+                style={{ animation: 'fadeInUp 0.6s ease-out 0.1s both' }}
+              >
                 Save <span className="text-emerald-600">5+ Hours</span> Every Week on Planning, Grading, and Classroom Admin
               </h1>
               
-              <p className="text-lg sm:text-xl text-slate-600 mb-8 leading-relaxed">
+              <p 
+                className="text-base sm:text-lg text-slate-600 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0"
+                style={{ animation: 'fadeInUp 0.6s ease-out 0.2s both' }}
+              >
                 TeacherHubPro helps busy educators create lesson plans, manage grades, track attendance, and use AI to simplify daily classroom work — all in one place.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div 
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start"
+                style={{ animation: 'fadeInUp 0.6s ease-out 0.3s both' }}
+              >
                 <Button 
                   size="lg" 
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 h-14 text-lg shadow-lg shadow-emerald-200"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 sm:px-8 h-12 sm:h-14 text-base sm:text-lg shadow-lg shadow-emerald-200/50 hover:shadow-xl hover:shadow-emerald-200/50 transition-all group"
                   onClick={() => document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' })}
+                  data-testid="hero-primary-cta"
                 >
                   Start Free — No Credit Card Required
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="border-slate-300 text-slate-700 hover:bg-slate-50 h-14 text-lg"
+                  className="border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 h-12 sm:h-14 text-base sm:text-lg transition-all"
                   onClick={() => document.getElementById('how-it-works').scrollIntoView({ behavior: 'smooth' })}
+                  data-testid="hero-secondary-cta"
                 >
                   <Play className="mr-2 h-5 w-5" />
                   See How It Works
@@ -156,52 +273,63 @@ const Landing = () => {
               </div>
             </div>
 
-            {/* Right - Visual */}
-            <div className="hidden lg:block relative">
+            {/* Right - Hero Image */}
+            <div 
+              className="hidden lg:block relative"
+              style={{ animation: 'fadeInRight 0.8s ease-out 0.2s both' }}
+            >
               <div className="relative">
-                {/* Main dashboard mockup */}
-                <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 transform rotate-1">
-                  <div className="flex items-center gap-3 mb-4 pb-4 border-b border-slate-100">
+                {/* Main Image with overlay cards */}
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                  <img 
+                    src="https://images.unsplash.com/photo-1758685848226-eedca8f6bce7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzB8MHwxfHNlYXJjaHwyfHx0ZWFjaGVyJTIwY2xhc3Nyb29tJTIwbGFwdG9wJTIwZWR1Y2F0aW9uJTIwcHJvZmVzc2lvbmFsfGVufDB8fHx8MTc3MjIzMzIxN3ww&ixlib=rb-4.1.0&q=85"
+                    alt="Teacher using TeacherHubPro"
+                    className="w-full h-[400px] object-cover"
+                    data-testid="hero-image"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent"></div>
+                </div>
+
+                {/* Floating card - Top Left */}
+                <div 
+                  className="absolute -top-4 -left-6 bg-white rounded-xl shadow-lg border border-slate-100 p-4 animate-float"
+                  style={{ animationDelay: '0s' }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <BarChart3 className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <div className="text-xs text-slate-500 font-medium">Class Average</div>
+                      <div className="text-lg font-bold text-slate-900">87%</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating card - Bottom Right */}
+                <div 
+                  className="absolute -bottom-4 -right-6 bg-white rounded-xl shadow-lg border border-slate-100 p-4 animate-float"
+                  style={{ animationDelay: '1.5s' }}
+                >
+                  <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                      <BookOpen className="h-5 w-5 text-emerald-600" />
+                      <Sparkles className="h-5 w-5 text-emerald-600" />
                     </div>
                     <div>
-                      <div className="font-semibold text-slate-900">Lesson Planner</div>
-                      <div className="text-xs text-slate-500">Week of Feb 10-14</div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-5 gap-2">
-                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((day, i) => (
-                      <div key={i} className="bg-emerald-50 rounded-lg p-3 text-center">
-                        <div className="text-xs font-medium text-emerald-700 mb-2">{day}</div>
-                        <div className="h-2 bg-emerald-300 rounded-full"></div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Floating cards */}
-                <div className="absolute -top-4 -left-8 bg-white rounded-xl shadow-lg border border-slate-100 p-4 transform -rotate-6">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <BarChart3 className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <div className="text-xs text-slate-500">Class Average</div>
-                      <div className="font-bold text-slate-900">87%</div>
+                      <div className="text-xs text-slate-500 font-medium">AI Generated</div>
+                      <div className="text-lg font-bold text-slate-900">3 Lessons</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="absolute -bottom-4 -right-8 bg-white rounded-xl shadow-lg border border-slate-100 p-4 transform rotate-3">
+                {/* Floating card - Middle Right */}
+                <div 
+                  className="absolute top-1/2 -right-4 transform -translate-y-1/2 bg-white rounded-xl shadow-lg border border-slate-100 p-3 animate-float"
+                  style={{ animationDelay: '0.75s' }}
+                >
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <Sparkles className="h-4 w-4 text-purple-600" />
-                    </div>
-                    <div>
-                      <div className="text-xs text-slate-500">AI Generated</div>
-                      <div className="font-bold text-slate-900">3 Lessons</div>
-                    </div>
+                    <CheckCircle className="h-5 w-5 text-emerald-500" />
+                    <span className="text-sm font-medium text-slate-700">Attendance saved</span>
                   </div>
                 </div>
               </div>
@@ -211,159 +339,153 @@ const Landing = () => {
       </section>
 
       {/* The Problem Section */}
-      <section className="py-20 px-6 bg-slate-900 text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-6">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-slate-900 text-white">
+        <AnimatedSection className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6">
             Teaching Is More Than Teaching
           </h2>
-          <p className="text-lg sm:text-xl text-slate-300 mb-8 leading-relaxed max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-slate-300 mb-10 leading-relaxed max-w-3xl mx-auto">
             Between lesson planning, grading, attendance, reporting, and communication — most teachers spend hours every week on tasks that steal time from students and personal life.
           </p>
-          <div className="border-t border-slate-700 pt-8">
-            <p className="text-2xl font-semibold text-emerald-400 mb-2">
+          <div className="border-t border-slate-700 pt-8 max-w-2xl mx-auto">
+            <p className="text-xl sm:text-2xl font-semibold text-emerald-400 mb-2">
               You became a teacher to educate.
             </p>
-            <p className="text-xl text-slate-400">
+            <p className="text-lg sm:text-xl text-slate-400">
               Not to drown in paperwork.
             </p>
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
       {/* The Solution Section */}
-      <section id="solution" className="py-20 px-6 bg-white">
+      <section id="solution" className="py-16 sm:py-20 px-4 sm:px-6 bg-white">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+          <AnimatedSection className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
               Everything You Need. One Simple Platform.
             </h2>
-            <p className="text-xl text-slate-600">
+            <p className="text-lg sm:text-xl text-slate-600">
               Less busywork. More teaching.
             </p>
-          </div>
+          </AnimatedSection>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { icon: Calendar, title: 'Generate structured lesson plans in minutes', color: 'emerald' },
-              { icon: BarChart3, title: 'Track grades with an easy-to-use digital gradebook', color: 'blue' },
-              { icon: ClipboardList, title: 'Record attendance quickly', color: 'purple' },
-              { icon: Users, title: 'Organize class data in one dashboard', color: 'amber' },
-              { icon: Brain, title: 'Use AI tools to speed up prep work', color: 'pink' },
-            ].map((feature, idx) => {
-              const colors = {
-                emerald: 'bg-emerald-100 text-emerald-600',
-                blue: 'bg-blue-100 text-blue-600',
-                purple: 'bg-purple-100 text-purple-600',
-                amber: 'bg-amber-100 text-amber-600',
-                pink: 'bg-pink-100 text-pink-600',
-              };
-              return (
-                <div key={idx} className="flex items-start gap-4 p-6 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${colors[feature.color]}`}>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {solutionFeatures.map((feature, idx) => (
+              <AnimatedSection key={idx} delay={idx * 100}>
+                <div 
+                  className="group flex items-start gap-4 p-5 sm:p-6 rounded-xl bg-slate-50 hover:bg-white hover:shadow-lg border border-transparent hover:border-slate-200 transition-all duration-300 cursor-default"
+                  data-testid={`feature-${idx}`}
+                >
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${featureColors[feature.color]}`}>
                     <feature.icon className="h-6 w-6" />
                   </div>
                   <div>
-                    <p className="text-slate-800 font-medium text-lg leading-snug">{feature.title}</p>
+                    <p className="text-slate-800 font-medium text-base sm:text-lg leading-snug">{feature.title}</p>
                   </div>
                 </div>
-              );
-            })}
+              </AnimatedSection>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Real Outcomes Section */}
-      <section className="py-20 px-6 bg-emerald-50">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-emerald-50">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+          <AnimatedSection className="text-center mb-10 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
               What Teachers Experience
             </h2>
-          </div>
+          </AnimatedSection>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {outcomes.map((outcome, idx) => (
-              <div key={idx} className="flex items-center gap-3 bg-white rounded-xl p-5 shadow-sm">
-                <CheckCircle className="h-6 w-6 text-emerald-500 flex-shrink-0" />
-                <span className="text-slate-700 font-medium">{outcome}</span>
-              </div>
+              <AnimatedSection key={idx} delay={idx * 75}>
+                <div 
+                  className="flex items-center gap-3 bg-white rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow border border-emerald-100"
+                  data-testid={`outcome-${idx}`}
+                >
+                  <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500 flex-shrink-0" />
+                  <span className="text-slate-700 font-medium text-sm sm:text-base">{outcome}</span>
+                </div>
+              </AnimatedSection>
             ))}
           </div>
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 px-6 bg-white">
+      <section id="how-it-works" className="py-16 sm:py-20 px-4 sm:px-6 bg-white">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-              How It Works
+          <AnimatedSection className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              Get Started in 3 Simple Steps
             </h2>
-            <p className="text-xl text-slate-600">
+            <p className="text-lg sm:text-xl text-slate-600">
               You'll see value in minutes — not hours.
             </p>
-          </div>
+          </AnimatedSection>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { step: '1', title: 'Create Your Classes', desc: 'Set up your classes and students in seconds', icon: Users },
-              { step: '2', title: 'Use AI to Build Lessons & Materials', desc: 'Generate comprehensive lesson plans with AI assistance', icon: Sparkles },
-              { step: '3', title: 'Manage Grades and Attendance Effortlessly', desc: 'Track everything from one intuitive dashboard', icon: BarChart3 },
-            ].map((item, idx) => (
-              <div key={idx} className="text-center">
+          <div className="grid md:grid-cols-3 gap-8 sm:gap-10">
+            {howItWorksSteps.map((item, idx) => (
+              <AnimatedSection key={idx} delay={idx * 150} className="text-center">
                 <div className="relative inline-flex items-center justify-center mb-6">
-                  <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center">
-                    <item.icon className="h-8 w-8 text-emerald-600" />
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-full flex items-center justify-center shadow-lg shadow-emerald-100">
+                    <item.icon className="h-8 w-8 sm:h-10 sm:w-10 text-emerald-600" />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                  <div className="absolute -top-2 -right-2 w-8 h-8 sm:w-9 sm:h-9 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
                     {item.step}
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">{item.title}</h3>
-                <p className="text-slate-600">{item.desc}</p>
-              </div>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">{item.title}</h3>
+                <p className="text-slate-600 text-sm sm:text-base">{item.desc}</p>
+              </AnimatedSection>
             ))}
           </div>
         </div>
       </section>
 
       {/* Built For Section */}
-      <section className="py-20 px-6 bg-slate-50">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-slate-50">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-              Built for:
+          <AnimatedSection className="text-center mb-10 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              Built Specifically for Educators
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              If you manage students, you need a system that works for you.
-            </p>
-          </div>
+          </AnimatedSection>
 
-          <div className="flex flex-wrap justify-center gap-4">
-            {targetAudience.map((audience, idx) => (
-              <div key={idx} className="flex items-center gap-3 bg-white rounded-full px-6 py-3 shadow-sm border border-slate-200">
-                <audience.icon className="h-5 w-5 text-emerald-600" />
-                <span className="text-slate-700 font-medium">{audience.label}</span>
-              </div>
-            ))}
-          </div>
+          <AnimatedSection delay={100}>
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
+              {targetAudience.map((audience, idx) => (
+                <div 
+                  key={idx} 
+                  className="flex items-center gap-2 sm:gap-3 bg-white rounded-full px-4 sm:px-6 py-2.5 sm:py-3 shadow-sm border border-slate-200 hover:border-emerald-200 hover:shadow-md transition-all"
+                  data-testid={`audience-${idx}`}
+                >
+                  <audience.icon className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
+                  <span className="text-slate-700 font-medium text-sm sm:text-base">{audience.label}</span>
+                </div>
+              ))}
+            </div>
+          </AnimatedSection>
         </div>
       </section>
 
       {/* Final CTA + Auth Section */}
-      <section id="get-started" className="py-20 px-6 bg-gradient-to-b from-white to-emerald-50">
+      <section id="get-started" className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-b from-white to-emerald-50">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
             {/* Left - CTA Copy */}
-            <div className="text-center lg:text-left">
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-                Ready to simplify your teaching life?
+            <AnimatedSection className="text-center lg:text-left">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                Ready to Simplify Your Teaching Life?
               </h2>
-              <p className="text-xl text-slate-600 mb-8">
+              <p className="text-lg sm:text-xl text-slate-600 mb-8">
                 Start your free account today and experience how much time you can save this week.
               </p>
 
-              <div className="space-y-4 mb-8">
+              <div className="space-y-3 sm:space-y-4 mb-8">
                 {[
                   'No credit card required',
                   'Set up in under 2 minutes',
@@ -372,7 +494,7 @@ const Landing = () => {
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-center gap-3 justify-center lg:justify-start">
                     <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" />
-                    <span className="text-slate-600">{item}</span>
+                    <span className="text-slate-600 text-sm sm:text-base">{item}</span>
                   </div>
                 ))}
               </div>
@@ -381,7 +503,10 @@ const Landing = () => {
               <div className="flex items-center gap-4 justify-center lg:justify-start">
                 <div className="flex -space-x-2">
                   {['M', 'J', 'L', 'A'].map((letter, i) => (
-                    <div key={i} className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 border-2 border-white flex items-center justify-center text-white text-sm font-bold">
+                    <div 
+                      key={i} 
+                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 border-2 border-white flex items-center justify-center text-white text-xs sm:text-sm font-bold shadow-sm"
+                    >
                       {letter}
                     </div>
                   ))}
@@ -390,36 +515,36 @@ const Landing = () => {
                   <span className="font-semibold text-slate-800">500+</span> teachers already using TeacherHubPro
                 </div>
               </div>
-            </div>
+            </AnimatedSection>
 
             {/* Right - Auth Form */}
-            <div>
-              <Card className="shadow-xl border-0 bg-white">
+            <AnimatedSection delay={150}>
+              <Card className="shadow-2xl border-0 bg-white overflow-hidden">
                 <CardContent className="p-0">
                   <Tabs defaultValue="register" className="w-full">
                     <TabsList className="w-full rounded-none border-b bg-slate-50 p-0 h-auto">
                       <TabsTrigger 
                         value="register"
-                        className="flex-1 py-4 rounded-none data-[state=active]:bg-white data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-emerald-500 font-medium"
+                        className="flex-1 py-3.5 sm:py-4 rounded-none data-[state=active]:bg-white data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-emerald-500 font-medium text-sm sm:text-base transition-colors"
                         data-testid="register-tab"
                       >
                         Create Free Account
                       </TabsTrigger>
                       <TabsTrigger 
                         value="login" 
-                        className="flex-1 py-4 rounded-none data-[state=active]:bg-white data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-emerald-500 font-medium"
+                        className="flex-1 py-3.5 sm:py-4 rounded-none data-[state=active]:bg-white data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-emerald-500 font-medium text-sm sm:text-base transition-colors"
                         data-testid="login-tab"
                       >
                         Sign In
                       </TabsTrigger>
                     </TabsList>
 
-                    <div className="p-8">
+                    <div className="p-6 sm:p-8">
                       {/* Google Auth */}
                       <Button
                         type="button"
                         variant="outline"
-                        className="w-full h-12 mb-6 border-slate-300 hover:bg-slate-50"
+                        className="w-full h-11 sm:h-12 mb-5 sm:mb-6 border-slate-300 hover:bg-slate-50 hover:border-slate-400 transition-all"
                         onClick={handleGoogleLogin}
                         data-testid="google-login-btn"
                       >
@@ -432,7 +557,7 @@ const Landing = () => {
                         Continue with Google
                       </Button>
 
-                      <div className="relative mb-6">
+                      <div className="relative mb-5 sm:mb-6">
                         <div className="absolute inset-0 flex items-center">
                           <div className="w-full border-t border-slate-200"></div>
                         </div>
@@ -444,54 +569,57 @@ const Landing = () => {
                       <TabsContent value="register" className="mt-0">
                         <form onSubmit={handleRegister} className="space-y-4">
                           <div>
-                            <Label htmlFor="register-name" className="text-slate-700">Full Name</Label>
+                            <Label htmlFor="register-name" className="text-slate-700 text-sm">Full Name</Label>
                             <Input
                               id="register-name"
                               type="text"
                               value={registerForm.name}
                               onChange={(e) => setRegisterForm({...registerForm, name: e.target.value})}
                               placeholder="Your name"
-                              className="mt-1 h-12"
+                              className="mt-1.5 h-11 sm:h-12"
                               required
                               data-testid="register-name"
                             />
                           </div>
                           <div>
-                            <Label htmlFor="register-email" className="text-slate-700">Email</Label>
+                            <Label htmlFor="register-email" className="text-slate-700 text-sm">Email</Label>
                             <Input
                               id="register-email"
                               type="email"
                               value={registerForm.email}
                               onChange={(e) => setRegisterForm({...registerForm, email: e.target.value})}
                               placeholder="you@school.edu"
-                              className="mt-1 h-12"
+                              className="mt-1.5 h-11 sm:h-12"
                               required
                               data-testid="register-email"
                             />
                           </div>
                           <div>
-                            <Label htmlFor="register-password" className="text-slate-700">Password</Label>
+                            <Label htmlFor="register-password" className="text-slate-700 text-sm">Password</Label>
                             <Input
                               id="register-password"
                               type="password"
                               value={registerForm.password}
                               onChange={(e) => setRegisterForm({...registerForm, password: e.target.value})}
                               placeholder="Create a password"
-                              className="mt-1 h-12"
+                              className="mt-1.5 h-11 sm:h-12"
                               required
                               data-testid="register-password"
                             />
                           </div>
                           <Button 
                             type="submit" 
-                            className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white text-lg"
+                            className="w-full h-11 sm:h-12 bg-emerald-600 hover:bg-emerald-700 text-white text-base sm:text-lg shadow-lg shadow-emerald-200/50 hover:shadow-xl transition-all"
                             disabled={isLoading}
                             data-testid="register-submit"
                           >
                             {isLoading ? 'Creating account...' : 'Start Free Today'}
                           </Button>
                           <p className="text-xs text-center text-slate-500 mt-4">
-                            By signing up, you agree to our <Link to="/terms" className="text-emerald-600 hover:underline">Terms</Link> and <Link to="/privacy" className="text-emerald-600 hover:underline">Privacy Policy</Link>
+                            By signing up, you agree to our{' '}
+                            <Link to="/terms-of-use" className="text-emerald-600 hover:underline">Terms</Link>
+                            {' '}and{' '}
+                            <Link to="/privacy-policy" className="text-emerald-600 hover:underline">Privacy Policy</Link>
                           </p>
                         </form>
                       </TabsContent>
@@ -499,33 +627,33 @@ const Landing = () => {
                       <TabsContent value="login" className="mt-0">
                         <form onSubmit={handleLogin} className="space-y-4">
                           <div>
-                            <Label htmlFor="login-email" className="text-slate-700">Email</Label>
+                            <Label htmlFor="login-email" className="text-slate-700 text-sm">Email</Label>
                             <Input
                               id="login-email"
                               type="email"
                               value={loginForm.email}
                               onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
                               placeholder="you@school.edu"
-                              className="mt-1 h-12"
+                              className="mt-1.5 h-11 sm:h-12"
                               required
                               data-testid="login-email"
                             />
                           </div>
                           <div>
-                            <Label htmlFor="login-password" className="text-slate-700">Password</Label>
+                            <Label htmlFor="login-password" className="text-slate-700 text-sm">Password</Label>
                             <Input
                               id="login-password"
                               type="password"
                               value={loginForm.password}
                               onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
-                              className="mt-1 h-12"
+                              className="mt-1.5 h-11 sm:h-12"
                               required
                               data-testid="login-password"
                             />
                           </div>
                           <Button 
                             type="submit" 
-                            className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white"
+                            className="w-full h-11 sm:h-12 bg-emerald-600 hover:bg-emerald-700 text-white text-base shadow-lg shadow-emerald-200/50 hover:shadow-xl transition-all"
                             disabled={isLoading}
                             data-testid="login-submit"
                           >
@@ -537,23 +665,23 @@ const Landing = () => {
                   </Tabs>
                 </CardContent>
               </Card>
-            </div>
+            </AnimatedSection>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 bg-slate-900 text-white">
+      <footer className="py-10 sm:py-12 px-4 sm:px-6 bg-slate-900 text-white">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-4">
                 <img 
                   src="https://customer-assets.emergentagent.com/job_teachersuite/artifacts/swlef12w_ChatGPT%20Image%20Feb%2015%2C%202026%2C%2009_08_36%20PM.png"
                   alt="TeacherHubPro"
-                  className="h-10 w-10 object-contain"
+                  className="h-9 w-9 sm:h-10 sm:w-10 object-contain"
                 />
-                <span className="font-bold text-lg">TeacherHubPro</span>
+                <span className="font-bold text-base sm:text-lg">TeacherHubPro</span>
               </div>
               <p className="text-slate-400 text-sm">
                 Simplifying teaching, one classroom at a time.
@@ -561,27 +689,27 @@ const Landing = () => {
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
+              <h4 className="font-semibold mb-4 text-sm sm:text-base">Product</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><a href="#solution" className="hover:text-white">Features</a></li>
-                <li><Link to="/pricing" className="hover:text-white">Pricing</Link></li>
-                <li><a href="#how-it-works" className="hover:text-white">How It Works</a></li>
+                <li><a href="#solution" className="hover:text-white transition-colors">Features</a></li>
+                <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
+                <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
+              <h4 className="font-semibold mb-4 text-sm sm:text-base">Company</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/contact" className="hover:text-white">Contact</Link></li>
-                <li><Link to="/help" className="hover:text-white">Help Center</Link></li>
+                <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+                <li><Link to="/help" className="hover:text-white transition-colors">Help Center</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
+              <h4 className="font-semibold mb-4 text-sm sm:text-base">Legal</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/privacy" className="hover:text-white">Privacy Policy</Link></li>
-                <li><Link to="/terms" className="hover:text-white">Terms of Service</Link></li>
+                <li><Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+                <li><Link to="/terms-of-use" className="hover:text-white transition-colors">Terms of Service</Link></li>
               </ul>
             </div>
           </div>
@@ -596,10 +724,30 @@ const Landing = () => {
       <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
+          50% { transform: translateY(-12px); }
         }
         .animate-float {
-          animation: float 3s ease-in-out infinite;
+          animation: float 4s ease-in-out infinite;
+        }
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes fadeInRight {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
         }
       `}</style>
     </div>
