@@ -17,7 +17,7 @@ import os
 import json
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://edu-game-platform.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://classroom-game-hub-1.preview.emergentagent.com')
 
 # Test sessions from review request
 TEST_SESSIONS = {

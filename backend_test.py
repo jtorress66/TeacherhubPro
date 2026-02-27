@@ -6,7 +6,7 @@ import json
 from datetime import datetime, timedelta
 
 class TeacherHubAPITester:
-    def __init__(self, base_url="https://edu-game-platform.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://classroom-game-hub-1.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.session = requests.Session()
         self.user_data = None

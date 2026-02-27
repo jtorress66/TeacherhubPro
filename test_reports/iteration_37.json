@@ -25,7 +25,7 @@
     "frontend": "100% - All 6 Playwright tests passed"
   },
   "test_credentials": {
-    "API_URL": "https://edu-game-platform.preview.emergentagent.com",
+    "API_URL": "https://classroom-game-hub-1.preview.emergentagent.com",
     "test_teacher": "test@school.edu / testpassword",
     "test_assignment": "pa_b93b8e94b84849ad (Solar System - has all game modes)"
   },
@@ -55,7 +55,7 @@
     },
     "frontend_playwright_tests": {
       "landing_page": {
-        "url": "https://edu-game-platform.preview.emergentagent.com/play-to-learn",
+        "url": "https://classroom-game-hub-1.preview.emergentagent.com/play-to-learn",
         "status": "PASSED",
         "elements_verified": [
           "Play to Learn title",
@@ -64,7 +64,7 @@
         ]
       },
       "mode_selection_screen": {
-        "url": "https://edu-game-platform.preview.emergentagent.com/play-to-learn/game/ps_ea66f96b48ff410f",
+        "url": "https://classroom-game-hub-1.preview.emergentagent.com/play-to-learn/game/ps_ea66f96b48ff410f",
         "status": "PASSED",
         "elements_verified": [
           "Choose How to Play! title",
@@ -100,7 +100,7 @@
         ]
       },
       "teacher_host_lobby": {
-        "url": "https://edu-game-platform.preview.emergentagent.com/teacher/play-to-learn/host/ps_1111bee408aa4c1e",
+        "url": "https://classroom-game-hub-1.preview.emergentagent.com/teacher/play-to-learn/host/ps_1111bee408aa4c1e",
         "status": "PASSED",
         "elements_verified": [
           "Back button (top left with arrow)",
