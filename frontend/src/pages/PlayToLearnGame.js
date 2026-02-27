@@ -846,6 +846,11 @@ const PlayToLearnGame = () => {
       setSession(res.data);
       setIsLiveMode(res.data.mode === 'LIVE');
       
+      // Save original game type on first load
+      if (!originalGameType) {
+        setOriginalGameType(res.data.game_type);
+      }
+      
       // Fetch assignment to get language setting
       try {
         const assignmentRes = await axios.get(`${API}/play-to-learn/assignments/${res.data.assignment_id}`);
