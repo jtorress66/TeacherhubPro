@@ -1,6 +1,37 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-27 (Batch 16) - HOMEPAGE REDESIGN v2 - VERIFIED ✅
+
+### Fixes Applied:
+1. **Hero image overlap fixed** - Image now positioned correctly below CTA buttons on all screen sizes
+2. **Separate Login button added** - Header now has both "Log In" AND "Start Free" buttons
+3. **Auth moved to dedicated page** - Created `/auth` route instead of scrolling to bottom of page
+4. **More images added** - 4 total images throughout the landing page:
+   - Hero: Professional teacher with laptop at chalkboard
+   - Solution section: Teacher helping student with math
+   - Outcomes section: Happy students in classroom
+   - Collaboration section: Teacher and student drawing together
+
+### New Files Created:
+- `/app/frontend/src/pages/Auth.js` - Dedicated auth page with tabbed Register/Login forms
+
+### Route Changes:
+- Added `/auth` route to App.js
+- Header "Log In" → `/auth?mode=login` (pre-selects Sign In tab)
+- Header "Start Free" → `/auth` (pre-selects Create Free Account tab)
+- All primary CTAs now link to `/auth` instead of scrolling
+
+### Language Selector Note:
+The language selector works correctly for the authenticated app interface (dashboard, navigation, etc.). The landing page marketing copy intentionally stays in English for marketing consistency.
+
+**Test Results (iteration_52.json):**
+- Frontend: 100% - All 15 features verified
+- Hero image: No overlap with buttons (confirmed via element positioning)
+- All 4 images loading from Unsplash
+- Mobile responsiveness verified at 390x844 viewport
+
+---
 ## Update 2026-02-27 (Batch 15) - HOMEPAGE REDESIGN - VERIFIED ✅
 
 ### Feature: Complete Homepage Redesign with Conversion-Focused Copy
