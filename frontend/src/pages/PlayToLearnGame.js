@@ -847,9 +847,10 @@ const PlayToLearnGame = () => {
       setSession(res.data);
       setIsLiveMode(res.data.mode === 'LIVE');
       
-      // Save original game type on first load
+      // Save original game type and allowed modes on first load
       if (!originalGameType) {
         setOriginalGameType(res.data.game_type);
+        setOriginalAllowedModes(res.data.allowed_game_types);
       }
       
       // Fetch assignment to get language setting
@@ -858,6 +859,11 @@ const PlayToLearnGame = () => {
         setAssignment(assignmentRes.data);
         // Set language from assignment
         setLanguage(assignmentRes.data.language || 'en');
+        
+        // Also save allowed modes from assignment if not already saved
+        if (!originalAllowedModes && assignmentRes.data.allowed_game_types) {
+          setOriginalAllowedModes(assignmentRes.data.allowed_game_types);
+        }
       } catch (assignErr) {
         console.log('Could not fetch assignment details');
       }
