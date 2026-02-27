@@ -23,17 +23,16 @@ class TestWordSearchScoringBugFixes:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Setup test session and authentication"""
-        # Login as teacher
-        login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        # Login as teacher - use session to capture cookies
+        self.session = requests.Session()
+        login_response = self.session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "test@school.edu",
             "password": "testpassword"
         })
         assert login_response.status_code == 200, f"Login failed: {login_response.text}"
-        self.token = login_response.json().get("token")
-        self.headers = {
-            "Authorization": f"Bearer {self.token}",
-            "Content-Type": "application/json"
-        }
+        
+        # The session now has the cookie set
+        self.headers = {"Content-Type": "application/json"}
         
     def test_01_create_word_search_assignment_and_session(self):
         """Create a Word Search assignment and session for testing"""
@@ -48,7 +47,7 @@ class TestWordSearchScoringBugFixes:
             "language": "en"
         }
         
-        response = requests.post(
+        response = self.session.post(
             f"{BASE_URL}/api/play-to-learn/assignments",
             json=assignment_data,
             headers=self.headers
@@ -64,7 +63,7 @@ class TestWordSearchScoringBugFixes:
             "mode": "SELF_PACED"
         }
         
-        response = requests.post(
+        response = self.session.post(
             f"{BASE_URL}/api/play-to-learn/sessions",
             json=session_data,
             headers=self.headers
@@ -311,16 +310,13 @@ class TestSequenceAnswerValidation:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Setup test session and authentication"""
-        login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        self.session = requests.Session()
+        login_response = self.session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "test@school.edu",
             "password": "testpassword"
         })
         assert login_response.status_code == 200, f"Login failed: {login_response.text}"
-        self.token = login_response.json().get("token")
-        self.headers = {
-            "Authorization": f"Bearer {self.token}",
-            "Content-Type": "application/json"
-        }
+        self.headers = {"Content-Type": "application/json"}
         
     def test_01_create_sequence_session(self):
         """Create a Sequence game session"""
@@ -335,7 +331,7 @@ class TestSequenceAnswerValidation:
             "language": "en"
         }
         
-        response = requests.post(
+        response = self.session.post(
             f"{BASE_URL}/api/play-to-learn/assignments",
             json=assignment_data,
             headers=self.headers
@@ -350,7 +346,7 @@ class TestSequenceAnswerValidation:
             "mode": "SELF_PACED"
         }
         
-        response = requests.post(
+        response = self.session.post(
             f"{BASE_URL}/api/play-to-learn/sessions",
             json=session_data,
             headers=self.headers
@@ -481,16 +477,13 @@ class TestMemoryGameAnswerValidation:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Setup test session and authentication"""
-        login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        self.session = requests.Session()
+        login_response = self.session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "test@school.edu",
             "password": "testpassword"
         })
         assert login_response.status_code == 200
-        self.token = login_response.json().get("token")
-        self.headers = {
-            "Authorization": f"Bearer {self.token}",
-            "Content-Type": "application/json"
-        }
+        self.headers = {"Content-Type": "application/json"}
         
     def test_01_create_memory_session(self):
         """Create a Memory game session"""
@@ -504,7 +497,7 @@ class TestMemoryGameAnswerValidation:
             "language": "en"
         }
         
-        response = requests.post(
+        response = self.session.post(
             f"{BASE_URL}/api/play-to-learn/assignments",
             json=assignment_data,
             headers=self.headers
@@ -518,7 +511,7 @@ class TestMemoryGameAnswerValidation:
             "mode": "SELF_PACED"
         }
         
-        response = requests.post(
+        response = self.session.post(
             f"{BASE_URL}/api/play-to-learn/sessions",
             json=session_data,
             headers=self.headers
