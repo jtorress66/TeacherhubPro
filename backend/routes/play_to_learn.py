@@ -1163,9 +1163,6 @@ async def complete_session(session_id: str, participant_id: str):
     accuracy = (correct_answers / total_questions * 100) if total_questions > 0 else 0
     avg_time = (participant["total_time_ms"] / len(participant["answers"])) if participant["answers"] else 0
     
-    # Get missed topics
-    missed_items = [a for a in participant["answers"] if not a["is_correct"]]
-    
     result = {
         "participant_id": participant_id,
         "nickname": participant["nickname"],
