@@ -24,6 +24,8 @@ const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPa
   const [foundWords, setFoundWords] = useState([]);
   const [wordPositions, setWordPositions] = useState({});
   const gridRef = useRef(null);
+  const [actualWords, setActualWords] = useState([]);
+  const [gridSizeUsed, setGridSizeUsed] = useState(12);
   
   const words = session?.game_payload?.words || [];
   const hints = session?.game_payload?.hints || [];
@@ -36,6 +38,13 @@ const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPa
     const newGrid = generateWordSearchGrid(words, gridSize);
     setGrid(newGrid.grid);
     setWordPositions(newGrid.positions);
+    setActualWords(newGrid.placedWords); // Only show words that were actually placed
+    setGridSizeUsed(newGrid.effectiveSize);
+    
+    if (newGrid.failedWords.length > 0) {
+      console.warn('[WordSearch] Failed to place words:', newGrid.failedWords);
+      toast.warning(`Some words may be missing from the grid`);
+    }
   }, [words, gridSize]);
   
   // Generate word search grid with words placed in various directions
