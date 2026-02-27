@@ -1221,26 +1221,78 @@ const PlayToLearnGame = () => {
   };
 
   const tryDifferentMode = () => {
-    // Show mode selection instead of navigating away
-    setShowModeSelection(true);
-    setGameComplete(false);
+    // Reset game state when trying a different mode
+    setScore(0);
+    setStreak(0);
+    setBestStreak(0);
+    setAnswers([]);
+    setMatchedPairs([]);
+    setCurrentQuestionIndex(0);
+    setTotalTime(0);
+    
+    // For ALL_MODES sessions, show mode selection to pick a new mode within same session
+    // For single-mode sessions, show mode selection to create a new session
+    if (session?.game_type === 'all_modes' || originalGameType === 'all_modes') {
+      setShowModeSelection(true);
+      setGameComplete(false);
+    } else {
+      setShowModeSelection(true);
+      setGameComplete(false);
+    }
   };
 
   const selectNewMode = async (newGameType) => {
-    toast.info(language === 'en' ? 'Creating new game...' : 'Creando nuevo juego...');
+    // Reset game state
+    setScore(0);
+    setStreak(0);
+    setBestStreak(0);
+    setAnswers([]);
+    setMatchedPairs([]);
+    setCurrentQuestionIndex(0);
+    setTotalTime(0);
     
-    try {
-      const res = await axios.post(`${API}/play-to-learn/sessions`, {
-        assignment_id: session?.assignment_id,
-        game_type: newGameType,
-        mode: 'SELF_PACED'
-      }, { withCredentials: true });
+    // If we're in an ALL_MODES session, use the select-mode endpoint to stay in same session
+    if (session?.game_type === 'all_modes' || originalGameType === 'all_modes') {
+      try {
+        const res = await axios.post(
+          `${API}/play-to-learn/sessions/${sessionId}/select-mode`,
+          {
+            game_type: newGameType,
+            participant_id: participantId
+          }
+        );
+        
+        // Update session with new game payload
+        setSession(prev => ({
+          ...prev,
+          game_type: newGameType,
+          game_payload: res.data.game_payload
+        }));
+        
+        setShowModeSelection(false);
+        setGameComplete(false);
+        toast.success(language === 'en' ? `Switched to ${newGameType.replace('_', ' ')}` : `Cambiado a ${newGameType.replace('_', ' ')}`);
+      } catch (err) {
+        console.error('Error switching mode:', err);
+        toast.error(language === 'en' ? 'Error switching mode' : 'Error al cambiar modo');
+      }
+    } else {
+      // For non-ALL_MODES sessions, create a new session
+      toast.info(language === 'en' ? 'Creating new game...' : 'Creando nuevo juego...');
       
-      // Navigate to the new session
-      navigate(`/play-to-learn/game/${res.data.session_id}`);
-      window.location.reload(); // Force reload to reset state
-    } catch (err) {
-      toast.error(language === 'en' ? 'Error creating new game' : 'Error al crear nuevo juego');
+      try {
+        const res = await axios.post(`${API}/play-to-learn/sessions`, {
+          assignment_id: session?.assignment_id,
+          game_type: newGameType,
+          mode: 'SELF_PACED'
+        }, { withCredentials: true });
+        
+        // Navigate to the new session
+        navigate(`/play-to-learn/game/${res.data.session_id}`);
+        window.location.reload(); // Force reload to reset state
+      } catch (err) {
+        toast.error(language === 'en' ? 'Error creating new game' : 'Error al crear nuevo juego');
+      }
     }
   };
 
