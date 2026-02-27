@@ -9,8 +9,16 @@ const TermsOfUse = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Header */}
-      <header className="border-b border-slate-200 bg-white">
-        <div className="max-w-4xl mx-auto px-6 py-4">
+      <header className="border-b border-slate-200 bg-white/95 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3">
+            <img 
+              src="https://customer-assets.emergentagent.com/job_teachersuite/artifacts/swlef12w_ChatGPT%20Image%20Feb%2015%2C%202026%2C%2009_08_36%20PM.png"
+              alt="TeacherHubPro Logo"
+              className="h-10 w-10 object-contain"
+            />
+            <span className="text-xl font-bold text-slate-900">TeacherHubPro</span>
+          </Link>
           <Link to="/" className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-800">
             <ArrowLeft className="h-4 w-4" />
             {isEs ? 'Volver al inicio' : 'Back to home'}
