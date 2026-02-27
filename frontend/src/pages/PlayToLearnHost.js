@@ -532,39 +532,45 @@ const PlayToLearnHost = () => {
               </CardContent>
             </Card>
 
-            {/* Live Stats Summary */}
-            <div className="grid grid-cols-4 gap-4">
-              <Card className="bg-blue-500/20 border-blue-400/30">
-                <CardContent className="p-4 text-center">
-                  <Users className="h-8 w-8 mx-auto text-blue-400 mb-1" />
-                  <div className="text-2xl font-bold text-white">{players.filter(p => p.selected_mode).length}</div>
-                  <p className="text-blue-200 text-sm">{language === 'es' ? 'Jugando' : 'Playing'}</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-yellow-500/20 border-yellow-400/30">
-                <CardContent className="p-4 text-center">
-                  <Clock className="h-8 w-8 mx-auto text-yellow-400 mb-1" />
-                  <div className="text-2xl font-bold text-white">{players.filter(p => !p.selected_mode).length}</div>
-                  <p className="text-yellow-200 text-sm">{language === 'es' ? 'Eligiendo' : 'Choosing'}</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-green-500/20 border-green-400/30">
-                <CardContent className="p-4 text-center">
-                  <CheckCircle2 className="h-8 w-8 mx-auto text-green-400 mb-1" />
-                  <div className="text-2xl font-bold text-white">{answersReceived}</div>
-                  <p className="text-green-200 text-sm">{language === 'es' ? 'Respuestas' : 'Answers'}</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-purple-500/20 border-purple-400/30">
-                <CardContent className="p-4 text-center">
-                  <Trophy className="h-8 w-8 mx-auto text-purple-400 mb-1" />
-                  <div className="text-2xl font-bold text-white">
-                    {answersReceived > 0 ? Math.round((correctAnswers / answersReceived) * 100) : 0}%
-                  </div>
-                  <p className="text-purple-200 text-sm">{language === 'es' ? 'Precisión' : 'Accuracy'}</p>
-                </CardContent>
-              </Card>
-            </div>
+            {/* Live Stats Summary - calculated from player data for accuracy */}
+            {(() => {
+              const totalAnswers = players.reduce((sum, p) => sum + (p.answers?.length || 0), 0);
+              const totalCorrect = players.reduce((sum, p) => sum + (p.answers?.filter(a => a.is_correct)?.length || 0), 0);
+              const overallAccuracy = totalAnswers > 0 ? Math.round((totalCorrect / totalAnswers) * 100) : 0;
+              
+              return (
+                <div className="grid grid-cols-4 gap-4">
+                  <Card className="bg-blue-500/20 border-blue-400/30">
+                    <CardContent className="p-4 text-center">
+                      <Users className="h-8 w-8 mx-auto text-blue-400 mb-1" />
+                      <div className="text-2xl font-bold text-white">{players.filter(p => p.selected_mode).length}</div>
+                      <p className="text-blue-200 text-sm">{language === 'es' ? 'Jugando' : 'Playing'}</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-yellow-500/20 border-yellow-400/30">
+                    <CardContent className="p-4 text-center">
+                      <Clock className="h-8 w-8 mx-auto text-yellow-400 mb-1" />
+                      <div className="text-2xl font-bold text-white">{players.filter(p => !p.selected_mode).length}</div>
+                      <p className="text-yellow-200 text-sm">{language === 'es' ? 'Eligiendo' : 'Choosing'}</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-green-500/20 border-green-400/30">
+                    <CardContent className="p-4 text-center">
+                      <CheckCircle2 className="h-8 w-8 mx-auto text-green-400 mb-1" />
+                      <div className="text-2xl font-bold text-white">{totalAnswers}</div>
+                      <p className="text-green-200 text-sm">{language === 'es' ? 'Respuestas' : 'Answers'}</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-purple-500/20 border-purple-400/30">
+                    <CardContent className="p-4 text-center">
+                      <Trophy className="h-8 w-8 mx-auto text-purple-400 mb-1" />
+                      <div className="text-2xl font-bold text-white">{overallAccuracy}%</div>
+                      <p className="text-purple-200 text-sm">{language === 'es' ? 'Precisión' : 'Accuracy'}</p>
+                    </CardContent>
+                  </Card>
+                </div>
+              );
+            })()}
 
             {/* Player Progress Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
