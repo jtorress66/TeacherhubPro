@@ -1,6 +1,33 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-27 (Batch 10) - CRITICAL BUG FIXES - VERIFIED ✅
+
+### Bug Fixes:
+
+**Bug 1: Word Search - Words Not Appearing in Grid (FIXED)**
+- **Root Cause:** Grid was fixed at 12x12, too small for long words (COMPREHENSION=13 chars)
+- **Fix Applied:**
+  1. Grid now dynamically sizes: `effectiveSize = Math.max(size, longestWordLength + 2)`
+  2. Increased placement attempts from 100 to 500
+  3. Added force-placement fallback that systematically tries every position
+  4. Only displays words that were actually placed (`actualWords` state)
+  5. Shows toast warning if any words fail to place
+- **Result:** All words including long ones now appear in grid
+
+**Bug 2: Host Dashboard Not Updating (FIXED)**
+- **Root Cause:** Polling was disabled when WebSocket connected (15s interval only when disconnected)
+- **Fix Applied:**
+  1. Polling now runs every 5 seconds ALWAYS (backup for WebSocket)
+  2. Mode selection broadcasts for ALL session types (removed LIVE-only check)
+- **Result:** Host dashboard reliably shows mode badges and player updates
+
+**Test Results (iteration_46.json):**
+- Backend: 100% - All 7 tests passed
+- Frontend: 100% - All features verified via Playwright
+- Also fixed unreachable code in PlayToLearnGame.js
+
+---
 ## Update 2026-02-26 (Batch 9) - Word Search & Sequence Game Modes - VERIFIED ✅
 
 ### Feature: Interactive Game Mode Frontends
