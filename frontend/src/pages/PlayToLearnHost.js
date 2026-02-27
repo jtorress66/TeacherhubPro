@@ -571,7 +571,27 @@ const PlayToLearnHost = () => {
               {sortedPlayers.map((player, idx) => {
                 const answeredCount = player.answers?.length || 0;
                 const correctCount = player.answers?.filter(a => a.is_correct)?.length || 0;
-                const progress = answeredCount > 0 ? (answeredCount / totalQuestions) * 100 : 0;
+                
+                // Calculate total questions for this player's selected mode
+                const getPlayerTotalQuestions = () => {
+                  const playerMode = player.selected_mode || session?.game_type || 'quiz';
+                  const playerPayload = player.game_payload || session?.game_payload || {};
+                  
+                  if (playerMode === 'word_search') {
+                    return playerPayload.words?.length || totalQuestions;
+                  } else if (playerMode === 'memory' || playerMode === 'matching') {
+                    return playerPayload.pairs?.length || totalQuestions;
+                  } else if (playerMode === 'sequence') {
+                    return playerPayload.items?.length || totalQuestions;
+                  } else if (playerMode === 'flashcard') {
+                    return playerPayload.cards?.length || totalQuestions;
+                  } else {
+                    return playerPayload.questions?.length || totalQuestions;
+                  }
+                };
+                
+                const playerTotalQ = getPlayerTotalQuestions();
+                const progress = playerTotalQ > 0 ? Math.min(100, (answeredCount / playerTotalQ) * 100) : 0;
                 
                 const modeColors = {
                   'quiz': 'from-purple-500 to-indigo-600',
@@ -579,7 +599,9 @@ const PlayToLearnHost = () => {
                   'fill_blank': 'from-orange-500 to-amber-600',
                   'matching': 'from-green-500 to-teal-600',
                   'flashcard': 'from-pink-500 to-rose-600',
-                  'memory': 'from-violet-500 to-purple-600'
+                  'memory': 'from-violet-500 to-purple-600',
+                  'word_search': 'from-emerald-500 to-teal-600',
+                  'sequence': 'from-violet-500 to-indigo-600'
                 };
                 
                 const modeNames = {
@@ -588,7 +610,9 @@ const PlayToLearnHost = () => {
                   'fill_blank': language === 'es' ? 'Completar' : 'Fill',
                   'matching': language === 'es' ? 'Parejas' : 'Match',
                   'flashcard': language === 'es' ? 'Tarjetas' : 'Flash',
-                  'memory': language === 'es' ? 'Memoria' : 'Memory'
+                  'memory': language === 'es' ? 'Memoria' : 'Memory',
+                  'word_search': language === 'es' ? 'Sopa' : 'Words',
+                  'sequence': language === 'es' ? 'Orden' : 'Seq'
                 };
                 
                 return (
