@@ -1418,11 +1418,14 @@ const PlayToLearnGame = () => {
     ];
     
     // Filter to allowed modes if available
-    const allowedModes = session?.allowed_game_types || assignment?.allowed_game_types || ['quiz', 'time_attack', 'matching', 'flashcard', 'true_false', 'fill_blank', 'word_search', 'memory'];
+    // Check assignment first (most reliable source), then session, then default
+    const allowedModes = assignment?.allowed_game_types || session?.allowed_game_types || ['quiz', 'time_attack', 'matching', 'flashcard', 'true_false', 'fill_blank', 'word_search', 'memory'];
     const availableModes = gameModes.filter(m => allowedModes.includes(m.id));
     
-    // Check if this is initial selection (game_type is 'all_modes') or post-game selection
+    // Check if this is initial selection (originalGameType is 'all_modes' AND current game_type is still 'all_modes')
+    // or post-game selection (returning from a completed game)
     const isInitialSelection = session?.game_type === 'all_modes';
+    const isPostGameModeSwitch = originalGameType === 'all_modes' && session?.game_type !== 'all_modes';
     
     // Function to handle initial mode selection
     const handleInitialModeSelect = async (modeId) => {
