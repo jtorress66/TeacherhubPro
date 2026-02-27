@@ -1,6 +1,39 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-02-27 (Batch 11) - WORD SEARCH SCORING FIXES - VERIFIED ✅
+
+### Critical Bug Fixes:
+
+**Bug 1: Word Search answers marked incorrect when they were correct**
+- **Root Cause:** Backend validation was comparing submitted word against original quiz `correct_answer` instead of Word Search's `word` field
+- **Fix:** Added explicit `word_search` validation block (lines 1039-1053) that:
+  - Looks up word in `game_payload.hints[]` by item_id
+  - Compares submitted answer against `hint.word` (case-insensitive)
+  - Fallback: checks if word is in `game_payload.words[]`
+
+**Bug 2: Completion showing wrong total_questions and missed_count**
+- **Root Cause:** `total_questions` was calculated from `base_items` (assignment items), but Word Search only uses a subset as `words`
+- **Fix (Backend - line 1145-1162):** Calculate total based on game type:
+  - `word_search`: `words.length`
+  - `memory/matching`: `pairs.length`  
+  - `sequence`: `items.length`
+  - `flashcard`: `cards.length`
+  - Others: `questions.length`
+- **Fix (Frontend - line 1149-1175):** Same calculation for client-side results
+
+**Bug 3: Sequence answer validation**
+- **Fix:** Added sequence validation (lines 1052-1067) that compares submitted position against `correct_position`
+
+**Bug 4: Memory game validation**
+- **Fix:** Memory answers always marked correct (line 1069-1072) since client already validated matches
+
+**Test Results (iteration_47.json):**
+- Backend: 100% - All 18 tests passed
+- Frontend: 100% - UI verified
+- Key verification: Finding 5/5 words → `score=5, total_questions=5, accuracy=100%, missed_count=0`
+
+---
 ## Update 2026-02-27 (Batch 10) - CRITICAL BUG FIXES - VERIFIED ✅
 
 ### Bug Fixes:
