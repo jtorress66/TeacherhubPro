@@ -218,7 +218,8 @@ const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPa
     const selectedWord = selectedCells.map(c => grid[c.row]?.[c.col] || '').join('');
     const reversedWord = selectedWord.split('').reverse().join('');
     
-    const matchedWord = words.find(w => w === selectedWord || w === reversedWord);
+    // Match against actually placed words
+    const matchedWord = actualWords.find(w => w === selectedWord || w === reversedWord);
     
     if (matchedWord && !foundWords.includes(matchedWord)) {
       setFoundWords(prev => [...prev, matchedWord]);
@@ -233,8 +234,8 @@ const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPa
         submitAnswer(hint.item_id, matchedWord, true);
       }
       
-      // Check if all words found
-      if (foundWords.length + 1 >= words.length) {
+      // Check if all placed words found
+      if (foundWords.length + 1 >= actualWords.length) {
         setTimeout(() => handleGameComplete(), 1000);
       }
     }
@@ -273,9 +274,9 @@ const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPa
         </p>
       </div>
       
-      {/* Words to find */}
+      {/* Words to find - only show words that were actually placed */}
       <div className="flex flex-wrap gap-2 justify-center">
-        {words.map((word, idx) => (
+        {actualWords.map((word, idx) => (
           <Badge 
             key={idx} 
             className={`text-sm py-1 px-3 transition-all duration-300 ${
