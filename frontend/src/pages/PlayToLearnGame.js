@@ -166,8 +166,6 @@ const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPa
     }
     
     return { grid: gridArr, positions, placedWords, failedWords, effectiveSize };
-    
-    return { grid: gridArr, positions };
   };
   
   // Handle cell selection
