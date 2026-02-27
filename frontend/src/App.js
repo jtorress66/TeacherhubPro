@@ -53,6 +53,8 @@ import FeaturesPage from "./pages/FeaturesPage";
 import AIAssistantMarketing from "./pages/AIAssistantMarketing";
 import HomeschoolMarketing from "./pages/HomeschoolMarketing";
 import IntegrationsPage from "./pages/IntegrationsPage";
+// Auth Page
+import Auth from "./pages/Auth";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
