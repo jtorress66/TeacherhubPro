@@ -1142,7 +1142,23 @@ async def complete_session(session_id: str, participant_id: str):
     if not participant:
         raise HTTPException(status_code=404, detail="Participant not found")
     
-    total_questions = len(session.get("base_items", []))
+    # Get the correct total based on game type
+    game_type = participant.get("selected_mode") or session.get("game_type", "quiz")
+    game_payload = participant.get("game_payload") or session.get("game_payload", {})
+    
+    # Calculate total_questions based on game type
+    if game_type == "word_search":
+        total_questions = len(game_payload.get("words", []))
+    elif game_type == "memory" or game_type == "matching":
+        total_questions = len(game_payload.get("pairs", []))
+    elif game_type == "sequence":
+        total_questions = len(game_payload.get("items", []))
+    elif game_type == "flashcard":
+        total_questions = len(game_payload.get("cards", []))
+    else:
+        # For quiz, true_false, fill_blank, time_attack - use questions
+        total_questions = len(game_payload.get("questions", session.get("base_items", [])))
+    
     correct_answers = sum(1 for a in participant["answers"] if a["is_correct"])
     accuracy = (correct_answers / total_questions * 100) if total_questions > 0 else 0
     avg_time = (participant["total_time_ms"] / len(participant["answers"])) if participant["answers"] else 0
@@ -1153,13 +1169,13 @@ async def complete_session(session_id: str, participant_id: str):
     result = {
         "participant_id": participant_id,
         "nickname": participant["nickname"],
-        "score": participant["score"],
+        "score": correct_answers,  # Use actual correct count, not client score
         "total_questions": total_questions,
         "accuracy_percent": round(accuracy, 1),
         "best_streak": participant["best_streak"],
         "average_response_time_ms": round(avg_time),
         "total_time_ms": participant["total_time_ms"],
-        "missed_count": len(missed_items),
+        "missed_count": max(0, total_questions - correct_answers),
         "completed_at": datetime.now(timezone.utc).isoformat()
     }
     
