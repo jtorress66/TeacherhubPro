@@ -327,7 +327,28 @@ const PlayToLearnHost = () => {
     );
   }
 
-  const totalQuestions = session?.game_payload?.questions?.length || 0;
+  // Calculate total questions based on session game type
+  const getTotalQuestions = () => {
+    const payload = session?.game_payload || {};
+    const gameType = session?.game_type || 'quiz';
+    
+    if (gameType === 'word_search') {
+      return payload.words?.length || 0;
+    } else if (gameType === 'memory' || gameType === 'matching') {
+      return payload.pairs?.length || 0;
+    } else if (gameType === 'sequence') {
+      return payload.items?.length || 0;
+    } else if (gameType === 'flashcard') {
+      return payload.cards?.length || 0;
+    } else if (gameType === 'all_modes') {
+      // For all_modes, use base_items count since different players may have different counts
+      return session?.base_items?.length || payload.questions?.length || 0;
+    } else {
+      return payload.questions?.length || 0;
+    }
+  };
+  
+  const totalQuestions = getTotalQuestions();
   const currentQuestion = session?.game_payload?.questions?.[currentQuestionIndex];
 
   // Lobby View
