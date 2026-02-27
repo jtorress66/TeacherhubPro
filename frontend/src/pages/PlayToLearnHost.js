@@ -645,7 +645,7 @@ const PlayToLearnHost = () => {
                       {player.selected_mode && (
                         <div className="mt-3 space-y-1">
                           <div className="flex justify-between text-xs text-white/60">
-                            <span>{answeredCount} / {totalQuestions} {language === 'es' ? 'respondidas' : 'answered'}</span>
+                            <span>{answeredCount} / {playerTotalQ} {language === 'es' ? 'respondidas' : 'answered'}</span>
                             <span>{correctCount} {language === 'es' ? 'correctas' : 'correct'}</span>
                           </div>
                           <Progress value={progress} className="h-2" />
