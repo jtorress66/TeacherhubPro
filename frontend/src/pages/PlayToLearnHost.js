@@ -62,38 +62,35 @@ const PlayToLearnHost = () => {
     
     if (session?.status === 'ACTIVE') {
       pollInterval = setInterval(async () => {
-        // Only poll if WebSocket is disconnected
-        if (!wsConnected) {
-          console.log('[Host] WebSocket disconnected, using fallback polling...');
-          try {
-            const res = await axios.get(`${API}/play-to-learn/sessions/${sessionId}`, { withCredentials: true });
-            
-            // De-duplicate and update players with their selected modes
-            const participants = res.data.participants || [];
-            const uniqueParticipants = participants.reduce((acc, p) => {
-              const existingIdx = acc.findIndex(existing => 
-                existing.nickname.toLowerCase() === p.nickname.toLowerCase()
-              );
-              if (existingIdx === -1) {
-                acc.push(p);
-              } else {
-                // Merge data, keeping the most recent info
-                acc[existingIdx] = { ...acc[existingIdx], ...p };
-              }
-              return acc;
-            }, []);
-            
-            setPlayers(uniqueParticipants);
-            
-            // Update session if status changed
-            if (res.data.status !== session?.status) {
-              setSession(res.data);
+        // Always poll to ensure data consistency (WebSocket handles instant updates, this is backup)
+        try {
+          const res = await axios.get(`${API}/play-to-learn/sessions/${sessionId}`, { withCredentials: true });
+          
+          // De-duplicate and update players with their selected modes
+          const participants = res.data.participants || [];
+          const uniqueParticipants = participants.reduce((acc, p) => {
+            const existingIdx = acc.findIndex(existing => 
+              existing.nickname.toLowerCase() === p.nickname.toLowerCase()
+            );
+            if (existingIdx === -1) {
+              acc.push(p);
+            } else {
+              // Merge data, keeping the most recent info
+              acc[existingIdx] = { ...acc[existingIdx], ...p };
             }
-          } catch (err) {
-            console.error('[Host] Polling error:', err);
+            return acc;
+          }, []);
+          
+          setPlayers(uniqueParticipants);
+          
+          // Update session if status changed
+          if (res.data.status !== session?.status) {
+            setSession(res.data);
           }
+        } catch (err) {
+          console.error('[Host] Polling error:', err);
         }
-      }, 15000); // Poll every 15 seconds as fallback
+      }, 5000); // Poll every 5 seconds for reliable updates
     }
     
     return () => {
