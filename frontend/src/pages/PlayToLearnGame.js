@@ -608,7 +608,7 @@ const SequenceGameComponent = ({ session, language, setScore, setStreak, handleG
 };
 
 // Memory Game Component - separate to prevent reshuffling on every render
-const MemoryGameComponent = ({ session, language, matchedPairs, setMatchedPairs, setScore, setStreak, handleGameComplete }) => {
+const MemoryGameComponent = ({ session, language, matchedPairs, setMatchedPairs, setScore, setStreak, handleGameComplete, participantId }) => {
   const [selectedCards, setSelectedCards] = useState([]);
   const [isChecking, setIsChecking] = useState(false);
   
@@ -616,8 +616,8 @@ const MemoryGameComponent = ({ session, language, matchedPairs, setMatchedPairs,
   const shuffledCards = useMemo(() => {
     const pairs = session?.game_payload?.pairs || [];
     const cards = pairs.flatMap((pair) => [
-      { id: `${pair.pair_id}_a`, text: pair.card_a, pairId: pair.pair_id, type: 'term' },
-      { id: `${pair.pair_id}_b`, text: pair.card_b, pairId: pair.pair_id, type: 'definition' }
+      { id: `${pair.pair_id}_a`, text: pair.card_a, pairId: pair.pair_id, type: 'term', itemId: pair.item_id },
+      { id: `${pair.pair_id}_b`, text: pair.card_b, pairId: pair.pair_id, type: 'definition', itemId: pair.item_id }
     ]);
     // Fisher-Yates shuffle
     for (let i = cards.length - 1; i > 0; i--) {
