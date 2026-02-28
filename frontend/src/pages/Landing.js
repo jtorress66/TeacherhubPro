@@ -276,16 +276,16 @@ const Landing = () => {
 
             {/* Right - Hero Image */}
             <div 
-              className="relative mt-8 lg:mt-0"
+              className="relative mt-8 lg:mt-0 hidden lg:block"
               style={{ animation: 'fadeInRight 0.8s ease-out 0.2s both' }}
             >
-              <div className="relative">
+              <div className="relative pl-6 pt-4 pb-4 pr-6">
                 {/* Main Image */}
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                   <img 
                     src={images.hero}
                     alt="Teacher using TeacherHubPro"
-                    className="w-full h-[300px] sm:h-[350px] lg:h-[400px] object-cover object-top"
+                    className="w-full h-[350px] lg:h-[380px] object-cover object-center"
                     data-testid="hero-image"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 to-transparent"></div>
@@ -293,7 +293,7 @@ const Landing = () => {
 
                 {/* Floating card - Top Left */}
                 <div 
-                  className="absolute -top-3 -left-3 sm:-top-4 sm:-left-6 bg-white rounded-xl shadow-lg border border-slate-100 p-3 sm:p-4 animate-float hidden sm:block"
+                  className="absolute top-0 left-0 bg-white rounded-xl shadow-lg border border-slate-100 p-3 sm:p-4 animate-float"
                   style={{ animationDelay: '0s' }}
                 >
                   <div className="flex items-center gap-2 sm:gap-3">
@@ -309,7 +309,7 @@ const Landing = () => {
 
                 {/* Floating card - Bottom Right */}
                 <div 
-                  className="absolute -bottom-3 -right-3 sm:-bottom-4 sm:-right-6 bg-white rounded-xl shadow-lg border border-slate-100 p-3 sm:p-4 animate-float hidden sm:block"
+                  className="absolute bottom-0 right-0 bg-white rounded-xl shadow-lg border border-slate-100 p-3 sm:p-4 animate-float"
                   style={{ animationDelay: '1.5s' }}
                 >
                   <div className="flex items-center gap-2 sm:gap-3">
