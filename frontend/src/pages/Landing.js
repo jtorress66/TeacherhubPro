@@ -5,7 +5,8 @@ import { Button } from '../components/ui/button';
 import { 
   Clock, CheckCircle, ArrowRight, BookOpen, BarChart3, Users, 
   ClipboardList, Sparkles, Brain, Calendar, GraduationCap, Home, 
-  Play, Target, Award, LogIn, Rocket, Gamepad2, Zap
+  Play, Target, Award, LogIn, Rocket, Gamepad2, Zap, Download, 
+  Volume2, Shield, Link2
 } from 'lucide-react';
 import LanguageSelector from '../components/LanguageSelector';
 
