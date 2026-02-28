@@ -1801,15 +1801,73 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
                 </Select>
               </div>
               
+              {/* Plan Type Selector */}
               <div className="space-y-2">
-                <Label>{t('unit')}</Label>
-                <Input 
-                  value={formData.unit}
-                  onChange={(e) => setFormData(prev => ({ ...prev, unit: e.target.value }))}
-                  placeholder={language === 'es' ? 'Ej: Unidad 1' : 'Ex: Unit 1'}
-                  data-testid="unit-input"
-                />
+                <Label>{language === 'es' ? 'Tipo de Plan' : 'Plan Type'}</Label>
+                <Select 
+                  value={formData.plan_type || 'weekly'}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, plan_type: value }))}
+                >
+                  <SelectTrigger data-testid="plan-type-select">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="weekly">
+                      {language === 'es' ? '📅 Plan Semanal (2 Semanas)' : '📅 Weekly Plan (2 Weeks)'}
+                    </SelectItem>
+                    <SelectItem value="conversational_english">
+                      {language === 'es' ? '🗣️ Inglés Conversacional' : '🗣️ Conversational English'}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
+              
+              {/* Show different form based on plan type */}
+              {formData.plan_type === 'conversational_english' ? (
+                <>
+                  {/* Conversational English Form Fields */}
+                  <div className="space-y-2">
+                    <Label>{language === 'es' ? 'Fecha de la Lección' : 'Lesson Date'}</Label>
+                    <Input 
+                      type="date"
+                      value={formData.lesson_date}
+                      onChange={(e) => setFormData(prev => ({ ...prev, lesson_date: e.target.value }))}
+                      data-testid="lesson-date-input"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>{language === 'es' ? 'Materia' : 'Subject'}</Label>
+                    <Input 
+                      value={formData.subject}
+                      onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
+                      placeholder="Conversational English"
+                      data-testid="ce-subject-input"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>{language === 'es' ? 'Nombre del Maestro' : 'Teacher Name'}</Label>
+                    <Input 
+                      value={formData.teacher_name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, teacher_name: e.target.value }))}
+                      placeholder={language === 'es' ? 'Nombre del maestro' : 'Teacher name'}
+                      data-testid="ce-teacher-input"
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Weekly Plan Form Fields */}
+                  <div className="space-y-2">
+                    <Label>{t('unit')}</Label>
+                    <Input 
+                      value={formData.unit}
+                      onChange={(e) => setFormData(prev => ({ ...prev, unit: e.target.value }))}
+                      placeholder={language === 'es' ? 'Ej: Unidad 1' : 'Ex: Unit 1'}
+                      data-testid="unit-input"
+                    />
+                  </div>
               
               <div className="space-y-2">
                 <Label>{t('story')}</Label>
