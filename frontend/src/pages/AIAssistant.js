@@ -126,6 +126,38 @@ const AIAssistant = () => {
     loadGenerations();
   }, []);
 
+  // Restore the current generation content when generations are loaded
+  useEffect(() => {
+    if (generations.length > 0 && currentGenerationId && !generatedContent) {
+      const currentGen = generations.find(g => g.generation_id === currentGenerationId);
+      if (currentGen) {
+        setGeneratedContent(currentGen.content);
+        setGenForm(prev => ({
+          ...prev,
+          tool_type: currentGen.tool_type,
+          subject: currentGen.subject,
+          grade_level: currentGen.grade_level,
+          topic: currentGen.topic
+        }));
+      }
+    } else if (generations.length > 0 && !generatedContent && !currentGenerationId) {
+      // Load the most recent generation if no specific one is selected
+      const mostRecent = generations[0];
+      if (mostRecent) {
+        setGeneratedContent(mostRecent.content);
+        setCurrentGenerationId(mostRecent.generation_id);
+        sessionStorage.setItem('ai_current_generation_id', mostRecent.generation_id);
+        setGenForm(prev => ({
+          ...prev,
+          tool_type: mostRecent.tool_type,
+          subject: mostRecent.subject,
+          grade_level: mostRecent.grade_level,
+          topic: mostRecent.topic
+        }));
+      }
+    }
+  }, [generations]);
+
   useEffect(() => {
     // Scroll to bottom of chat
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
