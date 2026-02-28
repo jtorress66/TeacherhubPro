@@ -207,9 +207,7 @@ const Pricing = () => {
           <Alert className="bg-amber-50 border-amber-200 max-w-2xl mx-auto">
             <AlertCircle className="h-5 w-5 text-amber-600" />
             <AlertDescription className="text-amber-800">
-              {language === 'es' 
-                ? 'Tu período de prueba ha expirado. Selecciona un plan para continuar usando TeacherHubPro.' 
-                : 'Your free trial has expired. Please select a plan to continue using TeacherHubPro.'}
+              {t('pricingTrialExpired') || 'Your free trial has expired. Please select a plan to continue using TeacherHubPro.'}
             </AlertDescription>
           </Alert>
         )}
@@ -217,12 +215,10 @@ const Pricing = () => {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto">
           <h1 className="text-2xl sm:text-4xl font-heading font-bold text-slate-800 mb-3 sm:mb-4">
-            {language === 'es' ? 'Elige tu Plan' : 'Choose Your Plan'}
+            {t('pricingTitle')}
           </h1>
           <p className="text-base sm:text-lg text-slate-600">
-            {language === 'es' 
-              ? 'Comienza con 7 días gratis. Cancela en cualquier momento.' 
-              : 'Start with a 7-day free trial. Cancel anytime.'}
+            {t('pricingSubtitle')}
           </p>
           
           {/* Current Status */}
@@ -230,19 +226,17 @@ const Pricing = () => {
             <div className="mt-4">
               {subscriptionStatus.status === 'admin' && (
                 <Badge className="bg-purple-100 text-purple-800">
-                  {language === 'es' ? 'Cuenta de Administrador - Acceso Completo' : 'Admin Account - Full Access'}
+                  {t('pricingAdminAccount') || 'Admin Account - Full Access'}
                 </Badge>
               )}
               {subscriptionStatus.status === 'trialing' && subscriptionStatus.plan === 'free_trial' && (
                 <Badge className="bg-amber-100 text-amber-800">
-                  {language === 'es' 
-                    ? `Período de prueba: ${subscriptionStatus.days_left} días restantes` 
-                    : `Free Trial: ${subscriptionStatus.days_left} days remaining`}
+                  {t('pricingFreeTrial')}: {subscriptionStatus.days_left} {t('pricingDaysRemaining')}
                 </Badge>
               )}
               {subscriptionStatus.status === 'active' && (
                 <Badge className="bg-green-100 text-green-800">
-                  {language === 'es' ? 'Suscripción Activa' : 'Active Subscription'}: {subscriptionStatus.plan}
+                  {t('pricingActiveSubscription')}: {subscriptionStatus.plan}
                 </Badge>
               )}
             </div>
@@ -252,7 +246,7 @@ const Pricing = () => {
         {/* Teacher Count Selector for School/District */}
         <div className="max-w-md mx-auto bg-white p-4 rounded-lg border shadow-sm">
           <label className="block text-sm font-medium mb-2">
-            {language === 'es' ? 'Número de maestros (para planes escolares)' : 'Number of teachers (for school plans)'}
+            {t('pricingNumberOfTeachers') || 'Number of teachers'} ({t('pricingForSchoolPlans') || 'for school plans'})
           </label>
           <Input
             type="number"
@@ -263,7 +257,7 @@ const Pricing = () => {
             data-testid="teacher-count-input"
           />
           <p className="text-xs text-slate-500 mt-1">
-            {language === 'es' ? 'Mínimo 10 maestros para Plan Escolar, 100 para Distrito' : 'Minimum 10 teachers for School Plan, 100 for District'}
+            {t('pricingMinTeachers')}
           </p>
         </div>
 
@@ -278,7 +272,7 @@ const Pricing = () => {
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                   <Badge className="bg-lime-500 text-white">
-                    {language === 'es' ? 'Más Popular' : 'Most Popular'}
+                    {t('pricingMostPopular')}
                   </Badge>
                 </div>
               )}
@@ -305,16 +299,16 @@ const Pricing = () => {
                 
                 {plan.billedYearly && (
                   <div className="text-sm text-slate-600 mb-4">
-                    {language === 'es' ? 'Facturado anualmente' : 'Billed yearly'}
+                    {t('pricingBilledAnnually')}
                     {['school', 'district'].includes(plan.id) && (
                       <div className="font-semibold text-slate-800 mt-1">
                         {teacherCount >= plan.minTeachers ? (
                           <>
-                            {teacherCount} {language === 'es' ? 'maestros' : 'teachers'}: ${calculateSchoolPrice(plan.id, teacherCount)}/year
+                            {teacherCount} {t('pricingTeachers') || 'teachers'}: ${calculateSchoolPrice(plan.id, teacherCount)}/{t('pricingYear')}
                           </>
                         ) : (
                           <span className="text-amber-600">
-                            {language === 'es' ? `Mínimo ${plan.minTeachers} maestros` : `Minimum ${plan.minTeachers} teachers`}
+                            {t('pricingMinimum')} {plan.minTeachers} {t('pricingTeachers') || 'teachers'}
                           </span>
                         )}
                       </div>
@@ -344,15 +338,15 @@ const Pricing = () => {
                   data-testid={`subscribe-btn-${plan.id}`}
                 >
                   {loadingCheckout && selectedPlan === plan.id ? (
-                    <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {language === 'es' ? 'Procesando...' : 'Processing...'}</>
+                    <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {t('pricingProcessing') || 'Processing...'}</>
                   ) : !user ? (
-                    language === 'es' ? 'Registrarse Gratis' : 'Sign Up Free'
+                    t('pricingSignUpFree')
                   ) : subscriptionStatus?.status === 'admin' ? (
-                    language === 'es' ? 'Probar Checkout' : 'Test Checkout'
+                    t('pricingTestCheckout') || 'Test Checkout'
                   ) : subscriptionStatus?.status === 'active' && subscriptionStatus?.plan === plan.id ? (
-                    language === 'es' ? 'Plan Actual' : 'Current Plan'
+                    t('pricingCurrentPlan')
                   ) : (
-                    language === 'es' ? 'Comenzar Prueba Gratis' : 'Start Free Trial'
+                    t('pricingGetStarted') || 'Start Free Trial'
                   )}
                 </Button>
               </CardFooter>
