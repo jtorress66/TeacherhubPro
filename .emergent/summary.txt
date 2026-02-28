@@ -1,40 +1,56 @@
 <analysis>**original_problem_statement:**
 The user wants to build a comprehensive, teacher-focused web application called TeacherHubPro. This app aims to replace paper-based planners and consolidate various teacher workflows into a single digital platform.
 
-The current focus is on a major feature called **Play to Learn**, a Kahoot-style live and self-paced game module for student engagement.
+The initial project scope included a major feature called Play to Learn, a Kahoot-style game module, which is now stable.
 
-Recently, the user provided new, conversion-oriented copy to completely redesign the homepage () to better appeal to the target audience of teachers.
+The current work focuses on a complete, multi-stage redesign of the public-facing marketing pages (, , etc.) to be conversion-oriented, visually appealing, and fully multi-lingual. The user has provided specific copy, design preferences, and iterative feedback to guide this process.
 
-**PRODUCT REQUIREMENTS (Play to Learn):**
-1.  **Core Objective:** Allow students to join live games with a PIN or play self-paced assignments. Teachers can create assignments, host live sessions, and view participation insights.
-2.  **Student Flow:** Join with PIN/nickname, wait in a lobby, receive immediate feedback, and see a results dashboard.
-3.  **Teacher Flow:** Create reusable assignments, host live games, monitor a live progress dashboard showing real-time student activity, and view participation insights.
-4.  **Game Modes:** Must support , , , , , , , , and .
-5.  **All Modes Option:** Teachers must be able to create assignments that allow students to choose their preferred game mode.
-6.  **Real-Time (Live Mode):** Must use WebSockets for real-time player join, game start, and progress updates.
+**PRODUCT REQUIREMENTS (current focus):**
+1.  **Homepage Redesign:** Implement a modern, clean, and trustworthy homepage using user-provided copy. This includes specific sections for Hero, Problem, Solution, Outcomes, How It Works, Target Audience, Platform Integrations, Google Classroom, Homeschooling, and CTAs.
+2.  **Multi-Language Support:** The entire public-facing site, including the landing and pricing pages, must support English, Spanish, German, Portuguese, Italian, French, and Chinese. A language selector should be present and functional.
+3.  **Consistent Branding:** All public pages must feature the TeacherHubPro name and logo in the header for brand consistency.
+4.  **Separate Auth Page:** The login and registration forms must be on a dedicated  page, not part of the landing page.
+5.  **Visual Appeal:** Use modern, professional images of American or European classrooms, teachers, and students. Avoid cartoonish illustrations. The layout should be clean with plenty of whitespace.
 
 **User's preferred language**: English. The next agent must respond in **English**.
 
 **what currently exists?**
-The Play to Learn module is functionally complete, with all requested game modes implemented. The last session was a marathon of bug-fixing based on user feedback, addressing critical issues in game logic, scoring, real-time dashboard updates, and session management. After a series of fixes, the user confirmed all major gameplay issues are resolved.
+The agent has performed multiple iterations of a complete homepage redesign based on detailed user feedback. This included implementing new copy, creating a separate authentication page, adding multi-language support via a large  file, creating a reusable  component, and adding several new feature sections to the landing page (, , ).
 
-The agent's last action was to analyze the existing homepage () in preparation for a complete redesign using new marketing copy provided by the user.
+The agent's last action was attempting to fix three new user-reported issues: an incorrect logo on the  page, missing multi-language support on the  page, and a hero image layout bug on . Edits have been made to multiple files, but they have not yet been tested.
 
 **Last working item**:
--   **Last item agent was working:** Redesigning the homepage with new teacher-focused, conversion-oriented copy. The agent has identified the correct file to modify () and analyzed its current structure.
--   **Status:** NOT STARTED
+-   **Last item agent was working:** Fixing a batch of three user-reported UI and translation issues across the public-facing site.
+-   **Status:** IN PROGRESS
 -   **Agent Testing Done:** N
--   **Which testing method agent to use?** Frontend testing agent. The agent should use the screenshot tool to visually verify the new design and the testing agent to confirm all links and CTAs function as expected.
+-   **Which testing method agent to use?** Frontend testing agent. Take screenshots of , , and  to visually verify the fixes. Then, run the testing agent to confirm functionality across different languages and pages.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Monolithic  file refactoring (P2)**
--   **Issue 2: Overly complex  component refactoring (P2)**
--   **Issue 3: Google Search Console Indexing Failures (P2)**
+-   **Issue 1: UI & Translation Fixes (P0)**
+-   **Issue 2: Monolithic  file refactoring (P2)**
+-   **Issue 3: Overly complex  component refactoring (P2)**
 -   **Issue 4: Remove dead code from Google Classroom OAuth (P2)**
 
 **Issues Detail:**
--   **Issue 1: Monolithic  file refactoring (P2)**
+-   **Issue 1: UI & Translation Fixes (P0)**
+    -   **Attempted fixes:** The agent has:
+        1.  Edited  to replace the incorrect logo component with the .
+        2.  Edited  to adjust hero section CSS grid and container classes to prevent image overlap.
+        3.  Added extensive translation keys for the pricing page to  for all supported languages.
+        4.  Rewrote  to remove inline language conditionals and use the  translation function with the newly added keys.
+    -   **Next debug checklist:**
+        1.  View  to confirm the header now uses . Take a screenshot to verify the correct logo appears.
+        2.  View . Take screenshots while switching between English, Spanish, and French to confirm the page content is fully translated.
+        3.  View . Take a screenshot to confirm the hero image no longer overlaps the See How It Works button.
+        4.  Run the frontend testing agent, instructing it to check navigation, language switching, and content rendering on the landing, pricing, and homeschool pages.
+    -   **Why fix this issue and what will be achieved with the fix?** To resolve direct user-reported bugs, ensure a consistent brand identity, and provide a seamless multi-lingual experience, which is critical for user trust and conversion.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend.
+    -   **Blocked on other issue:** None.
+
+-   **Issue 2: Monolithic  file refactoring (P2)**
     -   **Attempted fixes:** This is a known technical debt item that has been partially addressed in the past but remains incomplete.
     -   **Next debug checklist:** Plan and execute the migration of routes from  into dedicated files under .
     -   **Why fix this issue and what will be achieved with the fix?** To improve backend maintainability, scalability, and readability.
@@ -43,7 +59,7 @@ The agent's last action was to analyze the existing homepage () in preparation f
     -   **Should Test frontend/backend/both after fix?** Backend.
     -   **Blocked on other issue:** None.
 
--   **Issue 2: Overly complex  component refactoring (P2)**
+-   **Issue 3: Overly complex  component refactoring (P2)**
     -   **Attempted fixes:** The agent created a dedicated component for , but the main file is still over 2000 lines long.
     -   **Next debug checklist:** Extract the logic for each game mode (, , , etc.) into its own dedicated React component.
     -   **Why fix this issue and what will be achieved with the fix?** The file's size and complexity make it difficult to maintain and debug. Refactoring will improve readability and component isolation.
@@ -52,47 +68,53 @@ The agent's last action was to analyze the existing homepage () in preparation f
     -   **Should Test frontend/backend/both after fix?** Frontend.
     -   **Blocked on other issue:** None.
 
-**In progress Task List**:
--   **Task 1: Redesign the Homepage (P0)**
-    -   **Where to resume:** Open  and replace the existing content with new components and styling that reflect the user-provided copy.
-    -   **What will be achieved with this?** A new, conversion-focused homepage that speaks directly to the teacher audience.
+-   **Issue 4: Remove dead code from Google Classroom OAuth (P2)**
+    -   **Attempted fixes:** None. Identified as a tech debt item.
+    -   **Next debug checklist:** Analyze the Google Classroom integration code, identify unused functions or variables related to a previous OAuth implementation, and safely remove them.
+    -   **Why fix this issue and what will be achieved with the fix?** To clean up the codebase and prevent confusion for future development.
     -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Backend.
+    -   **Blocked on other issue:** None.
+
+**In progress Task List**:
+-   **Task 1: Verify and Finalize UI & Translation Fixes (P0)**
+    -   **Where to resume:** The agent has just finished editing all necessary files. The next step is to begin testing the changes via screenshots and the testing agent as outlined in the Next debug checklist for Issue 1.
+    -   **What will be achieved with this?** A fully functional, visually correct, and multi-lingual public-facing website that meets all recent user requirements.
+    -   **Status:** IN PROGRESS
     -   **Should Test frontend/backend/both after fix?** Frontend.
     -   **Blocked on something:** None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks (P1):**
+    *   **Conversion-Optimized Pricing Page:** While multi-language support was added, the user may have further optimization requests.
+    *   **Email Capture Lead Magnet:** Add a section to capture user emails in exchange for a resource.
+    *   **Referral Incentive Display:** Add a section inside the authenticated user dashboard to display a referral program.
     *   Finish Report Card Generation.
     *   Email Parent Portal Links.
     *   Finish Bulk Import Tools.
 -   **Future Tasks (P2):**
+    *   Refactor  into separate JSON files per language.
     *   Full Google Classroom Integration (data sync).
     *   Drag-and-Drop Seating Chart Editor.
     *   Quick Week Copy in Lesson Planner.
     *   Audit Log for admin actions.
 
 **Completed work in this session**
--   **Play to Learn Bug Fixes (All Verified):**
-    -   **Critical Game Logic:** Fixed validation for , , and .
-    -   **Word Search Generation:** Fixed the grid generation algorithm to ensure all words are placable and dynamically adjusted grid size.
-    -   **Memory Game Scoring:** Fixed a bug causing 200% accuracy by implementing proper answer submission and resetting state correctly.
-    -   **Scoring & Stats:** Fixed scoring and completion logic for  and  games to report correct totals and accuracy.
--   **Real-Time Host Dashboard Overhaul (All Verified):**
-    -   Implemented robust WebSocket events for all player actions (join, mode select, answer submit) for both  and  sessions.
-    -   Replaced polling with a real-time, event-driven architecture, including a Connected status indicator.
-    -   Fixed dashboard to correctly display each player's chosen game mode badge and progress in  sessions.
-    -   Fixed aggregate statistics (total answers, accuracy) to be calculated from player state, ensuring accuracy.
--   **Session Management Fixes (All Verified):**
-    -   Fixed the Try Different Mode feature to keep the student in the same session instead of creating a new one.
-    -   Fixed an issue where Try Different Mode would only show one game option instead of all allowed modes.
--   **New Game Mode UIs Implemented:**
-    -   Built and integrated fully interactive frontend components for the  and  game modes.
+-   **Homepage Redesign (v5):**
+    -   Implemented a fully responsive, multi-stage redesign of  with all user-requested copy and sections.
+    -   Added a dedicated  page for login/signup, separating it from the landing page.
+    -   Created a reusable  component with the site logo and navigation, and applied it to all public pages (, , , , etc.) for consistent branding.
+    -   Implemented full multi-language support for the landing page for 7 languages (EN, ES, FR, DE, PT, IT, ZH).
+    -   Added new marketing sections: Platform Integrations, Connect with Your Favorite Platforms (Google Classroom), and Perfect for Homeschool Educators.
+    -   Replaced placeholder images with professional, American/European-style classroom and student photos.
+    -   Successfully used the testing agent to verify each major iteration.
 
 **Earlier issues found/mentioned but not fixed**
--   See **All Pending/In progress Issue list** for technical debt items.
+-   See **All Pending/In progress Issue list** for technical debt items (, , dead code).
 
 **Known issue recurrence from previous fork**
--   **Issue recurrence in previous fork:** Real-time UI updates, game scoring, and answer validation logic have been the most frequent sources of bugs. The latest series of fixes addressed these comprehensively, but this area remains fragile and requires thorough testing after any changes.
+-   **Issue recurrence in previous fork:** Real-time UI updates, game scoring, and answer validation logic for the Play to Learn module have been fragile. While stable now, this area requires thorough testing if modified.
 -   **Recurrence count:** 5+
 -   **Status:** RESOLVED (for now, but high risk)
 
@@ -100,61 +122,60 @@ The agent's last action was to analyze the existing homepage () in preparation f
 
 
 **Key Technical Concepts**
--   **Robust Real-Time Sync:** The architecture was overhauled to rely primarily on WebSockets for instant dashboard updates, with polling relegated to a fallback. WebSocket messages were enriched to carry full participant state.
--   **Per-Participant State Management:** The backend correctly handles  sessions by storing , , and progress on a per-participant basis in the database.
--   **Derived Frontend State:** The Host dashboard now calculates aggregate statistics (total answers, accuracy) directly from the  array rather than relying on separate state variables, ensuring data consistency.
--   **Dynamic UI Logic:** The  component can now correctly calculate and display the total number of questions for each player, even when they are playing different game modes within the same session.
--   **Robust Game Generation:** The Word Search grid algorithm was rewritten to be more reliable, dynamically resizing the grid based on word length and ensuring all words are placed.
+-   **Centralized Translations:** A single, large context file () manages translations for 7 languages across the entire frontend. The  hook and  function are used to render text dynamically.
+-   **Component Reusability:** The  component was created to enforce consistent branding (logo, navigation) across all unauthenticated pages.
+-   **Conditional Rendering:** The UI extensively uses conditional rendering based on the selected language from the .
+-   **CSS Grid & Flexbox:** Used for creating complex, responsive layouts for the new sections on the landing page.
 
 **key DB schema**
--   **practice_sessions**: 
+-   No changes in this session.  remains the key collection for the game module.
 
 **All files of reference**
--    (Next task)
--    (Core backend logic)
--    (Core frontend game logic)
--    (Teacher dashboard logic)
+-    (Primary file for homepage content)
+-    (Source of all translations)
+-    (Page requiring translation fixes)
+-    (Page requiring logo fix)
+-    (New reusable component)
+-    (New auth page)
+-    (Tech debt)
+-    (Tech debt)
 
 **Areas that need refactoring**:
--   **/app/backend/server.py**: This monolithic file is a high-priority technical debt item. Its routes should be broken out into the  directory.
--   **/app/frontend/src/pages/PlayToLearnGame.js**: At over 2100 lines, this file is extremely difficult to maintain. The logic for each game mode should be extracted into its own dedicated component, similar to .
+-   **/app/backend/server.py**: High-priority tech debt. Routes should be broken out into the  directory.
+-   **/app/frontend/src/pages/PlayToLearnGame.js**: At over 2100 lines, this file is difficult to maintain. Game mode logic should be extracted into dedicated components.
+-   **/app/frontend/src/contexts/LanguageContext.js**: This file has grown to over 3500 lines. It should be refactored to load translations from separate JSON files per language (e.g., ) to improve maintainability.
 
 **key api endpoints**
--   : Logic was modified to correctly validate answers for  and broadcast WebSocket updates.
--   : Logic was modified to broadcast WebSocket updates for  sessions.
--   **WebSocket Events:** , , , . These are now the primary mechanism for updating the Host Dashboard.
+-   No backend API endpoints were modified in this session.
 
 **Critical Info for New Agent**
--   **Homepage Redesign is P0:** The user's latest request is to implement a complete redesign of the  page using the provided copy. This is the next immediate task.
--   **User Trust is Fragile:** The user has been frustrated by a long series of bugs. Although the app is currently stable, any new feature or fix must be tested exhaustively before being presented as complete.
--   **Play to Learn is Stable (for now):** After a long bug-fixing session, the core game module is working as expected. Do not modify it unless requested. The focus should be on the new homepage and then on addressing technical debt.
--   **Refactoring is Needed:** Both the backend  and frontend  are major sources of technical debt. After the homepage redesign, proposing a refactoring plan for one of these would be a valuable next step.
+-   **Verify First:** Your immediate task is to test and verify the fixes for the three user-reported issues (Homeschool logo, Pricing page translations, Landing page hero image overlap). Do not start new work until these are confirmed fixed.
+-   **User is Detail-Oriented:** The user provides very specific visual feedback, often with annotated screenshots. Pay close attention to layout, spacing, and image choice.
+-   **Translation Workflow:** All new public-facing text must be added to  for all 7 supported languages. The  function must be used to display it.
+-   **Next Priorities are Conversion-Focused:** After fixing the current issues, the user's focus will shift to a lead magnet and a referral program. Be prepared to discuss and plan these features.
 
 **documents and test reports created in this job**
--   /app/memory/PRD.md (Updated with completed work)
--   /app/test_reports/iteration_43.json
--   /app/test_reports/iteration_44.json
--   /app/test_reports/iteration_45.json
--   /app/test_reports/iteration_46.json
--   /app/test_reports/iteration_47.json
--   /app/test_reports/iteration_48.json
--   /app/test_reports/iteration_49.json
--   /app/test_reports/iteration_50.json
+-   /app/memory/PRD.md (Updated multiple times)
+-   /app/test_reports/iteration_51.json
+-   /app/test_reports/iteration_52.json
+-   /app/test_reports/iteration_53.json
+-   /app/test_reports/iteration_54.json
+-   /app/test_reports/iteration_55.json
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **LATEST -> User:** Provides detailed copy for a new, teacher-focused, conversion-oriented homepage. (Status: **NOT STARTED**)
-2.  **User:** Reports the Host Dashboard is not updating correctly in real-time, showing incorrect scores and progress. (Status: **RESOLVED**)
-3.  **User:** Reports that when a student finishes a game and tries a different mode, it creates a new player session. Also reports the Memory game has a 200% accuracy bug. (Status: **RESOLVED**)
-4.  **User:** Reports that clicking Try Different Mode only shows one game option, not all available ones. (Status: **RESOLVED**)
-5.  **User:** Reports Word Search scoring is broken (shows 7/10 instead of X/5) and Host dashboard stats are wrong. (Status: **RESOLVED**)
-6.  **User:** Reports a critical bug where the Word Search grid is impossible to solve because the words aren't in the puzzle. Also reports the Host page isn't updating. (Status: **RESOLVED**)
-7.  **User:** Asks agent to implement Word Search and Sequence game frontends. (Status: **COMPLETED**)
-8.  **User:** Asks agent to implement real-time WebSocket updates for the Host dashboard to replace polling. (Status: **COMPLETED**)
-9.  **User:** Confirms P0 bugs are fixed and asks the agent to proceed with P1 tasks. (Status: Addressed, but new bugs were found)
-10. **User:** Gives initial go-ahead to fix P0 bugs. (Status: Addressed)
+1.  **LATEST -> User:** Reports 3 issues: Homeschool page has the wrong logo, Pricing page is not multi-lingual, and an image on the landing page still overlaps a button. (Status: **IN PROGRESS**)
+2.  **User:** Requests adding a Connect with favorite platforms (Google Classroom) section and a Homeschool Educators section to the landing page, with American/European student images. (Status: **COMPLETED**)
+3.  **User:** Reports landing page is only in English, all pages need the logo/app name in the header, and key features (Adaptive Learning, Educational Games, Play to Learn) should be mentioned on the landing page. (Status: **COMPLETED**)
+4.  **User:** Reports an image overlaps a button, the multi-language support is broken, a Login button is needed, and the auth form should be on a separate page. Requests more images. (Status: **COMPLETED**)
+5.  **User:** Approves initial homepage redesign and provides new, detailed copy and design preferences for a conversion-optimized homepage. (Status: **COMPLETED**)
+6.  **User:** Provides copy for the new homepage. (Status: **COMPLETED**)
+7.  **User:** Confirms P0 bugs are fixed. (Status: **ADDRESSED**)
+8.  **User:** Reports the Host Dashboard is not updating correctly. (Status: **RESOLVED in previous fork**)
+9.  **User:** Reports multiple game logic bugs. (Status: **RESOLVED in previous fork**)
+10. **User:** Reports Word Search scoring and dashboard stats are broken. (Status: **RESOLVED in previous fork**)
 
 **Project Health Check:**
--   **Broken:** No features are currently reported as broken. The application is in a stable state.
+-   **Broken:** Three UI/translation issues on the public pages (, , ) are currently being fixed but are not yet verified.
 -   **Mocked:** N/A
 
 **3rd Party Integrations**
@@ -165,14 +186,13 @@ The agent's last action was to analyze the existing homepage () in preparation f
 -   OpenAI TTS (Audio narration)
 
 **Testing status**
--   **Testing agent used after significant changes:** YES. The testing agent was used successfully multiple times to verify complex bug fixes across game logic and real-time updates.
+-   **Testing agent used after significant changes:** YES. The testing agent was used after every major homepage iteration to verify functionality.
 -   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:**
-    -  (This file was present from a previous session and likely used implicitly by the testing agent)
--   **Known regressions:** Real-time updates and scoring logic have been fragile. The latest fixes seem robust, but this area requires careful attention.
+-   **Test files created:** None in this session.
+-   **Known regressions:** None in this session.
 
 **Credentials to test flow:**
 -   **School Teacher / Has Plans:**  / 
 
 **What agent forgot to execute**
--   The agent has been focused on reactive bug fixing and implementing new game modes. The high-priority technical debt tasks of refactoring  and  have not been addressed.</analysis>
+-   The agent has correctly prioritized user-facing feature requests and bug fixes over long-standing technical debt. The refactoring of  and  remains pending as a lower-priority task.</analysis>

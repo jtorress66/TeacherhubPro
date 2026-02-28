@@ -24,7 +24,7 @@
     "frontend": "100% - Playwright verified Play Again generates different questions"
   },
   "test_credentials": {
-    "API_URL": "https://classroom-game-hub-1.preview.emergentagent.com",
+    "API_URL": "https://edu-workspace-7.preview.emergentagent.com",
     "test_game": "test_true_false_1771598782"
   },
   "seed_data_creation": "None - used existing test game",
@@ -68,7 +68,7 @@
       ]
     },
     "frontend_playwright_tests": {
-      "url": "https://classroom-game-hub-1.preview.emergentagent.com/play-game/test_true_false_1771598782",
+      "url": "https://edu-workspace-7.preview.emergentagent.com/play-game/test_true_false_1771598782",
       "round1_question": "Galileo Galilei was condemned by the Roman Catholic Church in 1633 for supporting the heliocentric theory.",
       "round2_question": "Galileo Galilei was placed under house arrest by the Roman Inquisition for supporting the heliocentric theory.",
       "questions_different": true,

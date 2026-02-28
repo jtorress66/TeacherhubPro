@@ -23,7 +23,7 @@
     "frontend": "100% - All Playwright tests passed"
   },
   "test_credentials": {
-    "API_URL": "https://classroom-game-hub-1.preview.emergentagent.com",
+    "API_URL": "https://edu-workspace-7.preview.emergentagent.com",
     "test_teacher": "test@school.edu / testpassword",
     "test_assignment_english": "pa_819f4878e48f4936 (Parts of Speech - Nouns and Verbs, language: en)",
     "test_live_session": "ps_6a7c35d430f14797 (PIN: 757083)"
@@ -56,7 +56,7 @@
     },
     "frontend_playwright_tests": {
       "live_join_flow": {
-        "url": "https://classroom-game-hub-1.preview.emergentagent.com/play-to-learn?pin=757083",
+        "url": "https://edu-workspace-7.preview.emergentagent.com/play-to-learn?pin=757083",
         "status": "PASSED",
         "elements_verified": [
           "Join form with PIN pre-filled",
@@ -67,7 +67,7 @@
         ]
       },
       "late_join_to_active_game": {
-        "url": "https://classroom-game-hub-1.preview.emergentagent.com/play-to-learn?pin=757083",
+        "url": "https://edu-workspace-7.preview.emergentagent.com/play-to-learn?pin=757083",
         "status": "PASSED",
         "elements_verified": [
           "Student joined ACTIVE game",
@@ -78,7 +78,7 @@
         ]
       },
       "host_view_deduplication": {
-        "url": "https://classroom-game-hub-1.preview.emergentagent.com/teacher/play-to-learn/host/ps_6a7c35d430f14797",
+        "url": "https://edu-workspace-7.preview.emergentagent.com/teacher/play-to-learn/host/ps_6a7c35d430f14797",
         "status": "PASSED",
         "elements_verified": [
           "Live Players list shows 4 unique players",
