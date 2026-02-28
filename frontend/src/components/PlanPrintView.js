@@ -116,24 +116,40 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <style>
           @page { 
             size: landscape;
-            margin: 0.25in; 
+            margin: 0.2in; 
           }
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { 
             font-family: Arial, sans-serif; 
-            font-size: 9pt;
+            font-size: 8pt;
           }
           .print-page {
             width: 100%;
+            height: auto;
+            max-height: 7.5in;
+            overflow: hidden;
             page-break-after: always;
             page-break-inside: avoid;
           }
           .print-page:last-child { page-break-after: avoid; }
           .preview-wrapper { display: contents; }
-          table { border-collapse: collapse; width: 100%; }
-          td, th { border: 1px solid black; padding: 3px 4px; vertical-align: top; }
+          table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            table-layout: fixed;
+            page-break-inside: avoid;
+          }
+          td, th { 
+            border: 1px solid black; 
+            padding: 2px 3px; 
+            vertical-align: top; 
+            word-wrap: break-word;
+            overflow: hidden;
+          }
+          tr { page-break-inside: avoid; }
           @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .print-page { max-height: none; }
           }
         </style>
       </head>
