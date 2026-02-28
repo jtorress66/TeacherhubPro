@@ -3358,7 +3358,31 @@ const translations = {
     landingPlatformIntegrationsDesc: '连接您已经使用的工具',
     landingAiAssistantTitle: 'AI助手',
     landingStudentProgressTitle: '学生进度',
-    landingPresentationsTitle: '演示文稿'
+    landingPresentationsTitle: '演示文稿',
+    
+    // Google Classroom Section (Chinese)
+    landingConnectPlatforms: '连接您喜爱的平台',
+    landingConnectPlatformsDesc: '无缝集成学校已使用的工具',
+    landingIntegrated: '已集成',
+    landingImportClasses: '自动导入班级和名册',
+    landingSyncGrades: '与Google Classroom同步成绩',
+    landingSecurePrivate: '安全私密 - OAuth 2.0保护',
+    landingConnectGoogleClassroom: '连接 Google Classroom',
+    landingComingSoon: '即将推出',
+    landingComingSoonBadge: '即将推出',
+    landingMoreIntegrations: '更多集成即将推出。告诉我们您需要什么！',
+    landingTrustedBySchools: '受到全球使用Google Classroom的学校信赖',
+    
+    // Homeschool Section (Chinese)
+    landingForHomeschool: '家庭教育',
+    landingHomeschoolFriendly: '适合家庭教育',
+    landingLearnMoreHomeschool: '了解更多家庭教育功能',
+    landingHomeschoolAdaptiveDesc: 'AI驱动的路径，适应孩子独特的学习节奏',
+    landingFlexibleCurriculum: '灵活课程',
+    landingFlexibleCurriculumDesc: '根据学习风格自定义科目和节奏',
+    landingTextToSpeechDesc: '内置文字转语音，适合听觉学习者',
+    landingSafeContent: '安全内容',
+    landingSafeContentDesc: '适龄且经过教育审核的材料'
   }
 };
 
