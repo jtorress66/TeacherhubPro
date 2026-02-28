@@ -122,41 +122,26 @@ const AIAssistant = () => {
     if (!chatSessionId) {
       setChatSessionId(`chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
     }
-    // Load user's generations
-    loadGenerations();
+    // Load user's saved lesson plans
+    loadSavedPlans();
   }, []);
 
-  // Restore the current generation content when generations are loaded
+  // Restore the current plan content when saved plans are loaded
   useEffect(() => {
-    if (generations.length > 0 && currentGenerationId && !generatedContent) {
-      const currentGen = generations.find(g => g.generation_id === currentGenerationId);
-      if (currentGen) {
-        setGeneratedContent(currentGen.content);
+    if (savedPlans.length > 0 && currentGenerationId && !generatedContent) {
+      const currentPlan = savedPlans.find(p => p.generation_id === currentGenerationId);
+      if (currentPlan) {
+        setGeneratedContent(currentPlan.content);
         setGenForm(prev => ({
           ...prev,
-          tool_type: currentGen.tool_type,
-          subject: currentGen.subject,
-          grade_level: currentGen.grade_level,
-          topic: currentGen.topic
-        }));
-      }
-    } else if (generations.length > 0 && !generatedContent && !currentGenerationId) {
-      // Load the most recent generation if no specific one is selected
-      const mostRecent = generations[0];
-      if (mostRecent) {
-        setGeneratedContent(mostRecent.content);
-        setCurrentGenerationId(mostRecent.generation_id);
-        sessionStorage.setItem('ai_current_generation_id', mostRecent.generation_id);
-        setGenForm(prev => ({
-          ...prev,
-          tool_type: mostRecent.tool_type,
-          subject: mostRecent.subject,
-          grade_level: mostRecent.grade_level,
-          topic: mostRecent.topic
+          tool_type: currentPlan.tool_type,
+          subject: currentPlan.subject,
+          grade_level: currentPlan.grade_level,
+          topic: currentPlan.topic
         }));
       }
     }
-  }, [generations]);
+  }, [savedPlans]);
 
   useEffect(() => {
     // Scroll to bottom of chat
