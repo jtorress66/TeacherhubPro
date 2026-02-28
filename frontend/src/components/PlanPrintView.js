@@ -342,9 +342,21 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     }, 300);
   };
 
-  // Checkbox component - compact
+  // Checkbox component - using inline styles for print compatibility
   const Chk = ({ checked }) => (
-    <span className={`chk ${checked ? 'checked' : ''}`}>
+    <span style={{
+      display: 'inline-block',
+      width: '8px',
+      height: '8px',
+      border: '1px solid #000',
+      marginRight: '3px',
+      verticalAlign: 'middle',
+      textAlign: 'center',
+      fontSize: '6pt',
+      lineHeight: '6px',
+      background: checked ? '#000' : '#fff',
+      color: checked ? '#fff' : '#000'
+    }}>
       {checked ? '✓' : ''}
     </span>
   );
