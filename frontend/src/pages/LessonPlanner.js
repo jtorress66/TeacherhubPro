@@ -1967,6 +1967,8 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
                 </div>
               </div>
             </div>
+                </>
+              )}
 
             {/* SM Aprendizaje Integration - Simple Direct Link */}
             <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
