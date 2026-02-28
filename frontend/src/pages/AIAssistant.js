@@ -477,8 +477,8 @@ const AIAssistant = () => {
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
           <div className="bg-white/10 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold">{generations.length}</div>
-            <div className="text-xs text-white/70">{language === 'es' ? 'Generaciones' : 'Generations'}</div>
+            <div className="text-2xl font-bold">{savedPlans.length}</div>
+            <div className="text-xs text-white/70">{language === 'es' ? 'Planes Guardados' : 'Saved Plans'}</div>
           </div>
           <div className="bg-white/10 rounded-lg p-3 text-center">
             <div className="text-2xl font-bold">5</div>
