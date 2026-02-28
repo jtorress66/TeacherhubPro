@@ -148,14 +148,53 @@ const AIAssistant = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
-  const loadGenerations = async () => {
+  const loadSavedPlans = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/ai/generations`, {
+        withCredentials: true,
+        params: { saved_only: true }
+      });
+      setSavedPlans(response.data.filter(g => g.is_saved));
+    } catch (error) {
+      console.error('Failed to load saved plans:', error);
+    }
+  };
+
+  const handleSavePlan = async () => {
+    if (!currentGenerationId || !generatedContent) {
+      toast.error(language === 'es' ? 'No hay contenido para guardar' : 'No content to save');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await axios.post(`${API_URL}/api/ai/generations/${currentGenerationId}/save`, {}, {
         withCredentials: true
       });
-      setGenerations(response.data);
+      toast.success(language === 'es' ? '¡Plan guardado!' : 'Plan saved!');
+      loadSavedPlans();
     } catch (error) {
-      console.error('Failed to load generations:', error);
+      toast.error(error.response?.data?.detail || error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeletePlan = async (generationId, e) => {
+    e.stopPropagation();
+    try {
+      await axios.delete(`${API_URL}/api/ai/generations/${generationId}`, {
+        withCredentials: true
+      });
+      toast.success(language === 'es' ? 'Plan eliminado' : 'Plan deleted');
+      loadSavedPlans();
+      if (currentGenerationId === generationId) {
+        setGeneratedContent('');
+        setCurrentGenerationId(null);
+        sessionStorage.removeItem('ai_current_generation_id');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.detail || error.message);
     }
   };
 
