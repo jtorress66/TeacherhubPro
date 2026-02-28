@@ -190,20 +190,21 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             margin-left: 20px;
           }
           .skills-list li {
-            margin-bottom: 1px;
+            margin-bottom: 3px;
           }
           
-          /* Main table - fills remaining space */
+          /* Main table - expands to fill page */
           table.main-grid {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            font-size: 8pt;
+            font-size: 9pt;
+            flex: 1;
           }
           table.main-grid th,
           table.main-grid td {
             border: 1px solid #000;
-            padding: 3px 4px;
+            padding: 6px 8px;
             vertical-align: top;
             word-wrap: break-word;
           }
@@ -211,60 +212,60 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             background: #f0f0f0;
             font-weight: bold;
             text-align: center;
-            font-size: 9pt;
-            padding: 4px;
+            font-size: 11pt;
+            padding: 8px;
           }
           
           /* Column widths */
-          .col-label { width: 11%; }
-          .col-day { width: 17.8%; }
+          .col-label { width: 12%; }
+          .col-day { width: 17.6%; }
           
           /* Day header cell */
           .day-header {
             font-weight: bold;
-            font-size: 10pt;
+            font-size: 12pt;
           }
           .eca-line {
-            font-size: 7pt;
-            margin-top: 2px;
+            font-size: 9pt;
+            margin-top: 4px;
           }
           
           /* Row label cell */
           .row-label {
             font-weight: bold;
-            font-size: 7pt;
+            font-size: 9pt;
             background: #f5f5f5;
           }
           
           /* Checkbox styling */
           .chk {
             display: inline-block;
-            width: 9px;
-            height: 9px;
+            width: 11px;
+            height: 11px;
             border: 1px solid #000;
-            margin-right: 2px;
+            margin-right: 4px;
             vertical-align: middle;
             text-align: center;
-            font-size: 6pt;
-            line-height: 7px;
+            font-size: 8pt;
+            line-height: 9px;
           }
           .chk.checked {
             background: #000;
             color: #fff;
           }
           
-          /* Activity/Material items - tighter spacing */
+          /* Activity/Material items - expanded */
           .item-row {
-            font-size: 7pt;
-            line-height: 1.2;
-            margin-bottom: 1px;
+            font-size: 9pt;
+            line-height: 1.5;
+            margin-bottom: 3px;
           }
           
-          /* DOK levels - tighter */
+          /* DOK levels - expanded */
           .dok-item {
-            font-size: 7pt;
-            line-height: 1.25;
-            margin-bottom: 1px;
+            font-size: 9pt;
+            line-height: 1.6;
+            margin-bottom: 4px;
           }
           
           /* Standards page */
