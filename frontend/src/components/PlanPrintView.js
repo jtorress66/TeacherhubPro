@@ -53,19 +53,19 @@ const formatDate = (dateStr) => {
   return dateStr;
 };
 
-// Checkbox component
+// Checkbox component - Compact
 const Checkbox = ({ checked }) => (
   <span style={{
     display: 'inline-block',
-    width: '10px',
-    height: '10px',
+    width: '8px',
+    height: '8px',
     border: '1px solid black',
     background: checked ? '#000' : '#fff',
     verticalAlign: 'middle',
-    marginRight: '3px',
+    marginRight: '2px',
     position: 'relative'
   }}>
-    {checked && <span style={{ position: 'absolute', top: '-1px', left: '1px', fontSize: '9px', color: 'white' }}>✓</span>}
+    {checked && <span style={{ position: 'absolute', top: '-2px', left: '0px', fontSize: '7px', color: 'white' }}>✓</span>}
   </span>
 );
 
