@@ -506,9 +506,9 @@ const AIAssistant = () => {
             <MessageSquare className="h-4 w-4" />
             {language === 'es' ? 'Chat' : 'Chat'}
           </TabsTrigger>
-          <TabsTrigger value="history" className="gap-2" data-testid="ai-history-tab">
-            <History className="h-4 w-4" />
-            {language === 'es' ? 'Historial' : 'History'}
+          <TabsTrigger value="saved" className="gap-2" data-testid="ai-saved-tab">
+            <FolderOpen className="h-4 w-4" />
+            {language === 'es' ? 'Planes Guardados' : 'Saved Plans'}
           </TabsTrigger>
         </TabsList>
 
