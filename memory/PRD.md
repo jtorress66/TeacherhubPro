@@ -28,29 +28,31 @@
 - Hero image position verified not overlapping "See How It Works" button
 - Grid layout working correctly on desktop
 
-**4. AI Assistant Generated Content Persistence (P0) - FIXED ✅**
-- File: `/app/frontend/src/pages/AIAssistant.js`
-- **Issue**: Content was lost when navigating away and returning to the page
-- **Root cause**: Content was stored in React state only, not persisted
-- **Solution**: 
-  - Added `currentGenerationId` state with `sessionStorage` persistence
-  - On component mount, automatically loads most recent generation from history
-  - Content now survives navigation - users can leave and return without losing their work
-  - Added visual highlight (purple ring) on currently selected generation in History tab
-- Changed from fixed `max-h-[500px]` to responsive `max-h-[calc(100vh-400px)] min-h-[400px]`
+**4. AI Assistant Content Cutoff & Saved Plans Feature (P0) - FIXED ✅**
+- **Root Cause**: Backend was truncating content at 500 characters
+- **Solution - Backend** (`/app/backend/routes/ai.py`):
+  - Changed `/api/ai/generations` to return full content instead of truncated
+  - Added `POST /api/ai/generations/{id}/save` endpoint to mark plans as saved
+  - Added `DELETE /api/ai/generations/{id}` endpoint to delete saved plans
+  - Added `is_saved` field to track saved vs unsaved generations
+- **Solution - Frontend** (`/app/frontend/src/pages/AIAssistant.js`):
+  - Removed "History" tab, replaced with "Saved Plans" (Planes Guardados) tab
+  - Added green "Save Plan" (Guardar Plan) button that appears after content generation
+  - Changed layout to 4-column grid for larger Generated Content panel
+  - Added `handleSavePlan()` and `handleDeletePlan()` functions
+  - Saved Plans tab shows cards with topic, type, subject, grade, date
+  - Each saved plan has Copy, Print, and Delete buttons
 
-### Test Results (iteration_56.json):
-- Frontend: 100% - All 8 tests passed
-- Content persistence verified: Navigate away → Dashboard → Return → Content restored (440 chars → 440 chars)
-- Homeschool logo: PASS
-- Pricing English: PASS
-- Pricing Spanish: PASS
-- Pricing French: PASS ("Choisissez Votre Plan")
-- Pricing German: PASS ("Wählen Sie Ihren Plan")
-- Pricing Portuguese: PASS ("Escolha Seu Plano")
-- Language selector: PASS (7 languages available)
-- Landing hero overlap: PASS (button clickable)
-- AI Assistant content height: PASS (responsive height)
+**5. Features & Homeschool Page Logos (P0) - FIXED ✅**
+- File: `/app/frontend/src/pages/FeaturesPage.js` - Fixed header and footer logos
+- File: `/app/frontend/src/pages/HomeschoolMarketing.js` - Fixed footer logo
+
+### Test Results (iteration_57.json):
+- Backend: 100% - All 4 API endpoints tested
+- Frontend: 100% - All 12 UI tests passed
+- Content generation: Full 5118-7112 char lesson plans displayed without cutoff
+- Save functionality: Toast notification "¡Plan guardado!" appears
+- Content persistence: Verified after navigation to Dashboard and back
 
 
 ---
