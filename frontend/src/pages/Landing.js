@@ -326,6 +326,51 @@ const Landing = () => {
         </AnimatedSection>
       </section>
 
+      {/* Platform Integrations Section */}
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <AnimatedSection className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              {t('landingPlatformIntegrations') || 'Platform Integrations'}
+            </h2>
+            <p className="text-lg sm:text-xl text-slate-600">
+              {t('landingPlatformIntegrationsDesc') || 'Connect with the tools you already use'}
+            </p>
+          </AnimatedSection>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
+            {platformIntegrations.map((integration, idx) => {
+              const colorClasses = {
+                indigo: 'bg-indigo-50 text-indigo-600 border-indigo-100 hover:border-indigo-200',
+                pink: 'bg-pink-50 text-pink-600 border-pink-100 hover:border-pink-200',
+                orange: 'bg-orange-50 text-orange-600 border-orange-100 hover:border-orange-200',
+                blue: 'bg-blue-50 text-blue-600 border-blue-100 hover:border-blue-200',
+                emerald: 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:border-emerald-200',
+                purple: 'bg-purple-50 text-purple-600 border-purple-100 hover:border-purple-200',
+              };
+              return (
+                <AnimatedSection key={idx} delay={idx * 75}>
+                  <div 
+                    className={`relative flex flex-col items-center justify-center p-4 sm:p-6 rounded-xl border-2 transition-all duration-300 hover:shadow-md cursor-default ${colorClasses[integration.color]}`}
+                    data-testid={`integration-${idx}`}
+                  >
+                    {integration.isNew && (
+                      <span className="absolute -top-2 -right-2 px-2 py-0.5 bg-emerald-500 text-white text-xs font-bold rounded-full">
+                        NEW
+                      </span>
+                    )}
+                    <integration.icon className="h-8 w-8 sm:h-10 sm:w-10 mb-3" />
+                    <span className="text-sm sm:text-base font-medium text-center text-slate-700">
+                      {t(integration.titleKey)}
+                    </span>
+                  </div>
+                </AnimatedSection>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* The Solution Section */}
       <section id="solution" className="py-16 sm:py-20 px-4 sm:px-6 bg-white">
         <div className="max-w-6xl mx-auto">
