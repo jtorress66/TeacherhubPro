@@ -1024,7 +1024,14 @@ const translations = {
     landingLegalLabel: 'Legal',
     landingHelpCenter: 'Centro de Ayuda',
     landingPrivacyPolicyLink: 'Política de Privacidad',
-    landingTermsOfServiceLink: 'Términos de Servicio'
+    landingTermsOfServiceLink: 'Términos de Servicio',
+    
+    // Platform Integrations (Spanish)
+    landingPlatformIntegrations: 'Integraciones de Plataforma',
+    landingPlatformIntegrationsDesc: 'Conéctate con las herramientas que ya usas',
+    landingAiAssistantTitle: 'Asistente IA',
+    landingStudentProgressTitle: 'Progreso del Estudiante',
+    landingPresentationsTitle: 'Presentaciones'
   },
   fr: {
     // Navigation
