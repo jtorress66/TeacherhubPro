@@ -1682,7 +1682,31 @@ const translations = {
     landingFlexibleCurriculumDesc: 'Personnalisez les matières et le rythme selon les styles d\'apprentissage',
     landingTextToSpeechDesc: 'Synthèse vocale intégrée pour les apprenants auditifs',
     landingSafeContent: 'Contenu Sécurisé',
-    landingSafeContentDesc: 'Matériaux adaptés à l\'âge et vérifiés pédagogiquement'
+    landingSafeContentDesc: 'Matériaux adaptés à l\'âge et vérifiés pédagogiquement',
+    
+    // Pricing Page (French)
+    pricingTitle: 'Choisissez Votre Plan',
+    pricingSubtitle: 'Commencez avec un essai gratuit de 7 jours. Annulez à tout moment.',
+    pricingBack: 'Retour',
+    pricingYourDigitalClassroom: 'Votre classe numérique',
+    pricingAllRightsReserved: 'Tous droits réservés.',
+    pricingTrialExpired: 'Votre période d\'essai a expiré. Veuillez sélectionner un plan pour continuer.',
+    pricingAdminAccount: 'Compte Admin - Accès Complet',
+    pricingFreeTrial: 'Essai Gratuit',
+    pricingDaysRemaining: 'jours restants',
+    pricingActiveSubscription: 'Abonnement Actif',
+    pricingSchoolDistrict: 'Pour Écoles et Districts',
+    pricingNumberOfTeachers: 'Nombre d\'enseignants',
+    pricingTeachers: 'enseignants',
+    pricingMostPopular: 'LE PLUS POPULAIRE',
+    pricingMonth: 'mois',
+    pricingYear: 'an',
+    pricingPerTeacher: 'par enseignant',
+    pricingBilledAnnually: 'Facturé annuellement',
+    pricingGetStarted: 'Commencer',
+    pricingSubscribe: 'S\'abonner',
+    pricingContactUs: 'Nous Contacter',
+    pricingCurrentPlan: 'Plan Actuel'
   },
   pt: {
     // Navigation
