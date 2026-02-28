@@ -1961,6 +1961,107 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
                 </Button>
               </div>
             </div>
+            
+            {/* Conversational English Additional Fields */}
+            {formData.plan_type === 'conversational_english' && (
+              <div className="mt-6 space-y-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <h4 className="font-semibold text-amber-800 mb-3">
+                  {language === 'es' ? '🗣️ Detalles del Plan de Inglés Conversacional' : '🗣️ Conversational English Plan Details'}
+                </h4>
+                
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Tema de la Lección' : 'Lesson Topic'}</Label>
+                  <Input 
+                    value={formData.lesson_topic}
+                    onChange={(e) => setFormData(prev => ({ ...prev, lesson_topic: e.target.value }))}
+                    placeholder={language === 'es' ? 'Ej: Greetings and Introductions' : 'Ex: Greetings and Introductions'}
+                    data-testid="lesson-topic-input"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Objetivo/s de Aprendizaje' : 'Learning Objective/s'}</Label>
+                  <Textarea 
+                    value={formData.learning_objectives}
+                    onChange={(e) => setFormData(prev => ({ ...prev, learning_objectives: e.target.value }))}
+                    placeholder={language === 'es' ? 'Escriba los objetivos de aprendizaje...' : 'Write the learning objectives...'}
+                    rows={3}
+                    data-testid="learning-objectives-input"
+                  />
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>{language === 'es' ? 'Materiales Necesarios' : 'Materials Needed'}</Label>
+                    <Textarea 
+                      value={formData.materials_text}
+                      onChange={(e) => setFormData(prev => ({ ...prev, materials_text: e.target.value }))}
+                      placeholder={language === 'es' ? 'Lista de materiales...' : 'List of materials...'}
+                      rows={3}
+                      data-testid="materials-text-input"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>{language === 'es' ? 'Gancho/Introducción' : 'Hook/Intro'}</Label>
+                    <Textarea 
+                      value={formData.hook_intro}
+                      onChange={(e) => setFormData(prev => ({ ...prev, hook_intro: e.target.value }))}
+                      placeholder={language === 'es' ? 'Cómo captar la atención...' : 'How to capture attention...'}
+                      rows={3}
+                      data-testid="hook-intro-input"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Meta de Aprendizaje' : 'Learning Goal'}</Label>
+                  <Textarea 
+                    value={formData.learning_goal}
+                    onChange={(e) => setFormData(prev => ({ ...prev, learning_goal: e.target.value }))}
+                    placeholder={language === 'es' ? 'Describe la meta de aprendizaje...' : 'Describe the learning goal...'}
+                    rows={4}
+                    data-testid="learning-goal-input"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Cierre' : 'Closure'}</Label>
+                  <Textarea 
+                    value={formData.closure}
+                    onChange={(e) => setFormData(prev => ({ ...prev, closure: e.target.value }))}
+                    placeholder={language === 'es' ? 'Cómo cerrar la lección...' : 'How to close the lesson...'}
+                    rows={2}
+                    data-testid="closure-input"
+                  />
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>{language === 'es' ? 'Fecha del Examen/Quiz' : 'Date of Test/Quiz'}</Label>
+                    <Input 
+                      type="date"
+                      value={formData.test_quiz_date}
+                      onChange={(e) => setFormData(prev => ({ ...prev, test_quiz_date: e.target.value }))}
+                      data-testid="test-quiz-date-input"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>{language === 'es' ? 'Notas Adicionales' : 'Additional Notes'}</Label>
+                    <Textarea 
+                      value={formData.additional_notes}
+                      onChange={(e) => setFormData(prev => ({ ...prev, additional_notes: e.target.value }))}
+                      placeholder={language === 'es' ? 'Notas adicionales...' : 'Additional notes...'}
+                      rows={2}
+                      data-testid="additional-notes-input"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+                </>
+              )}
           </CardContent>
         </Card>
 
