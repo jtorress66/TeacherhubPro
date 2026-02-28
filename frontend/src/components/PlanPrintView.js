@@ -194,15 +194,15 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       <Header />
       
       {/* Info Box */}
-      <table style={{ marginBottom: '8px' }}>
+      <table style={{ marginBottom: '6px' }}>
         <tbody>
           <tr>
-            <td style={{ width: '60%', padding: '6px 10px', fontSize: '10pt' }}>
+            <td style={{ width: '60%', padding: '4px 8px', fontSize: '9pt' }}>
               <strong>Unit:</strong> {plan.unit || '_____'} | <strong>Story:</strong> {plan.story || '_____'}<br/>
               <strong>Teacher:</strong> {plan.teacher_name || '_____'} | <strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}
             </td>
-            <td style={{ width: '40%', padding: '6px 10px', fontSize: '10pt' }}>
-              <strong>Date:</strong> From {weekStart || '_____'} To {weekEnd || '_____'}
+            <td style={{ width: '40%', padding: '4px 8px', fontSize: '9pt' }}>
+              <strong>Date:</strong> From {formatDate(weekStart)} To {formatDate(weekEnd)}
               {weekNum === 2 && <span style={{ marginLeft: '10px', fontWeight: 'bold' }}>(Week 2)</span>}
             </td>
           </tr>
@@ -210,10 +210,10 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       </table>
 
       {/* Objective */}
-      <table style={{ marginBottom: '8px' }}>
+      <table style={{ marginBottom: '6px' }}>
         <tbody>
           <tr>
-            <td style={{ padding: '6px 10px', fontSize: '10pt' }}>
+            <td style={{ padding: '4px 8px', fontSize: '9pt' }}>
               <strong>Objective of the week:</strong> {objective || '_____'}
             </td>
           </tr>
@@ -221,10 +221,10 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       </table>
 
       {/* Skills */}
-      <table style={{ marginBottom: '8px' }}>
+      <table style={{ marginBottom: '6px' }}>
         <tbody>
           <tr>
-            <td style={{ padding: '6px 10px' }}>
+            <td style={{ padding: '4px 8px' }}>
               <div style={{ fontWeight: 'bold', fontSize: '10pt', borderBottom: '1px solid black', paddingBottom: '4px', marginBottom: '6px' }}>
                 Skills of the week:
               </div>
