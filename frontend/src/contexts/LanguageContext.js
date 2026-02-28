@@ -524,7 +524,31 @@ const translations = {
     landingPlatformIntegrationsDesc: 'Connect with the tools you already use',
     landingAiAssistantTitle: 'AI Assistant',
     landingStudentProgressTitle: 'Student Progress',
-    landingPresentationsTitle: 'Presentations'
+    landingPresentationsTitle: 'Presentations',
+    
+    // Google Classroom Section (English)
+    landingConnectPlatforms: 'Connect with Your Favorite Platforms',
+    landingConnectPlatformsDesc: 'Seamlessly integrate with the tools your school already uses',
+    landingIntegrated: 'INTEGRATED',
+    landingImportClasses: 'Import classes and rosters automatically',
+    landingSyncGrades: 'Sync grades back to Google Classroom',
+    landingSecurePrivate: 'Secure & private - OAuth 2.0 protected',
+    landingConnectGoogleClassroom: 'Connect Google Classroom',
+    landingComingSoon: 'Coming Soon',
+    landingComingSoonBadge: 'Coming Soon',
+    landingMoreIntegrations: 'More integrations are on the way. Let us know what you need!',
+    landingTrustedBySchools: 'Trusted by schools using Google Classroom worldwide',
+    
+    // Homeschool Section (English)
+    landingForHomeschool: 'FOR HOMESCHOOL',
+    landingHomeschoolFriendly: 'Homeschool Friendly',
+    landingLearnMoreHomeschool: 'Learn More About Homeschool Features',
+    landingHomeschoolAdaptiveDesc: 'AI-powered paths that adapt to your child\'s unique pace',
+    landingFlexibleCurriculum: 'Flexible Curriculum',
+    landingFlexibleCurriculumDesc: 'Customize subjects and pacing to match learning styles',
+    landingTextToSpeechDesc: 'Built-in text-to-speech for auditory learners',
+    landingSafeContent: 'Safe Content',
+    landingSafeContentDesc: 'Age-appropriate, educationally vetted materials'
   },
   es: {
     // Navigation
