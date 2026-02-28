@@ -874,87 +874,109 @@ const AIAssistant = () => {
           </Card>
         </TabsContent>
 
-        {/* History Tab */}
-        <TabsContent value="history" className="space-y-4">
+        {/* Saved Plans Tab */}
+        <TabsContent value="saved" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>{language === 'es' ? 'Historial de Generaciones' : 'Generation History'}</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <FolderOpen className="h-5 w-5 text-green-600" />
+                {language === 'es' ? 'Planes Guardados' : 'Saved Lesson Plans'}
+              </CardTitle>
               <CardDescription>
                 {language === 'es' 
-                  ? 'Tus contenidos generados anteriormente' 
-                  : 'Your previously generated content'}
+                  ? 'Tus planes de lección guardados para acceder fácilmente' 
+                  : 'Your saved lesson plans for easy access'}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {generations.length === 0 ? (
+              {savedPlans.length === 0 ? (
                 <div className="text-center py-12 text-slate-400">
-                  <History className="h-12 w-12 mx-auto mb-3" />
-                  <p>{language === 'es' ? 'No hay generaciones aún' : 'No generations yet'}</p>
+                  <FolderOpen className="h-12 w-12 mx-auto mb-3" />
+                  <p className="mb-2">{language === 'es' ? 'No hay planes guardados aún' : 'No saved plans yet'}</p>
+                  <p className="text-sm">
+                    {language === 'es' 
+                      ? 'Genera contenido y usa el botón "Guardar Plan" para guardarlo aquí' 
+                      : 'Generate content and use the "Save Plan" button to save it here'}
+                  </p>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {generations.map((gen) => {
-                    const tool = tools.find(t => t.id === gen.tool_type);
+                <div className="grid gap-4 md:grid-cols-2">
+                  {savedPlans.map((plan) => {
+                    const tool = tools.find(t => t.id === plan.tool_type);
                     return (
-                      <div
-                        key={gen.generation_id}
-                        className={`flex items-start gap-4 p-4 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer ${
-                          currentGenerationId === gen.generation_id ? 'bg-purple-50 ring-1 ring-purple-200' : 'bg-slate-50'
+                      <Card
+                        key={plan.generation_id}
+                        className={`cursor-pointer hover:shadow-md transition-all ${
+                          currentGenerationId === plan.generation_id ? 'ring-2 ring-green-500' : ''
                         }`}
                         onClick={() => {
-                          setGeneratedContent(gen.content);
-                          setCurrentGenerationId(gen.generation_id);
-                          sessionStorage.setItem('ai_current_generation_id', gen.generation_id);
+                          setGeneratedContent(plan.content);
+                          setCurrentGenerationId(plan.generation_id);
+                          sessionStorage.setItem('ai_current_generation_id', plan.generation_id);
                           setGenForm(prev => ({
                             ...prev,
-                            tool_type: gen.tool_type,
-                            subject: gen.subject,
-                            grade_level: gen.grade_level,
-                            topic: gen.topic
+                            tool_type: plan.tool_type,
+                            subject: plan.subject,
+                            grade_level: plan.grade_level,
+                            topic: plan.topic
                           }));
                           setActiveTab('generate');
                         }}
+                        data-testid={`saved-plan-${plan.generation_id}`}
                       >
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${tool?.color || 'bg-slate-200'}`}>
-                          {tool && <tool.icon className="h-5 w-5" />}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium">{gen.topic}</div>
-                          <div className="text-sm text-slate-500">
-                            {tool?.name} • {gen.subject} • {gen.grade_level}
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-3">
+                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${tool?.color || 'bg-slate-200'}`}>
+                              {tool && <tool.icon className="h-5 w-5" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium truncate">{plan.topic}</div>
+                              <div className="text-sm text-slate-500">
+                                {tool?.name} • {plan.subject} • {plan.grade_level}
+                              </div>
+                              <div className="text-xs text-slate-400 mt-1">
+                                {language === 'es' ? 'Guardado el' : 'Saved on'} {new Date(plan.created_at).toLocaleDateString()}
+                              </div>
+                            </div>
                           </div>
-                          <div className="text-xs text-slate-400 mt-1">
-                            {new Date(gen.created_at).toLocaleDateString()}
+                          <div className="flex gap-2 mt-3 pt-3 border-t">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex-1"
+                              onClick={(e) => { e.stopPropagation(); copyToClipboard(plan.content); }}
+                            >
+                              <Copy className="h-4 w-4 mr-2" />
+                              {language === 'es' ? 'Copiar' : 'Copy'}
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex-1 text-green-600 hover:text-green-700"
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                handlePrint(plan.content, {
+                                  tool_type: plan.tool_type,
+                                  subject: plan.subject,
+                                  grade_level: plan.grade_level,
+                                  topic: plan.topic
+                                }); 
+                              }}
+                            >
+                              <Printer className="h-4 w-4 mr-2" />
+                              {language === 'es' ? 'Imprimir' : 'Print'}
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={(e) => handleDeletePlan(plan.generation_id, e)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
-                        </div>
-                        <div className="flex gap-1">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={(e) => { e.stopPropagation(); copyToClipboard(gen.content); }}
-                            title={language === 'es' ? 'Copiar' : 'Copy'}
-                          >
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              handlePrint(gen.content, {
-                                tool_type: gen.tool_type,
-                                subject: gen.subject,
-                                grade_level: gen.grade_level,
-                                topic: gen.topic
-                              }); 
-                            }}
-                            title={language === 'es' ? 'Imprimir / PDF' : 'Print / PDF'}
-                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                          >
-                            <Printer className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
+                        </CardContent>
+                      </Card>
                     );
                   })}
                 </div>
