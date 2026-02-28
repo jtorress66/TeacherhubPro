@@ -48,6 +48,7 @@ const LessonPlanner = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [activeDay, setActiveDay] = useState(0);
   const [showPrintView, setShowPrintView] = useState(false);
+  const [showConvEngPrintView, setShowConvEngPrintView] = useState(false);
   const [school, setSchool] = useState(null);
   const [activeWeek, setActiveWeek] = useState(1); // Toggle between Week 1 and Week 2
   const [pendingTemplateId, setPendingTemplateId] = useState(null);
