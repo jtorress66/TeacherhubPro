@@ -311,9 +311,11 @@ const HomeschoolMarketing = () => {
       <footer className="bg-slate-900 text-white py-12 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
-              <BookOpen className="h-5 w-5 text-white" />
-            </div>
+            <img 
+              src="https://customer-assets.emergentagent.com/job_teachersuite/artifacts/swlef12w_ChatGPT%20Image%20Feb%2015%2C%202026%2C%2009_08_36%20PM.png"
+              alt="TeacherHubPro Logo"
+              className="h-10 w-10 object-contain"
+            />
             <span className="text-xl font-bold">TeacherHubPro</span>
           </div>
           <p className="text-slate-400 mb-6">
