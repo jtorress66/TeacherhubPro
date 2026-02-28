@@ -159,33 +159,30 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Objective box */
           .objective-box {
             border: 1px solid #000;
-            padding: 4px 6px;
-            margin-bottom: 6px;
-            font-size: 9pt;
-            min-height: 30px;
+            padding: 2px 4px;
+            margin-bottom: 3px;
+            font-size: 7pt;
           }
           .objective-box strong {
             font-weight: bold;
-            text-decoration: underline;
           }
           
           /* Skills box */
           .skills-box {
             border: 1px solid #000;
-            padding: 4px 6px;
-            margin-bottom: 8px;
-            font-size: 8pt;
+            padding: 2px 4px;
+            margin-bottom: 4px;
+            font-size: 7pt;
           }
           .skills-title {
             font-weight: bold;
-            text-decoration: underline;
-            margin-bottom: 3px;
+            margin-bottom: 1px;
           }
           .skills-list {
-            margin-left: 15px;
+            margin-left: 12px;
           }
           .skills-list li {
-            margin-bottom: 1px;
+            margin-bottom: 0px;
           }
           
           /* Main table - THIS IS CRITICAL FOR FIT */
@@ -193,12 +190,12 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            font-size: 7pt;
+            font-size: 6pt;
           }
           table.main-grid th,
           table.main-grid td {
             border: 1px solid #000;
-            padding: 2px 3px;
+            padding: 1px 2px;
             vertical-align: top;
             word-wrap: break-word;
             overflow: hidden;
@@ -207,17 +204,17 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             background: #f0f0f0;
             font-weight: bold;
             text-align: center;
-            font-size: 8pt;
+            font-size: 7pt;
           }
           
           /* Column widths */
-          .col-label { width: 10%; }
-          .col-day { width: 18%; }
+          .col-label { width: 9%; }
+          .col-day { width: 18.2%; }
           
           /* Day header cell */
           .day-header {
             font-weight: bold;
-            font-size: 9pt;
+            font-size: 8pt;
           }
           .eca-line {
             font-size: 7pt;
