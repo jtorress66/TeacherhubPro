@@ -113,7 +113,7 @@ const Landing = () => {
     rose: 'bg-rose-50 text-rose-600 group-hover:bg-rose-100',
   };
 
-  // Images - American/European classrooms
+  // Images - American/European classrooms and homeschool
   const images = {
     hero: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=800&q=80',
     students: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80',
@@ -122,6 +122,8 @@ const Landing = () => {
     playToLearn: 'https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=600&q=80',
     games: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80',
     adaptive: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=600&q=80',
+    homeschool: 'https://images.unsplash.com/photo-1657664050038-1e6f957de1a9?auto=format&fit=crop&w=600&q=80',
+    googleClassroom: 'https://images.unsplash.com/photo-1758270705290-62b6294dd044?auto=format&fit=crop&w=600&q=80',
   };
 
   // Platform integrations data
@@ -132,6 +134,25 @@ const Landing = () => {
     { icon: Rocket, titleKey: 'landingPlayToLearnTitle', color: 'blue', isNew: true },
     { icon: BarChart3, titleKey: 'landingStudentProgressTitle', color: 'emerald', isNew: false },
     { icon: Play, titleKey: 'landingPresentationsTitle', color: 'purple', isNew: true },
+  ];
+
+  // Coming soon platforms
+  const comingSoonPlatforms = [
+    { name: 'Canvas LMS', icon: '📚' },
+    { name: 'Schoology', icon: '🎓' },
+    { name: 'Microsoft Teams', icon: '💼' },
+    { name: 'Clever', icon: '🔗' },
+    { name: 'ClassLink', icon: '🔐' },
+  ];
+
+  // Homeschool features
+  const homeschoolFeatures = [
+    { icon: Sparkles, titleKey: 'landingAdaptiveLearningTitle', descKey: 'landingHomeschoolAdaptiveDesc', color: 'pink' },
+    { icon: Users, titleKey: 'landingParentDashboard', descKey: 'landingParentDashboardDesc', color: 'blue' },
+    { icon: Calendar, titleKey: 'landingFlexibleCurriculum', descKey: 'landingFlexibleCurriculumDesc', color: 'emerald' },
+    { icon: Download, titleKey: 'landingDownloadAndLearn', descKey: 'landingDownloadAndLearnDesc', color: 'amber' },
+    { icon: Volume2, titleKey: 'landingAudioLearning', descKey: 'landingTextToSpeechDesc', color: 'purple' },
+    { icon: Shield, titleKey: 'landingSafeContent', descKey: 'landingSafeContentDesc', color: 'rose' },
   ];
 
   return (
