@@ -6,13 +6,13 @@ import { Printer, X } from 'lucide-react';
 
 const ACTIVITY_LABELS = {
   brainstorming: { en: 'Brain storming', es: 'Lluvia de ideas' },
-  buildingBackground: { en: 'Building background', es: 'Construir conocimiento previo' },
-  vocabularyDevelopment: { en: 'Vocabulary development', es: 'Desarrollo de vocabulario' },
-  readPages: { en: 'Read pages ___ from the book', es: 'Leer páginas ___ del libro' },
-  guidedReading: { en: 'Students will do guided and choral reading', es: 'Lectura guiada y coral' },
-  oralQuestions: { en: 'Teacher ask oral questions to demonstrate comprehension', es: 'Preguntas orales de comprensión' },
-  comprehensionQuestions: { en: 'Students answer comprehension questions', es: 'Responder preguntas de comprensión' },
-  exercisePractice: { en: 'Work on an exercise practice', es: 'Práctica de ejercicio' },
+  buildingBackground: { en: 'Building background', es: 'Conocimiento previo' },
+  vocabularyDevelopment: { en: 'Vocabulary development', es: 'Vocabulario' },
+  readPages: { en: 'Read pages ___', es: 'Leer páginas ___' },
+  guidedReading: { en: 'Guided/choral reading', es: 'Lectura guiada/coral' },
+  oralQuestions: { en: 'Oral comprehension Qs', es: 'Preguntas orales' },
+  comprehensionQuestions: { en: 'Comprehension Qs', es: 'Preguntas comprensión' },
+  exercisePractice: { en: 'Exercise practice', es: 'Práctica ejercicio' },
   other: { en: 'Other', es: 'Otro' }
 };
 
