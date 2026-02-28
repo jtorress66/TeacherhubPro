@@ -2907,7 +2907,31 @@ const translations = {
     landingPlatformIntegrationsDesc: 'Connettiti con gli strumenti che già usi',
     landingAiAssistantTitle: 'Assistente IA',
     landingStudentProgressTitle: 'Progressi Studenti',
-    landingPresentationsTitle: 'Presentazioni'
+    landingPresentationsTitle: 'Presentazioni',
+    
+    // Google Classroom Section (Italian)
+    landingConnectPlatforms: 'Connetti le Tue Piattaforme Preferite',
+    landingConnectPlatformsDesc: 'Integra facilmente gli strumenti che la tua scuola già usa',
+    landingIntegrated: 'INTEGRATO',
+    landingImportClasses: 'Importa classi e elenchi automaticamente',
+    landingSyncGrades: 'Sincronizza i voti con Google Classroom',
+    landingSecurePrivate: 'Sicuro e privato - protetto da OAuth 2.0',
+    landingConnectGoogleClassroom: 'Connetti Google Classroom',
+    landingComingSoon: 'Prossimamente',
+    landingComingSoonBadge: 'Prossimamente',
+    landingMoreIntegrations: 'Altre integrazioni sono in arrivo. Facci sapere di cosa hai bisogno!',
+    landingTrustedBySchools: 'Affidato da scuole che usano Google Classroom in tutto il mondo',
+    
+    // Homeschool Section (Italian)
+    landingForHomeschool: 'PER HOMESCHOOL',
+    landingHomeschoolFriendly: 'Adatto per Homeschool',
+    landingLearnMoreHomeschool: 'Scopri di Più sulle Funzionalità Homeschool',
+    landingHomeschoolAdaptiveDesc: 'Percorsi alimentati dall\'IA che si adattano al ritmo unico del tuo bambino',
+    landingFlexibleCurriculum: 'Curriculum Flessibile',
+    landingFlexibleCurriculumDesc: 'Personalizza materie e ritmo secondo gli stili di apprendimento',
+    landingTextToSpeechDesc: 'Sintesi vocale integrata per apprendenti uditivi',
+    landingSafeContent: 'Contenuto Sicuro',
+    landingSafeContentDesc: 'Materiali adatti all\'età e verificati educativamente'
   },
   zh: {
     // Navigation
