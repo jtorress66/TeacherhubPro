@@ -93,6 +93,17 @@ const LessonPlanner = () => {
     4: { phase: 'assessment', label_es: 'Evaluación', label_en: 'Assessment', focus: 'Formative/summative assessment, reflection, closure' }
   };
   
+  // Helper function to format date from YYYY-MM-DD to MM/DD/YYYY
+  const formatDisplayDate = (dateStr) => {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const [year, month, day] = parts;
+      return `${month}/${day}/${year}`;
+    }
+    return dateStr;
+  };
+  
   // Subject options for AI
   const AI_SUBJECTS = [
     { value: 'math', label: language === 'es' ? 'Matemáticas' : 'Mathematics' },
