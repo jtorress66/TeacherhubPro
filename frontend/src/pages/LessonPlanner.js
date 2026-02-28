@@ -4,6 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import { PlanPrintView } from '../components/PlanPrintView';
+import ConversationalEnglishPlanView from '../components/ConversationalEnglishPlanView';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
