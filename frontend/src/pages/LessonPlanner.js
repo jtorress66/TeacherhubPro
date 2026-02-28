@@ -1899,29 +1899,28 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
                     />
                   </div>
               
-              <div className="space-y-2">
-                <Label>{t('story')}</Label>
-                <Input 
-                  value={formData.story}
-                  onChange={(e) => setFormData(prev => ({ ...prev, story: e.target.value }))}
-                  placeholder={language === 'es' ? 'Título de la historia' : 'Story title'}
-                  data-testid="story-input"
-                />
-              </div>
+                  <div className="space-y-2">
+                    <Label>{t('story')}</Label>
+                    <Input 
+                      value={formData.story}
+                      onChange={(e) => setFormData(prev => ({ ...prev, story: e.target.value }))}
+                      placeholder={language === 'es' ? 'Título de la historia' : 'Story title'}
+                      data-testid="story-input"
+                    />
+                  </div>
               
-              <div className="space-y-2">
-                <Label>{t('teacher')}</Label>
-                <Input 
-                  value={formData.teacher_name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, teacher_name: e.target.value }))}
-                  placeholder={language === 'es' ? 'Nombre del maestro' : 'Teacher name'}
-                  data-testid="teacher-name-input"
-                />
-              </div>
-            </div>
+                  <div className="space-y-2">
+                    <Label>{t('teacher')}</Label>
+                    <Input 
+                      value={formData.teacher_name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, teacher_name: e.target.value }))}
+                      placeholder={language === 'es' ? 'Nombre del maestro' : 'Teacher name'}
+                      data-testid="teacher-name-input"
+                    />
+                  </div>
             
-            {/* Two-Week Date Range - All in one compact section */}
-            <div className="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  {/* Two-Week Date Range - All in one compact section */}
+                  <div className="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
               <Label className="text-sm font-medium text-slate-700 mb-3 block">
                 {language === 'es' ? 'Rango de Fechas (2 Semanas)' : 'Date Range (2 Weeks)'}
               </Label>
