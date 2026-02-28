@@ -1,5 +1,52 @@
 # TeacherHub - Product Requirements Document
 
+
+---
+## Update 2026-02-28 (Batch 20) - P0 BUG FIXES - Multi-Lingual Pricing & AI Assistant - VERIFIED ✅
+
+### Issues Fixed:
+
+**1. Homeschool Page Logo (P0) - FIXED ✅**
+- File: `/app/frontend/src/pages/HomeschoolMarketing.js`
+- Changed header to use correct TeacherHubPro logo
+- Logo now consistent with rest of public site
+
+**2. Pricing Page Multi-Lingual Support (P0) - FIXED ✅**
+- File: `/app/frontend/src/pages/Pricing.js`
+- Removed all inline `language === 'es' ? 'Spanish' : 'English'` conditionals
+- Updated to use `t()` translation function throughout
+- Plans array now uses translation keys for names, descriptions, and features
+- File: `/app/frontend/src/contexts/LanguageContext.js`
+- Added 35+ pricing translation keys for all 7 languages:
+  - `pricingIndividualMonthly`, `pricingIndividualYearly`
+  - `pricingSchoolPlanName`, `pricingDistrictPlanName`
+  - All feature translations: `pricingFeatureLessonPlanner`, `pricingFeatureAttendanceTracker`, etc.
+- Pricing page now fully functional in: EN, ES, FR, DE, PT, IT, ZH
+
+**3. Landing Page Hero Image Overlap (P0) - VERIFIED ✅**
+- File: `/app/frontend/src/pages/Landing.js`
+- Hero image position verified not overlapping "See How It Works" button
+- Grid layout working correctly on desktop
+
+**4. AI Assistant Generated Content Cutoff (P0) - FIXED ✅**
+- File: `/app/frontend/src/pages/AIAssistant.js`
+- Changed from fixed `max-h-[500px]` to responsive `max-h-[calc(100vh-400px)] min-h-[400px]`
+- Added `flex flex-col` to Card and `flex-shrink-0` to CardHeader
+- Content now scrollable without being cut off
+
+### Test Results (iteration_56.json):
+- Frontend: 100% - All 8 tests passed
+- Homeschool logo: PASS
+- Pricing English: PASS
+- Pricing Spanish: PASS
+- Pricing French: PASS ("Choisissez Votre Plan")
+- Pricing German: PASS ("Wählen Sie Ihren Plan")
+- Pricing Portuguese: PASS ("Escolha Seu Plano")
+- Language selector: PASS (7 languages available)
+- Landing hero overlap: PASS (button clickable)
+- AI Assistant content height: PASS (responsive height)
+
+
 ---
 ## Update 2026-02-28 (Batch 19) - HOMEPAGE v5 - Google Classroom & Homeschool Sections - VERIFIED ✅
 
