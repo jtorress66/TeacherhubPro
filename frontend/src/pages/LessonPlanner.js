@@ -2090,8 +2090,6 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
                 </div>
               </div>
             )}
-                </>
-              )}
           </CardContent>
         </Card>
 
