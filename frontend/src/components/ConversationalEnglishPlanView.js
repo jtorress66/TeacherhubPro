@@ -119,13 +119,14 @@ const ConversationalEnglishPlanView = ({ plan, classInfo, school, onClose }) => 
   };
 
   // Extract values from plan or use defaults
+  // Note: LessonPlanner.js passes these fields directly: lesson_topic, learning_objectives, etc.
   const teacherName = plan?.teacher_name || classInfo?.teacher_name || '';
   const grade = classInfo?.grade || '';
   const section = classInfo?.section || '';
   const subject = plan?.subject || 'Conversational English';
   const lessonDate = plan?.lesson_date || plan?.week_start || '';
-  const lessonTopic = plan?.topic || plan?.story || '';
-  const learningObjectives = plan?.objective || plan?.week1_objective || '';
+  const lessonTopic = plan?.lesson_topic || plan?.topic || plan?.story || '';
+  const learningObjectives = plan?.learning_objectives || plan?.objective || '';
   const materialsNeeded = plan?.materials_text || '';
   const hookIntro = plan?.hook_intro || '';
   const learningGoal = plan?.learning_goal || '';
