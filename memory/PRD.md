@@ -28,14 +28,20 @@
 - Hero image position verified not overlapping "See How It Works" button
 - Grid layout working correctly on desktop
 
-**4. AI Assistant Generated Content Cutoff (P0) - FIXED ✅**
+**4. AI Assistant Generated Content Persistence (P0) - FIXED ✅**
 - File: `/app/frontend/src/pages/AIAssistant.js`
+- **Issue**: Content was lost when navigating away and returning to the page
+- **Root cause**: Content was stored in React state only, not persisted
+- **Solution**: 
+  - Added `currentGenerationId` state with `sessionStorage` persistence
+  - On component mount, automatically loads most recent generation from history
+  - Content now survives navigation - users can leave and return without losing their work
+  - Added visual highlight (purple ring) on currently selected generation in History tab
 - Changed from fixed `max-h-[500px]` to responsive `max-h-[calc(100vh-400px)] min-h-[400px]`
-- Added `flex flex-col` to Card and `flex-shrink-0` to CardHeader
-- Content now scrollable without being cut off
 
 ### Test Results (iteration_56.json):
 - Frontend: 100% - All 8 tests passed
+- Content persistence verified: Navigate away → Dashboard → Return → Content restored (440 chars → 440 chars)
 - Homeschool logo: PASS
 - Pricing English: PASS
 - Pricing Spanish: PASS
