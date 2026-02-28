@@ -431,7 +431,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           <tr>
             <td className="row-label">Day Theme</td>
             {days.map((day, i) => (
-              <td key={i} style={{textAlign: 'center', fontWeight: 'bold', fontSize: '8pt'}}>
+              <td key={i} style={{textAlign: 'center', fontWeight: 'bold', fontSize: '7pt'}}>
                 {day.theme || ''}
               </td>
             ))}
@@ -444,10 +444,10 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             </td>
             {days.map((day, i) => (
               <td key={i}>
-                <div className="dok-item"><Chk checked={day.dok_levels?.includes(1)} /> Level 1: Memory Thought<br/><span style={{fontSize:'6pt',color:'#555'}}>(Knowledge in or the same way as learned)</span></div>
-                <div className="dok-item"><Chk checked={day.dok_levels?.includes(2)} /> Level 2: Processing<br/><span style={{fontSize:'6pt',color:'#555'}}>(Requires some basic mental reasoning, something beyond memory)</span></div>
-                <div className="dok-item"><Chk checked={day.dok_levels?.includes(3)} /> Level 3: Thinking Strategic<br/><span style={{fontSize:'6pt',color:'#555'}}>(Demonstrate knowledge based on complex and abstract cognitive demand)</span></div>
-                <div className="dok-item"><Chk checked={day.dok_levels?.includes(4)} /> Level 4: Thinking Thought Extended<br/><span style={{fontSize:'6pt',color:'#555'}}>(extends knowledge to broader contexts)</span></div>
+                <div className="dok-item"><Chk checked={day.dok_levels?.includes(1)} /> L1: Memory</div>
+                <div className="dok-item"><Chk checked={day.dok_levels?.includes(2)} /> L2: Processing</div>
+                <div className="dok-item"><Chk checked={day.dok_levels?.includes(3)} /> L3: Strategic</div>
+                <div className="dok-item"><Chk checked={day.dok_levels?.includes(4)} /> L4: Extended</div>
               </td>
             ))}
           </tr>
