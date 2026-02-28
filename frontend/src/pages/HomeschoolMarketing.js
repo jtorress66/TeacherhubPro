@@ -85,17 +85,19 @@ const HomeschoolMarketing = () => {
       <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
-                <BookOpen className="h-5 w-5 text-white" />
-              </div>
+            <Link to="/" className="flex items-center gap-3">
+              <img 
+                src="https://customer-assets.emergentagent.com/job_teachersuite/artifacts/swlef12w_ChatGPT%20Image%20Feb%2015%2C%202026%2C%2009_08_36%20PM.png"
+                alt="TeacherHubPro Logo"
+                className="h-10 w-10 object-contain"
+              />
               <span className="text-xl font-bold text-slate-800">TeacherHubPro</span>
             </Link>
             <div className="flex items-center gap-4">
               <Link to="/features" className="text-slate-600 hover:text-slate-900 hidden sm:block">
                 {isSpanish ? 'Características' : 'Features'}
               </Link>
-              <Link to="/">
+              <Link to="/auth">
                 <Button>{isSpanish ? 'Comenzar' : 'Get Started'}</Button>
               </Link>
             </div>
