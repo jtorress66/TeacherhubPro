@@ -266,7 +266,7 @@ async def get_chat_history(session_id: str, current_user: dict = Depends(get_cur
 
 @router.get("/generations")
 async def get_user_generations(current_user: dict = Depends(get_current_user)):
-    """Get user's AI generations"""
+    """Get user's AI generations - returns full content for saved plans"""
     user_id = current_user.get("user_id")
     
     generations = await db.ai_generations.find(
@@ -279,9 +279,42 @@ async def get_user_generations(current_user: dict = Depends(get_current_user)):
         "subject": gen["subject"],
         "grade_level": gen["grade_level"],
         "topic": gen["topic"],
-        "content": gen["content"][:500] + "..." if len(gen["content"]) > 500 else gen["content"],
+        "content": gen["content"],  # Return full content
+        "is_saved": gen.get("is_saved", False),
         "created_at": gen["created_at"]
     } for gen in generations]
+
+
+@router.post("/generations/{generation_id}/save")
+async def save_generation(generation_id: str, current_user: dict = Depends(get_current_user)):
+    """Mark a generation as saved"""
+    user_id = current_user.get("user_id")
+    
+    result = await db.ai_generations.update_one(
+        {"generation_id": generation_id, "user_id": user_id},
+        {"$set": {"is_saved": True, "saved_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Generation not found")
+    
+    return {"success": True, "message": "Plan saved successfully"}
+
+
+@router.delete("/generations/{generation_id}")
+async def delete_generation(generation_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a saved generation"""
+    user_id = current_user.get("user_id")
+    
+    result = await db.ai_generations.delete_one({
+        "generation_id": generation_id,
+        "user_id": user_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Generation not found")
+    
+    return {"success": True, "message": "Plan deleted successfully"}
 
 
 @router.get("/generations/{generation_id}")
