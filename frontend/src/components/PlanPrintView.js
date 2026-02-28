@@ -101,13 +101,13 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <style>
           @page { 
             size: letter landscape;
-            margin: 0.25in 0.2in; 
+            margin: 0.2in 0.15in; 
           }
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { 
             font-family: Arial, Helvetica, sans-serif; 
-            font-size: 8pt;
-            line-height: 1.15;
+            font-size: 7pt;
+            line-height: 1.1;
             color: #000;
           }
           .page {
@@ -121,38 +121,38 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Header styles */
           .header {
             text-align: center;
-            margin-bottom: 6px;
-            padding-bottom: 4px;
-            border-bottom: 2px solid #333;
+            margin-bottom: 4px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid #333;
           }
           .header-logo {
-            height: 40px;
+            height: 30px;
             object-fit: contain;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
           }
           .school-name {
-            font-size: 12pt;
+            font-size: 10pt;
             font-weight: bold;
-            margin: 2px 0;
+            margin: 1px 0;
           }
           .school-info {
-            font-size: 8pt;
+            font-size: 7pt;
             color: #333;
           }
           .plan-title {
-            font-size: 11pt;
+            font-size: 9pt;
             font-weight: bold;
-            margin-top: 4px;
+            margin-top: 2px;
           }
           
           /* Info row */
           .info-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 6px;
-            padding: 4px 0;
+            margin-bottom: 3px;
+            padding: 2px 0;
             border-bottom: 1px solid #ccc;
-            font-size: 9pt;
+            font-size: 8pt;
           }
           .info-row strong { font-weight: bold; }
           
