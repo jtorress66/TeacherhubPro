@@ -633,8 +633,8 @@ const AIAssistant = () => {
 
             {/* Generated Content */}
             <div className="lg:col-span-1">
-              <Card className="h-full">
-                <CardHeader className="pb-3 flex flex-row items-center justify-between">
+              <Card className="h-full flex flex-col">
+                <CardHeader className="pb-3 flex flex-row items-center justify-between flex-shrink-0">
                   <CardTitle className="text-lg">
                     {language === 'es' ? 'Contenido Generado' : 'Generated Content'}
                   </CardTitle>
@@ -660,14 +660,14 @@ const AIAssistant = () => {
                     </div>
                   )}
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-1 overflow-hidden">
                   {isLoading ? (
                     <div className="flex flex-col items-center justify-center py-12 text-slate-500">
                       <Loader2 className="h-8 w-8 animate-spin mb-3" />
                       <p>{language === 'es' ? 'Generando contenido...' : 'Generating content...'}</p>
                     </div>
                   ) : generatedContent ? (
-                    <div className="prose prose-sm max-w-none max-h-[500px] overflow-y-auto bg-slate-50 p-4 rounded-lg">
+                    <div className="prose prose-sm max-w-none h-full max-h-[calc(100vh-400px)] min-h-[400px] overflow-y-auto bg-slate-50 p-4 rounded-lg">
                       <ReactMarkdown>{generatedContent}</ReactMarkdown>
                     </div>
                   ) : (
