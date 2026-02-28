@@ -26,6 +26,10 @@ const AIAssistant = () => {
   const [activeTab, setActiveTab] = useState('generate');
   const [isLoading, setIsLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState('');
+  const [currentGenerationId, setCurrentGenerationId] = useState(() => {
+    // Restore the current generation ID from sessionStorage
+    return sessionStorage.getItem('ai_current_generation_id') || null;
+  });
   const [generations, setGenerations] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
