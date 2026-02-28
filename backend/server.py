@@ -249,6 +249,7 @@ class PlanExpectation(BaseModel):
 
 class LessonPlanCreate(BaseModel):
     class_id: str
+    plan_type: Optional[str] = "weekly"  # 'weekly' or 'conversational_english'
     week_start: str
     week_end: str
     week2_start: Optional[str] = None
@@ -266,6 +267,17 @@ class LessonPlanCreate(BaseModel):
     subject_integration: List[str] = []  # Mathematics, Spanish, Social Studies, etc.
     is_template: bool = False
     template_name: Optional[str] = None
+    # Conversational English specific fields
+    lesson_date: Optional[str] = None
+    subject: Optional[str] = "Conversational English"
+    lesson_topic: Optional[str] = None
+    learning_objectives: Optional[str] = None
+    materials_text: Optional[str] = None
+    hook_intro: Optional[str] = None
+    learning_goal: Optional[str] = None
+    closure: Optional[str] = None
+    test_quiz_date: Optional[str] = None
+    additional_notes: Optional[str] = None
 
 class LessonPlanResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -273,6 +285,7 @@ class LessonPlanResponse(BaseModel):
     class_id: str
     teacher_id: str
     school_id: str
+    plan_type: Optional[str] = "weekly"
     week_start: str
     week_end: str
     week2_start: Optional[str] = None
@@ -290,6 +303,17 @@ class LessonPlanResponse(BaseModel):
     subject_integration: List[str] = []
     is_template: bool = False
     template_name: Optional[str] = None
+    # Conversational English specific fields
+    lesson_date: Optional[str] = None
+    subject: Optional[str] = None
+    lesson_topic: Optional[str] = None
+    learning_objectives: Optional[str] = None
+    materials_text: Optional[str] = None
+    hook_intro: Optional[str] = None
+    learning_goal: Optional[str] = None
+    closure: Optional[str] = None
+    test_quiz_date: Optional[str] = None
+    additional_notes: Optional[str] = None
     created_at: str
     updated_at: str
 
