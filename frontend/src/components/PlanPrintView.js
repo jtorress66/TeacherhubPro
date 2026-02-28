@@ -101,18 +101,23 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <style>
           @page { 
             size: letter landscape;
-            margin: 0.2in 0.15in; 
+            margin: 0.25in; 
           }
           * { margin: 0; padding: 0; box-sizing: border-box; }
+          html, body { 
+            height: 100%;
+          }
           body { 
             font-family: Arial, Helvetica, sans-serif; 
-            font-size: 7pt;
-            line-height: 1.1;
+            font-size: 9pt;
+            line-height: 1.2;
             color: #000;
           }
           .page {
             width: 100%;
             height: 100%;
+            display: flex;
+            flex-direction: column;
             page-break-after: always;
             page-break-inside: avoid;
           }
@@ -121,62 +126,64 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Header styles */
           .header {
             text-align: center;
-            margin-bottom: 4px;
-            padding-bottom: 3px;
-            border-bottom: 1px solid #333;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #333;
           }
           .header-logo {
-            height: 30px;
+            height: 45px;
             object-fit: contain;
-            margin-bottom: 1px;
+            margin-bottom: 3px;
           }
           .school-name {
-            font-size: 10pt;
+            font-size: 13pt;
             font-weight: bold;
-            margin: 1px 0;
+            margin: 3px 0;
           }
           .school-info {
-            font-size: 7pt;
+            font-size: 9pt;
             color: #333;
           }
           .plan-title {
-            font-size: 9pt;
+            font-size: 12pt;
             font-weight: bold;
-            margin-top: 2px;
+            margin-top: 5px;
           }
           
           /* Info row */
           .info-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 3px;
-            padding: 2px 0;
-            border-bottom: 1px solid #ccc;
-            font-size: 8pt;
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid #999;
+            font-size: 10pt;
           }
           .info-row strong { font-weight: bold; }
           
           /* Objective box */
           .objective-box {
             border: 1px solid #000;
-            padding: 2px 4px;
-            margin-bottom: 3px;
-            font-size: 7pt;
+            padding: 6px 10px;
+            margin-bottom: 8px;
+            font-size: 10pt;
           }
           .objective-box strong {
             font-weight: bold;
+            text-decoration: underline;
           }
           
           /* Skills box */
           .skills-box {
             border: 1px solid #000;
-            padding: 2px 4px;
-            margin-bottom: 4px;
-            font-size: 7pt;
+            padding: 6px 10px;
+            margin-bottom: 10px;
+            font-size: 9pt;
           }
           .skills-title {
             font-weight: bold;
-            margin-bottom: 1px;
+            text-decoration: underline;
+            margin-bottom: 4px;
           }
           .skills-list {
             margin-left: 12px;
