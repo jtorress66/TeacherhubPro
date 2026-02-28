@@ -189,6 +189,11 @@ const AIAssistant = () => {
       });
 
       setGeneratedContent(response.data.content);
+      // Save the generation ID for persistence
+      if (response.data.generation_id) {
+        setCurrentGenerationId(response.data.generation_id);
+        sessionStorage.setItem('ai_current_generation_id', response.data.generation_id);
+      }
       toast.success(language === 'es' ? '¡Contenido generado!' : 'Content generated!');
       loadGenerations();
     } catch (error) {
