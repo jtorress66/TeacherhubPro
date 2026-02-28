@@ -174,25 +174,17 @@ const Pricing = () => {
             />
             <div className="flex flex-col">
               <span className="text-lg sm:text-2xl font-bold text-slate-800">TeacherHubPro</span>
-              <span className="text-xs font-medium text-cyan-600 hidden sm:block">{language === 'es' ? 'Tu aula digital' : 'Your digital classroom'}</span>
+              <span className="text-xs font-medium text-cyan-600 hidden sm:block">{t('pricingYourDigitalClassroom') || 'Your digital classroom'}</span>
             </div>
           </Link>
           <div className="flex items-center gap-2 sm:gap-4">
             <Link to="/">
               <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
                 <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">{language === 'es' ? 'Volver' : 'Back'}</span>
+                <span className="hidden sm:inline">{t('pricingBack') || 'Back'}</span>
               </Button>
             </Link>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleLanguage}
-              className="flex items-center gap-1 sm:gap-2 px-2"
-            >
-              <Globe className="h-4 w-4" />
-              <span className="hidden sm:inline">{language === 'es' ? 'EN' : 'ES'}</span>
-            </Button>
+            <LanguageSelector variant="compact" dropdownPosition="down" />
           </div>
         </div>
       </header>
@@ -202,7 +194,7 @@ const Pricing = () => {
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-center text-slate-500 text-sm">
-          <p>© 2026 TeacherHubPro. {language === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p>
+          <p>© 2026 TeacherHubPro. {t('pricingAllRightsReserved') || 'All rights reserved.'}</p>
         </div>
       </footer>
     </div>
