@@ -113,16 +113,26 @@ const Landing = () => {
     rose: 'bg-rose-50 text-rose-600 group-hover:bg-rose-100',
   };
 
-  // Images
+  // Images - American/European classrooms
   const images = {
-    hero: 'https://images.unsplash.com/photo-1758685848226-eedca8f6bce7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzB8MHwxfHNlYXJjaHwyfHx0ZWFjaGVyJTIwY2xhc3Nyb29tJTIwbGFwdG9wJTIwZWR1Y2F0aW9uJTIwcHJvZmVzc2lvbmFsfGVufDB8fHx8MTc3MjIzMzIxN3ww&ixlib=rb-4.1.0&q=85&w=800',
-    students: 'https://images.unsplash.com/photo-1759143101324-d375443f1955?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwzfHxzdHVkZW50cyUyMGNsYXNzcm9vbSUyMGxlYXJuaW5nJTIwaGFwcHklMjBjaGlsZHJlbnxlbnwwfHx8fDE3NzIyMzQ0OTh8MA&ixlib=rb-4.1.0&q=85&w=600',
-    teaching: 'https://images.unsplash.com/photo-1758685733926-00cba008215b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwxfHx0ZWFjaGVyJTIwaGVscGluZyUyMHN0dWRlbnRzJTIwZWR1Y2F0aW9ufGVufDB8fHx8MTc3MjIzNDUwMnww&ixlib=rb-4.1.0&q=85&w=600',
-    collaboration: 'https://images.unsplash.com/photo-1770096679916-2cd9c720d400?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwzfHx0ZWFjaGVyJTIwaGVscGluZyUyMHN0dWRlbnRzJTIwZWR1Y2F0aW9ufGVufDB8fHx8MTc3MjIzNDUwMnww&ixlib=rb-4.1.0&q=85&w=600',
-    playToLearn: 'https://images.unsplash.com/photo-1719159381916-062fa9f435a6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwyfHxzdHVkZW50cyUyMHBsYXlpbmclMjBlZHVjYXRpb25hbCUyMGdhbWUlMjBxdWl6JTIwY2xhc3Nyb29tfGVufDB8fHx8MTc3MjIzNTczOXww&ixlib=rb-4.1.0&q=85&w=600',
-    games: 'https://images.unsplash.com/photo-1770096679844-57ca92c2b64b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwzfHxzdHVkZW50cyUyMHBsYXlpbmclMjBlZHVjYXRpb25hbCUyMGdhbWUlMjBxdWl6JTIwY2xhc3Nyb29tfGVufDB8fHx8MTc3MjIzNTczOXww&ixlib=rb-4.1.0&q=85&w=600',
-    adaptive: 'https://images.unsplash.com/photo-1638452033979-14fba9e17fbb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTJ8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwdXNpbmclMjBjb21wdXRlciUyMGludGVyYWN0aXZlJTIwbGVhcm5pbmd8ZW58MHx8fHwxNzcyMjM1NzgwfDA&ixlib=rb-4.1.0&q=85&w=600',
+    hero: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=800&q=80',
+    students: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80',
+    teaching: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=600&q=80',
+    collaboration: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=600&q=80',
+    playToLearn: 'https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=600&q=80',
+    games: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80',
+    adaptive: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=600&q=80',
   };
+
+  // Platform integrations data
+  const platformIntegrations = [
+    { icon: Brain, titleKey: 'landingAiAssistantTitle', color: 'indigo', isNew: true },
+    { icon: Sparkles, titleKey: 'landingAdaptiveLearningTitle', color: 'pink', isNew: false },
+    { icon: Gamepad2, titleKey: 'landingEducationalGamesTitle', color: 'orange', isNew: false },
+    { icon: Rocket, titleKey: 'landingPlayToLearnTitle', color: 'blue', isNew: true },
+    { icon: BarChart3, titleKey: 'landingStudentProgressTitle', color: 'emerald', isNew: false },
+    { icon: Play, titleKey: 'landingPresentationsTitle', color: 'purple', isNew: true },
+  ];
 
   return (
     <div className="min-h-screen bg-white">
