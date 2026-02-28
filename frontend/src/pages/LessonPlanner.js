@@ -1226,7 +1226,13 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
             
             {planId !== 'new' && (
               <>
-                <Button variant="outline" onClick={() => setShowPrintView(true)} data-testid="print-plan-btn" className="px-2 sm:px-4" title={t('exportPdf')}>
+                <Button variant="outline" onClick={() => {
+                  if (formData.plan_type === 'conversational_english') {
+                    setShowConvEngPrintView(true);
+                  } else {
+                    setShowPrintView(true);
+                  }
+                }} data-testid="print-plan-btn" className="px-2 sm:px-4" title={t('exportPdf')}>
                   <Printer className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">{t('exportPdf')}</span>
                 </Button>
