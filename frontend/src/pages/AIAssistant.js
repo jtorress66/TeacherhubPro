@@ -218,8 +218,7 @@ const AIAssistant = () => {
         setCurrentGenerationId(response.data.generation_id);
         sessionStorage.setItem('ai_current_generation_id', response.data.generation_id);
       }
-      toast.success(language === 'es' ? '¡Contenido generado!' : 'Content generated!');
-      loadGenerations();
+      toast.success(language === 'es' ? '¡Contenido generado! Usa el botón Guardar para guardarlo.' : 'Content generated! Use the Save button to save it.');
     } catch (error) {
       toast.error(error.response?.data?.detail || error.message);
     } finally {
