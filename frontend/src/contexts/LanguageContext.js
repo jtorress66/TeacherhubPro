@@ -1554,7 +1554,31 @@ const translations = {
     landingPlatformIntegrationsDesc: 'Connectez-vous avec les outils que vous utilisez déjà',
     landingAiAssistantTitle: 'Assistant IA',
     landingStudentProgressTitle: 'Progrès des Élèves',
-    landingPresentationsTitle: 'Présentations'
+    landingPresentationsTitle: 'Présentations',
+    
+    // Google Classroom Section (French)
+    landingConnectPlatforms: 'Connectez Vos Plateformes Favorites',
+    landingConnectPlatformsDesc: 'Intégrez facilement les outils que votre école utilise déjà',
+    landingIntegrated: 'INTÉGRÉ',
+    landingImportClasses: 'Importez classes et listes automatiquement',
+    landingSyncGrades: 'Synchronisez les notes avec Google Classroom',
+    landingSecurePrivate: 'Sécurisé et privé - protégé par OAuth 2.0',
+    landingConnectGoogleClassroom: 'Connecter Google Classroom',
+    landingComingSoon: 'Bientôt Disponible',
+    landingComingSoonBadge: 'Bientôt',
+    landingMoreIntegrations: 'Plus d\'intégrations arrivent. Dites-nous ce dont vous avez besoin!',
+    landingTrustedBySchools: 'Approuvé par les écoles utilisant Google Classroom dans le monde entier',
+    
+    // Homeschool Section (French)
+    landingForHomeschool: 'POUR L\'ÉCOLE À LA MAISON',
+    landingHomeschoolFriendly: 'Adapté à l\'École à la Maison',
+    landingLearnMoreHomeschool: 'En Savoir Plus sur les Fonctionnalités École à la Maison',
+    landingHomeschoolAdaptiveDesc: 'Parcours alimentés par l\'IA qui s\'adaptent au rythme unique de votre enfant',
+    landingFlexibleCurriculum: 'Programme Flexible',
+    landingFlexibleCurriculumDesc: 'Personnalisez les matières et le rythme selon les styles d\'apprentissage',
+    landingTextToSpeechDesc: 'Synthèse vocale intégrée pour les apprenants auditifs',
+    landingSafeContent: 'Contenu Sécurisé',
+    landingSafeContentDesc: 'Matériaux adaptés à l\'âge et vérifiés pédagogiquement'
   },
   pt: {
     // Navigation
