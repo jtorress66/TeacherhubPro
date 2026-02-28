@@ -864,9 +864,13 @@ const AIAssistant = () => {
                     return (
                       <div
                         key={gen.generation_id}
-                        className="flex items-start gap-4 p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                        className={`flex items-start gap-4 p-4 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer ${
+                          currentGenerationId === gen.generation_id ? 'bg-purple-50 ring-1 ring-purple-200' : 'bg-slate-50'
+                        }`}
                         onClick={() => {
                           setGeneratedContent(gen.content);
+                          setCurrentGenerationId(gen.generation_id);
+                          sessionStorage.setItem('ai_current_generation_id', gen.generation_id);
                           setGenForm(prev => ({
                             ...prev,
                             tool_type: gen.tool_type,
