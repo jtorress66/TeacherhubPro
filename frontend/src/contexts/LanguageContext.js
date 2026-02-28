@@ -1062,7 +1062,31 @@ const translations = {
     landingPlatformIntegrationsDesc: 'Conéctate con las herramientas que ya usas',
     landingAiAssistantTitle: 'Asistente IA',
     landingStudentProgressTitle: 'Progreso del Estudiante',
-    landingPresentationsTitle: 'Presentaciones'
+    landingPresentationsTitle: 'Presentaciones',
+    
+    // Google Classroom Section (Spanish)
+    landingConnectPlatforms: 'Conecta con Tus Plataformas Favoritas',
+    landingConnectPlatformsDesc: 'Integra sin problemas con las herramientas que tu escuela ya usa',
+    landingIntegrated: 'INTEGRADO',
+    landingImportClasses: 'Importa clases y listas automáticamente',
+    landingSyncGrades: 'Sincroniza calificaciones con Google Classroom',
+    landingSecurePrivate: 'Seguro y privado - protegido con OAuth 2.0',
+    landingConnectGoogleClassroom: 'Conectar Google Classroom',
+    landingComingSoon: 'Próximamente',
+    landingComingSoonBadge: 'Próximamente',
+    landingMoreIntegrations: '¡Más integraciones están en camino. Cuéntanos qué necesitas!',
+    landingTrustedBySchools: 'Confiado por escuelas que usan Google Classroom en todo el mundo',
+    
+    // Homeschool Section (Spanish)
+    landingForHomeschool: 'PARA EDUCACIÓN EN CASA',
+    landingHomeschoolFriendly: 'Ideal para Homeschool',
+    landingLearnMoreHomeschool: 'Más Sobre Funciones de Homeschool',
+    landingHomeschoolAdaptiveDesc: 'Rutas impulsadas por IA que se adaptan al ritmo único de tu hijo',
+    landingFlexibleCurriculum: 'Currículo Flexible',
+    landingFlexibleCurriculumDesc: 'Personaliza materias y ritmo según estilos de aprendizaje',
+    landingTextToSpeechDesc: 'Texto a voz integrado para aprendices auditivos',
+    landingSafeContent: 'Contenido Seguro',
+    landingSafeContentDesc: 'Materiales apropiados para la edad y verificados educativamente'
   },
   fr: {
     // Navigation
