@@ -1273,6 +1273,28 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
             onClose={() => setShowPrintView(false)}
           />
         )}
+        
+        {/* Conversational English Print View Modal */}
+        {showConvEngPrintView && selectedPlan && (
+          <ConversationalEnglishPlanView 
+            plan={{
+              ...selectedPlan,
+              lesson_date: formData.lesson_date,
+              subject: formData.subject,
+              lesson_topic: formData.lesson_topic,
+              learning_objectives: formData.learning_objectives,
+              materials_text: formData.materials_text,
+              hook_intro: formData.hook_intro,
+              learning_goal: formData.learning_goal,
+              closure: formData.closure,
+              test_quiz_date: formData.test_quiz_date,
+              additional_notes: formData.additional_notes
+            }}
+            classInfo={classes.find(c => c.class_id === selectedPlan.class_id)}
+            school={school}
+            onClose={() => setShowConvEngPrintView(false)}
+          />
+        )}
 
         {/* AI Generation Modal */}
         <Dialog open={showAIModal} onOpenChange={setShowAIModal}>
