@@ -1971,7 +1971,6 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
                 </div>
               </div>
             </div>
-              </>
             )}
 
             {/* SM Aprendizaje Integration - Simple Direct Link */}
