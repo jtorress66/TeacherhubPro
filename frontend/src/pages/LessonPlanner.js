@@ -1932,10 +1932,10 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
                 : (language === 'es' ? '📗 Semana 2' : '📗 Week 2')
               }
               {activeWeek === 1 && formData.week_start && formData.week_end && (
-                <span className="ml-2 text-xs">({formData.week_start} - {formData.week_end})</span>
+                <span className="ml-2 text-xs">({formatDisplayDate(formData.week_start)} - {formatDisplayDate(formData.week_end)})</span>
               )}
               {activeWeek === 2 && formData.week2_start && formData.week2_end && (
-                <span className="ml-2 text-xs">({formData.week2_start} - {formData.week2_end})</span>
+                <span className="ml-2 text-xs">({formatDisplayDate(formData.week2_start)} - {formatDisplayDate(formData.week2_end)})</span>
               )}
             </div>
             
