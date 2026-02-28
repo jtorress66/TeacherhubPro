@@ -42,6 +42,17 @@ const STANDARD_LABELS = {
   language: { en: 'Language', es: 'Lenguaje' }
 };
 
+// Helper function to format date from YYYY-MM-DD to MM/DD/YYYY
+const formatDate = (dateStr) => {
+  if (!dateStr) return '_____';
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    const [year, month, day] = parts;
+    return `${month}/${day}/${year}`;
+  }
+  return dateStr;
+};
+
 // Checkbox component
 const Checkbox = ({ checked }) => (
   <span style={{
