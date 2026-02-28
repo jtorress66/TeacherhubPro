@@ -441,6 +441,178 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* Connect with Favorite Platforms - Google Classroom */}
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-slate-50">
+        <div className="max-w-6xl mx-auto">
+          <AnimatedSection className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              {t('landingConnectPlatforms') || 'Connect with Your Favorite Platforms'}
+            </h2>
+            <p className="text-lg sm:text-xl text-slate-600">
+              {t('landingConnectPlatformsDesc') || 'Seamlessly integrate with the tools your school already uses'}
+            </p>
+          </AnimatedSection>
+
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            {/* Google Classroom Card */}
+            <AnimatedSection>
+              <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-slate-200">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
+                    <svg className="w-8 h-8 text-green-600" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-bold text-slate-900">Google Classroom</h3>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                      <CheckCircle className="h-3 w-3" /> {t('landingIntegrated') || 'INTEGRATED'}
+                    </span>
+                  </div>
+                </div>
+
+                <ul className="space-y-3 mb-6">
+                  {[
+                    { icon: Link2, text: t('landingImportClasses') || 'Import classes and rosters automatically' },
+                    { icon: BarChart3, text: t('landingSyncGrades') || 'Sync grades back to Google Classroom' },
+                    { icon: Shield, text: t('landingSecurePrivate') || 'Secure & private - OAuth 2.0 protected' },
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <item.icon className="h-4 w-4 text-green-600" />
+                      </div>
+                      <span className="text-slate-700">{item.text}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Link to="/auth">
+                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                    {t('landingConnectGoogleClassroom') || 'Connect Google Classroom'}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </AnimatedSection>
+
+            {/* Coming Soon Platforms */}
+            <AnimatedSection delay={150}>
+              <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-slate-200">
+                <h3 className="text-xl font-bold text-slate-900 mb-6">
+                  {t('landingComingSoon') || 'Coming Soon'}
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {comingSoonPlatforms.map((platform, idx) => (
+                    <div 
+                      key={idx}
+                      className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50 border border-slate-200"
+                    >
+                      <span className="text-2xl mb-2">{platform.icon}</span>
+                      <span className="text-sm font-medium text-slate-600 text-center">{platform.name}</span>
+                      <span className="text-xs text-slate-400 mt-1">{t('landingComingSoonBadge') || 'Coming Soon'}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sm text-slate-500 mt-6 text-center">
+                  {t('landingMoreIntegrations') || 'More integrations are on the way. Let us know what you need!'}
+                </p>
+              </div>
+            </AnimatedSection>
+          </div>
+
+          {/* Classroom Image */}
+          <AnimatedSection delay={200} className="mt-12">
+            <div className="relative rounded-2xl overflow-hidden shadow-xl max-w-4xl mx-auto">
+              <img 
+                src={images.googleClassroom}
+                alt="Students using laptops in classroom"
+                className="w-full h-[250px] sm:h-[300px] object-cover"
+                data-testid="google-classroom-image"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
+              <div className="absolute bottom-4 left-4 right-4">
+                <p className="text-white text-sm sm:text-base font-medium">
+                  {t('landingTrustedBySchools') || 'Trusted by schools using Google Classroom worldwide'}
+                </p>
+              </div>
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* Homeschool Section */}
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-12">
+            {/* Image */}
+            <AnimatedSection>
+              <div className="relative rounded-2xl overflow-hidden shadow-xl">
+                <img 
+                  src={images.homeschool}
+                  alt="Parent teaching child at home"
+                  className="w-full h-[300px] sm:h-[400px] object-cover"
+                  data-testid="homeschool-image"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-purple-900/30 to-transparent"></div>
+                <div className="absolute bottom-4 left-4 right-4">
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 text-purple-700 text-sm font-medium">
+                    <Home className="h-4 w-4" />
+                    {t('landingHomeschoolFriendly') || 'Homeschool Friendly'}
+                  </span>
+                </div>
+              </div>
+            </AnimatedSection>
+
+            {/* Content */}
+            <AnimatedSection delay={150}>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-100 text-purple-700 text-sm font-medium mb-4">
+                <Home className="h-4 w-4" />
+                {t('landingForHomeschool') || 'FOR HOMESCHOOL'}
+              </div>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                {t('landingPerfectHomeschool') || 'Perfect for Homeschool Educators'}
+              </h2>
+              <p className="text-slate-600 mb-6 leading-relaxed">
+                {t('landingHomeschoolCompleteDesc') || 'Everything you need to create a personalized learning experience, from lesson planning to progress tracking.'}
+              </p>
+              <Link to="/homeschool">
+                <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                  {t('landingLearnMoreHomeschool') || 'Learn More About Homeschool Features'}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </AnimatedSection>
+          </div>
+
+          {/* Homeschool Features Grid */}
+          <AnimatedSection delay={200}>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {homeschoolFeatures.map((feature, idx) => {
+                const colorClasses = {
+                  pink: 'bg-pink-50 text-pink-600 border-pink-100',
+                  blue: 'bg-blue-50 text-blue-600 border-blue-100',
+                  emerald: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                  amber: 'bg-amber-50 text-amber-600 border-amber-100',
+                  purple: 'bg-purple-50 text-purple-600 border-purple-100',
+                  rose: 'bg-rose-50 text-rose-600 border-rose-100',
+                };
+                return (
+                  <div 
+                    key={idx}
+                    className={`p-5 rounded-xl border-2 ${colorClasses[feature.color]} transition-all hover:shadow-md`}
+                    data-testid={`homeschool-feature-${idx}`}
+                  >
+                    <feature.icon className="h-8 w-8 mb-3" />
+                    <h4 className="font-bold text-slate-900 mb-1">{t(feature.titleKey)}</h4>
+                    <p className="text-sm text-slate-600">{t(feature.descKey)}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
       {/* Engage Students Section - Play to Learn, Educational Games, Adaptive Learning */}
       <section id="engage" className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-b from-indigo-50 to-white">
         <div className="max-w-6xl mx-auto">
