@@ -418,10 +418,10 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
 
       {/* Signatures */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', paddingTop: '6px' }}>
-        <div style={{ borderTop: '1px solid black', paddingTop: '5px', width: '40%', textAlign: 'center', fontSize: '9pt' }}>
+        <div style={{ borderTop: '1px solid black', paddingTop: '3px', width: '40%', textAlign: 'center', fontSize: '7pt' }}>
           Teacher's Signature / Date
         </div>
-        <div style={{ borderTop: '1px solid black', paddingTop: '5px', width: '40%', textAlign: 'center', fontSize: '9pt' }}>
+        <div style={{ borderTop: '1px solid black', paddingTop: '3px', width: '40%', textAlign: 'center', fontSize: '7pt' }}>
           Principal's Signature / Date
         </div>
       </div>
