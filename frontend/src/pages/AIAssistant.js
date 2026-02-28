@@ -514,7 +514,7 @@ const AIAssistant = () => {
 
         {/* Generate Tab */}
         <TabsContent value="generate" className="space-y-6">
-          <div className="grid lg:grid-cols-3 gap-6">
+          <div className="grid lg:grid-cols-4 gap-6">
             {/* Tool Selection & Form */}
             <div className="lg:col-span-1 space-y-4">
               <Card>
