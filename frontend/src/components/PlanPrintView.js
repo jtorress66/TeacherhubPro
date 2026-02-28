@@ -225,12 +225,12 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <tbody>
           <tr>
             <td style={{ padding: '4px 8px' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '10pt', borderBottom: '1px solid black', paddingBottom: '4px', marginBottom: '6px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '9pt', borderBottom: '1px solid black', paddingBottom: '3px', marginBottom: '4px' }}>
                 Skills of the week:
               </div>
-              <ol style={{ marginLeft: '20px', fontSize: '9pt' }}>
+              <ol style={{ marginLeft: '20px', fontSize: '8pt' }}>
                 {(skills || []).filter(s => s).map((skill, i) => (
-                  <li key={i} style={{ marginBottom: '2px' }}>{skill}</li>
+                  <li key={i} style={{ marginBottom: '1px' }}>{skill}</li>
                 ))}
                 {(!skills || skills.filter(s => s).length === 0) && (
                   <>
@@ -247,14 +247,14 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       </table>
 
       {/* Main Table */}
-      <table style={{ fontSize: '8pt' }}>
+      <table style={{ fontSize: '7pt' }}>
         <thead>
           <tr style={{ background: '#f5f5f5' }}>
-            <th style={{ width: '12%', padding: '6px', fontSize: '9pt' }}></th>
+            <th style={{ width: '12%', padding: '4px', fontSize: '8pt' }}></th>
             {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, idx) => (
-              <th key={day} style={{ width: '17.6%', textAlign: 'center', padding: '6px', fontSize: '9pt' }}>
+              <th key={day} style={{ width: '17.6%', textAlign: 'center', padding: '4px', fontSize: '8pt' }}>
                 <div style={{ fontWeight: 'bold' }}>{DAY_LABELS[day][lang]}</div>
-                <div style={{ marginTop: '4px', fontSize: '9pt' }}>
+                <div style={{ marginTop: '2px', fontSize: '8pt' }}>
                   E <Checkbox checked={days[idx]?.eca?.E} />
                   {'  '}C <Checkbox checked={days[idx]?.eca?.C} />
                   {'  '}A <Checkbox checked={days[idx]?.eca?.A} />
@@ -265,17 +265,17 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         </thead>
         <tbody>
           <tr>
-            <td style={{ fontWeight: 'bold', padding: '5px', fontSize: '9pt' }}>Day Theme</td>
+            <td style={{ fontWeight: 'bold', padding: '3px', fontSize: '8pt' }}>Day Theme</td>
             {days.map((day, i) => (
-              <td key={i} style={{ textAlign: 'center', padding: '5px', fontSize: '9pt' }}>{day.theme || ''}</td>
+              <td key={i} style={{ textAlign: 'center', padding: '3px', fontSize: '8pt' }}>{day.theme || ''}</td>
             ))}
           </tr>
           <tr>
-            <td style={{ fontWeight: 'bold', padding: '5px', fontSize: '8pt' }}>
+            <td style={{ fontWeight: 'bold', padding: '3px', fontSize: '7pt' }}>
               Type of Taxonomy:<br/>Webb (2005) Levels
             </td>
             {days.map((day, i) => (
-              <td key={i} style={{ padding: '4px', fontSize: '8pt', lineHeight: '1.4' }}>
+              <td key={i} style={{ padding: '2px', fontSize: '7pt', lineHeight: '1.3' }}>
                 <Checkbox checked={day.dok_levels?.includes(1)} />Level 1<br/>
                 <Checkbox checked={day.dok_levels?.includes(2)} />Level 2<br/>
                 <Checkbox checked={day.dok_levels?.includes(3)} />Level 3<br/>
@@ -284,9 +284,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             ))}
           </tr>
           <tr>
-            <td style={{ fontWeight: 'bold', padding: '5px', fontSize: '9pt' }}>Activities</td>
+            <td style={{ fontWeight: 'bold', padding: '3px', fontSize: '8pt' }}>Activities</td>
             {days.map((day, i) => (
-              <td key={i} style={{ padding: '4px', fontSize: '7.5pt', lineHeight: '1.35' }}>
+              <td key={i} style={{ padding: '2px', fontSize: '6.5pt', lineHeight: '1.2' }}>
                 {Object.keys(ACTIVITY_LABELS).map(actType => {
                   const activity = day.activities?.find(a => a.activity_type === actType);
                   return (
@@ -302,9 +302,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             ))}
           </tr>
           <tr>
-            <td style={{ fontWeight: 'bold', padding: '5px', fontSize: '9pt' }}>Materials</td>
+            <td style={{ fontWeight: 'bold', padding: '3px', fontSize: '8pt' }}>Materials</td>
             {days.map((day, i) => (
-              <td key={i} style={{ padding: '4px', fontSize: '8pt', lineHeight: '1.4' }}>
+              <td key={i} style={{ padding: '2px', fontSize: '7pt', lineHeight: '1.3' }}>
                 {Object.keys(MATERIAL_LABELS).map(matType => {
                   const material = day.materials?.find(m => m.material_type === matType);
                   return (
