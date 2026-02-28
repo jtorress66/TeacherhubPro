@@ -1403,6 +1403,7 @@ async def update_plan(plan_id: str, plan_data: LessonPlanCreate, user: dict = De
     now = datetime.now(timezone.utc).isoformat()
     update_data = {
         "class_id": plan_data.class_id,
+        "plan_type": plan_data.plan_type or "weekly",
         "week_start": plan_data.week_start,
         "week_end": plan_data.week_end,
         "week2_start": plan_data.week2_start,
@@ -1420,6 +1421,17 @@ async def update_plan(plan_id: str, plan_data: LessonPlanCreate, user: dict = De
         "subject_integration": plan_data.subject_integration,
         "is_template": plan_data.is_template,
         "template_name": plan_data.template_name,
+        # Conversational English specific fields
+        "lesson_date": plan_data.lesson_date,
+        "subject": plan_data.subject,
+        "lesson_topic": plan_data.lesson_topic,
+        "learning_objectives": plan_data.learning_objectives,
+        "materials_text": plan_data.materials_text,
+        "hook_intro": plan_data.hook_intro,
+        "learning_goal": plan_data.learning_goal,
+        "closure": plan_data.closure,
+        "test_quiz_date": plan_data.test_quiz_date,
+        "additional_notes": plan_data.additional_notes,
         "updated_at": now
     }
     
