@@ -2,6 +2,81 @@
 
 
 ---
+## Update 2026-02-28 (Batch 21) - P0 PDF PRINT LAYOUT FIX - Weekly & Conversational English Plans - FIXED ✅
+
+### Issues Fixed:
+
+**1. Weekly Lesson Planner PDF Layout (P0 - Recurring) - FIXED ✅**
+- **Problem**: User reported PDF print was "horrible" and didn't match their reference images
+- **Root Cause**: Content was overflowing page boundary; checkboxes weren't rendering; DOK level descriptions too long
+- **Files Modified**: `/app/frontend/src/components/PlanPrintView.js`
+- **Solution - Complete Rewrite**:
+  - Reduced page margins to 0.2in x 0.15in for landscape letter
+  - Changed all font sizes to more compact values (6-10pt)
+  - Fixed checkbox rendering with inline styles (was using className that didn't work in print window)
+  - Simplified DOK level descriptions: "L1: Memory", "L2: Processing", "L3: Strategic", "L4: Extended"
+  - Reduced padding throughout all sections
+  - All 9 Activities and 7 Materials now visible in single landscape page
+  - Date format properly shows MM/DD/YYYY
+
+**2. Conversational English Plan Print View Field Mapping (P0) - FIXED ✅**
+- **Problem**: Form data wasn't showing in PDF print view
+- **Root Cause**: Print component was looking for wrong field names (e.g., `topic` instead of `lesson_topic`)
+- **File Modified**: `/app/frontend/src/components/ConversationalEnglishPlanView.js`
+- **Solution**: Fixed field name mappings in extractors:
+  - `plan?.lesson_topic || plan?.topic || plan?.story` (was just `plan?.topic`)
+  - `plan?.learning_objectives || plan?.objective` (was just `plan?.objective`)
+
+**3. Backend Models for Conversational English Plans - ADDED ✅**
+- **Problem**: Backend didn't support `plan_type` or Conversational English specific fields
+- **File Modified**: `/app/backend/server.py`
+- **Solution**: Added fields to `LessonPlanCreate` and `LessonPlanResponse` models:
+  - `plan_type`: 'weekly' or 'conversational_english'
+  - `lesson_date`, `subject`, `lesson_topic`, `learning_objectives`
+  - `materials_text`, `hook_intro`, `learning_goal`, `closure`
+  - `test_quiz_date`, `additional_notes`
+- Updated `create_plan` and `update_plan` endpoints to persist these fields
+
+**4. Frontend loadPlanToForm Function - FIXED ✅**
+- **File Modified**: `/app/frontend/src/pages/LessonPlanner.js` (by testing agent)
+- **Solution**: Added Conversational English fields to loadPlanToForm function
+
+### Test Results (iteration_58.json):
+- **Weekly Lesson Planner PDF**: PASS
+  - All elements verified: Header, Info row, Objective, Skills
+  - Day columns with E/C/A checkboxes
+  - DOK Levels row (L1-L4)
+  - Activities row (9 items)
+  - Materials row (7 items)
+  - 133 checkboxes with inline styles rendering correctly
+  - Date format: MM/DD/YYYY
+  - Fits on single landscape page
+- **Conversational English PDF**: BLOCKED → FIXED (backend models added)
+
+### PDF Layout Summary (matches user's reference images):
+```
+Page 1 (Weekly Plan):
++--------------------------------------------------+
+| [Logo] My School - Planificación del Maestro     |
++--------------------------------------------------+
+| Unit | Story | Teacher | Grade | Date: MM/DD/YYYY|
++--------------------------------------------------+
+| Objective of the week: [objective text]          |
++--------------------------------------------------+
+| Skills of the week: 1. [skill] 2. [skill] ...    |
++--------------------------------------------------+
+|     | Lunes | Martes | Miércoles | Jueves | Vier |
+|     | □E□C□A| □E□C□A | □E□C□A    | □E□C□A | □E□C□A|
+|-----|-------|--------|-----------|--------|------|
+|Theme| [txt] | [txt]  | [txt]     | [txt]  | [txt]|
+|DOK  |□L1-L4 |□L1-L4  |□L1-L4     |□L1-L4  |□L1-L4|
+|Act  |□9 itms|□9 itms |□9 itms    |□9 itms |□9 itms|
+|Mat  |□7 itms|□7 itms |□7 itms    |□7 itms |□7 itms|
++--------------------------------------------------+
+```
+
+
+---
 ## Update 2026-02-28 (Batch 20) - P0 BUG FIXES - Multi-Lingual Pricing & AI Assistant - VERIFIED ✅
 
 ### Issues Fixed:
