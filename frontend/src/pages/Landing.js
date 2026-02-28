@@ -222,9 +222,9 @@ const Landing = () => {
       {/* Hero Section */}
       <section className="pt-24 pb-16 sm:pt-28 sm:pb-20 px-4 sm:px-6 bg-gradient-to-b from-slate-50 via-white to-white overflow-hidden">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
             {/* Left - Main Copy */}
-            <div className="text-center lg:text-left">
+            <div className="text-center lg:text-left z-10">
               <div 
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium mb-6 border border-emerald-100"
                 style={{ animation: 'fadeInUp 0.6s ease-out' }}
