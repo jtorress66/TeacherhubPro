@@ -14,8 +14,8 @@ import { Textarea } from '../components/ui/textarea';
 import { toast } from 'sonner';
 import { 
   Sparkles, BookOpen, FileQuestion, FileText, Lightbulb, ClipboardList,
-  MessageSquare, Send, Loader2, Copy, Download, History, Trash2,
-  GraduationCap, Target, Clock, ChevronRight, Bot, User, RefreshCw, Printer
+  MessageSquare, Send, Loader2, Copy, Download, Trash2, Save,
+  GraduationCap, Target, Clock, ChevronRight, Bot, User, RefreshCw, Printer, FolderOpen
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
