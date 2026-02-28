@@ -318,6 +318,7 @@ const LessonPlanner = () => {
 
     setFormData({
       class_id: plan.class_id || '',
+      plan_type: plan.plan_type || 'weekly',
       week_start: plan.week_start || '',
       week_end: plan.week_end || '',
       week2_start: plan.week2_start || '',
@@ -329,6 +330,17 @@ const LessonPlanner = () => {
       objective_week2: plan.objective_week2 || '',
       skills: plan.skills?.length > 0 ? [...plan.skills, '', '', '', ''].slice(0, 4) : ['', '', '', ''],
       skills_week2: plan.skills_week2?.length > 0 ? [...plan.skills_week2, '', '', '', ''].slice(0, 4) : ['', '', '', ''],
+      // Conversational English specific fields
+      lesson_date: plan.lesson_date || '',
+      subject: plan.subject || 'Conversational English',
+      lesson_topic: plan.lesson_topic || '',
+      learning_objectives: plan.learning_objectives || '',
+      materials_text: plan.materials_text || '',
+      hook_intro: plan.hook_intro || '',
+      learning_goal: plan.learning_goal || '',
+      closure: plan.closure || '',
+      test_quiz_date: plan.test_quiz_date || '',
+      additional_notes: plan.additional_notes || '',
       days: allDays,
       standards: plan.standards?.length > 0 ? plan.standards : [
         { week_index: 1, domain: 'listeningAndSpeaking', codes: [] },
