@@ -186,66 +186,66 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             margin-bottom: 4px;
           }
           .skills-list {
-            margin-left: 12px;
+            margin-left: 20px;
           }
           .skills-list li {
-            margin-bottom: 0px;
+            margin-bottom: 2px;
           }
           
-          /* Main table - THIS IS CRITICAL FOR FIT */
+          /* Main table - fills remaining space */
           table.main-grid {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            font-size: 6pt;
+            font-size: 8pt;
+            flex: 1;
           }
           table.main-grid th,
           table.main-grid td {
             border: 1px solid #000;
-            padding: 1px 2px;
+            padding: 4px 5px;
             vertical-align: top;
             word-wrap: break-word;
-            overflow: hidden;
           }
           table.main-grid th {
             background: #f0f0f0;
             font-weight: bold;
             text-align: center;
-            font-size: 7pt;
+            font-size: 10pt;
           }
           
           /* Column widths */
-          .col-label { width: 9%; }
-          .col-day { width: 18.2%; }
+          .col-label { width: 12%; }
+          .col-day { width: 17.6%; }
           
           /* Day header cell */
           .day-header {
             font-weight: bold;
-            font-size: 8pt;
+            font-size: 11pt;
           }
           .eca-line {
-            font-size: 6pt;
-            margin-top: 1px;
+            font-size: 8pt;
+            margin-top: 3px;
           }
           
           /* Row label cell */
           .row-label {
             font-weight: bold;
-            font-size: 6pt;
+            font-size: 8pt;
             background: #f5f5f5;
           }
           
-          /* Checkbox styling - compact */
+          /* Checkbox styling */
           .chk {
             display: inline-block;
-            width: 7px;
-            height: 7px;
+            width: 10px;
+            height: 10px;
             border: 1px solid #000;
-            margin-right: 1px;
+            margin-right: 3px;
             vertical-align: middle;
             text-align: center;
-            font-size: 5pt;
-            line-height: 5px;
+            font-size: 7pt;
+            line-height: 8px;
           }
           .chk.checked {
             background: #000;
@@ -254,15 +254,16 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           
           /* Activity/Material items */
           .item-row {
-            font-size: 6pt;
-            line-height: 1.1;
-            margin-bottom: 0px;
+            font-size: 8pt;
+            line-height: 1.3;
+            margin-bottom: 2px;
           }
           
-          /* DOK levels - very compact */
+          /* DOK levels */
           .dok-item {
-            font-size: 6pt;
-            line-height: 1.1;
+            font-size: 8pt;
+            line-height: 1.4;
+            margin-bottom: 2px;
           }
           
           /* Standards page */
