@@ -122,7 +122,7 @@ const Landing = () => {
     collaboration: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=600&q=80',
     playToLearn: 'https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=600&q=80',
     games: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80',
-    adaptive: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=600&q=80',
+    adaptive: 'https://images.unsplash.com/photo-1758612898788-38a249839c1d?auto=format&fit=crop&w=600&q=80',
     homeschool: 'https://images.unsplash.com/photo-1657664050038-1e6f957de1a9?auto=format&fit=crop&w=600&q=80',
     googleClassroom: 'https://images.unsplash.com/photo-1758270705290-62b6294dd044?auto=format&fit=crop&w=600&q=80',
   };
