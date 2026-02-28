@@ -696,16 +696,27 @@ const AIAssistant = () => {
             </div>
 
             {/* Generated Content */}
-            <div className="lg:col-span-1">
-              <Card className="h-full flex flex-col">
+            <div className="lg:col-span-2">
+              <Card className="h-full flex flex-col" style={{ minHeight: '700px' }}>
                 <CardHeader className="pb-3 flex flex-row items-center justify-between flex-shrink-0">
                   <CardTitle className="text-lg">
                     {language === 'es' ? 'Contenido Generado' : 'Generated Content'}
                   </CardTitle>
                   {generatedContent && (
-                    <div className="flex gap-1">
+                    <div className="flex gap-2">
                       <Button 
-                        variant="ghost" 
+                        variant="default" 
+                        size="sm" 
+                        onClick={handleSavePlan}
+                        disabled={isSaving}
+                        className="bg-green-600 hover:bg-green-700 text-white gap-2"
+                        data-testid="save-plan-btn"
+                      >
+                        {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                        {language === 'es' ? 'Guardar Plan' : 'Save Plan'}
+                      </Button>
+                      <Button 
+                        variant="outline" 
                         size="sm" 
                         onClick={() => copyToClipboard(generatedContent)}
                         title={language === 'es' ? 'Copiar' : 'Copy'}
@@ -713,7 +724,7 @@ const AIAssistant = () => {
                         <Copy className="h-4 w-4" />
                       </Button>
                       <Button 
-                        variant="ghost" 
+                        variant="outline" 
                         size="sm" 
                         onClick={() => handlePrint(generatedContent)}
                         title={language === 'es' ? 'Imprimir / PDF' : 'Print / PDF'}
@@ -724,18 +735,18 @@ const AIAssistant = () => {
                     </div>
                   )}
                 </CardHeader>
-                <CardContent className="flex-1 overflow-hidden">
+                <CardContent className="flex-1 overflow-hidden p-4">
                   {isLoading ? (
-                    <div className="flex flex-col items-center justify-center py-12 text-slate-500">
+                    <div className="flex flex-col items-center justify-center h-full text-slate-500">
                       <Loader2 className="h-8 w-8 animate-spin mb-3" />
                       <p>{language === 'es' ? 'Generando contenido...' : 'Generating content...'}</p>
                     </div>
                   ) : generatedContent ? (
-                    <div className="prose prose-sm max-w-none h-full max-h-[calc(100vh-400px)] min-h-[400px] overflow-y-auto bg-slate-50 p-4 rounded-lg">
+                    <div className="prose prose-sm max-w-none h-full overflow-y-auto bg-slate-50 p-6 rounded-lg border">
                       <ReactMarkdown>{generatedContent}</ReactMarkdown>
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+                    <div className="flex flex-col items-center justify-center h-full text-slate-400">
                       <Target className="h-12 w-12 mb-3" />
                       <p className="text-center">
                         {language === 'es' 
