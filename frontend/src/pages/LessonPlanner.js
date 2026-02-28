@@ -135,6 +135,7 @@ const LessonPlanner = () => {
   // Form state
   const [formData, setFormData] = useState({
     class_id: '',
+    plan_type: 'weekly', // 'weekly' or 'conversational_english'
     week_start: '',
     week_end: '',
     week2_start: '',
@@ -146,6 +147,17 @@ const LessonPlanner = () => {
     objective_week2: '',
     skills: ['', '', '', ''],
     skills_week2: ['', '', '', ''],
+    // Conversational English specific fields
+    lesson_date: '',
+    subject: 'Conversational English',
+    lesson_topic: '',
+    learning_objectives: '',
+    materials_text: '',
+    hook_intro: '',
+    learning_goal: '',
+    closure: '',
+    test_quiz_date: '',
+    additional_notes: '',
     days: DAYS.map((day, i) => ({
       date: '',
       day_name: day,
