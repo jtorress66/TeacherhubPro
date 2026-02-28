@@ -6,7 +6,7 @@ import json
 from datetime import datetime, timedelta
 
 class TeacherHubAPITester:
-    def __init__(self, base_url="https://edu-workspace-7.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://lesson-planner-64.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.session = requests.Session()
         self.user_data = None

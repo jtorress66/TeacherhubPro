@@ -7,7 +7,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://edu-workspace-7.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://lesson-planner-64.preview.emergentagent.com').rstrip('/')
 
 # Admin credentials for AI access
 ADMIN_EMAIL = "admin@teacherhubpro.com"
