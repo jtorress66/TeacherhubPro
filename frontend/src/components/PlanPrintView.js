@@ -170,22 +170,22 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     }, 250);
   };
 
-  // Header
+  // Header - Compact version
   const Header = () => (
-    <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', marginBottom: '5px' }}>
+    <div style={{ textAlign: 'center', marginBottom: '4px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '2px' }}>
         {school?.logo_url && (
-          <img src={school.logo_url} alt="Logo" style={{ height: '50px', objectFit: 'contain' }} />
+          <img src={school.logo_url} alt="Logo" style={{ height: '35px', objectFit: 'contain' }} />
         )}
         <div>
-          <div style={{ fontWeight: 'bold', fontSize: '14pt' }}>{school?.name || 'My School'}</div>
-          <div style={{ fontSize: '9pt' }}>{school?.address || 'School Address'}</div>
-          <div style={{ fontSize: '9pt' }}>
+          <div style={{ fontWeight: 'bold', fontSize: '11pt' }}>{school?.name || 'My School'}</div>
+          <div style={{ fontSize: '7pt' }}>{school?.address || 'School Address'}</div>
+          <div style={{ fontSize: '7pt' }}>
             {school?.phone ? `Tel. ${school.phone}` : ''} {school?.email ? `| ${school.email}` : ''}
           </div>
         </div>
       </div>
-      <div style={{ fontWeight: 'bold', fontSize: '14pt', marginTop: '8px' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '10pt', marginTop: '2px' }}>
         {lang === 'es' ? 'Planificación del Maestro' : "Teacher's Planning"}
       </div>
     </div>
@@ -197,26 +197,25 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       <Header />
       
       {/* Info Box */}
-      <table style={{ marginBottom: '6px' }}>
+      <table style={{ marginBottom: '3px' }}>
         <tbody>
           <tr>
-            <td style={{ width: '60%', padding: '4px 8px', fontSize: '9pt' }}>
-              <strong>Unit:</strong> {plan.unit || '_____'} | <strong>Story:</strong> {plan.story || '_____'}<br/>
-              <strong>Teacher:</strong> {plan.teacher_name || '_____'} | <strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}
+            <td style={{ width: '60%', padding: '2px 4px', fontSize: '7pt' }}>
+              <strong>Unit:</strong> {plan.unit || '_____'} | <strong>Story:</strong> {plan.story || '_____'} | <strong>Teacher:</strong> {plan.teacher_name || '_____'} | <strong>Grade:</strong> {classInfo?.grade}-{classInfo?.section}
             </td>
-            <td style={{ width: '40%', padding: '4px 8px', fontSize: '9pt' }}>
+            <td style={{ width: '40%', padding: '2px 4px', fontSize: '7pt' }}>
               <strong>Date:</strong> From {formatDate(weekStart)} To {formatDate(weekEnd)}
-              {weekNum === 2 && <span style={{ marginLeft: '10px', fontWeight: 'bold' }}>(Week 2)</span>}
+              {weekNum === 2 && <span style={{ marginLeft: '8px', fontWeight: 'bold' }}>(Week 2)</span>}
             </td>
           </tr>
         </tbody>
       </table>
 
       {/* Objective */}
-      <table style={{ marginBottom: '6px' }}>
+      <table style={{ marginBottom: '3px' }}>
         <tbody>
           <tr>
-            <td style={{ padding: '4px 8px', fontSize: '9pt' }}>
+            <td style={{ padding: '2px 4px', fontSize: '7pt' }}>
               <strong>Objective of the week:</strong> {objective || '_____'}
             </td>
           </tr>
@@ -224,10 +223,10 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       </table>
 
       {/* Skills */}
-      <table style={{ marginBottom: '6px' }}>
+      <table style={{ marginBottom: '3px' }}>
         <tbody>
           <tr>
-            <td style={{ padding: '4px 8px' }}>
+            <td style={{ padding: '2px 4px' }}>
               <div style={{ fontWeight: 'bold', fontSize: '9pt', borderBottom: '1px solid black', paddingBottom: '3px', marginBottom: '4px' }}>
                 Skills of the week:
               </div>
