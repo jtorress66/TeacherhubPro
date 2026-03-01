@@ -1307,6 +1307,7 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
             plan={{
               ...selectedPlan,
               lesson_date: formData.lesson_date,
+              lesson_date_end: formData.lesson_date_end,
               subject: formData.subject,
               lesson_topic: formData.lesson_topic,
               learning_objectives: formData.learning_objectives,
