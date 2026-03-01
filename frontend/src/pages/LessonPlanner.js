@@ -151,6 +151,7 @@ const LessonPlanner = () => {
     skills_week2: ['', '', '', ''],
     // Conversational English specific fields
     lesson_date: '',
+    lesson_date_end: '',
     subject: 'Conversational English',
     lesson_topic: '',
     learning_objectives: '',
