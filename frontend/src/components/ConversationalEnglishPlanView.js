@@ -137,7 +137,7 @@ const ConversationalEnglishPlanView = ({ plan, classInfo, school, onClose }) => 
   
   // Format date range for display
   const dateRangeDisplay = lessonDateTo 
-    ? `${formatDate(lessonDateFrom)} - ${formatDate(lessonDateTo)}`
+    ? `From ${formatDate(lessonDateFrom)} To ${formatDate(lessonDateTo)}`
     : formatDate(lessonDateFrom);
 
   return (
