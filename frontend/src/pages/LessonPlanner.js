@@ -333,6 +333,7 @@ const LessonPlanner = () => {
       skills_week2: plan.skills_week2?.length > 0 ? [...plan.skills_week2, '', '', '', ''].slice(0, 4) : ['', '', '', ''],
       // Conversational English specific fields
       lesson_date: plan.lesson_date || '',
+      lesson_date_end: plan.lesson_date_end || '',
       subject: plan.subject || 'Conversational English',
       lesson_topic: plan.lesson_topic || '',
       learning_objectives: plan.learning_objectives || '',
