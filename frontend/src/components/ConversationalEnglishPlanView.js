@@ -210,7 +210,7 @@ const ConversationalEnglishPlanView = ({ plan, classInfo, school, onClose }) => 
                     </td>
                     <td style={{ border: '1px solid black', padding: '8px', width: '25%' }}>
                       <span style={{ fontWeight: 'bold' }}>Date:</span>
-                      <span style={{ marginLeft: '10px' }}>{formatDate(lessonDate)}</span>
+                      <span style={{ marginLeft: '10px' }}>{dateRangeDisplay || '_____________________'}</span>
                     </td>
                   </tr>
                   {/* Row 2: Subject */}
