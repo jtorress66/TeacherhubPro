@@ -1872,13 +1872,30 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                 {/* Conversational English Form Fields */}
                 <div className="space-y-2">
-                  <Label>{language === 'es' ? 'Fecha de la Lección' : 'Lesson Date'}</Label>
-                  <Input 
-                    type="date"
-                    value={formData.lesson_date}
-                    onChange={(e) => setFormData(prev => ({ ...prev, lesson_date: e.target.value }))}
-                    data-testid="lesson-date-input"
-                  />
+                  <Label>{language === 'es' ? 'Rango de Fechas de la Lección' : 'Lesson Date Range'}</Label>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1">
+                      <Input 
+                        type="date"
+                        value={formData.lesson_date}
+                        onChange={(e) => setFormData(prev => ({ ...prev, lesson_date: e.target.value }))}
+                        data-testid="lesson-date-from-input"
+                        className="w-full"
+                      />
+                      <span className="text-xs text-slate-500 mt-1 block">{language === 'es' ? 'Desde' : 'From'}</span>
+                    </div>
+                    <span className="text-slate-400">—</span>
+                    <div className="flex-1">
+                      <Input 
+                        type="date"
+                        value={formData.lesson_date_end}
+                        onChange={(e) => setFormData(prev => ({ ...prev, lesson_date_end: e.target.value }))}
+                        data-testid="lesson-date-to-input"
+                        className="w-full"
+                      />
+                      <span className="text-xs text-slate-500 mt-1 block">{language === 'es' ? 'Hasta' : 'To'}</span>
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
