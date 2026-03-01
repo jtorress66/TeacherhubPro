@@ -1193,11 +1193,24 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-heading font-bold text-slate-800">{t('weeklyPlan')}</h1>
-            {planId === 'new' && (
-              <p className="text-slate-500 text-sm">{t('createPlan')}</p>
-            )}
+          <div className="flex items-center gap-3">
+            {/* Back Button - only show when viewing/editing a plan */}
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate('/planner')}
+              className="flex items-center gap-1 text-slate-600 hover:text-slate-800"
+              data-testid="back-to-planner-btn"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">{language === 'es' ? 'Volver' : 'Back'}</span>
+            </Button>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-heading font-bold text-slate-800">{t('weeklyPlan')}</h1>
+              {planId === 'new' && (
+                <p className="text-slate-500 text-sm">{t('createPlan')}</p>
+              )}
+            </div>
           </div>
           <div className="flex gap-1.5 sm:gap-2 flex-wrap">
             {/* Templates Button */}
