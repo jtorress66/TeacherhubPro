@@ -1364,6 +1364,7 @@ async def create_plan(plan_data: LessonPlanCreate, user: dict = Depends(get_curr
         "template_name": plan_data.template_name,
         # Conversational English specific fields
         "lesson_date": plan_data.lesson_date,
+        "lesson_date_end": plan_data.lesson_date_end,
         "subject": plan_data.subject,
         "lesson_topic": plan_data.lesson_topic,
         "learning_objectives": plan_data.learning_objectives,
