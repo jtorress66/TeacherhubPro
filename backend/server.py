@@ -269,6 +269,7 @@ class LessonPlanCreate(BaseModel):
     template_name: Optional[str] = None
     # Conversational English specific fields
     lesson_date: Optional[str] = None
+    lesson_date_end: Optional[str] = None
     subject: Optional[str] = "Conversational English"
     lesson_topic: Optional[str] = None
     learning_objectives: Optional[str] = None
@@ -305,6 +306,7 @@ class LessonPlanResponse(BaseModel):
     template_name: Optional[str] = None
     # Conversational English specific fields
     lesson_date: Optional[str] = None
+    lesson_date_end: Optional[str] = None
     subject: Optional[str] = None
     lesson_topic: Optional[str] = None
     learning_objectives: Optional[str] = None
