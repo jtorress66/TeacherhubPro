@@ -124,7 +124,8 @@ const ConversationalEnglishPlanView = ({ plan, classInfo, school, onClose }) => 
   const grade = classInfo?.grade || '';
   const section = classInfo?.section || '';
   const subject = plan?.subject || 'Conversational English';
-  const lessonDate = plan?.lesson_date || plan?.week_start || '';
+  const lessonDateFrom = plan?.lesson_date || plan?.week_start || '';
+  const lessonDateTo = plan?.lesson_date_end || plan?.week_end || '';
   const lessonTopic = plan?.lesson_topic || plan?.topic || plan?.story || '';
   const learningObjectives = plan?.learning_objectives || plan?.objective || '';
   const materialsNeeded = plan?.materials_text || '';
@@ -133,6 +134,20 @@ const ConversationalEnglishPlanView = ({ plan, classInfo, school, onClose }) => 
   const closure = plan?.closure || '';
   const testQuizDate = plan?.test_quiz_date || '';
   const additionalNotes = plan?.additional_notes || '';
+  
+  // Format date range for display
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      return `${parts[1]}/${parts[2]}/${parts[0]}`;
+    }
+    return dateStr;
+  };
+  
+  const dateRangeDisplay = lessonDateTo 
+    ? `${formatDate(lessonDateFrom)} - ${formatDate(lessonDateTo)}`
+    : formatDate(lessonDateFrom);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-auto">
