@@ -169,7 +169,7 @@ const LessonPlanner = () => {
       dok_levels: [],
       eca: { E: false, C: false, A: false },  // Enrichment, Core, Assessment
       activities: ACTIVITY_TYPES.map(type => ({ activity_type: type, checked: false, notes: '' })),
-      materials: MATERIAL_TYPES.map(type => ({ material_type: type, checked: false })),
+      materials: MATERIAL_TYPES.map(type => ({ material_type: type, checked: false, notes: '' })),
       notes: ''
     })).concat(DAYS.map((day, i) => ({
       date: '',
@@ -179,7 +179,7 @@ const LessonPlanner = () => {
       dok_levels: [],
       eca: { E: false, C: false, A: false },
       activities: ACTIVITY_TYPES.map(type => ({ activity_type: type, checked: false, notes: '' })),
-      materials: MATERIAL_TYPES.map(type => ({ material_type: type, checked: false })),
+      materials: MATERIAL_TYPES.map(type => ({ material_type: type, checked: false, notes: '' })),
       notes: ''
     }))),
     standards: [
