@@ -552,7 +552,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <div className="p-6 bg-slate-200">
           <div ref={printRef}>
             {/* Page 1: Week 1 */}
-            <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.25in', overflow: 'hidden' }}>
+            <div className="bg-white shadow-lg mb-6 mx-auto print-page" style={{ width: '11in', height: '8.5in', padding: '0.2in', overflow: 'hidden' }}>
               <WeeklyPlanPage
                 days={planDays}
                 weekNum={1}
@@ -565,7 +565,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
 
             {/* Page 2: Week 2 (if exists) */}
             {(plan.week2_start || plan.week2_end) && (
-              <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.25in', overflow: 'hidden' }}>
+              <div className="bg-white shadow-lg mb-6 mx-auto print-page" style={{ width: '11in', height: '8.5in', padding: '0.2in', overflow: 'hidden' }}>
                 <WeeklyPlanPage
                   days={planDaysWeek2}
                   weekNum={2}
@@ -578,7 +578,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             )}
 
             {/* Standards Page */}
-            <div className="bg-white shadow-lg mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.25in', overflow: 'hidden' }}>
+            <div className="bg-white shadow-lg mx-auto print-page" style={{ width: '11in', height: '8.5in', padding: '0.2in', overflow: 'hidden' }}>
               <StandardsPage />
             </div>
           </div>
