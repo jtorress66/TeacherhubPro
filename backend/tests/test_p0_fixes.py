@@ -266,7 +266,7 @@ class TestPricingCheckout:
         checkout_data = {
             "plan_id": "individual_monthly",
             "quantity": 1,
-            "origin_url": "https://teacherflow-app.preview.emergentagent.com"
+            "origin_url": "https://teacherhub-pro-2.preview.emergentagent.com"
         }
         
         response = self.session.post(f"{BASE_URL}/api/subscription/checkout", json=checkout_data)
