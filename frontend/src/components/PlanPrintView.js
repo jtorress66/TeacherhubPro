@@ -453,17 +453,29 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             ))}
           </tr>
           
-          {/* Type of Taxonomy Row */}
+          {/* Type of Taxonomy Row - WITH FULL DESCRIPTIONS LIKE REFERENCE */}
           <tr>
             <td className="row-label">
               Type of<br/>Taxonomy:<br/>Webb (2005)<br/>Levels
             </td>
             {days.map((day, i) => (
               <td key={i}>
-                <div className="dok-item"><Chk checked={day.dok_levels?.includes(1)} /> L1: Memory</div>
-                <div className="dok-item"><Chk checked={day.dok_levels?.includes(2)} /> L2: Processing</div>
-                <div className="dok-item"><Chk checked={day.dok_levels?.includes(3)} /> L3: Strategic</div>
-                <div className="dok-item"><Chk checked={day.dok_levels?.includes(4)} /> L4: Extended</div>
+                <div className="dok-item">
+                  <Chk checked={day.dok_levels?.includes(1)} /> Level 1: Memory Thought
+                  <span className="dok-desc">(Knowledge in or the same way as learned)</span>
+                </div>
+                <div className="dok-item">
+                  <Chk checked={day.dok_levels?.includes(2)} /> Level 2: Processing
+                  <span className="dok-desc">(Requires some basic mental reasoning)</span>
+                </div>
+                <div className="dok-item">
+                  <Chk checked={day.dok_levels?.includes(3)} /> Level 3: Thinking Strategic
+                  <span className="dok-desc">(Complex and abstract cognitive demand)</span>
+                </div>
+                <div className="dok-item">
+                  <Chk checked={day.dok_levels?.includes(4)} /> Level 4: Extended Thought
+                  <span className="dok-desc">(Extends knowledge to broader contexts)</span>
+                </div>
               </td>
             ))}
           </tr>
