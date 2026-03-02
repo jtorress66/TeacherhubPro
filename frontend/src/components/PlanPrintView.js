@@ -193,12 +193,13 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             margin-bottom: 2px;
           }
           
-          /* Main table - fills page */
+          /* Main table - MUST fill page */
           table.main-grid {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            font-size: 8pt;
+            font-size: 7pt;
+            flex: 1;
           }
           table.main-grid th,
           table.main-grid td {
@@ -232,7 +233,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Row label cell */
           .row-label {
             font-weight: bold;
-            font-size: 8pt;
+            font-size: 7pt;
             background: #f5f5f5;
           }
           
@@ -253,18 +254,24 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             color: #fff;
           }
           
-          /* Activity/Material items */
+          /* Activity/Material items - each item on its own line */
           .item-row {
-            font-size: 8pt;
-            line-height: 1.2;
+            font-size: 7pt;
+            line-height: 1.25;
             margin-bottom: 1px;
           }
           
-          /* DOK levels */
+          /* DOK levels - WITH FULL DESCRIPTIONS like reference */
           .dok-item {
-            font-size: 8pt;
-            line-height: 1.25;
-            margin-bottom: 1px;
+            font-size: 6.5pt;
+            line-height: 1.2;
+            margin-bottom: 2px;
+          }
+          .dok-desc {
+            font-size: 5.5pt;
+            color: #444;
+            display: block;
+            margin-left: 11px;
           }
           
           /* Standards page */
