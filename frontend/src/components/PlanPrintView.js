@@ -109,6 +109,8 @@ const styles = {
     margin: '2px 0',
     fontSize: '6.5pt',
     flexShrink: 0,
+    overflow: 'hidden',
+    maxHeight: '30px',
   },
   // Skills box
   skillsBox: {
@@ -117,18 +119,27 @@ const styles = {
     marginBottom: '2px',
     fontSize: '6pt',
     flexShrink: 0,
+    overflow: 'hidden',
+    maxHeight: '45px',
   },
   skillsList: {
     margin: '0 0 0 10px',
     padding: 0,
   },
+  // Table wrapper - takes remaining space with STRICT overflow hidden
+  tableWrapper: {
+    flex: 1,
+    minHeight: 0,
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
+  },
   // Table - takes remaining space
   table: {
-    flex: 1,
     width: '100%',
+    height: '100%',
     borderCollapse: 'collapse',
     tableLayout: 'fixed',
-    minHeight: 0,
   },
   th: {
     border: '1px solid #000',
@@ -138,6 +149,7 @@ const styles = {
     fontSize: '6.5pt',
     background: '#e8e8e8',
     verticalAlign: 'middle',
+    height: '28px',
   },
   td: {
     border: '1px solid #000',
@@ -159,6 +171,7 @@ const styles = {
     fontWeight: 'bold',
     fontSize: '7pt',
     verticalAlign: 'middle',
+    height: '22px',
   },
   // Checkbox
   checkbox: (checked) => ({
@@ -180,6 +193,15 @@ const styles = {
   },
   ecaLine: {
     fontSize: '5pt',
+  },
+  // Content rows in table (DOK, Activities, Materials) - equal height distribution
+  contentTd: {
+    border: '1px solid #000',
+    padding: '1px 2px',
+    verticalAlign: 'top',
+    fontSize: '5.5pt',
+    overflow: 'hidden',
+    height: '25%', // Each content row takes 25% of tbody height
   },
 };
 
