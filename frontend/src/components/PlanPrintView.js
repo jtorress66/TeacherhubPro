@@ -259,7 +259,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     <span style={styles.checkbox(checked)} />
   );
 
-  // Weekly Plan Page with all inline styles
+  // Weekly Plan Page with all inline styles - COMPACT layout
   const WeeklyPlanPage = ({ days, weekNum, weekStart, weekEnd, objective, skills }) => (
     <div style={styles.page} className="page-break">
       {/* HEADER */}
@@ -308,88 +308,86 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         </ol>
       </div>
       
-      {/* TABLE WRAPPER - Contains overflow */}
-      <div style={styles.tableWrapper}>
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={{...styles.th, ...styles.rowLabel}}></th>
-              {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, idx) => (
-                <th key={day} style={{...styles.th, width: '18.2%'}}>
-                  <div>{DAY_LABELS[day][lang]}</div>
-                  <div style={styles.ecaLine}>
-                    <Chk checked={days[idx]?.eca?.E} />E{' '}
-                    <Chk checked={days[idx]?.eca?.C} />C{' '}
-                    <Chk checked={days[idx]?.eca?.A} />A
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {/* Day Theme Row - Shorter */}
-            <tr style={{height: '22px'}}>
-              <td style={styles.rowLabel}>Day Theme</td>
-              {days.map((day, i) => (
-                <td key={i} style={{...styles.td, ...styles.themeCell}}>{day.theme || ''}</td>
-              ))}
-            </tr>
-            
-            {/* DOK Levels Row */}
-            <tr>
-              <td style={styles.rowLabel}>Webb Taxonomy Levels</td>
-              {days.map((day, i) => (
-                <td key={i} style={styles.contentTd}>
-                  <div style={styles.itemRow}><Chk checked={day.dok_levels?.includes(1)} /> Lv1: Memory</div>
-                  <div style={styles.itemRow}><Chk checked={day.dok_levels?.includes(2)} /> Lv2: Processing</div>
-                  <div style={styles.itemRow}><Chk checked={day.dok_levels?.includes(3)} /> Lv3: Strategic</div>
-                  <div style={styles.itemRow}><Chk checked={day.dok_levels?.includes(4)} /> Lv4: Extended</div>
-                </td>
-              ))}
-            </tr>
-            
-            {/* Activities Row */}
-            <tr>
-              <td style={styles.rowLabel}>Activities</td>
-              {days.map((day, i) => (
-                <td key={i} style={styles.contentTd}>
-                  {Object.keys(ACTIVITY_LABELS).map(actType => {
-                    const activity = day.activities?.find(a => a.activity_type === actType);
-                    return (
-                      <div key={actType} style={styles.itemRow}>
-                        <Chk checked={activity?.checked} /> {ACTIVITY_LABELS[actType][lang]}
-                        {actType === 'other' && activity?.checked && activity?.notes && (
-                          <span>: {activity.notes}</span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </td>
-              ))}
-            </tr>
-            
-            {/* Materials Row */}
-            <tr>
-              <td style={styles.rowLabel}>Materials</td>
-              {days.map((day, i) => (
-                <td key={i} style={styles.contentTd}>
-                  {Object.keys(MATERIAL_LABELS).map(matType => {
-                    const material = day.materials?.find(m => m.material_type === matType);
-                    return (
-                      <div key={matType} style={styles.itemRow}>
-                        <Chk checked={material?.checked} /> {MATERIAL_LABELS[matType][lang]}
-                        {matType === 'other' && material?.checked && material?.notes && (
-                          <span>: {material.notes}</span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      {/* MAIN TABLE - COMPACT, no stretching */}
+      <table style={styles.table}>
+        <thead>
+          <tr>
+            <th style={{...styles.th, ...styles.rowLabel}}></th>
+            {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, idx) => (
+              <th key={day} style={{...styles.th, width: '18.2%'}}>
+                <div>{DAY_LABELS[day][lang]}</div>
+                <div style={styles.ecaLine}>
+                  <Chk checked={days[idx]?.eca?.E} />E{' '}
+                  <Chk checked={days[idx]?.eca?.C} />C{' '}
+                  <Chk checked={days[idx]?.eca?.A} />A
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {/* Day Theme Row */}
+          <tr>
+            <td style={styles.rowLabel}>Day Theme</td>
+            {days.map((day, i) => (
+              <td key={i} style={{...styles.td, ...styles.themeCell}}>{day.theme || ''}</td>
+            ))}
+          </tr>
+          
+          {/* DOK Levels Row */}
+          <tr>
+            <td style={styles.rowLabel}>Webb Taxonomy Levels</td>
+            {days.map((day, i) => (
+              <td key={i} style={styles.td}>
+                <div style={styles.itemRow}><Chk checked={day.dok_levels?.includes(1)} /> Lv1: Memory</div>
+                <div style={styles.itemRow}><Chk checked={day.dok_levels?.includes(2)} /> Lv2: Processing</div>
+                <div style={styles.itemRow}><Chk checked={day.dok_levels?.includes(3)} /> Lv3: Strategic</div>
+                <div style={styles.itemRow}><Chk checked={day.dok_levels?.includes(4)} /> Lv4: Extended</div>
+              </td>
+            ))}
+          </tr>
+          
+          {/* Activities Row */}
+          <tr>
+            <td style={styles.rowLabel}>Activities</td>
+            {days.map((day, i) => (
+              <td key={i} style={styles.td}>
+                {Object.keys(ACTIVITY_LABELS).map(actType => {
+                  const activity = day.activities?.find(a => a.activity_type === actType);
+                  return (
+                    <div key={actType} style={styles.itemRow}>
+                      <Chk checked={activity?.checked} /> {ACTIVITY_LABELS[actType][lang]}
+                      {actType === 'other' && activity?.checked && activity?.notes && (
+                        <span>: {activity.notes}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </td>
+            ))}
+          </tr>
+          
+          {/* Materials Row */}
+          <tr>
+            <td style={styles.rowLabel}>Materials</td>
+            {days.map((day, i) => (
+              <td key={i} style={styles.td}>
+                {Object.keys(MATERIAL_LABELS).map(matType => {
+                  const material = day.materials?.find(m => m.material_type === matType);
+                  return (
+                    <div key={matType} style={styles.itemRow}>
+                      <Chk checked={material?.checked} /> {MATERIAL_LABELS[matType][lang]}
+                      {matType === 'other' && material?.checked && material?.notes && (
+                        <span>: {material.notes}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 
