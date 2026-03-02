@@ -227,6 +227,7 @@ class PlanDayActivity(BaseModel):
 class PlanDayMaterial(BaseModel):
     material_type: str  # book, notebook, teachers_guide, test_quiz, dictionary, handouts, other
     checked: bool = False
+    notes: Optional[str] = None
 
 class PlanDay(BaseModel):
     date: str
