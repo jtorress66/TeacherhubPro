@@ -101,7 +101,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <style>
           @page { 
             size: letter landscape;
-            margin: 0.2in; 
+            margin: 0.15in 0.2in; 
           }
           * { margin: 0; padding: 0; box-sizing: border-box; }
           html, body { 
@@ -110,12 +110,12 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           }
           body { 
             font-family: Arial, Helvetica, sans-serif; 
-            font-size: 8pt;
-            line-height: 1.1;
+            font-size: 7pt;
+            line-height: 1.05;
             color: #000;
           }
           
-          /* CRITICAL: Page must fill viewport and use flexbox to distribute space */
+          /* Page container - fills entire print page */
           .page {
             width: 100%;
             height: 100vh;
@@ -127,42 +127,42 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           }
           .page:last-child { page-break-after: avoid; }
           
-          /* Header - compact, fixed size */
+          /* Header - very compact */
           .header {
             text-align: center;
-            padding-bottom: 3px;
-            margin-bottom: 4px;
-            border-bottom: 2px solid #333;
+            padding-bottom: 2px;
+            margin-bottom: 3px;
+            border-bottom: 1.5px solid #333;
             flex-shrink: 0;
           }
           .header-logo {
-            height: 32px;
+            height: 28px;
             object-fit: contain;
             margin-bottom: 1px;
           }
           .school-name {
-            font-size: 11pt;
+            font-size: 10pt;
             font-weight: bold;
             margin: 1px 0;
           }
           .school-info {
-            font-size: 7pt;
+            font-size: 6.5pt;
             color: #333;
           }
           .plan-title {
-            font-size: 10pt;
+            font-size: 9pt;
             font-weight: bold;
-            margin-top: 2px;
+            margin-top: 1px;
           }
           
           /* Info row - compact */
           .info-row {
             display: flex;
             justify-content: space-between;
-            padding: 3px 0;
-            margin-bottom: 4px;
+            padding: 2px 0;
+            margin-bottom: 3px;
             border-bottom: 1px solid #999;
-            font-size: 8pt;
+            font-size: 7.5pt;
             flex-shrink: 0;
           }
           .info-row strong { font-weight: bold; }
@@ -170,9 +170,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Objective box - compact */
           .objective-box {
             border: 1px solid #000;
-            padding: 4px 6px;
-            margin-bottom: 4px;
-            font-size: 8pt;
+            padding: 3px 5px;
+            margin-bottom: 3px;
+            font-size: 7.5pt;
             flex-shrink: 0;
           }
           .objective-box strong {
@@ -183,43 +183,44 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Skills box - compact */
           .skills-box {
             border: 1px solid #000;
-            padding: 4px 6px;
-            margin-bottom: 5px;
-            font-size: 7pt;
+            padding: 3px 5px;
+            margin-bottom: 4px;
+            font-size: 6.5pt;
             flex-shrink: 0;
           }
           .skills-title {
             font-weight: bold;
             text-decoration: underline;
-            margin-bottom: 2px;
-          }
-          .skills-list {
-            margin-left: 12px;
-          }
-          .skills-list li {
             margin-bottom: 1px;
           }
+          .skills-list {
+            margin-left: 10px;
+          }
+          .skills-list li {
+            margin-bottom: 0;
+          }
           
-          /* TABLE WRAPPER - This is the key! It grows to fill remaining space */
+          /* Table wrapper - CRITICAL: grows to fill remaining page space */
           .table-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
             min-height: 0;
+            overflow: hidden;
           }
           
-          /* Main table - fills wrapper using height: 100% */
+          /* Main table - fills wrapper height */
           table.main-grid {
             width: 100%;
             height: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            font-size: 7pt;
+            font-size: 6.5pt;
           }
           table.main-grid th,
           table.main-grid td {
             border: 1px solid #000;
-            padding: 2px 3px;
+            padding: 1px 2px;
             vertical-align: top;
             word-wrap: break-word;
             overflow: hidden;
@@ -228,43 +229,43 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             background: #f0f0f0;
             font-weight: bold;
             text-align: center;
-            font-size: 8pt;
-            padding: 3px;
+            font-size: 7.5pt;
+            padding: 2px;
           }
           
           /* Column widths */
-          .col-label { width: 9%; }
-          .col-day { width: 18.2%; }
+          .col-label { width: 8%; }
+          .col-day { width: 18.4%; }
           
           /* Day header cell */
           .day-header {
             font-weight: bold;
-            font-size: 9pt;
+            font-size: 8pt;
           }
           .eca-line {
-            font-size: 6pt;
+            font-size: 5.5pt;
             margin-top: 1px;
           }
           
           /* Row label cell */
           .row-label {
             font-weight: bold;
-            font-size: 6.5pt;
+            font-size: 6pt;
             background: #f5f5f5;
-            line-height: 1.2;
+            line-height: 1.1;
           }
           
           /* Checkbox styling */
           .chk {
             display: inline-block;
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             border: 1px solid #000;
-            margin-right: 2px;
+            margin-right: 1px;
             vertical-align: middle;
             text-align: center;
-            font-size: 5pt;
-            line-height: 5px;
+            font-size: 4pt;
+            line-height: 4px;
           }
           .chk.checked {
             background: #000;
@@ -273,25 +274,24 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           
           /* Activity/Material items */
           .item-row {
-            font-size: 6.5pt;
-            line-height: 1.2;
+            font-size: 6pt;
+            line-height: 1.15;
             margin-bottom: 0;
           }
           
-          /* DOK levels with full descriptions like in reference image */
+          /* DOK levels - compact with descriptions */
           .dok-item {
-            font-size: 6pt;
-            line-height: 1.15;
-            margin-bottom: 2px;
+            font-size: 5.5pt;
+            line-height: 1.1;
+            margin-bottom: 1px;
           }
           .dok-title {
             font-weight: bold;
           }
           .dok-desc {
-            font-size: 5.5pt;
+            font-size: 5pt;
             color: #333;
-            display: block;
-            margin-left: 9px;
+            display: inline;
           }
           
           /* Standards page */
