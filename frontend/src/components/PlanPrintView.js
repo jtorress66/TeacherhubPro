@@ -202,7 +202,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           table.main-grid th,
           table.main-grid td {
             border: 1px solid #000;
-            padding: 4px 5px;
+            padding: 3px 4px;
             vertical-align: top;
             word-wrap: break-word;
           }
@@ -210,8 +210,8 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             background: #f0f0f0;
             font-weight: bold;
             text-align: center;
-            font-size: 10pt;
-            padding: 5px;
+            font-size: 9pt;
+            padding: 4px;
           }
           
           /* Column widths */
