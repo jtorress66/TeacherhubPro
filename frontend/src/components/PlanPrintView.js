@@ -59,8 +59,8 @@ const styles = {
     width: '10.5in',
     height: '8in',
     fontFamily: 'Arial, Helvetica, sans-serif',
-    fontSize: '7pt',
-    lineHeight: '1.2',
+    fontSize: '8pt',
+    lineHeight: '1.3',
     color: '#000',
     overflow: 'hidden',
     pageBreakAfter: 'always',
@@ -69,53 +69,53 @@ const styles = {
   // Header section
   header: {
     textAlign: 'center',
-    paddingBottom: '3px',
-    borderBottom: '1.5pt solid #333',
-    marginBottom: '3px',
+    paddingBottom: '4px',
+    borderBottom: '2pt solid #333',
+    marginBottom: '4px',
   },
   headerLogo: {
-    height: '24px',
+    height: '28px',
     objectFit: 'contain',
   },
   schoolName: {
-    fontSize: '10pt',
+    fontSize: '11pt',
     fontWeight: 'bold',
     margin: 0,
   },
   schoolInfo: {
-    fontSize: '6pt',
+    fontSize: '7pt',
     color: '#333',
   },
   planTitle: {
-    fontSize: '9pt',
+    fontSize: '10pt',
     fontWeight: 'bold',
-    marginTop: '2px',
+    marginTop: '3px',
   },
   // Info row
   infoRow: {
     display: 'flex',
     justifyContent: 'space-between',
-    padding: '3px 0',
+    padding: '4px 0',
     borderBottom: '1px solid #999',
-    fontSize: '7pt',
-    marginBottom: '3px',
+    fontSize: '8pt',
+    marginBottom: '4px',
   },
   // Objective box
   objectiveBox: {
     border: '1px solid #000',
-    padding: '3px 4px',
-    marginBottom: '3px',
-    fontSize: '7pt',
+    padding: '4px 6px',
+    marginBottom: '4px',
+    fontSize: '8pt',
   },
   // Skills box
   skillsBox: {
     border: '1px solid #000',
-    padding: '3px 4px',
-    marginBottom: '4px',
-    fontSize: '6.5pt',
+    padding: '4px 6px',
+    marginBottom: '5px',
+    fontSize: '7.5pt',
   },
   skillsList: {
-    margin: '0 0 0 12px',
+    margin: '0 0 0 14px',
     padding: 0,
   },
   // Table - COMPACT, no stretching
@@ -126,52 +126,53 @@ const styles = {
   },
   th: {
     border: '1px solid #000',
-    padding: '3px 2px',
+    padding: '4px 3px',
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: '7pt',
+    fontSize: '8pt',
     background: '#e8e8e8',
     verticalAlign: 'middle',
   },
   td: {
     border: '1px solid #000',
-    padding: '2px 3px',
+    padding: '3px 4px',
     verticalAlign: 'top',
-    fontSize: '6pt',
+    fontSize: '7pt',
   },
   rowLabel: {
     fontWeight: 'bold',
-    fontSize: '5.5pt',
+    fontSize: '6.5pt',
     background: '#f5f5f5',
     width: '9%',
     verticalAlign: 'top',
-    padding: '3px',
+    padding: '4px',
   },
   themeCell: {
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: '8pt',
+    fontSize: '8.5pt',
     verticalAlign: 'middle',
+    padding: '5px 4px',
   },
-  // Checkbox - slightly larger for visibility
+  // Checkbox - visible size
   checkbox: (checked) => ({
     display: 'inline-block',
-    width: '6px',
-    height: '6px',
+    width: '7px',
+    height: '7px',
     border: '0.5pt solid #000',
-    marginRight: '2px',
+    marginRight: '3px',
     verticalAlign: 'middle',
     background: checked ? '#000' : '#fff',
   }),
-  // Item row - compact with proper line height
+  // Item row - larger font and spacing
   itemRow: {
-    fontSize: '6pt',
-    lineHeight: '1.25',
-    marginBottom: '1px',
+    fontSize: '7pt',
+    lineHeight: '1.4',
+    marginBottom: '2px',
   },
   ecaLine: {
-    fontSize: '5.5pt',
-    marginTop: '2px',
+    fontSize: '6pt',
+    marginTop: '3px',
   },
 };
 
