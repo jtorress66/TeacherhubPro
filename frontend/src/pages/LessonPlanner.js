@@ -306,7 +306,7 @@ const LessonPlanner = () => {
           }),
           materials: MATERIAL_TYPES.map(type => {
             const existing = existingDay?.materials?.find(m => m.material_type === type);
-            return existing || { material_type: type, checked: false };
+            return existing || { material_type: type, checked: false, notes: '' };
           }),
           notes: existingDay?.notes || ''
         };
