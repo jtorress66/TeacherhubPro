@@ -58,11 +58,9 @@ const styles = {
   page: {
     width: '10.5in',
     height: '8in',
-    display: 'flex',
-    flexDirection: 'column',
     fontFamily: 'Arial, Helvetica, sans-serif',
     fontSize: '7pt',
-    lineHeight: '1.15',
+    lineHeight: '1.2',
     color: '#000',
     overflow: 'hidden',
     pageBreakAfter: 'always',
@@ -71,137 +69,109 @@ const styles = {
   // Header section
   header: {
     textAlign: 'center',
-    paddingBottom: '2px',
+    paddingBottom: '3px',
     borderBottom: '1.5pt solid #333',
-    flexShrink: 0,
+    marginBottom: '3px',
   },
   headerLogo: {
-    height: '22px',
+    height: '24px',
     objectFit: 'contain',
   },
   schoolName: {
-    fontSize: '9pt',
+    fontSize: '10pt',
     fontWeight: 'bold',
     margin: 0,
   },
   schoolInfo: {
-    fontSize: '5.5pt',
+    fontSize: '6pt',
     color: '#333',
   },
   planTitle: {
-    fontSize: '8pt',
+    fontSize: '9pt',
     fontWeight: 'bold',
-    marginTop: '1px',
+    marginTop: '2px',
   },
   // Info row
   infoRow: {
     display: 'flex',
     justifyContent: 'space-between',
-    padding: '2px 0',
+    padding: '3px 0',
     borderBottom: '1px solid #999',
-    fontSize: '6.5pt',
-    flexShrink: 0,
+    fontSize: '7pt',
+    marginBottom: '3px',
   },
   // Objective box
   objectiveBox: {
     border: '1px solid #000',
-    padding: '2px 3px',
-    margin: '2px 0',
-    fontSize: '6.5pt',
-    flexShrink: 0,
-    overflow: 'hidden',
-    maxHeight: '30px',
+    padding: '3px 4px',
+    marginBottom: '3px',
+    fontSize: '7pt',
   },
   // Skills box
   skillsBox: {
     border: '1px solid #000',
-    padding: '2px 3px',
-    marginBottom: '2px',
-    fontSize: '6pt',
-    flexShrink: 0,
-    overflow: 'hidden',
-    maxHeight: '45px',
+    padding: '3px 4px',
+    marginBottom: '4px',
+    fontSize: '6.5pt',
   },
   skillsList: {
-    margin: '0 0 0 10px',
+    margin: '0 0 0 12px',
     padding: 0,
   },
-  // Table wrapper - takes remaining space with STRICT overflow hidden
-  tableWrapper: {
-    flex: 1,
-    minHeight: 0,
-    overflow: 'hidden',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  // Table - takes remaining space
+  // Table - COMPACT, no stretching
   table: {
     width: '100%',
-    height: '100%',
     borderCollapse: 'collapse',
     tableLayout: 'fixed',
   },
   th: {
     border: '1px solid #000',
-    padding: '2px',
+    padding: '3px 2px',
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: '6.5pt',
+    fontSize: '7pt',
     background: '#e8e8e8',
     verticalAlign: 'middle',
-    height: '28px',
   },
   td: {
     border: '1px solid #000',
-    padding: '1px 2px',
+    padding: '2px 3px',
     verticalAlign: 'top',
-    fontSize: '5.5pt',
-    overflow: 'hidden',
+    fontSize: '6pt',
   },
   rowLabel: {
     fontWeight: 'bold',
-    fontSize: '5pt',
+    fontSize: '5.5pt',
     background: '#f5f5f5',
     width: '9%',
     verticalAlign: 'top',
-    padding: '2px',
+    padding: '3px',
   },
   themeCell: {
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: '7pt',
+    fontSize: '8pt',
     verticalAlign: 'middle',
-    height: '22px',
   },
-  // Checkbox
+  // Checkbox - slightly larger for visibility
   checkbox: (checked) => ({
     display: 'inline-block',
-    width: '5px',
-    height: '5px',
+    width: '6px',
+    height: '6px',
     border: '0.5pt solid #000',
-    marginRight: '1px',
+    marginRight: '2px',
     verticalAlign: 'middle',
     background: checked ? '#000' : '#fff',
   }),
-  // Item row
+  // Item row - compact with proper line height
   itemRow: {
-    fontSize: '5.5pt',
-    lineHeight: '1.1',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
+    fontSize: '6pt',
+    lineHeight: '1.25',
+    marginBottom: '1px',
   },
   ecaLine: {
-    fontSize: '5pt',
-  },
-  // Content rows in table (DOK, Activities, Materials) - equal height distribution
-  contentTd: {
-    border: '1px solid #000',
-    padding: '1px 2px',
-    verticalAlign: 'top',
     fontSize: '5.5pt',
-    overflow: 'hidden',
-    height: '25%', // Each content row takes 25% of tbody height
+    marginTop: '2px',
   },
 };
 
