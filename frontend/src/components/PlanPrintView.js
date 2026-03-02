@@ -490,6 +490,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
                   return (
                     <div key={matType} className="item-row">
                       <Chk checked={material?.checked} /> {MATERIAL_LABELS[matType][lang]}
+                      {matType === 'other' && material?.checked && material?.notes && (
+                        <span style={{fontStyle:'italic'}}>: {material.notes}</span>
+                      )}
                     </div>
                   );
                 })}
