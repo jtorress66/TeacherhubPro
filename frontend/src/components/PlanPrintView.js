@@ -500,24 +500,24 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
               ))}
             </tr>
             
-            {/* Type of Taxonomy Row - COMPACT ABBREVIATED FORMAT */}
+            {/* Type of Taxonomy Row - FULL DESCRIPTIONS AS PER REFERENCE IMAGE */}
             <tr>
               <td className="row-label">
                 Type of<br/>Taxonomy:<br/>Webb (2005)<br/>Levels
               </td>
               {days.map((day, i) => (
-                <td key={i}>
-                  <div className="dok-item">
-                    <Chk checked={day.dok_levels?.includes(1)} /> Lv1: Memory <span className="dok-desc">(recall)</span>
+                <td key={i} style={{ fontSize: '5pt', lineHeight: 1.0, padding: '1px' }}>
+                  <div style={{ marginBottom: '1px' }}>
+                    <Chk checked={day.dok_levels?.includes(1)} /> Level 1: Memory Thought (Knowledge in or the same way as learned)
                   </div>
-                  <div className="dok-item">
-                    <Chk checked={day.dok_levels?.includes(2)} /> Lv2: Processing <span className="dok-desc">(reasoning)</span>
+                  <div style={{ marginBottom: '1px' }}>
+                    <Chk checked={day.dok_levels?.includes(2)} /> Level 2: Processing (Requires some basic mental reasoning, something beyond memory)
                   </div>
-                  <div className="dok-item">
-                    <Chk checked={day.dok_levels?.includes(3)} /> Lv3: Strategic <span className="dok-desc">(complex)</span>
+                  <div style={{ marginBottom: '1px' }}>
+                    <Chk checked={day.dok_levels?.includes(3)} /> Level 3: Thinking Strategic (Demonstrate knowledge based on complex and abstract cognitive demand)
                   </div>
-                  <div className="dok-item">
-                    <Chk checked={day.dok_levels?.includes(4)} /> Lv4: Extended <span className="dok-desc">(broader)</span>
+                  <div style={{ marginBottom: '0' }}>
+                    <Chk checked={day.dok_levels?.includes(4)} /> Level 4: Thinking Thought Extended (extends knowledge to broader contexts)
                   </div>
                 </td>
               ))}
