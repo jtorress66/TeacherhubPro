@@ -698,11 +698,11 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           </div>
         </div>
 
-        {/* Print Preview Container */}
+        {/* Print Preview Container - temporarily remove overflow hidden to debug */}
         <div className="p-6 bg-slate-200">
           <div ref={printRef} className="preview-wrapper">
             {/* Page 1: Week 1 Daily Plan */}
-            <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.1in', overflow: 'hidden' }}>
+            <div className="bg-white shadow-lg mb-6 mx-auto border-2 border-red-500" style={{ width: '11in', height: '8.5in', padding: '0.1in', overflow: 'visible', position: 'relative' }}>
               <WeeklyPlanPage
                 days={planDays}
                 weekNum={1}
