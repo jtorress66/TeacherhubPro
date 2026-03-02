@@ -17,7 +17,7 @@ import os
 import json
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://teacherhub-pro-2.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://edu-planner-app.preview.emergentagent.com')
 
 # Test sessions from review request
 TEST_SESSIONS = {
