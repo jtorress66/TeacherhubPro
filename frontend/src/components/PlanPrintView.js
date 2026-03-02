@@ -228,37 +228,37 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           }
           
           /* Column widths */
-          .col-label { width: 9%; }
-          .col-day { width: 18.2%; }
+          .col-label { width: 8%; }
+          .col-day { width: 18.4%; }
           
           /* Day header */
           .day-header {
             font-weight: bold;
-            font-size: 8pt;
+            font-size: 7pt;
           }
           .eca-line {
-            font-size: 6pt;
-            margin-top: 1px;
+            font-size: 5pt;
+            margin-top: 0px;
           }
           
           /* Row label */
           .row-label {
             font-weight: bold;
-            font-size: 6pt;
+            font-size: 5pt;
             background: #f5f5f5;
           }
           
           /* Checkbox */
           .chk {
             display: inline-block;
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             border: 1px solid #000;
-            margin-right: 2px;
+            margin-right: 1px;
             vertical-align: middle;
             text-align: center;
             font-size: 4pt;
-            line-height: 5px;
+            line-height: 4px;
           }
           .chk.checked {
             background: #000;
@@ -267,15 +267,15 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           
           /* DOK levels */
           .dok-item {
-            font-size: 6pt;
-            line-height: 1.05;
+            font-size: 5pt;
+            line-height: 1.0;
             margin-bottom: 0px;
           }
           
           /* Activity/Material items */
           .item-row {
-            font-size: 6pt;
-            line-height: 1.05;
+            font-size: 5pt;
+            line-height: 1.0;
             margin-bottom: 0px;
           }
           
