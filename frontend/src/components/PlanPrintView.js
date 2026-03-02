@@ -164,9 +164,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Objective box */
           .objective-box {
             border: 1px solid #000;
-            padding: 5px 8px;
-            margin-bottom: 6px;
-            font-size: 9pt;
+            padding: 4px 6px;
+            margin-bottom: 4px;
+            font-size: 8pt;
           }
           .objective-box strong {
             font-weight: bold;
@@ -176,20 +176,20 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Skills box */
           .skills-box {
             border: 1px solid #000;
-            padding: 5px 8px;
-            margin-bottom: 8px;
+            padding: 4px 6px;
+            margin-bottom: 6px;
             font-size: 8pt;
           }
           .skills-title {
             font-weight: bold;
             text-decoration: underline;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
           }
           .skills-list {
-            margin-left: 20px;
+            margin-left: 15px;
           }
           .skills-list li {
-            margin-bottom: 2px;
+            margin-bottom: 1px;
           }
           
           /* Main table - fills page */
