@@ -101,7 +101,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <style>
           @page { 
             size: letter landscape;
-            margin: 0.2in; 
+            margin: 0.25in; 
           }
           * { margin: 0; padding: 0; box-sizing: border-box; }
           html, body { 
@@ -109,8 +109,8 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           }
           body { 
             font-family: Arial, Helvetica, sans-serif; 
-            font-size: 7pt;
-            line-height: 1.1;
+            font-size: 8pt;
+            line-height: 1.15;
             color: #000;
           }
           .page {
@@ -126,47 +126,48 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Header styles */
           .header {
             text-align: center;
-            margin-bottom: 4px;
-            padding-bottom: 3px;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
             border-bottom: 2px solid #333;
           }
           .header-logo {
-            height: 35px;
+            height: 40px;
             object-fit: contain;
             margin-bottom: 2px;
           }
           .school-name {
-            font-size: 11pt;
+            font-size: 12pt;
             font-weight: bold;
             margin: 2px 0;
           }
           .school-info {
-            font-size: 7pt;
+            font-size: 8pt;
             color: #333;
           }
           .plan-title {
-            font-size: 10pt;
+            font-size: 11pt;
             font-weight: bold;
-            margin-top: 2px;
+            margin-top: 3px;
           }
           
           /* Info row */
           .info-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 4px;
-            padding: 3px 0;
+            margin-bottom: 6px;
+            padding: 4px 0;
             border-bottom: 1px solid #999;
-            font-size: 8pt;
+            font-size: 9pt;
           }
           .info-row strong { font-weight: bold; }
           
           /* Objective box */
           .objective-box {
             border: 1px solid #000;
-            padding: 3px 6px;
-            margin-bottom: 4px;
-            font-size: 8pt;
+            padding: 5px 8px;
+            margin-bottom: 6px;
+            font-size: 9pt;
+            min-height: 38px;
           }
           .objective-box strong {
             font-weight: bold;
@@ -176,20 +177,20 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Skills box */
           .skills-box {
             border: 1px solid #000;
-            padding: 3px 6px;
-            margin-bottom: 5px;
-            font-size: 7pt;
+            padding: 5px 8px;
+            margin-bottom: 8px;
+            font-size: 8pt;
           }
           .skills-title {
             font-weight: bold;
             text-decoration: underline;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
           }
           .skills-list {
-            margin-left: 12px;
+            margin-left: 15px;
           }
           .skills-list li {
-            margin-bottom: 1px;
+            margin-bottom: 2px;
           }
           
           /* Main table - fills page */
