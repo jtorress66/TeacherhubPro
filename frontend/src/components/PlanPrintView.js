@@ -99,252 +99,280 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       <head>
         <title>Lesson Plan - ${plan.unit || 'Plan'}</title>
         <style>
+          /* CRITICAL: Force exact page dimensions */
           @page { 
-            size: letter landscape;
-            margin: 0.2in; 
+            size: 11in 8.5in; /* Landscape letter */
+            margin: 0.15in;
           }
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { 
-            font-family: Arial, Helvetica, sans-serif; 
-            font-size: 8pt;
-            line-height: 1.2;
+          
+          * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+          }
+          
+          html, body {
+            width: 100%;
+            height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 7pt;
+            line-height: 1.15;
             color: #000;
           }
           
-          /* PAGE CONTAINER - FILLS ENTIRE PAGE HEIGHT */
+          /* ========================================
+             PAGE: CSS GRID - GUARANTEED SINGLE PAGE
+             ======================================== */
           .page {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            width: 10.7in;
+            height: 8.2in; /* Exact height minus margins */
+            display: grid;
+            grid-template-rows: auto auto auto auto minmax(0, 1fr);
             page-break-after: always;
             page-break-inside: avoid;
-            overflow: hidden;
+            overflow: hidden; /* CRITICAL: Clip any overflow */
           }
           .page:last-child { page-break-after: avoid; }
           
-          /* Header */
+          /* HEADER - Fixed height */
           .header {
             text-align: center;
-            padding-bottom: 3px;
-            margin-bottom: 3px;
-            border-bottom: 2px solid #333;
-            flex-shrink: 0;
+            padding-bottom: 2px;
+            border-bottom: 1.5pt solid #333;
           }
           .header-logo {
-            height: 30px;
+            height: 24px;
             object-fit: contain;
-            margin-bottom: 1px;
           }
           .school-name {
-            font-size: 10pt;
+            font-size: 9pt;
             font-weight: bold;
-            margin: 1px 0;
+            margin: 0;
           }
           .school-info {
-            font-size: 6pt;
+            font-size: 5.5pt;
             color: #333;
           }
           .plan-title {
-            font-size: 9pt;
+            font-size: 8pt;
             font-weight: bold;
-            margin-top: 2px;
+            margin-top: 1px;
           }
           
-          /* Info row */
+          /* INFO ROW - Fixed height */
           .info-row {
             display: flex;
             justify-content: space-between;
             padding: 2px 0;
-            margin-bottom: 3px;
             border-bottom: 1px solid #999;
-            font-size: 7pt;
-            flex-shrink: 0;
+            font-size: 6.5pt;
           }
           .info-row strong { font-weight: bold; }
           
-          /* Objective box */
+          /* OBJECTIVE BOX - Fixed height */
           .objective-box {
             border: 1px solid #000;
-            padding: 2px 4px;
-            margin-bottom: 3px;
-            font-size: 7pt;
-            flex-shrink: 0;
+            padding: 2px 3px;
+            margin: 2px 0;
+            font-size: 6.5pt;
           }
           .objective-box strong {
             font-weight: bold;
             text-decoration: underline;
           }
           
-          /* Skills box */
+          /* SKILLS BOX - Fixed height */
           .skills-box {
             border: 1px solid #000;
-            padding: 2px 4px;
-            margin-bottom: 3px;
+            padding: 2px 3px;
+            margin-bottom: 2px;
             font-size: 6pt;
-            flex-shrink: 0;
           }
           .skills-title {
             font-weight: bold;
             text-decoration: underline;
-            margin-bottom: 1px;
           }
           .skills-list {
-            margin-left: 12px;
+            margin: 0 0 0 10px;
+            padding: 0;
           }
           .skills-list li {
-            margin-bottom: 0px;
+            margin: 0;
           }
           
-          /* TABLE WRAPPER - GROWS TO FILL REMAINING SPACE */
-          .table-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-          }
-          
-          /* Main table - FILLS wrapper height */
-          table.main-grid {
-            width: 100%;
-            height: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-            font-size: 5pt;
-          }
-          table.main-grid th,
-          table.main-grid td {
+          /* ========================================
+             MAIN TABLE - FILLS REMAINING SPACE
+             Uses CSS Grid for precise row distribution
+             ======================================== */
+          .table-container {
+            display: grid;
+            grid-template-rows: auto repeat(4, minmax(0, 1fr)); /* Header + 4 equal rows */
             border: 1px solid #000;
-            padding: 1px;
-            vertical-align: top;
-            word-wrap: break-word;
+            min-height: 0; /* Critical for grid item sizing */
+            overflow: hidden;
           }
-          table.main-grid th {
-            background: #f0f0f0;
-            font-weight: bold;
-            text-align: center;
-            font-size: 6pt;
+          
+          /* Table header row */
+          .table-header {
+            display: grid;
+            grid-template-columns: 9% repeat(5, 1fr);
+            border-bottom: 1px solid #000;
+            background: #e8e8e8;
+          }
+          .table-header > div {
+            border-right: 1px solid #000;
             padding: 2px;
-          }
-          
-          /* Column widths */
-          .col-label { width: 8%; }
-          .col-day { width: 18.4%; }
-          
-          /* Day header */
-          .day-header {
+            text-align: center;
             font-weight: bold;
-            font-size: 7pt;
+            font-size: 6.5pt;
           }
-          .eca-line {
-            font-size: 5pt;
-            margin-top: 0px;
-          }
+          .table-header > div:last-child { border-right: none; }
           
-          /* Row label */
+          /* Table content rows */
+          .table-row {
+            display: grid;
+            grid-template-columns: 9% repeat(5, 1fr);
+            border-bottom: 1px solid #000;
+            min-height: 0;
+            overflow: hidden;
+          }
+          .table-row:last-child { border-bottom: none; }
+          
+          .table-row > div {
+            border-right: 1px solid #000;
+            padding: 1px 2px;
+            overflow: hidden;
+            min-height: 0;
+            font-size: 5.5pt;
+          }
+          .table-row > div:last-child { border-right: none; }
+          
+          /* Row label cell */
           .row-label {
             font-weight: bold;
-            font-size: 5pt;
+            font-size: 5pt !important;
             background: #f5f5f5;
+            display: flex;
+            align-items: flex-start;
+            line-height: 1.1;
+          }
+          
+          /* Day theme cell */
+          .theme-cell {
+            text-align: center;
+            font-weight: bold;
+            font-size: 7pt !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          
+          /* DOK/Activity/Material cells */
+          .content-cell {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
           }
           
           /* Checkbox */
           .chk {
             display: inline-block;
-            width: 6px;
-            height: 6px;
-            border: 1px solid #000;
+            width: 5px;
+            height: 5px;
+            border: 0.5pt solid #000;
             margin-right: 1px;
             vertical-align: middle;
             text-align: center;
-            font-size: 4pt;
+            font-size: 3.5pt;
             line-height: 4px;
           }
           .chk.checked {
             background: #000;
-            color: #fff;
           }
           
-          /* DOK levels */
-          .dok-item {
-            font-size: 5pt;
-            line-height: 1.0;
-            margin-bottom: 0px;
-          }
-          
-          /* Activity/Material items */
+          /* Item row (DOK/Activity/Material) */
           .item-row {
-            font-size: 5pt;
-            line-height: 1.0;
-            margin-bottom: 0px;
+            font-size: 5.5pt;
+            line-height: 1.1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
           
-          /* ===== STANDARDS PAGE (Page B) ===== */
+          /* ECA line in header */
+          .eca-line {
+            font-size: 5pt;
+          }
+          
+          /* ===== STANDARDS PAGE ===== */
+          .page.standards-page {
+            grid-template-rows: auto auto 1fr auto auto;
+          }
+          
           .standards-grid {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 10px 0;
           }
           .standards-week {
-            flex: 1;
             border: 1px solid #000;
-            padding: 10px;
+            padding: 8px;
           }
           .standards-title {
             font-weight: bold;
-            font-size: 11pt;
-            border-bottom: 2px solid #000;
-            padding-bottom: 6px;
-            margin-bottom: 10px;
+            font-size: 10pt;
+            border-bottom: 1.5pt solid #000;
+            padding-bottom: 4px;
+            margin-bottom: 8px;
           }
           .standard-row {
-            font-size: 10pt;
-            margin-bottom: 6px;
+            font-size: 9pt;
+            margin-bottom: 4px;
           }
           .expectations-box {
             border: 1px solid #000;
-            padding: 8px;
-            margin-top: 12px;
-            min-height: 80px;
-            font-size: 10pt;
+            padding: 6px;
+            margin-top: 10px;
+            min-height: 60px;
+            font-size: 9pt;
           }
           
-          /* Integration section */
           .integration-section {
             border: 1px solid #000;
-            padding: 10px;
-            margin-bottom: 15px;
-            font-size: 10pt;
+            padding: 8px;
+            margin: 10px 0;
+            font-size: 9pt;
           }
           .integration-title {
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
           }
           .integration-items {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 12px;
           }
           
-          /* Signatures */
           .signatures {
             display: flex;
             justify-content: space-between;
-            margin-top: 30px;
-            padding-top: 15px;
+            margin-top: 20px;
+            padding-top: 12px;
           }
           .sig-line {
             width: 40%;
             border-top: 1px solid #000;
-            padding-top: 8px;
+            padding-top: 6px;
             text-align: center;
-            font-size: 10pt;
+            font-size: 9pt;
           }
           
           @media print {
-            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .page { page-break-after: always; }
-            .page:last-child { page-break-after: avoid; }
+            html, body { 
+              -webkit-print-color-adjust: exact; 
+              print-color-adjust: exact; 
+            }
           }
         </style>
       </head>
