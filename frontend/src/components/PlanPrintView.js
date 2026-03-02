@@ -60,7 +60,7 @@ const styles = {
     height: '8in',
     fontFamily: 'Arial, Helvetica, sans-serif',
     fontSize: '9pt',
-    lineHeight: '1.35',
+    lineHeight: '1.4',
     color: '#000',
     overflow: 'hidden',
     pageBreakAfter: 'always',
@@ -69,53 +69,53 @@ const styles = {
   // Header section
   header: {
     textAlign: 'center',
-    paddingBottom: '5px',
+    paddingBottom: '6px',
     borderBottom: '2pt solid #333',
-    marginBottom: '5px',
+    marginBottom: '6px',
   },
   headerLogo: {
-    height: '32px',
+    height: '35px',
     objectFit: 'contain',
   },
   schoolName: {
-    fontSize: '12pt',
+    fontSize: '13pt',
     fontWeight: 'bold',
     margin: 0,
   },
   schoolInfo: {
-    fontSize: '7.5pt',
+    fontSize: '8pt',
     color: '#333',
   },
   planTitle: {
-    fontSize: '11pt',
+    fontSize: '12pt',
     fontWeight: 'bold',
-    marginTop: '3px',
+    marginTop: '4px',
   },
   // Info row
   infoRow: {
     display: 'flex',
     justifyContent: 'space-between',
-    padding: '5px 0',
+    padding: '6px 0',
     borderBottom: '1px solid #999',
     fontSize: '9pt',
-    marginBottom: '5px',
+    marginBottom: '6px',
   },
   // Objective box
   objectiveBox: {
     border: '1px solid #000',
-    padding: '5px 8px',
-    marginBottom: '5px',
+    padding: '6px 8px',
+    marginBottom: '6px',
     fontSize: '9pt',
   },
   // Skills box
   skillsBox: {
     border: '1px solid #000',
-    padding: '5px 8px',
-    marginBottom: '6px',
+    padding: '6px 8px',
+    marginBottom: '8px',
     fontSize: '8.5pt',
   },
   skillsList: {
-    margin: '0 0 0 16px',
+    margin: '2px 0 0 18px',
     padding: 0,
   },
   // Table - COMPACT, no stretching
@@ -126,7 +126,7 @@ const styles = {
   },
   th: {
     border: '1px solid #000',
-    padding: '5px 4px',
+    padding: '6px 4px',
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: '9pt',
@@ -135,7 +135,7 @@ const styles = {
   },
   td: {
     border: '1px solid #000',
-    padding: '4px 5px',
+    padding: '5px 6px',
     verticalAlign: 'top',
     fontSize: '8pt',
   },
@@ -145,20 +145,20 @@ const styles = {
     background: '#f5f5f5',
     width: '9%',
     verticalAlign: 'top',
-    padding: '5px',
+    padding: '6px',
   },
   themeCell: {
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: '9pt',
     verticalAlign: 'middle',
-    padding: '6px 5px',
+    padding: '8px 6px',
   },
   // Checkbox - visible size
   checkbox: (checked) => ({
     display: 'inline-block',
-    width: '8px',
-    height: '8px',
+    width: '9px',
+    height: '9px',
     border: '0.5pt solid #000',
     marginRight: '4px',
     verticalAlign: 'middle',
@@ -167,12 +167,12 @@ const styles = {
   // Item row - larger font and spacing
   itemRow: {
     fontSize: '8pt',
-    lineHeight: '1.5',
+    lineHeight: '1.6',
     marginBottom: '3px',
   },
   ecaLine: {
-    fontSize: '6.5pt',
-    marginTop: '3px',
+    fontSize: '7pt',
+    marginTop: '4px',
   },
 };
 
