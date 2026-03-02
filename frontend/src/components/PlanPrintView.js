@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useSchool } from '../contexts/SchoolContext';
 import { Button } from './ui/button';
@@ -44,6 +44,272 @@ const formatDate = (dateStr) => {
   return dateStr;
 };
 
+// Generate print-ready CSS - this is critical for matching the reference
+const generatePrintStyles = () => `
+  /* CRITICAL: Letter Portrait - 8.5 x 11 inches */
+  @page {
+    size: 8.5in 11in;
+    margin: 0.3in;
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 6pt;
+    line-height: 1.15;
+    color: #000;
+  }
+  
+  .print-page {
+    width: 7.9in;
+    min-height: 10.4in;
+    max-height: 10.4in;
+    overflow: hidden;
+    page-break-after: always;
+    padding: 0;
+  }
+  .print-page:last-child {
+    page-break-after: avoid;
+  }
+  
+  /* === HEADER === */
+  .print-header {
+    text-align: center;
+    margin-bottom: 4pt;
+    padding-bottom: 2pt;
+    border-bottom: 1px solid #000;
+  }
+  .print-header img {
+    height: 32px;
+    margin-bottom: 2px;
+  }
+  .school-name {
+    font-size: 10pt;
+    font-weight: bold;
+    margin: 0;
+  }
+  .school-info {
+    font-size: 6pt;
+    margin: 1px 0;
+  }
+  
+  /* === DATE LINE === */
+  .date-line {
+    font-size: 7pt;
+    padding: 2pt 0;
+    border-bottom: 1px solid #000;
+    margin-bottom: 4pt;
+  }
+  
+  /* === OBJECTIVE BOX === */
+  .objective-box {
+    border: 1px solid #000;
+    padding: 2pt 4pt;
+    margin-bottom: 4pt;
+    font-size: 6.5pt;
+    min-height: 18pt;
+  }
+  .objective-box b {
+    text-decoration: underline;
+  }
+  
+  /* === SKILLS BOX === */
+  .skills-box {
+    border: 1px solid #000;
+    padding: 2pt 4pt;
+    margin-bottom: 4pt;
+    font-size: 6.5pt;
+  }
+  .skills-box b {
+    text-decoration: underline;
+  }
+  .skills-box ol {
+    margin: 1pt 0 0 12pt;
+    padding: 0;
+  }
+  .skills-box li {
+    margin: 0;
+    line-height: 1.2;
+  }
+  
+  /* === MAIN TABLE - CRITICAL SECTION === */
+  .plan-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 5.5pt;
+  }
+  
+  .plan-table th,
+  .plan-table td {
+    border: 1px solid #000;
+    padding: 1pt 2pt;
+    vertical-align: top;
+    text-align: left;
+  }
+  
+  .plan-table th {
+    background-color: #e8e8e8;
+    font-weight: bold;
+    text-align: center;
+    font-size: 6pt;
+  }
+  
+  /* Column widths: Label column + 5 day columns */
+  .col-label {
+    width: 11%;
+  }
+  .col-day {
+    width: 17.8%;
+  }
+  
+  /* Day header cell */
+  .day-header {
+    font-weight: bold;
+    font-size: 6.5pt;
+  }
+  .eca-line {
+    font-size: 5pt;
+    margin-top: 1pt;
+  }
+  
+  /* Row label styling */
+  .row-label {
+    background-color: #f5f5f5;
+    font-weight: bold;
+    font-size: 5.5pt;
+    vertical-align: top;
+  }
+  
+  /* Theme row - centered, bold */
+  .theme-cell {
+    text-align: center;
+    font-weight: bold;
+    font-size: 6.5pt;
+    vertical-align: middle;
+  }
+  
+  /* Checkbox styling - matching reference exactly */
+  .chk {
+    display: inline-block;
+    width: 6pt;
+    height: 6pt;
+    border: 0.5pt solid #000;
+    margin-right: 1pt;
+    vertical-align: middle;
+    text-align: center;
+    line-height: 5pt;
+    font-size: 4pt;
+    font-weight: bold;
+  }
+  .chk.x::after {
+    content: "X";
+  }
+  
+  /* Content items in table cells */
+  .item {
+    font-size: 5.5pt;
+    line-height: 1.15;
+    margin-bottom: 0.5pt;
+    display: block;
+  }
+  
+  /* DOK/Taxonomy items - slightly smaller */
+  .dok-item {
+    font-size: 5pt;
+    line-height: 1.1;
+    margin-bottom: 0.5pt;
+  }
+  
+  /* === STANDARDS PAGE (Page 2) === */
+  .page-title {
+    font-size: 11pt;
+    font-weight: bold;
+    text-align: center;
+    margin: 6pt 0;
+  }
+  
+  .info-grid {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #000;
+    padding: 4pt;
+    margin-bottom: 8pt;
+    font-size: 7pt;
+  }
+  
+  .standards-row {
+    display: flex;
+    gap: 8pt;
+    margin-bottom: 8pt;
+  }
+  
+  .standard-col {
+    flex: 1;
+    border: 2px solid #000;
+    padding: 4pt;
+  }
+  
+  .standard-title {
+    font-weight: bold;
+    font-size: 8pt;
+    border-bottom: 2px solid #000;
+    padding-bottom: 3pt;
+    margin-bottom: 4pt;
+  }
+  
+  .standard-item {
+    font-size: 7pt;
+    margin-bottom: 2pt;
+  }
+  
+  .expectations-box {
+    border: 1px solid #000;
+    padding: 4pt;
+    margin-top: 6pt;
+    min-height: 50pt;
+    font-size: 7pt;
+  }
+  .expectations-box b {
+    text-decoration: underline;
+  }
+  
+  .integration-section {
+    border: 1px solid #000;
+    padding: 6pt;
+    margin-bottom: 10pt;
+    font-size: 7pt;
+  }
+  .integration-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8pt;
+    margin-top: 3pt;
+  }
+  
+  .signatures {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20pt;
+  }
+  .sig-line {
+    width: 45%;
+    border-top: 1px solid #000;
+    padding-top: 4pt;
+    text-align: center;
+    font-size: 7pt;
+  }
+  
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+`;
+
 export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) => {
   const { language } = useLanguage();
   const { school: contextSchool } = useSchool();
@@ -80,6 +346,11 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
            plan.expectations?.find(e => e.week_index === weekIndex)?.text || '';
   };
 
+  // Checkbox component - renders as proper checkbox
+  const Chk = ({ checked }) => (
+    <span className={`chk ${checked ? 'x' : ''}`} />
+  );
+
   const handlePrint = () => {
     const printContent = printRef.current;
     const printWindow = window.open('', '_blank');
@@ -89,246 +360,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
 <html>
 <head>
   <title>Lesson Plan - ${plan.unit || 'Plan'}</title>
-  <style>
-    /* PORTRAIT LETTER - Matching Reference Images */
-    @page {
-      size: Letter portrait;
-      margin: 0.4in 0.3in;
-    }
-    
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    body {
-      font-family: Arial, sans-serif;
-      font-size: 8pt;
-      line-height: 1.2;
-    }
-    
-    /* Each page */
-    .page {
-      width: 100%;
-      page-break-after: always;
-    }
-    .page:last-child {
-      page-break-after: avoid;
-    }
-    
-    /* HEADER - Compact like reference */
-    .header {
-      text-align: center;
-      margin-bottom: 8px;
-    }
-    .header img {
-      height: 40px;
-      margin-bottom: 2px;
-    }
-    .school-name {
-      font-size: 12pt;
-      font-weight: bold;
-    }
-    .school-address {
-      font-size: 7pt;
-    }
-    .school-contact {
-      font-size: 7pt;
-    }
-    
-    /* Date line */
-    .date-line {
-      border-bottom: 1px solid #000;
-      padding: 4px 0;
-      margin-bottom: 6px;
-      font-size: 8pt;
-    }
-    
-    /* Objective box */
-    .objective-box {
-      border: 1px solid #000;
-      padding: 4px 6px;
-      margin-bottom: 6px;
-      font-size: 8pt;
-      min-height: 30px;
-    }
-    .objective-box strong {
-      text-decoration: underline;
-    }
-    
-    /* Skills box */
-    .skills-box {
-      border: 1px solid #000;
-      padding: 4px 6px;
-      margin-bottom: 8px;
-      font-size: 8pt;
-    }
-    .skills-box strong {
-      text-decoration: underline;
-    }
-    .skills-box ol {
-      margin: 2px 0 0 16px;
-      padding: 0;
-    }
-    .skills-box li {
-      margin: 1px 0;
-    }
-    
-    /* MAIN TABLE - Matching reference exactly */
-    .main-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 7pt;
-      table-layout: fixed;
-    }
-    .main-table th,
-    .main-table td {
-      border: 1px solid #000;
-      padding: 2px 3px;
-      vertical-align: top;
-    }
-    .main-table th {
-      background: #e0e0e0;
-      font-weight: bold;
-      text-align: center;
-      font-size: 8pt;
-    }
-    
-    /* Column widths */
-    .col-label { width: 12%; }
-    .col-day { width: 17.6%; }
-    
-    /* Day header with ECA checkboxes */
-    .day-header {
-      font-weight: bold;
-      font-size: 8pt;
-    }
-    .eca-row {
-      font-size: 6pt;
-      margin-top: 2px;
-    }
-    
-    /* Row label cell */
-    .row-label {
-      font-weight: bold;
-      font-size: 7pt;
-      background: #f5f5f5;
-      text-align: left;
-      vertical-align: top;
-    }
-    
-    /* Theme cell */
-    .theme-cell {
-      text-align: center;
-      font-weight: bold;
-      font-size: 8pt;
-      vertical-align: middle;
-      min-height: 20px;
-    }
-    
-    /* Checkbox styling - matching reference */
-    .chk {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border: 1px solid #000;
-      margin-right: 2px;
-      vertical-align: middle;
-      font-size: 6pt;
-      text-align: center;
-      line-height: 6px;
-    }
-    .chk.checked::after {
-      content: "X";
-      font-weight: bold;
-    }
-    
-    /* Item rows in cells */
-    .item-row {
-      font-size: 6.5pt;
-      line-height: 1.3;
-      margin-bottom: 1px;
-    }
-    
-    /* ===== STANDARDS PAGE (Page B) ===== */
-    .info-grid {
-      display: flex;
-      justify-content: space-between;
-      border: 1px solid #000;
-      padding: 6px;
-      margin-bottom: 10px;
-    }
-    .info-left {
-      font-size: 9pt;
-    }
-    .info-right {
-      font-size: 9pt;
-      text-align: right;
-    }
-    
-    /* Standards two-column layout */
-    .standards-container {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .standards-week {
-      flex: 1;
-      border: 2px solid #000;
-      padding: 8px;
-    }
-    .standards-title {
-      font-weight: bold;
-      font-size: 10pt;
-      border-bottom: 2px solid #000;
-      padding-bottom: 4px;
-      margin-bottom: 6px;
-    }
-    .standard-item {
-      font-size: 9pt;
-      margin-bottom: 3px;
-    }
-    .expectations-box {
-      border: 1px solid #000;
-      padding: 6px;
-      margin-top: 8px;
-      min-height: 80px;
-      font-size: 9pt;
-    }
-    .expectations-box strong {
-      text-decoration: underline;
-    }
-    
-    /* Integration section */
-    .integration-section {
-      border: 1px solid #000;
-      padding: 8px;
-      margin-bottom: 15px;
-      font-size: 9pt;
-    }
-    .integration-items {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 4px;
-    }
-    
-    /* Signatures */
-    .signatures {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 30px;
-      padding-top: 10px;
-    }
-    .sig-line {
-      width: 45%;
-      border-top: 1px solid #000;
-      padding-top: 6px;
-      text-align: center;
-      font-size: 9pt;
-    }
-    
-    @media print {
-      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    }
-  </style>
+  <style>${generatePrintStyles()}</style>
 </head>
 <body>
   ${printContent.innerHTML}
@@ -344,64 +376,59 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     }, 300);
   };
 
-  // Checkbox component matching reference
-  const Chk = ({ checked }) => (
-    <span className={`chk ${checked ? 'checked' : ''}`} />
-  );
-
-  // Weekly Plan Page - Matching "Techers Planner A.jpeg"
+  // Weekly Plan Page - matches reference "Teachers Planner A.jpeg"
   const WeeklyPlanPage = ({ days, weekNum, weekStart, weekEnd, objective, skills }) => (
-    <div className="page">
+    <div className="print-page">
       {/* Header */}
-      <div className="header">
+      <div className="print-header">
         {school?.logo_url && <img src={school.logo_url} alt="" />}
         <div className="school-name">{school?.name || 'School Name'}</div>
-        <div className="school-address">{school?.address || ''}</div>
-        <div className="school-contact">
+        {school?.address && <div className="school-info">{school.address}</div>}
+        <div className="school-info">
           {school?.phone && `Tel. ${school.phone}`}
           {school?.email && ` | ${school.email}`}
         </div>
       </div>
       
-      {/* Date line */}
+      {/* Date Line */}
       <div className="date-line">
-        <strong>Date:</strong> From {formatDate(weekStart)} To {formatDate(weekEnd)}
+        <b>Date:</b> From {formatDate(weekStart)} To {formatDate(weekEnd)}
         {weekNum === 2 && ' (Week 2)'}
       </div>
       
       {/* Objective */}
       <div className="objective-box">
-        <strong>Objective of the week:</strong> {objective || ''}
+        <b>Objective of the week:</b> {objective || '______________________________________________________'}
       </div>
       
       {/* Skills */}
       <div className="skills-box">
-        <strong>Skills of the week:</strong>
+        <b>Skills of the week:</b>
         <ol>
-          {(skills || []).filter(s => s).length > 0 ? (
-            skills.filter(s => s).map((skill, i) => <li key={i}>{skill}</li>)
+          {(skills && skills.filter(s => s).length > 0) ? (
+            skills.filter(s => s).slice(0, 4).map((skill, i) => <li key={i}>{skill}</li>)
           ) : (
             <>
-              <li>______________________________________</li>
-              <li>______________________________________</li>
-              <li>______________________________________</li>
-              <li>______________________________________</li>
+              <li>_____________________________________________</li>
+              <li>_____________________________________________</li>
+              <li>_____________________________________________</li>
+              <li>_____________________________________________</li>
             </>
           )}
         </ol>
       </div>
       
-      {/* Main Table - Matching reference layout */}
-      <table className="main-table">
+      {/* Main Weekly Table */}
+      <table className="plan-table">
         <thead>
           <tr>
             <th className="col-label"></th>
             {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, idx) => (
               <th key={day} className="col-day">
                 <div className="day-header">{DAY_LABELS[day][lang]}</div>
-                <div className="eca-row">
-                  <Chk checked={days[idx]?.eca?.E} />E{' '}
-                  <Chk checked={days[idx]?.eca?.C} />C{' '}
+                <div className="eca-line">
+                  <Chk checked={days[idx]?.eca?.E} />E&nbsp;
+                  <Chk checked={days[idx]?.eca?.C} />C&nbsp;
                   <Chk checked={days[idx]?.eca?.A} />A
                 </div>
               </th>
@@ -409,7 +436,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           </tr>
         </thead>
         <tbody>
-          {/* Day Theme */}
+          {/* Day Theme Row */}
           <tr>
             <td className="row-label">Day Theme</td>
             {days.map((day, i) => (
@@ -417,22 +444,22 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             ))}
           </tr>
           
-          {/* Type of Taxonomy */}
+          {/* Type of Taxonomy / Webb Levels Row */}
           <tr>
             <td className="row-label">
               Type of<br/>Taxonomy:<br/>Webb (2005)<br/>Levels
             </td>
             {days.map((day, i) => (
               <td key={i}>
-                <div className="item-row"><Chk checked={day.dok_levels?.includes(1)} /> Level 1: Memory Thought<br/>(Knowledge in or the same way as learned)</div>
-                <div className="item-row"><Chk checked={day.dok_levels?.includes(2)} /> Level 2: Processing<br/>(Requires some basic mental reasoning, something beyond memory)</div>
-                <div className="item-row"><Chk checked={day.dok_levels?.includes(3)} /> Level 3: Thinking Strategic<br/>(Demonstrate knowledge based on complex and abstract cognitive demand)</div>
-                <div className="item-row"><Chk checked={day.dok_levels?.includes(4)} /> Level 4: Thinking Thought Extended<br/>(extends knowledge to broader contexts)</div>
+                <span className="dok-item"><Chk checked={day.dok_levels?.includes(1)} /> Level 1: Memory Thought<br/>(Knowledge in or the same way as learned)</span>
+                <span className="dok-item"><Chk checked={day.dok_levels?.includes(2)} /> Level 2: Processing<br/>(Requires some basic mental reasoning, something beyond memory)</span>
+                <span className="dok-item"><Chk checked={day.dok_levels?.includes(3)} /> Level 3: Thinking Strategic<br/>(Demonstrate knowledge based on complex and abstract cognitive demand)</span>
+                <span className="dok-item"><Chk checked={day.dok_levels?.includes(4)} /> Level 4: Thinking Thought Extended<br/>(extends knowledge to broader contexts)</span>
               </td>
             ))}
           </tr>
           
-          {/* Activities */}
+          {/* Activities Row */}
           <tr>
             <td className="row-label">Activities</td>
             {days.map((day, i) => (
@@ -440,17 +467,17 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
                 {Object.keys(ACTIVITY_LABELS).map(actType => {
                   const activity = day.activities?.find(a => a.activity_type === actType);
                   return (
-                    <div key={actType} className="item-row">
+                    <span key={actType} className="item">
                       <Chk checked={activity?.checked} /> {ACTIVITY_LABELS[actType][lang]}
                       {actType === 'other' && activity?.checked && activity?.notes && ` ${activity.notes}`}
-                    </div>
+                    </span>
                   );
                 })}
               </td>
             ))}
           </tr>
           
-          {/* Materials */}
+          {/* Materials Row */}
           <tr>
             <td className="row-label">Materials</td>
             {days.map((day, i) => (
@@ -458,10 +485,10 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
                 {Object.keys(MATERIAL_LABELS).map(matType => {
                   const material = day.materials?.find(m => m.material_type === matType);
                   return (
-                    <div key={matType} className="item-row">
+                    <span key={matType} className="item">
                       <Chk checked={material?.checked} /> {MATERIAL_LABELS[matType][lang]}
                       {matType === 'other' && material?.checked && material?.notes && ` ${material.notes}`}
-                    </div>
+                    </span>
                   );
                 })}
               </td>
@@ -472,31 +499,32 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     </div>
   );
 
-  // Standards Page - Matching "Teachers Planner B.jpeg"
+  // Standards Page - matches reference "Teachers Planner B.jpeg"
   const StandardsPage = () => (
-    <div className="page">
+    <div className="print-page">
       {/* Header */}
-      <div className="header">
+      <div className="print-header">
         {school?.logo_url && <img src={school.logo_url} alt="" />}
         <div className="school-name">{school?.name || 'School Name'}</div>
-        <div className="school-address">{school?.address || ''}</div>
-        <div className="school-contact">
+        {school?.address && <div className="school-info">{school.address}</div>}
+        <div className="school-info">
           {school?.phone && `Tel. ${school.phone}`}
           {school?.email && ` | ${school.email}`}
         </div>
-        <div style={{fontWeight: 'bold', fontSize: '11pt', marginTop: '4px'}}>Teacher's Planning</div>
       </div>
+      
+      <div className="page-title">Teacher's Planning</div>
       
       {/* Info Grid */}
       <div className="info-grid">
-        <div className="info-left">
-          <div><strong>Unit:</strong> {plan.unit || '_____'}</div>
-          <div><strong>Story:</strong> {plan.story || '_____'}</div>
-          <div><strong>Teacher:</strong> {plan.teacher_name || '_____'}</div>
-          <div><strong>Grade:</strong> {classInfo?.grade || ''}-{classInfo?.section || ''}</div>
+        <div>
+          <div><b>Unit:</b> {plan.unit || '_____'}</div>
+          <div><b>Story:</b> {plan.story || '_____'}</div>
+          <div><b>Teacher:</b> {plan.teacher_name || '_____'}</div>
+          <div><b>Grade:</b> {classInfo?.grade || ''}-{classInfo?.section || ''}</div>
         </div>
-        <div className="info-right">
-          <strong>Date</strong><br/>
+        <div style={{textAlign: 'right'}}>
+          <b>Date</b><br/>
           From: {formatDate(plan.week_start)} To: {formatDate(plan.week_end)}
           {(plan.week2_start || plan.week2_end) && (
             <><br/>From: {formatDate(plan.week2_start)} To: {formatDate(plan.week2_end)}</>
@@ -504,10 +532,10 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         </div>
       </div>
 
-      {/* Standards - Two Column Layout */}
-      <div className="standards-container">
-        <div className="standards-week">
-          <div className="standards-title">Standard: First Week</div>
+      {/* Standards - Two Column */}
+      <div className="standards-row">
+        <div className="standard-col">
+          <div className="standard-title">Standard: First Week</div>
           {[
             { key: 'listeningAndSpeaking', label: 'Listening/Speaking' },
             { key: 'foundationalSkills', label: 'Foundational Skills' },
@@ -519,19 +547,19 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             return (
               <div key={key} className="standard-item">
                 <Chk checked={standard?.codes?.length > 0} />
-                <strong> {label}</strong>
+                <b> {label}</b>
                 {standard?.codes?.length > 0 && ` ${standard.codes.join(', ')}`}
               </div>
             );
           })}
           <div className="expectations-box">
-            <strong>Expectations:</strong>
-            <div style={{marginTop: '4px'}}>{getExpectationForWeek(1)}</div>
+            <b>Expectations:</b>
+            <div style={{marginTop: '3pt'}}>{getExpectationForWeek(1)}</div>
           </div>
         </div>
         
-        <div className="standards-week">
-          <div className="standards-title">Standard: Second Week</div>
+        <div className="standard-col">
+          <div className="standard-title">Standard: Second Week</div>
           {[
             { key: 'listeningAndSpeaking', label: 'Listening/Speaking' },
             { key: 'foundationalSkills', label: 'Foundational Skills' },
@@ -543,21 +571,21 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             return (
               <div key={key} className="standard-item">
                 <Chk checked={standard?.codes?.length > 0} />
-                <strong> {label}</strong>
+                <b> {label}</b>
                 {standard?.codes?.length > 0 && ` ${standard.codes.join(', ')}`}
               </div>
             );
           })}
           <div className="expectations-box">
-            <strong>Expectations:</strong>
-            <div style={{marginTop: '4px'}}>{getExpectationForWeek(2)}</div>
+            <b>Expectations:</b>
+            <div style={{marginTop: '3pt'}}>{getExpectationForWeek(2)}</div>
           </div>
         </div>
       </div>
 
       {/* Integration */}
       <div className="integration-section">
-        <strong>Integration with other subjects:</strong>
+        <b>Integration with other subjects:</b>
         <div className="integration-items">
           {[
             { key: 'mathematics', label: 'Mathematics' },
@@ -585,7 +613,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
   );
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" data-testid="print-preview-modal">
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[95vh] overflow-auto">
         <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center z-10">
           <h2 className="font-heading font-semibold text-lg">
@@ -596,16 +624,17 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
               <Printer className="h-4 w-4" />
               {lang === 'es' ? 'Imprimir' : 'Print'}
             </Button>
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} data-testid="close-preview-btn">
               <X className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
+        {/* Preview container - styled to show pages */}
         <div className="p-4 bg-slate-200">
           <div ref={printRef}>
-            {/* Week 1 Page */}
-            <div className="bg-white shadow mb-4 mx-auto p-4" style={{ width: '8.5in', minHeight: '11in' }}>
+            {/* Week 1 */}
+            <div className="bg-white shadow mb-4 mx-auto" style={{ width: '8.5in', height: '11in', padding: '0.3in', overflow: 'hidden' }}>
               <WeeklyPlanPage
                 days={planDays}
                 weekNum={1}
@@ -616,9 +645,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
               />
             </div>
 
-            {/* Week 2 Page (if exists) */}
+            {/* Week 2 (if exists) */}
             {(plan.week2_start || plan.week2_end) && (
-              <div className="bg-white shadow mb-4 mx-auto p-4" style={{ width: '8.5in', minHeight: '11in' }}>
+              <div className="bg-white shadow mb-4 mx-auto" style={{ width: '8.5in', height: '11in', padding: '0.3in', overflow: 'hidden' }}>
                 <WeeklyPlanPage
                   days={planDaysWeek2}
                   weekNum={2}
@@ -631,7 +660,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             )}
 
             {/* Standards Page */}
-            <div className="bg-white shadow mx-auto p-4" style={{ width: '8.5in', minHeight: '11in' }}>
+            <div className="bg-white shadow mx-auto" style={{ width: '8.5in', height: '11in', padding: '0.3in', overflow: 'hidden' }}>
               <StandardsPage />
             </div>
           </div>
