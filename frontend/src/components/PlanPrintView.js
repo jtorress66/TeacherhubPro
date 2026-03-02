@@ -5,24 +5,24 @@ import { Button } from './ui/button';
 import { Printer, X } from 'lucide-react';
 
 const ACTIVITY_LABELS = {
-  brainstorming: { en: 'Brain storming', es: 'Lluvia de ideas' },
+  brainstorming: { en: 'Brainstorming', es: 'Lluvia de ideas' },
   buildingBackground: { en: 'Building background', es: 'Conocimiento previo' },
-  vocabularyDevelopment: { en: 'Vocabulary development', es: 'Vocabulario' },
-  readPages: { en: 'Read pages ___', es: 'Leer páginas ___' },
-  guidedReading: { en: 'Guided/choral reading', es: 'Lectura guiada/coral' },
-  oralQuestions: { en: 'Oral comprehension Qs', es: 'Preguntas orales' },
-  comprehensionQuestions: { en: 'Comprehension Qs', es: 'Preguntas comprensión' },
-  exercisePractice: { en: 'Exercise practice', es: 'Práctica ejercicio' },
+  vocabularyDevelopment: { en: 'Vocabulary dev.', es: 'Vocabulario' },
+  readPages: { en: 'Read pages', es: 'Leer páginas' },
+  guidedReading: { en: 'Guided reading', es: 'Lectura guiada' },
+  oralQuestions: { en: 'Oral comp. Qs', es: 'Preguntas orales' },
+  comprehensionQuestions: { en: 'Comprehension Qs', es: 'Preguntas comp.' },
+  exercisePractice: { en: 'Exercise practice', es: 'Práctica' },
   other: { en: 'Other', es: 'Otro' }
 };
 
 const MATERIAL_LABELS = {
   book: { en: 'Book', es: 'Libro' },
   notebook: { en: 'Notebook', es: 'Cuaderno' },
-  teachersGuide: { en: "Teacher's Guide", es: 'Guía del Maestro' },
-  testQuiz: { en: 'Test, quiz', es: 'Prueba, examen' },
+  teachersGuide: { en: "Teacher's Guide", es: 'Guía Maestro' },
+  testQuiz: { en: 'Test/Quiz', es: 'Prueba' },
   dictionary: { en: 'Dictionary', es: 'Diccionario' },
-  handouts: { en: 'Handouts', es: 'Hojas de trabajo' },
+  handouts: { en: 'Handouts', es: 'Hojas trabajo' },
   other: { en: 'Others', es: 'Otros' }
 };
 
