@@ -197,12 +197,12 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            font-size: 7pt;
+            font-size: 8pt;
           }
           table.main-grid th,
           table.main-grid td {
             border: 1px solid #000;
-            padding: 2px 3px;
+            padding: 3px 4px;
             vertical-align: top;
             word-wrap: break-word;
           }
@@ -210,8 +210,8 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             background: #f0f0f0;
             font-weight: bold;
             text-align: center;
-            font-size: 8pt;
-            padding: 3px;
+            font-size: 9pt;
+            padding: 4px;
           }
           
           /* Column widths */
@@ -221,31 +221,31 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Day header cell */
           .day-header {
             font-weight: bold;
-            font-size: 9pt;
+            font-size: 10pt;
           }
           .eca-line {
-            font-size: 6pt;
+            font-size: 7pt;
             margin-top: 2px;
           }
           
           /* Row label cell */
           .row-label {
             font-weight: bold;
-            font-size: 7pt;
+            font-size: 8pt;
             background: #f5f5f5;
           }
           
           /* Checkbox styling */
           .chk {
             display: inline-block;
-            width: 8px;
-            height: 8px;
+            width: 9px;
+            height: 9px;
             border: 1px solid #000;
             margin-right: 2px;
             vertical-align: middle;
             text-align: center;
-            font-size: 5pt;
-            line-height: 6px;
+            font-size: 6pt;
+            line-height: 7px;
           }
           .chk.checked {
             background: #000;
@@ -254,15 +254,15 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           
           /* Activity/Material items */
           .item-row {
-            font-size: 7pt;
-            line-height: 1.15;
-            margin-bottom: 0px;
+            font-size: 8pt;
+            line-height: 1.2;
+            margin-bottom: 1px;
           }
           
           /* DOK levels */
           .dok-item {
-            font-size: 7pt;
-            line-height: 1.2;
+            font-size: 8pt;
+            line-height: 1.25;
             margin-bottom: 1px;
           }
           
