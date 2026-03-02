@@ -20,8 +20,8 @@
     "frontend": "100% - All 5 test criteria passed"
   },
   "test_credentials": {
-    "API_URL": "https://lesson-planner-64.preview.emergentagent.com",
-    "test_game_url": "https://lesson-planner-64.preview.emergentagent.com/play-game/game_f1ca4b814708"
+    "API_URL": "https://teacherflow-app.preview.emergentagent.com",
+    "test_game_url": "https://teacherflow-app.preview.emergentagent.com/play-game/game_f1ca4b814708"
   },
   "seed_data_creation": "None - used existing game game_f1ca4b814708",
   "retest_needed": false,
