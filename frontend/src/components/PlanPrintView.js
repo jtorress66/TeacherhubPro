@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useSchool } from '../contexts/SchoolContext';
 import { Button } from './ui/button';
@@ -56,8 +56,34 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
   const { language } = useLanguage();
   const { school: contextSchool } = useSchool();
   const printRef = useRef();
+  const page1Ref = useRef();
+  const page2Ref = useRef();
+  const [page1Tight, setPage1Tight] = useState(false);
+  const [page2Tight, setPage2Tight] = useState(false);
   const lang = language === 'es' ? 'es' : 'en';
   const school = propSchool || contextSchool;
+
+  // Check for overflow after render and apply tight class if needed
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (page1Ref.current) {
+        const page1 = page1Ref.current;
+        if (page1.scrollHeight > page1.clientHeight + 5) {
+          setPage1Tight(true);
+        }
+      }
+      if (page2Ref.current) {
+        const page2 = page2Ref.current;
+        if (page2.scrollHeight > page2.clientHeight + 5) {
+          setPage2Tight(true);
+        }
+      }
+    };
+    
+    // Check after initial render and images load
+    const timer = setTimeout(checkOverflow, 100);
+    return () => clearTimeout(timer);
+  }, [plan]);
 
   const getWeekDays = (weekIndex) => {
     const weekDays = plan.days?.filter(d => d.week_index === weekIndex) || [];
@@ -116,7 +142,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             line-height: 1.3;
           }
           
-          /* FIXED PAGE CONTAINER - 10in height after margins */
+          /* FIXED PAGE CONTAINER - 7.5in height (letter landscape minus margins) */
           .print-page {
             width: 10.5in;
             height: 7.5in;
@@ -224,6 +250,54 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* ECA LINE */
           .eca-line { font-size: 7pt; margin-top: 2px; }
           
+          /* ============================================
+             TIGHT CLASS - Reduced spacing for overflow pages
+             ============================================ */
+          .print-page.tight .header {
+            padding-bottom: 2px;
+            margin-bottom: 3px;
+          }
+          .print-page.tight .header img { height: 24px; }
+          .print-page.tight .school-name { font-size: 11pt; }
+          .print-page.tight .plan-title { font-size: 10pt; margin-top: 1px; }
+          
+          .print-page.tight .info-row {
+            padding: 2px 0;
+            margin-bottom: 3px;
+            font-size: 8pt;
+          }
+          
+          .print-page.tight .objective-box,
+          .print-page.tight .skills-box {
+            padding: 2px 4px;
+            margin-bottom: 3px;
+            font-size: 8pt;
+            line-height: 1.2;
+          }
+          .print-page.tight .skills-box ol {
+            margin-left: 14px;
+          }
+          
+          .print-page.tight table.main-table th,
+          .print-page.tight table.main-table td {
+            padding: 2px 3px;
+          }
+          .print-page.tight table.main-table th {
+            font-size: 8pt;
+          }
+          .print-page.tight .item-row {
+            font-size: 7pt;
+            line-height: 1.25;
+            margin-bottom: 1px;
+          }
+          .print-page.tight .theme-cell {
+            font-size: 8pt;
+          }
+          .print-page.tight .row-label {
+            font-size: 6pt;
+          }
+          .print-page.tight .eca-line { font-size: 6pt; margin-top: 1px; }
+          
           /* STANDARDS PAGE */
           .standards-grid {
             display: flex;
@@ -300,8 +374,8 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
   );
 
   // Weekly Plan Page
-  const WeeklyPlanPage = ({ days, weekNum, weekStart, weekEnd, objective, skills }) => (
-    <div className="print-page">
+  const WeeklyPlanPage = ({ days, weekNum, weekStart, weekEnd, objective, skills, isTight, pageRef }) => (
+    <div className={`print-page ${isTight ? 'tight' : ''}`} ref={pageRef}>
       {/* Header */}
       <div className="header">
         {school?.logo_url && <img src={school.logo_url} alt="Logo" />}
@@ -547,7 +621,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <div className="p-6 bg-slate-200">
           <div ref={printRef}>
             {/* Page 1: Week 1 */}
-            <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', minHeight: '8.5in', padding: '0.25in' }}>
+            <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.25in', overflow: 'hidden' }}>
               <WeeklyPlanPage
                 days={planDays}
                 weekNum={1}
@@ -555,12 +629,14 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
                 weekEnd={plan.week_end}
                 objective={plan.objective}
                 skills={plan.skills}
+                isTight={page1Tight}
+                pageRef={page1Ref}
               />
             </div>
 
             {/* Page 2: Week 2 (if exists) */}
             {(plan.week2_start || plan.week2_end) && (
-              <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', minHeight: '8.5in', padding: '0.25in' }}>
+              <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.25in', overflow: 'hidden' }}>
                 <WeeklyPlanPage
                   days={planDaysWeek2}
                   weekNum={2}
@@ -568,12 +644,14 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
                   weekEnd={plan.week2_end}
                   objective={plan.objective_week2}
                   skills={plan.skills_week2}
+                  isTight={page2Tight}
+                  pageRef={page2Ref}
                 />
               </div>
             )}
 
             {/* Standards Page */}
-            <div className="bg-white shadow-lg mx-auto" style={{ width: '11in', minHeight: '8.5in', padding: '0.25in' }}>
+            <div className="bg-white shadow-lg mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.25in', overflow: 'hidden' }}>
               <StandardsPage />
             </div>
           </div>
