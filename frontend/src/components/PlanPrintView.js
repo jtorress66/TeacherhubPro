@@ -527,11 +527,11 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             <tr>
               <td className="row-label">Activities</td>
               {days.map((day, i) => (
-                <td key={i}>
+                <td key={i} style={{ fontSize: '5pt', lineHeight: 1.0, padding: '1px' }}>
                   {Object.keys(ACTIVITY_LABELS).map(actType => {
                     const activity = day.activities?.find(a => a.activity_type === actType);
                     return (
-                      <div key={actType} className="item-row">
+                      <div key={actType} style={{ marginBottom: '0' }}>
                         <Chk checked={activity?.checked} /> {ACTIVITY_LABELS[actType][lang]}
                         {actType === 'other' && activity?.checked && activity?.notes && (
                           <span style={{fontStyle:'italic'}}>: {activity.notes}</span>
@@ -547,11 +547,11 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             <tr>
               <td className="row-label">Materials</td>
               {days.map((day, i) => (
-                <td key={i}>
+                <td key={i} style={{ fontSize: '5pt', lineHeight: 1.0, padding: '1px' }}>
                   {Object.keys(MATERIAL_LABELS).map(matType => {
                     const material = day.materials?.find(m => m.material_type === matType);
                     return (
-                      <div key={matType} className="item-row">
+                      <div key={matType} style={{ marginBottom: '0' }}>
                         <Chk checked={material?.checked} /> {MATERIAL_LABELS[matType][lang]}
                         {matType === 'other' && material?.checked && material?.notes && (
                           <span style={{fontStyle:'italic'}}>: {material.notes}</span>
