@@ -101,175 +101,197 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <style>
           @page { 
             size: letter landscape;
-            margin: 0.25in; 
+            margin: 0.2in; 
           }
           * { margin: 0; padding: 0; box-sizing: border-box; }
           html, body { 
             height: 100%;
+            width: 100%;
           }
           body { 
             font-family: Arial, Helvetica, sans-serif; 
             font-size: 8pt;
-            line-height: 1.15;
+            line-height: 1.1;
             color: #000;
           }
+          
+          /* CRITICAL: Page must fill viewport and use flexbox to distribute space */
           .page {
             width: 100%;
-            height: 100%;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             page-break-after: always;
             page-break-inside: avoid;
+            overflow: hidden;
           }
           .page:last-child { page-break-after: avoid; }
           
-          /* Header styles */
+          /* Header - compact, fixed size */
           .header {
             text-align: center;
-            margin-bottom: 6px;
-            padding-bottom: 4px;
+            padding-bottom: 3px;
+            margin-bottom: 4px;
             border-bottom: 2px solid #333;
+            flex-shrink: 0;
           }
           .header-logo {
-            height: 40px;
+            height: 32px;
             object-fit: contain;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
           }
           .school-name {
-            font-size: 12pt;
+            font-size: 11pt;
             font-weight: bold;
-            margin: 2px 0;
+            margin: 1px 0;
           }
           .school-info {
-            font-size: 8pt;
+            font-size: 7pt;
             color: #333;
           }
           .plan-title {
-            font-size: 11pt;
+            font-size: 10pt;
             font-weight: bold;
-            margin-top: 3px;
+            margin-top: 2px;
           }
           
-          /* Info row */
+          /* Info row - compact */
           .info-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 6px;
-            padding: 4px 0;
+            padding: 3px 0;
+            margin-bottom: 4px;
             border-bottom: 1px solid #999;
-            font-size: 9pt;
+            font-size: 8pt;
+            flex-shrink: 0;
           }
           .info-row strong { font-weight: bold; }
           
-          /* Objective box */
+          /* Objective box - compact */
           .objective-box {
             border: 1px solid #000;
-            padding: 5px 8px;
-            margin-bottom: 6px;
-            font-size: 9pt;
-            min-height: 38px;
+            padding: 4px 6px;
+            margin-bottom: 4px;
+            font-size: 8pt;
+            flex-shrink: 0;
           }
           .objective-box strong {
             font-weight: bold;
             text-decoration: underline;
           }
           
-          /* Skills box */
+          /* Skills box - compact */
           .skills-box {
             border: 1px solid #000;
-            padding: 5px 8px;
-            margin-bottom: 8px;
-            font-size: 8pt;
+            padding: 4px 6px;
+            margin-bottom: 5px;
+            font-size: 7pt;
+            flex-shrink: 0;
           }
           .skills-title {
             font-weight: bold;
             text-decoration: underline;
-            margin-bottom: 3px;
-          }
-          .skills-list {
-            margin-left: 15px;
-          }
-          .skills-list li {
             margin-bottom: 2px;
           }
+          .skills-list {
+            margin-left: 12px;
+          }
+          .skills-list li {
+            margin-bottom: 1px;
+          }
           
-          /* Main table - MUST fill page */
+          /* TABLE WRAPPER - This is the key! It grows to fill remaining space */
+          .table-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+          }
+          
+          /* Main table - fills wrapper using height: 100% */
           table.main-grid {
             width: 100%;
+            height: 100%;
             border-collapse: collapse;
             table-layout: fixed;
             font-size: 7pt;
-            flex: 1;
           }
           table.main-grid th,
           table.main-grid td {
             border: 1px solid #000;
-            padding: 3px 4px;
+            padding: 2px 3px;
             vertical-align: top;
             word-wrap: break-word;
+            overflow: hidden;
           }
           table.main-grid th {
             background: #f0f0f0;
             font-weight: bold;
             text-align: center;
-            font-size: 9pt;
-            padding: 4px;
+            font-size: 8pt;
+            padding: 3px;
           }
           
           /* Column widths */
-          .col-label { width: 10%; }
-          .col-day { width: 18%; }
+          .col-label { width: 9%; }
+          .col-day { width: 18.2%; }
           
           /* Day header cell */
           .day-header {
             font-weight: bold;
-            font-size: 10pt;
+            font-size: 9pt;
           }
           .eca-line {
-            font-size: 7pt;
-            margin-top: 2px;
+            font-size: 6pt;
+            margin-top: 1px;
           }
           
           /* Row label cell */
           .row-label {
             font-weight: bold;
-            font-size: 7pt;
+            font-size: 6.5pt;
             background: #f5f5f5;
+            line-height: 1.2;
           }
           
           /* Checkbox styling */
           .chk {
             display: inline-block;
-            width: 9px;
-            height: 9px;
+            width: 7px;
+            height: 7px;
             border: 1px solid #000;
             margin-right: 2px;
             vertical-align: middle;
             text-align: center;
-            font-size: 6pt;
-            line-height: 7px;
+            font-size: 5pt;
+            line-height: 5px;
           }
           .chk.checked {
             background: #000;
             color: #fff;
           }
           
-          /* Activity/Material items - each item on its own line */
+          /* Activity/Material items */
           .item-row {
-            font-size: 7pt;
-            line-height: 1.25;
-            margin-bottom: 1px;
+            font-size: 6.5pt;
+            line-height: 1.2;
+            margin-bottom: 0;
           }
           
-          /* DOK levels - WITH DESCRIPTIONS */
+          /* DOK levels with full descriptions like in reference image */
           .dok-item {
             font-size: 6pt;
             line-height: 1.15;
-            margin-bottom: 1px;
+            margin-bottom: 2px;
+          }
+          .dok-title {
+            font-weight: bold;
           }
           .dok-desc {
-            font-size: 5pt;
-            color: #555;
+            font-size: 5.5pt;
+            color: #333;
+            display: block;
+            margin-left: 9px;
           }
           
           /* Standards page */
@@ -334,8 +356,28 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           }
           
           @media print {
-            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .page { height: auto; }
+            html, body { 
+              height: 100%; 
+              width: 100%;
+              overflow: hidden;
+            }
+            body { 
+              -webkit-print-color-adjust: exact; 
+              print-color-adjust: exact; 
+            }
+            .page { 
+              height: 100vh !important;
+              page-break-after: always;
+              page-break-inside: avoid;
+            }
+            .page:last-child { page-break-after: avoid; }
+            .table-wrapper {
+              flex: 1;
+              min-height: 0;
+            }
+            table.main-grid {
+              height: 100%;
+            }
           }
         </style>
       </head>
