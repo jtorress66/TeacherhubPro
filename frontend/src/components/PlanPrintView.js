@@ -52,6 +52,9 @@ const formatDate = (dateStr) => {
   return dateStr;
 };
 
+// Target height for one page (Letter landscape: 8.5in - 1in margins = 7.5in = 720px at 96dpi)
+const PAGE_HEIGHT_PX = 720;
+
 export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) => {
   const { language } = useLanguage();
   const { school: contextSchool } = useSchool();
@@ -63,41 +66,38 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
   const lang = language === 'es' ? 'es' : 'en';
   const school = propSchool || contextSchool;
 
-  // Escalating overflow detection - keeps tightening until content fits
+  // Measure and compress until content fits target height
   const fitPages = useCallback(() => {
     // Check page 1
-    if (page1Ref.current) {
-      const page = page1Ref.current;
-      const overflow = page.scrollHeight - page.clientHeight;
-      console.log('Page 1 overflow px:', overflow, 'current level:', page1TightLevel);
-      
-      if (overflow > 5 && page1TightLevel < 3) {
+    if (page1Ref.current && page1TightLevel < 5) {
+      const height = page1Ref.current.getBoundingClientRect().height;
+      console.log(`Page 1 height: ${height}px, target: ${PAGE_HEIGHT_PX}px, level: ${page1TightLevel}`);
+      if (height > PAGE_HEIGHT_PX) {
         setPage1TightLevel(prev => prev + 1);
       }
     }
     
     // Check page 2
-    if (page2Ref.current) {
-      const page = page2Ref.current;
-      const overflow = page.scrollHeight - page.clientHeight;
-      console.log('Page 2 overflow px:', overflow, 'current level:', page2TightLevel);
-      
-      if (overflow > 5 && page2TightLevel < 3) {
+    if (page2Ref.current && page2TightLevel < 5) {
+      const height = page2Ref.current.getBoundingClientRect().height;
+      console.log(`Page 2 height: ${height}px, target: ${PAGE_HEIGHT_PX}px, level: ${page2TightLevel}`);
+      if (height > PAGE_HEIGHT_PX) {
         setPage2TightLevel(prev => prev + 1);
       }
     }
   }, [page1TightLevel, page2TightLevel]);
 
-  // Run overflow detection multiple times to escalate if needed
+  // Run measurements after each render
   useEffect(() => {
     const timers = [
       setTimeout(fitPages, 50),
       setTimeout(fitPages, 150),
       setTimeout(fitPages, 300),
       setTimeout(fitPages, 500),
+      setTimeout(fitPages, 800),
     ];
     return () => timers.forEach(clearTimeout);
-  }, [fitPages, page1TightLevel, page2TightLevel]);
+  }, [fitPages]);
 
   const getWeekDays = (weekIndex) => {
     const weekDays = plan.days?.filter(d => d.week_index === weekIndex) || [];
@@ -128,12 +128,15 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
            plan.expectations?.find(e => e.week_index === weekIndex)?.text || '';
   };
 
-  // Get tight class based on level
+  // Get tight class based on level (0-5)
   const getTightClass = (level) => {
-    if (level >= 3) return 'tight tight2 tight3';
-    if (level >= 2) return 'tight tight2';
-    if (level >= 1) return 'tight';
-    return '';
+    const classes = [];
+    if (level >= 1) classes.push('tight1');
+    if (level >= 2) classes.push('tight2');
+    if (level >= 3) classes.push('tight3');
+    if (level >= 4) classes.push('tight4');
+    if (level >= 5) classes.push('tight5');
+    return classes.join(' ');
   };
 
   const handlePrint = () => {
@@ -160,65 +163,59 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           }
           
           html, body {
-            margin: 0 !important;
-            padding: 0 !important;
+            margin: 0;
+            padding: 0;
             font-family: Arial, sans-serif;
             font-size: 10pt;
             line-height: 1.3;
           }
           
-          /* FIXED PAGE CONTAINER - calc(11in - 1in) x calc(8.5in - 1in) */
+          /* PAGE FRAME - NO CLIPPING, uses break-after for page separation */
           .print-page {
             width: 10in;
-            height: 7.5in;
-            overflow: hidden;
-            page-break-after: always;
-            page-break-inside: avoid;
+            box-sizing: border-box;
+            break-after: page;
           }
           .print-page:last-child {
-            page-break-after: avoid;
-          }
-          .print-page * {
-            box-sizing: border-box;
+            break-after: auto;
           }
           
           /* HEADER */
           .header {
             text-align: center;
             border-bottom: 2px solid #333;
-            padding-bottom: 4px;
-            margin-bottom: 6px;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
           }
-          .header img { height: 30px; }
-          .school-name { font-size: 12pt; font-weight: bold; }
-          .school-info { font-size: 7pt; color: #333; }
-          .plan-title { font-size: 11pt; font-weight: bold; margin-top: 2px; }
+          .header img { height: 35px; }
+          .school-name { font-size: 14pt; font-weight: bold; }
+          .school-info { font-size: 8pt; color: #333; }
+          .plan-title { font-size: 12pt; font-weight: bold; margin-top: 4px; }
           
           /* INFO ROW */
           .info-row {
             display: flex;
             justify-content: space-between;
             border-bottom: 1px solid #999;
-            padding: 4px 0;
-            margin-bottom: 6px;
-            font-size: 9pt;
+            padding: 6px 0;
+            margin-bottom: 8px;
+            font-size: 10pt;
           }
           
           /* OBJECTIVE & SKILLS BOXES */
           .objective-box, .skills-box {
             border: 1px solid #000;
-            padding: 4px 6px;
-            margin-bottom: 6px;
-            font-size: 9pt;
-            line-height: 1.3;
+            padding: 6px 8px;
+            margin-bottom: 8px;
+            font-size: 10pt;
+            line-height: 1.4;
           }
           .skills-box ol {
-            margin: 0 0 0 16px;
+            margin: 2px 0 0 20px;
             padding: 0;
           }
           .skills-box li {
-            margin: 0;
-            padding: 0;
+            margin: 2px 0;
           }
           
           /* TABLE */
@@ -226,191 +223,156 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            font-size: 8pt;
+            font-size: 9pt;
           }
           table.main-table th,
           table.main-table td {
             border: 1px solid #000;
-            padding: 4px;
+            padding: 5px;
             vertical-align: top;
           }
           table.main-table th {
             background: #f0f0f0;
             font-weight: bold;
             text-align: center;
-            font-size: 9pt;
-          }
-          table.main-table tr {
-            page-break-inside: avoid;
+            font-size: 10pt;
           }
           
           .row-label {
             width: 9%;
             font-weight: bold;
-            font-size: 7pt;
+            font-size: 8pt;
             background: #f5f5f5;
           }
           .day-col { width: 18.2%; }
           .theme-cell {
             text-align: center;
             font-weight: bold;
-            font-size: 9pt;
+            font-size: 10pt;
           }
           
           .chk {
             display: inline-block;
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border: 1px solid #000;
-            margin-right: 3px;
+            margin-right: 4px;
             vertical-align: middle;
           }
           .chk.checked { background: #000; }
           
           .item-row {
-            font-size: 8pt;
-            line-height: 1.4;
-            margin-bottom: 2px;
-          }
-          .eca-line { font-size: 7pt; margin-top: 2px; }
-          
-          /* =============================================
-             TIGHT MODE LEVEL 1 - Moderate compression
-             ============================================= */
-          .print-page.tight .header {
-            padding-bottom: 2px;
-            margin-bottom: 4px;
-          }
-          .print-page.tight .header img { height: 26px; }
-          .print-page.tight .school-name { font-size: 11pt; }
-          .print-page.tight .plan-title { font-size: 10pt; margin-top: 1px; }
-          
-          .print-page.tight .info-row {
-            padding: 2px 0;
-            margin-bottom: 4px;
-            font-size: 8pt;
-          }
-          
-          .print-page.tight .objective-box,
-          .print-page.tight .skills-box {
-            padding: 3px 5px;
-            margin-bottom: 4px;
-            font-size: 8pt;
-            line-height: 1.2;
-          }
-          .print-page.tight .skills-box ol {
-            margin-left: 14px;
-          }
-          
-          .print-page.tight table.main-table th,
-          .print-page.tight table.main-table td {
-            padding: 3px;
-          }
-          .print-page.tight table.main-table th { font-size: 8pt; }
-          .print-page.tight .item-row {
-            font-size: 7.5pt;
-            line-height: 1.3;
-            margin-bottom: 1px;
-          }
-          .print-page.tight .theme-cell { font-size: 8pt; }
-          .print-page.tight .row-label { font-size: 6.5pt; }
-          .print-page.tight .eca-line { font-size: 6pt; margin-top: 1px; }
-          
-          /* =============================================
-             TIGHT MODE LEVEL 2 - Strong compression
-             ============================================= */
-          .print-page.tight2 .header {
-            padding-bottom: 1px;
+            font-size: 9pt;
+            line-height: 1.5;
             margin-bottom: 3px;
           }
-          .print-page.tight2 .header img { height: 22px; }
-          .print-page.tight2 .school-name { font-size: 10pt; }
-          .print-page.tight2 .school-info { font-size: 6pt; }
-          .print-page.tight2 .plan-title { font-size: 9pt; margin-top: 0; }
+          .eca-line { font-size: 8pt; margin-top: 4px; }
           
-          .print-page.tight2 .info-row {
-            padding: 1px 0;
-            margin-bottom: 3px;
-            font-size: 7.5pt;
-          }
+          /* =============================================
+             TIGHT LEVEL 1 - Light compression
+             ============================================= */
+          .print-page.tight1 .header { padding-bottom: 4px; margin-bottom: 6px; }
+          .print-page.tight1 .header img { height: 30px; }
+          .print-page.tight1 .school-name { font-size: 13pt; }
+          .print-page.tight1 .plan-title { font-size: 11pt; margin-top: 2px; }
+          .print-page.tight1 .info-row { padding: 4px 0; margin-bottom: 6px; font-size: 9pt; }
+          .print-page.tight1 .objective-box,
+          .print-page.tight1 .skills-box { padding: 5px 7px; margin-bottom: 6px; font-size: 9pt; line-height: 1.35; }
+          .print-page.tight1 .skills-box ol { margin-left: 18px; }
+          .print-page.tight1 table.main-table th,
+          .print-page.tight1 table.main-table td { padding: 4px; }
+          .print-page.tight1 .item-row { font-size: 8.5pt; line-height: 1.4; margin-bottom: 2px; }
+          .print-page.tight1 .theme-cell { font-size: 9pt; }
+          .print-page.tight1 .eca-line { font-size: 7pt; margin-top: 3px; }
+          .print-page.tight1 .chk { width: 9px; height: 9px; margin-right: 3px; }
           
+          /* =============================================
+             TIGHT LEVEL 2 - Moderate compression
+             ============================================= */
+          .print-page.tight2 .header { padding-bottom: 3px; margin-bottom: 5px; }
+          .print-page.tight2 .header img { height: 26px; }
+          .print-page.tight2 .school-name { font-size: 12pt; }
+          .print-page.tight2 .school-info { font-size: 7pt; }
+          .print-page.tight2 .plan-title { font-size: 10pt; margin-top: 1px; }
+          .print-page.tight2 .info-row { padding: 3px 0; margin-bottom: 5px; font-size: 8.5pt; }
           .print-page.tight2 .objective-box,
-          .print-page.tight2 .skills-box {
-            padding: 2px 4px;
-            margin-bottom: 3px;
-            font-size: 7.5pt;
-            line-height: 1.15;
-          }
-          .print-page.tight2 .skills-box ol {
-            margin-left: 12px;
-          }
-          .print-page.tight2 .skills-box li {
-            line-height: 1.15;
-          }
-          
+          .print-page.tight2 .skills-box { padding: 4px 6px; margin-bottom: 5px; font-size: 8.5pt; line-height: 1.3; }
+          .print-page.tight2 .skills-box ol { margin-left: 16px; }
+          .print-page.tight2 .skills-box li { margin: 1px 0; }
           .print-page.tight2 table.main-table th,
-          .print-page.tight2 table.main-table td {
-            padding: 2px;
-          }
-          .print-page.tight2 table.main-table th { font-size: 7.5pt; }
-          .print-page.tight2 .item-row {
-            font-size: 7pt;
-            line-height: 1.2;
-            margin-bottom: 0;
-          }
-          .print-page.tight2 .theme-cell { font-size: 7.5pt; }
-          .print-page.tight2 .row-label { font-size: 6pt; }
-          .print-page.tight2 .eca-line { font-size: 5.5pt; margin-top: 0; }
-          .print-page.tight2 .chk { width: 7px; height: 7px; margin-right: 2px; }
+          .print-page.tight2 table.main-table td { padding: 3px; }
+          .print-page.tight2 table.main-table th { font-size: 9pt; }
+          .print-page.tight2 .item-row { font-size: 8pt; line-height: 1.35; margin-bottom: 2px; }
+          .print-page.tight2 .theme-cell { font-size: 8.5pt; }
+          .print-page.tight2 .row-label { font-size: 7pt; }
+          .print-page.tight2 .eca-line { font-size: 6.5pt; margin-top: 2px; }
+          .print-page.tight2 .chk { width: 8px; height: 8px; margin-right: 2px; }
           
           /* =============================================
-             TIGHT MODE LEVEL 3 - Maximum compression
+             TIGHT LEVEL 3 - Strong compression
              ============================================= */
-          .print-page.tight3 .header {
-            padding-bottom: 0;
-            margin-bottom: 2px;
-            border-bottom-width: 1px;
-          }
-          .print-page.tight3 .header img { height: 18px; }
-          .print-page.tight3 .school-name { font-size: 9pt; }
-          .print-page.tight3 .school-info { font-size: 5.5pt; }
-          .print-page.tight3 .plan-title { font-size: 8pt; margin-top: 0; }
-          
-          .print-page.tight3 .info-row {
-            padding: 1px 0;
-            margin-bottom: 2px;
-            font-size: 7pt;
-          }
-          
+          .print-page.tight3 .header { padding-bottom: 2px; margin-bottom: 4px; border-bottom-width: 1px; }
+          .print-page.tight3 .header img { height: 22px; }
+          .print-page.tight3 .school-name { font-size: 11pt; }
+          .print-page.tight3 .school-info { font-size: 6pt; }
+          .print-page.tight3 .plan-title { font-size: 9pt; margin-top: 0; }
+          .print-page.tight3 .info-row { padding: 2px 0; margin-bottom: 4px; font-size: 8pt; }
           .print-page.tight3 .objective-box,
-          .print-page.tight3 .skills-box {
-            padding: 1px 3px;
-            margin-bottom: 2px;
-            font-size: 7pt;
-            line-height: 1.1;
-          }
-          .print-page.tight3 .skills-box ol {
-            margin-left: 10px;
-          }
-          .print-page.tight3 .skills-box li {
-            line-height: 1.1;
-          }
-          
+          .print-page.tight3 .skills-box { padding: 3px 5px; margin-bottom: 4px; font-size: 8pt; line-height: 1.25; }
+          .print-page.tight3 .skills-box ol { margin-left: 14px; }
+          .print-page.tight3 .skills-box li { margin: 0; line-height: 1.25; }
           .print-page.tight3 table.main-table th,
-          .print-page.tight3 table.main-table td {
-            padding: 1px 2px;
-            line-height: 1.1;
-          }
-          .print-page.tight3 table.main-table th { font-size: 7pt; }
-          .print-page.tight3 .item-row {
-            font-size: 6.5pt;
-            line-height: 1.1;
-            margin-bottom: 0;
-          }
-          .print-page.tight3 .theme-cell { font-size: 7pt; line-height: 1.1; }
-          .print-page.tight3 .row-label { font-size: 5.5pt; }
-          .print-page.tight3 .eca-line { font-size: 5pt; margin-top: 0; }
-          .print-page.tight3 .chk { width: 6px; height: 6px; margin-right: 1px; }
+          .print-page.tight3 table.main-table td { padding: 2px 3px; }
+          .print-page.tight3 table.main-table th { font-size: 8pt; }
+          .print-page.tight3 .item-row { font-size: 7.5pt; line-height: 1.3; margin-bottom: 1px; }
+          .print-page.tight3 .theme-cell { font-size: 8pt; }
+          .print-page.tight3 .row-label { font-size: 6.5pt; }
+          .print-page.tight3 .eca-line { font-size: 6pt; margin-top: 1px; }
+          .print-page.tight3 .chk { width: 7px; height: 7px; margin-right: 2px; }
+          
+          /* =============================================
+             TIGHT LEVEL 4 - Heavy compression
+             ============================================= */
+          .print-page.tight4 .header { padding-bottom: 1px; margin-bottom: 3px; }
+          .print-page.tight4 .header img { height: 18px; }
+          .print-page.tight4 .school-name { font-size: 10pt; }
+          .print-page.tight4 .school-info { font-size: 5.5pt; }
+          .print-page.tight4 .plan-title { font-size: 8pt; }
+          .print-page.tight4 .info-row { padding: 1px 0; margin-bottom: 3px; font-size: 7.5pt; }
+          .print-page.tight4 .objective-box,
+          .print-page.tight4 .skills-box { padding: 2px 4px; margin-bottom: 3px; font-size: 7.5pt; line-height: 1.2; }
+          .print-page.tight4 .skills-box ol { margin-left: 12px; }
+          .print-page.tight4 .skills-box li { margin: 0; line-height: 1.2; }
+          .print-page.tight4 table.main-table th,
+          .print-page.tight4 table.main-table td { padding: 2px; }
+          .print-page.tight4 table.main-table th { font-size: 7.5pt; }
+          .print-page.tight4 .item-row { font-size: 7pt; line-height: 1.25; margin-bottom: 0; }
+          .print-page.tight4 .theme-cell { font-size: 7.5pt; }
+          .print-page.tight4 .row-label { font-size: 6pt; }
+          .print-page.tight4 .eca-line { font-size: 5.5pt; margin-top: 0; }
+          .print-page.tight4 .chk { width: 6px; height: 6px; margin-right: 1px; }
+          
+          /* =============================================
+             TIGHT LEVEL 5 - Maximum compression
+             ============================================= */
+          .print-page.tight5 .header { padding-bottom: 0; margin-bottom: 2px; }
+          .print-page.tight5 .header img { height: 15px; }
+          .print-page.tight5 .school-name { font-size: 9pt; }
+          .print-page.tight5 .school-info { font-size: 5pt; }
+          .print-page.tight5 .plan-title { font-size: 7pt; }
+          .print-page.tight5 .info-row { padding: 1px 0; margin-bottom: 2px; font-size: 7pt; }
+          .print-page.tight5 .objective-box,
+          .print-page.tight5 .skills-box { padding: 1px 3px; margin-bottom: 2px; font-size: 7pt; line-height: 1.15; }
+          .print-page.tight5 .skills-box ol { margin-left: 10px; }
+          .print-page.tight5 .skills-box li { margin: 0; line-height: 1.15; }
+          .print-page.tight5 table.main-table th,
+          .print-page.tight5 table.main-table td { padding: 1px 2px; line-height: 1.15; }
+          .print-page.tight5 table.main-table th { font-size: 7pt; }
+          .print-page.tight5 .item-row { font-size: 6.5pt; line-height: 1.15; margin-bottom: 0; }
+          .print-page.tight5 .theme-cell { font-size: 7pt; line-height: 1.15; }
+          .print-page.tight5 .row-label { font-size: 5.5pt; }
+          .print-page.tight5 .eca-line { font-size: 5pt; margin-top: 0; }
+          .print-page.tight5 .chk { width: 5px; height: 5px; margin-right: 1px; }
           
           /* STANDARDS PAGE */
           .standards-grid {
@@ -464,8 +426,6 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             html, body { 
               -webkit-print-color-adjust: exact; 
               print-color-adjust: exact;
-              margin: 0 !important;
-              padding: 0 !important;
             }
           }
         </style>
@@ -489,7 +449,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     <span className={`chk ${checked ? 'checked' : ''}`} />
   );
 
-  // Weekly Plan Page
+  // Weekly Plan Page - NO height restriction, NO overflow hidden
   const WeeklyPlanPage = ({ days, weekNum, weekStart, weekEnd, objective, skills, tightLevel, pageRef }) => {
     const tightClass = getTightClass(tightLevel);
     
@@ -725,7 +685,8 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center z-10">
           <h2 className="font-heading font-semibold text-lg">
             {lang === 'es' ? 'Vista Previa de Impresión' : 'Print Preview'}
-            {page1TightLevel > 0 && <span className="text-xs ml-2 text-orange-600">(Page 1: tight level {page1TightLevel})</span>}
+            {page1TightLevel > 0 && <span className="text-xs ml-2 text-orange-600">(P1: L{page1TightLevel})</span>}
+            {page2TightLevel > 0 && <span className="text-xs ml-2 text-orange-600">(P2: L{page2TightLevel})</span>}
           </h2>
           <div className="flex gap-2">
             <Button onClick={handlePrint} className="gap-2" data-testid="print-btn">
@@ -738,11 +699,11 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           </div>
         </div>
 
-        {/* Print Preview Container */}
+        {/* Print Preview Container - NO overflow hidden on pages */}
         <div className="p-6 bg-slate-200">
           <div ref={printRef}>
-            {/* Page 1: Week 1 */}
-            <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.5in', overflow: 'hidden' }}>
+            {/* Page 1: Week 1 - Natural height, measured for compression */}
+            <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', padding: '0.5in' }}>
               <WeeklyPlanPage
                 days={planDays}
                 weekNum={1}
@@ -757,7 +718,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
 
             {/* Page 2: Week 2 (if exists) */}
             {(plan.week2_start || plan.week2_end) && (
-              <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.5in', overflow: 'hidden' }}>
+              <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', padding: '0.5in' }}>
                 <WeeklyPlanPage
                   days={planDaysWeek2}
                   weekNum={2}
@@ -772,7 +733,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             )}
 
             {/* Standards Page */}
-            <div className="bg-white shadow-lg mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.5in', overflow: 'hidden' }}>
+            <div className="bg-white shadow-lg mx-auto" style={{ width: '11in', padding: '0.5in' }}>
               <StandardsPage />
             </div>
           </div>
