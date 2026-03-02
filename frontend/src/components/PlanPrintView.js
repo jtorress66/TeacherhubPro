@@ -101,13 +101,13 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <style>
           @page { 
             size: letter landscape;
-            margin: 0.3in; 
+            margin: 0.2in; 
           }
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { 
             font-family: Arial, Helvetica, sans-serif; 
-            font-size: 10pt;
-            line-height: 1.2;
+            font-size: 8pt;
+            line-height: 1.15;
             color: #000;
           }
           
@@ -119,86 +119,86 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           }
           .page:last-child { page-break-after: avoid; }
           
-          /* Header */
+          /* Header - COMPACT */
           .header {
             text-align: center;
-            padding-bottom: 8px;
-            margin-bottom: 8px;
+            padding-bottom: 4px;
+            margin-bottom: 4px;
             border-bottom: 2px solid #333;
           }
           .header-logo {
-            height: 50px;
+            height: 35px;
             object-fit: contain;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
           }
           .school-name {
-            font-size: 14pt;
+            font-size: 11pt;
             font-weight: bold;
-            margin: 4px 0;
+            margin: 2px 0;
           }
           .school-info {
-            font-size: 9pt;
+            font-size: 7pt;
             color: #333;
           }
           .plan-title {
-            font-size: 12pt;
+            font-size: 10pt;
             font-weight: bold;
-            margin-top: 6px;
+            margin-top: 3px;
           }
           
-          /* Info row */
+          /* Info row - COMPACT */
           .info-row {
             display: flex;
             justify-content: space-between;
-            padding: 6px 0;
-            margin-bottom: 8px;
+            padding: 3px 0;
+            margin-bottom: 4px;
             border-bottom: 1px solid #999;
-            font-size: 10pt;
+            font-size: 8pt;
           }
           .info-row strong { font-weight: bold; }
           
-          /* Objective box */
+          /* Objective box - COMPACT */
           .objective-box {
             border: 1px solid #000;
-            padding: 8px 10px;
-            margin-bottom: 8px;
-            font-size: 10pt;
+            padding: 4px 6px;
+            margin-bottom: 4px;
+            font-size: 8pt;
           }
           .objective-box strong {
             font-weight: bold;
             text-decoration: underline;
           }
           
-          /* Skills box */
+          /* Skills box - COMPACT */
           .skills-box {
             border: 1px solid #000;
-            padding: 6px 10px;
-            margin-bottom: 10px;
-            font-size: 9pt;
+            padding: 3px 6px;
+            margin-bottom: 5px;
+            font-size: 7pt;
           }
           .skills-title {
             font-weight: bold;
             text-decoration: underline;
-            margin-bottom: 4px;
-          }
-          .skills-list {
-            margin-left: 20px;
-          }
-          .skills-list li {
             margin-bottom: 2px;
           }
+          .skills-list {
+            margin-left: 15px;
+          }
+          .skills-list li {
+            margin-bottom: 1px;
+          }
           
-          /* Main table */
+          /* Main table - COMPACT */
           table.main-grid {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            font-size: 8pt;
+            font-size: 6.5pt;
           }
           table.main-grid th,
           table.main-grid td {
             border: 1px solid #000;
-            padding: 4px 5px;
+            padding: 2px 3px;
             vertical-align: top;
             word-wrap: break-word;
           }
@@ -206,18 +206,18 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             background: #f0f0f0;
             font-weight: bold;
             text-align: center;
-            font-size: 9pt;
-            padding: 6px;
+            font-size: 8pt;
+            padding: 3px;
           }
           
           /* Column widths */
-          .col-label { width: 10%; }
-          .col-day { width: 18%; }
+          .col-label { width: 9%; }
+          .col-day { width: 18.2%; }
           
           /* Day header */
           .day-header {
             font-weight: bold;
-            font-size: 10pt;
+            font-size: 8pt;
           }
           .eca-line {
             font-size: 7pt;
