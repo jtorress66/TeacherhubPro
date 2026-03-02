@@ -422,9 +422,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
 
   // Weekly Plan Page (Page A) - Matches user's "Techers Planner A.jpeg"
   const WeeklyPlanPage = ({ days, weekNum, weekStart, weekEnd, objective, skills }) => (
-    <div className="page">
+    <div className="page" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       {/* Header */}
-      <div className="header">
+      <div className="header" style={{ flexShrink: 0 }}>
         {school?.logo_url && (
           <img src={school.logo_url} alt="Logo" className="header-logo" />
         )}
@@ -441,19 +441,19 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       </div>
       
       {/* Info Row */}
-      <div className="info-row">
+      <div className="info-row" style={{ flexShrink: 0 }}>
         <span><strong>Unit:</strong> {plan.unit || '_____'} &nbsp; <strong>Story:</strong> {plan.story || '_____'}</span>
         <span><strong>Teacher:</strong> {plan.teacher_name || '_____'} &nbsp; <strong>Grade:</strong> {classInfo?.grade || ''}-{classInfo?.section || ''}</span>
         <span><strong>Date:</strong> From {formatDate(weekStart)} To {formatDate(weekEnd)}</span>
       </div>
       
       {/* Objective */}
-      <div className="objective-box">
+      <div className="objective-box" style={{ flexShrink: 0 }}>
         <strong>Objective of the week:</strong> {objective || '_____'}
       </div>
       
       {/* Skills */}
-      <div className="skills-box">
+      <div className="skills-box" style={{ flexShrink: 0 }}>
         <div className="skills-title">Skills of the week:</div>
         <ol className="skills-list">
           {(skills || []).filter(s => s).length > 0 ? (
@@ -471,9 +471,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         </ol>
       </div>
       
-      {/* CRITICAL: Table wrapper with flex-grow to fill remaining page space */}
-      <div className="table-wrapper">
-        <table className="main-grid">
+      {/* CRITICAL: Table wrapper with flex:1 to fill remaining page space */}
+      <div className="table-wrapper" style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+        <table className="main-grid" style={{ height: '100%', width: '100%' }}>
           <thead>
             <tr>
               <th className="col-label"></th>
