@@ -234,27 +234,29 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             height: 28px;
           }
           
-          /* ROW HEIGHTS - Force rows to fill available space */
-          table.main-grid tbody {
-            display: flex;
-            flex-direction: column;
+          /* Make table rows distribute space evenly */
+          table.main-grid {
+            width: 100%;
             height: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-size: 5.5pt;
           }
-          table.main-grid tbody tr {
-            display: flex;
-            flex: 1;
+          table.main-grid th,
+          table.main-grid td {
+            border: 1px solid #000;
+            padding: 2px 2px;
+            vertical-align: top;
+            word-wrap: break-word;
+            overflow: hidden;
           }
-          table.main-grid tbody tr:first-child {
-            flex: 0.5; /* Day Theme row smaller */
-          }
-          table.main-grid tbody td {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-          }
-          table.main-grid tbody td.row-label {
-            flex: none;
-            width: 7.5%;
+          table.main-grid th {
+            background: #f0f0f0;
+            font-weight: bold;
+            text-align: center;
+            font-size: 6.5pt;
+            padding: 2px;
+            height: 28px;
           }
           
           /* Column widths */
