@@ -231,15 +231,30 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <style>
           @page { 
             size: 11in 8.5in;
-            margin: 0.15in;
+            margin: 0.2in;
           }
           * { margin: 0; padding: 0; box-sizing: border-box; }
           html, body {
             width: 100%;
             height: 100%;
           }
-          .page-break { page-break-after: always; }
-          .page-break:last-child { page-break-after: avoid; }
+          /* Hide the preview wrapper divs in print */
+          .bg-white.shadow-lg {
+            box-shadow: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: auto !important;
+            height: auto !important;
+            overflow: visible !important;
+          }
+          /* Ensure page breaks work correctly */
+          .page-break { 
+            page-break-after: always;
+            page-break-inside: avoid;
+          }
+          .page-break:last-child { 
+            page-break-after: avoid; 
+          }
           @media print {
             html, body { 
               -webkit-print-color-adjust: exact; 
