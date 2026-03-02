@@ -525,14 +525,14 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
                 Type of<br/>Taxonomy:<br/>Webb (2005)<br/>Levels
               </td>
               {days.map((day, i) => (
-                <td key={i} style={{ fontSize: '5.5pt', lineHeight: 1.1, padding: '2px' }}>
-                  <div style={{ marginBottom: '2px' }}>
+                <td key={i} style={{ fontSize: '6pt', lineHeight: 1.15, padding: '3px' }}>
+                  <div style={{ marginBottom: '3px' }}>
                     <Chk checked={day.dok_levels?.includes(1)} /> Level 1: Memory Thought (Knowledge in or the same way as learned)
                   </div>
-                  <div style={{ marginBottom: '2px' }}>
+                  <div style={{ marginBottom: '3px' }}>
                     <Chk checked={day.dok_levels?.includes(2)} /> Level 2: Processing (Requires some basic mental reasoning, something beyond memory)
                   </div>
-                  <div style={{ marginBottom: '2px' }}>
+                  <div style={{ marginBottom: '3px' }}>
                     <Chk checked={day.dok_levels?.includes(3)} /> Level 3: Thinking Strategic (Demonstrate knowledge based on complex and abstract cognitive demand)
                   </div>
                   <div style={{ marginBottom: '0' }}>
