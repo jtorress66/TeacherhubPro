@@ -101,308 +101,233 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <style>
           @page { 
             size: letter landscape;
-            margin: 0.1in; 
+            margin: 0.3in; 
           }
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          html, body { 
-            height: 100%;
-            width: 100%;
-          }
           body { 
             font-family: Arial, Helvetica, sans-serif; 
-            font-size: 6pt;
-            line-height: 0.95;
+            font-size: 10pt;
+            line-height: 1.2;
             color: #000;
           }
           
-          /* Page container - fills entire print page */
+          /* Each page container */
           .page {
             width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
             page-break-after: always;
             page-break-inside: avoid;
-            overflow: hidden;
           }
           .page:last-child { page-break-after: avoid; }
           
-          /* Header - more readable */
+          /* Header */
           .header {
             text-align: center;
-            padding-bottom: 2px;
-            margin-bottom: 3px;
-            border-bottom: 1.5px solid #333;
-            flex-shrink: 0;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+            border-bottom: 2px solid #333;
           }
           .header-logo {
-            height: 28px;
+            height: 50px;
             object-fit: contain;
+            margin-bottom: 4px;
           }
           .school-name {
-            font-size: 10pt;
+            font-size: 14pt;
             font-weight: bold;
-            margin: 1px 0;
+            margin: 4px 0;
           }
           .school-info {
-            font-size: 6.5pt;
+            font-size: 9pt;
             color: #333;
           }
           .plan-title {
-            font-size: 9pt;
+            font-size: 12pt;
             font-weight: bold;
-            margin-top: 2px;
+            margin-top: 6px;
           }
           
-          /* Info row - readable */
+          /* Info row */
           .info-row {
             display: flex;
             justify-content: space-between;
-            padding: 2px 0;
-            margin-bottom: 2px;
+            padding: 6px 0;
+            margin-bottom: 8px;
             border-bottom: 1px solid #999;
-            font-size: 7.5pt;
-            flex-shrink: 0;
+            font-size: 10pt;
           }
           .info-row strong { font-weight: bold; }
           
-          /* Objective box - readable */
+          /* Objective box */
           .objective-box {
             border: 1px solid #000;
-            padding: 3px 5px;
-            margin-bottom: 2px;
-            font-size: 7.5pt;
-            flex-shrink: 0;
+            padding: 8px 10px;
+            margin-bottom: 8px;
+            font-size: 10pt;
           }
           .objective-box strong {
             font-weight: bold;
             text-decoration: underline;
           }
           
-          /* Skills box - readable */
+          /* Skills box */
           .skills-box {
             border: 1px solid #000;
-            padding: 3px 5px;
-            margin-bottom: 4px;
-            font-size: 6.5pt;
-            flex-shrink: 0;
+            padding: 6px 10px;
+            margin-bottom: 10px;
+            font-size: 9pt;
           }
           .skills-title {
             font-weight: bold;
             text-decoration: underline;
+            margin-bottom: 4px;
           }
           .skills-list {
-            margin-left: 10px;
-            margin-top: 1px;
+            margin-left: 20px;
           }
           .skills-list li {
-            margin-bottom: 1px;
-            line-height: 1.15;
+            margin-bottom: 2px;
           }
           
-          /* Table wrapper - grows to fill ALL remaining page space */
-          .table-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-            overflow: hidden;
-          }
-          
-          /* Main table - CRITICAL: height 100% fills wrapper */
+          /* Main table */
           table.main-grid {
             width: 100%;
-            height: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            font-size: 5.5pt;
+            font-size: 8pt;
           }
           table.main-grid th,
           table.main-grid td {
             border: 1px solid #000;
-            padding: 1px 2px;
+            padding: 4px 5px;
             vertical-align: top;
             word-wrap: break-word;
-            overflow: hidden;
           }
           table.main-grid th {
             background: #f0f0f0;
             font-weight: bold;
             text-align: center;
-            font-size: 6.5pt;
-            padding: 1px 2px;
-            height: 28px;
-          }
-          
-          /* Make table rows distribute space evenly */
-          table.main-grid {
-            width: 100%;
-            height: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-            font-size: 5.5pt;
-          }
-          table.main-grid th,
-          table.main-grid td {
-            border: 1px solid #000;
-            padding: 2px 2px;
-            vertical-align: top;
-            word-wrap: break-word;
-            overflow: hidden;
-          }
-          table.main-grid th {
-            background: #f0f0f0;
-            font-weight: bold;
-            text-align: center;
-            font-size: 6.5pt;
-            padding: 2px;
-            height: 28px;
+            font-size: 9pt;
+            padding: 6px;
           }
           
           /* Column widths */
-          .col-label { width: 7.5%; }
-          .col-day { width: 18.5%; }
+          .col-label { width: 10%; }
+          .col-day { width: 18%; }
           
-          /* Day header cell */
+          /* Day header */
           .day-header {
             font-weight: bold;
-            font-size: 7pt;
+            font-size: 10pt;
           }
           .eca-line {
-            font-size: 5pt;
-            margin-top: 0;
+            font-size: 7pt;
+            margin-top: 2px;
           }
           
-          /* Row label cell */
+          /* Row label */
           .row-label {
             font-weight: bold;
-            font-size: 5pt;
+            font-size: 7pt;
             background: #f5f5f5;
-            line-height: 0.95;
           }
           
-          /* Checkbox styling */
+          /* Checkbox */
           .chk {
             display: inline-block;
-            width: 5px;
-            height: 5px;
+            width: 8px;
+            height: 8px;
             border: 1px solid #000;
-            margin-right: 1px;
+            margin-right: 3px;
             vertical-align: middle;
             text-align: center;
-            font-size: 3pt;
-            line-height: 3pt;
+            font-size: 5pt;
+            line-height: 6px;
           }
           .chk.checked {
             background: #000;
             color: #fff;
           }
           
-          /* Activity/Material items - very compact */
-          .item-row {
-            font-size: 5pt;
-            line-height: 1.0;
-            margin-bottom: 0;
-          }
-          
-          /* DOK levels - compact inline format */
+          /* DOK levels */
           .dok-item {
-            font-size: 4.5pt;
-            line-height: 0.95;
-            margin-bottom: 0;
-          }
-          .dok-title {
-            font-weight: bold;
-          }
-          .dok-desc {
-            font-size: 4pt;
-            color: #333;
+            font-size: 7pt;
+            line-height: 1.2;
+            margin-bottom: 2px;
           }
           
-          /* Standards page */
+          /* Activity/Material items */
+          .item-row {
+            font-size: 7pt;
+            line-height: 1.3;
+            margin-bottom: 1px;
+          }
+          
+          /* ===== STANDARDS PAGE (Page B) ===== */
           .standards-grid {
             display: flex;
-            gap: 15px;
-            margin-bottom: 12px;
+            gap: 20px;
+            margin-bottom: 15px;
           }
           .standards-week {
             flex: 1;
             border: 1px solid #000;
-            padding: 8px;
+            padding: 10px;
           }
           .standards-title {
             font-weight: bold;
-            font-size: 10pt;
+            font-size: 11pt;
             border-bottom: 2px solid #000;
-            padding-bottom: 4px;
-            margin-bottom: 8px;
+            padding-bottom: 6px;
+            margin-bottom: 10px;
           }
           .standard-row {
-            font-size: 8pt;
-            margin-bottom: 4px;
+            font-size: 10pt;
+            margin-bottom: 6px;
           }
           .expectations-box {
             border: 1px solid #000;
-            padding: 6px;
-            margin-top: 10px;
-            min-height: 50px;
+            padding: 8px;
+            margin-top: 12px;
+            min-height: 80px;
+            font-size: 10pt;
           }
           
           /* Integration section */
           .integration-section {
             border: 1px solid #000;
-            padding: 8px;
+            padding: 10px;
             margin-bottom: 15px;
-            font-size: 9pt;
+            font-size: 10pt;
           }
           .integration-title {
             font-weight: bold;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
           }
           .integration-items {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 15px;
           }
           
           /* Signatures */
           .signatures {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
-            padding-top: 10px;
+            margin-top: 30px;
+            padding-top: 15px;
           }
           .sig-line {
             width: 40%;
             border-top: 1px solid #000;
-            padding-top: 5px;
+            padding-top: 8px;
             text-align: center;
-            font-size: 8pt;
+            font-size: 10pt;
           }
           
           @media print {
-            html, body { 
-              height: 100%; 
-              width: 100%;
-              overflow: hidden;
-            }
-            body { 
-              -webkit-print-color-adjust: exact; 
-              print-color-adjust: exact; 
-            }
-            .page { 
-              height: 100vh !important;
-              page-break-after: always;
-              page-break-inside: avoid;
-            }
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .page { page-break-after: always; }
             .page:last-child { page-break-after: avoid; }
-            .table-wrapper {
-              flex: 1;
-              min-height: 0;
-            }
-            table.main-grid {
-              height: 100%;
-            }
           }
         </style>
       </head>
@@ -420,7 +345,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     }, 300);
   };
 
-  // Checkbox component - using inline styles for print compatibility
+  // Checkbox component
   const Chk = ({ checked }) => (
     <span style={{
       display: 'inline-block',
@@ -430,7 +355,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       marginRight: '3px',
       verticalAlign: 'middle',
       textAlign: 'center',
-      fontSize: '6pt',
+      fontSize: '5pt',
       lineHeight: '6px',
       background: checked ? '#000' : '#fff',
       color: checked ? '#fff' : '#000'
@@ -441,9 +366,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
 
   // Weekly Plan Page (Page A) - Matches user's "Techers Planner A.jpeg"
   const WeeklyPlanPage = ({ days, weekNum, weekStart, weekEnd, objective, skills }) => (
-    <div className="page" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <div className="page">
       {/* Header */}
-      <div className="header" style={{ flexShrink: 0 }}>
+      <div className="header">
         {school?.logo_url && (
           <img src={school.logo_url} alt="Logo" className="header-logo" />
         )}
@@ -460,19 +385,19 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       </div>
       
       {/* Info Row */}
-      <div className="info-row" style={{ flexShrink: 0 }}>
+      <div className="info-row">
         <span><strong>Unit:</strong> {plan.unit || '_____'} &nbsp; <strong>Story:</strong> {plan.story || '_____'}</span>
         <span><strong>Teacher:</strong> {plan.teacher_name || '_____'} &nbsp; <strong>Grade:</strong> {classInfo?.grade || ''}-{classInfo?.section || ''}</span>
         <span><strong>Date:</strong> From {formatDate(weekStart)} To {formatDate(weekEnd)}</span>
       </div>
       
       {/* Objective */}
-      <div className="objective-box" style={{ flexShrink: 0 }}>
+      <div className="objective-box">
         <strong>Objective of the week:</strong> {objective || '_____'}
       </div>
       
       {/* Skills */}
-      <div className="skills-box" style={{ flexShrink: 0 }}>
+      <div className="skills-box">
         <div className="skills-title">Skills of the week:</div>
         <ol className="skills-list">
           {(skills || []).filter(s => s).length > 0 ? (
@@ -490,100 +415,102 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         </ol>
       </div>
       
-      {/* CRITICAL: Table wrapper with flex:1 to fill remaining page space */}
-      <div className="table-wrapper" style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
-        <table className="main-grid" style={{ height: '100%', width: '100%' }}>
-          <thead>
-            <tr>
-              <th className="col-label"></th>
-              {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, idx) => (
-                <th key={day} className="col-day">
-                  <div className="day-header">{DAY_LABELS[day][lang]}</div>
-                  <div className="eca-line">
-                    <Chk checked={days[idx]?.eca?.E} />E{' '}
-                    <Chk checked={days[idx]?.eca?.C} />C{' '}
-                    <Chk checked={days[idx]?.eca?.A} />A
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {/* Day Theme Row */}
-            <tr>
-              <td className="row-label">Day Theme</td>
-              {days.map((day, i) => (
-                <td key={i} style={{textAlign: 'center', fontWeight: 'bold', fontSize: '7pt'}}>
-                  {day.theme || ''}
-                </td>
-              ))}
-            </tr>
-            
-            {/* Type of Taxonomy Row - FULL DESCRIPTIONS AS PER REFERENCE IMAGE */}
-            <tr>
-              <td className="row-label">
-                Type of<br/>Taxonomy:<br/>Webb (2005)<br/>Levels
+      {/* Main Grid Table */}
+      <table className="main-grid">
+        <thead>
+          <tr>
+            <th className="col-label"></th>
+            {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, idx) => (
+              <th key={day} className="col-day">
+                <div className="day-header">{DAY_LABELS[day][lang]}</div>
+                <div className="eca-line">
+                  <Chk checked={days[idx]?.eca?.E} />E{' '}
+                  <Chk checked={days[idx]?.eca?.C} />C{' '}
+                  <Chk checked={days[idx]?.eca?.A} />A
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {/* Day Theme Row */}
+          <tr>
+            <td className="row-label">Day Theme</td>
+            {days.map((day, i) => (
+              <td key={i} style={{textAlign: 'center', fontWeight: 'bold', fontSize: '8pt'}}>
+                {day.theme || ''}
               </td>
-              {days.map((day, i) => (
-                <td key={i} style={{ fontSize: '6pt', lineHeight: 1.15, padding: '3px' }}>
-                  <div style={{ marginBottom: '3px' }}>
-                    <Chk checked={day.dok_levels?.includes(1)} /> Level 1: Memory Thought (Knowledge in or the same way as learned)
-                  </div>
-                  <div style={{ marginBottom: '3px' }}>
-                    <Chk checked={day.dok_levels?.includes(2)} /> Level 2: Processing (Requires some basic mental reasoning, something beyond memory)
-                  </div>
-                  <div style={{ marginBottom: '3px' }}>
-                    <Chk checked={day.dok_levels?.includes(3)} /> Level 3: Thinking Strategic (Demonstrate knowledge based on complex and abstract cognitive demand)
-                  </div>
-                  <div style={{ marginBottom: '0' }}>
-                    <Chk checked={day.dok_levels?.includes(4)} /> Level 4: Thinking Thought Extended (extends knowledge to broader contexts)
-                  </div>
-                </td>
-              ))}
-            </tr>
-            
-            {/* Activities Row */}
-            <tr>
-              <td className="row-label">Activities</td>
-              {days.map((day, i) => (
-                <td key={i} style={{ fontSize: '6pt', lineHeight: 1.15, padding: '3px' }}>
-                  {Object.keys(ACTIVITY_LABELS).map(actType => {
-                    const activity = day.activities?.find(a => a.activity_type === actType);
-                    return (
-                      <div key={actType} style={{ marginBottom: '2px' }}>
-                        <Chk checked={activity?.checked} /> {ACTIVITY_LABELS[actType][lang]}
-                        {actType === 'other' && activity?.checked && activity?.notes && (
-                          <span style={{fontStyle:'italic'}}>: {activity.notes}</span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </td>
-              ))}
-            </tr>
-            
-            {/* Materials Row */}
-            <tr>
-              <td className="row-label">Materials</td>
-              {days.map((day, i) => (
-                <td key={i} style={{ fontSize: '6pt', lineHeight: 1.15, padding: '3px' }}>
-                  {Object.keys(MATERIAL_LABELS).map(matType => {
-                    const material = day.materials?.find(m => m.material_type === matType);
-                    return (
-                      <div key={matType} style={{ marginBottom: '2px' }}>
-                        <Chk checked={material?.checked} /> {MATERIAL_LABELS[matType][lang]}
-                        {matType === 'other' && material?.checked && material?.notes && (
-                          <span style={{fontStyle:'italic'}}>: {material.notes}</span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </div>
+            ))}
+          </tr>
+          
+          {/* Type of Taxonomy Row - DOK Levels with full descriptions */}
+          <tr>
+            <td className="row-label">
+              Type of<br/>Taxonomy:<br/>Webb (2005)<br/>Levels
+            </td>
+            {days.map((day, i) => (
+              <td key={i}>
+                <div className="dok-item">
+                  <Chk checked={day.dok_levels?.includes(1)} /> Level 1: Memory Thought<br/>
+                  <span style={{fontSize: '6pt', color: '#333', marginLeft: '11px'}}>(Knowledge in or the same way as learned)</span>
+                </div>
+                <div className="dok-item">
+                  <Chk checked={day.dok_levels?.includes(2)} /> Level 2: Processing<br/>
+                  <span style={{fontSize: '6pt', color: '#333', marginLeft: '11px'}}>(Requires some basic mental reasoning)</span>
+                </div>
+                <div className="dok-item">
+                  <Chk checked={day.dok_levels?.includes(3)} /> Level 3: Strategic Thinking<br/>
+                  <span style={{fontSize: '6pt', color: '#333', marginLeft: '11px'}}>(Complex cognitive demand)</span>
+                </div>
+                <div className="dok-item">
+                  <Chk checked={day.dok_levels?.includes(4)} /> Level 4: Extended Thought<br/>
+                  <span style={{fontSize: '6pt', color: '#333', marginLeft: '11px'}}>(Broader contexts)</span>
+                </div>
+              </td>
+            ))}
+          </tr>
+          
+          {/* Activities Row */}
+          <tr>
+            <td className="row-label">Activities</td>
+            {days.map((day, i) => (
+              <td key={i}>
+                {Object.keys(ACTIVITY_LABELS).map(actType => {
+                  const activity = day.activities?.find(a => a.activity_type === actType);
+                  return (
+                    <div key={actType} className="item-row">
+                      <Chk checked={activity?.checked} /> {ACTIVITY_LABELS[actType][lang]}
+                      {actType === 'other' && activity?.checked && activity?.notes && (
+                        <span style={{fontStyle:'italic'}}>: {activity.notes}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </td>
+            ))}
+          </tr>
+          
+          {/* Materials Row */}
+          <tr>
+            <td className="row-label">Materials</td>
+            {days.map((day, i) => (
+              <td key={i}>
+                {Object.keys(MATERIAL_LABELS).map(matType => {
+                  const material = day.materials?.find(m => m.material_type === matType);
+                  return (
+                    <div key={matType} className="item-row">
+                      <Chk checked={material?.checked} /> {MATERIAL_LABELS[matType][lang]}
+                      {matType === 'other' && material?.checked && material?.notes && (
+                        <span style={{fontStyle:'italic'}}>: {material.notes}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 
@@ -607,7 +534,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       </div>
       
       {/* Info Row */}
-      <div className="info-row" style={{marginBottom: '12px'}}>
+      <div className="info-row" style={{marginBottom: '15px'}}>
         <div>
           <div><strong>Unit:</strong> {plan.unit || '_____'}</div>
           <div><strong>Story:</strong> {plan.story || '_____'}</div>
@@ -641,7 +568,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           })}
           <div className="expectations-box">
             <strong>Expectations:</strong>
-            <div style={{marginTop: '4px'}}>{getExpectationForWeek(1)}</div>
+            <div style={{marginTop: '6px'}}>{getExpectationForWeek(1)}</div>
           </div>
         </div>
         
@@ -661,7 +588,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           })}
           <div className="expectations-box">
             <strong>Expectations:</strong>
-            <div style={{marginTop: '4px'}}>{getExpectationForWeek(2)}</div>
+            <div style={{marginTop: '6px'}}>{getExpectationForWeek(2)}</div>
           </div>
         </div>
       </div>
@@ -720,15 +647,8 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         {/* Print Preview Container */}
         <div className="p-6 bg-slate-200">
           <div ref={printRef} className="preview-wrapper">
-            {/* Page 1: Week 1 Daily Plan - Using same structure as print */}
-            <div className="bg-white shadow-lg mb-6 mx-auto" style={{ 
-              width: '11in', 
-              height: '8.5in', 
-              padding: '0.1in',
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden'
-            }}>
+            {/* Page 1: Week 1 Daily Plan */}
+            <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', minHeight: '8.5in', padding: '0.3in' }}>
               <WeeklyPlanPage
                 days={planDays}
                 weekNum={1}
@@ -741,14 +661,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
 
             {/* Page 2: Week 2 Daily Plan (if has week 2 data) */}
             {(plan.week2_start || plan.week2_end) && (
-              <div className="bg-white shadow-lg mb-6 mx-auto" style={{ 
-                width: '11in', 
-                height: '8.5in', 
-                padding: '0.1in',
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden'
-              }}>
+              <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', minHeight: '8.5in', padding: '0.3in' }}>
                 <WeeklyPlanPage
                   days={planDaysWeek2}
                   weekNum={2}
@@ -761,14 +674,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             )}
 
             {/* Page 3: Standards */}
-            <div className="bg-white shadow-lg mx-auto" style={{ 
-              width: '11in', 
-              height: '8.5in', 
-              padding: '0.1in',
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden'
-            }}>
+            <div className="bg-white shadow-lg mx-auto" style={{ width: '11in', minHeight: '8.5in', padding: '0.3in' }}>
               <StandardsPage />
             </div>
           </div>
