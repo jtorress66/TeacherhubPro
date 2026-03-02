@@ -392,27 +392,13 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
 
   // Checkbox component
   const Chk = ({ checked }) => (
-    <span style={{
-      display: 'inline-block',
-      width: '8px',
-      height: '8px',
-      border: '1px solid #000',
-      marginRight: '3px',
-      verticalAlign: 'middle',
-      textAlign: 'center',
-      fontSize: '5pt',
-      lineHeight: '6px',
-      background: checked ? '#000' : '#fff',
-      color: checked ? '#fff' : '#000'
-    }}>
-      {checked ? '✓' : ''}
-    </span>
+    <span className={`chk ${checked ? 'checked' : ''}`} />
   );
 
-  // Weekly Plan Page (Page A) - Matches user's "Techers Planner A.jpeg"
+  // Weekly Plan Page - CSS Grid based layout (GUARANTEED SINGLE PAGE)
   const WeeklyPlanPage = ({ days, weekNum, weekStart, weekEnd, objective, skills }) => (
     <div className="page">
-      {/* Header */}
+      {/* HEADER */}
       <div className="header">
         {school?.logo_url && (
           <img src={school.logo_url} alt="Logo" className="header-logo" />
@@ -429,21 +415,21 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         </div>
       </div>
       
-      {/* Info Row */}
+      {/* INFO ROW */}
       <div className="info-row">
         <span><strong>Unit:</strong> {plan.unit || '_____'} &nbsp; <strong>Story:</strong> {plan.story || '_____'}</span>
         <span><strong>Teacher:</strong> {plan.teacher_name || '_____'} &nbsp; <strong>Grade:</strong> {classInfo?.grade || ''}-{classInfo?.section || ''}</span>
         <span><strong>Date:</strong> From {formatDate(weekStart)} To {formatDate(weekEnd)}</span>
       </div>
       
-      {/* Objective */}
+      {/* OBJECTIVE */}
       <div className="objective-box">
-        <strong>Objective of the week:</strong> {objective || '_____'}
+        <strong>Objective:</strong> {objective || '_____'}
       </div>
       
-      {/* Skills */}
+      {/* SKILLS */}
       <div className="skills-box">
-        <div className="skills-title">Skills of the week:</div>
+        <span className="skills-title">Skills:</span>
         <ol className="skills-list">
           {(skills || []).filter(s => s).length > 0 ? (
             skills.filter(s => s).map((skill, i) => (
@@ -453,98 +439,88 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             <>
               <li>_________________________</li>
               <li>_________________________</li>
-              <li>_________________________</li>
-              <li>_________________________</li>
             </>
           )}
         </ol>
       </div>
       
-      {/* TABLE WRAPPER - GROWS TO FILL REMAINING PAGE SPACE */}
-      <div className="table-wrapper">
-        <table className="main-grid">
-        <thead>
-          <tr>
-            <th className="col-label"></th>
-            {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, idx) => (
-              <th key={day} className="col-day">
-                <div className="day-header">{DAY_LABELS[day][lang]}</div>
-                <div className="eca-line">
-                  <Chk checked={days[idx]?.eca?.E} />E{' '}
-                  <Chk checked={days[idx]?.eca?.C} />C{' '}
-                  <Chk checked={days[idx]?.eca?.A} />A
-                </div>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {/* Day Theme Row */}
-          <tr>
-            <td className="row-label">Day Theme</td>
-            {days.map((day, i) => (
-              <td key={i} style={{textAlign: 'center', fontWeight: 'bold', fontSize: '8pt'}}>
-                {day.theme || ''}
-              </td>
-            ))}
-          </tr>
-          
-          {/* Type of Taxonomy Row - DOK Levels with SHORT descriptions */}
-          <tr>
-            <td className="row-label">
-              Type of<br/>Taxonomy:<br/>Webb (2005)<br/>Levels
-            </td>
-            {days.map((day, i) => (
-              <td key={i}>
-                <div className="dok-item"><Chk checked={day.dok_levels?.includes(1)} /> Lv1: Memory <span style={{fontSize: '5pt', color: '#333'}}>(recall)</span></div>
-                <div className="dok-item"><Chk checked={day.dok_levels?.includes(2)} /> Lv2: Processing <span style={{fontSize: '5pt', color: '#333'}}>(reasoning)</span></div>
-                <div className="dok-item"><Chk checked={day.dok_levels?.includes(3)} /> Lv3: Strategic <span style={{fontSize: '5pt', color: '#333'}}>(complex)</span></div>
-                <div className="dok-item"><Chk checked={day.dok_levels?.includes(4)} /> Lv4: Extended <span style={{fontSize: '5pt', color: '#333'}}>(broader)</span></div>
-              </td>
-            ))}
-          </tr>
-          
-          {/* Activities Row */}
-          <tr>
-            <td className="row-label">Activities</td>
-            {days.map((day, i) => (
-              <td key={i}>
-                {Object.keys(ACTIVITY_LABELS).map(actType => {
-                  const activity = day.activities?.find(a => a.activity_type === actType);
-                  return (
-                    <div key={actType} className="item-row">
-                      <Chk checked={activity?.checked} /> {ACTIVITY_LABELS[actType][lang]}
-                      {actType === 'other' && activity?.checked && activity?.notes && (
-                        <span style={{fontStyle:'italic'}}>: {activity.notes}</span>
-                      )}
-                    </div>
-                  );
-                })}
-              </td>
-            ))}
-          </tr>
-          
-          {/* Materials Row */}
-          <tr>
-            <td className="row-label">Materials</td>
-            {days.map((day, i) => (
-              <td key={i}>
-                {Object.keys(MATERIAL_LABELS).map(matType => {
-                  const material = day.materials?.find(m => m.material_type === matType);
-                  return (
-                    <div key={matType} className="item-row">
-                      <Chk checked={material?.checked} /> {MATERIAL_LABELS[matType][lang]}
-                      {matType === 'other' && material?.checked && material?.notes && (
-                        <span style={{fontStyle:'italic'}}>: {material.notes}</span>
-                      )}
-                    </div>
-                  );
-                })}
-              </td>
-            ))}
-          </tr>
-        </tbody>
-      </table>
+      {/* MAIN TABLE - CSS GRID CONTAINER */}
+      <div className="table-container">
+        {/* Table Header */}
+        <div className="table-header">
+          <div></div>
+          {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, idx) => (
+            <div key={day}>
+              <div>{DAY_LABELS[day][lang]}</div>
+              <div className="eca-line">
+                <Chk checked={days[idx]?.eca?.E} />E{' '}
+                <Chk checked={days[idx]?.eca?.C} />C{' '}
+                <Chk checked={days[idx]?.eca?.A} />A
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {/* Day Theme Row */}
+        <div className="table-row">
+          <div className="row-label">Day Theme</div>
+          {days.map((day, i) => (
+            <div key={i} className="theme-cell">{day.theme || ''}</div>
+          ))}
+        </div>
+        
+        {/* DOK Levels Row */}
+        <div className="table-row">
+          <div className="row-label">Webb Taxonomy Levels</div>
+          {days.map((day, i) => (
+            <div key={i} className="content-cell">
+              <div className="item-row"><Chk checked={day.dok_levels?.includes(1)} /> Lv1: Memory</div>
+              <div className="item-row"><Chk checked={day.dok_levels?.includes(2)} /> Lv2: Processing</div>
+              <div className="item-row"><Chk checked={day.dok_levels?.includes(3)} /> Lv3: Strategic</div>
+              <div className="item-row"><Chk checked={day.dok_levels?.includes(4)} /> Lv4: Extended</div>
+            </div>
+          ))}
+        </div>
+        
+        {/* Activities Row */}
+        <div className="table-row">
+          <div className="row-label">Activities</div>
+          {days.map((day, i) => (
+            <div key={i} className="content-cell">
+              {Object.keys(ACTIVITY_LABELS).map(actType => {
+                const activity = day.activities?.find(a => a.activity_type === actType);
+                return (
+                  <div key={actType} className="item-row">
+                    <Chk checked={activity?.checked} /> {ACTIVITY_LABELS[actType][lang]}
+                    {actType === 'other' && activity?.checked && activity?.notes && (
+                      <span>: {activity.notes}</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+        
+        {/* Materials Row */}
+        <div className="table-row">
+          <div className="row-label">Materials</div>
+          {days.map((day, i) => (
+            <div key={i} className="content-cell">
+              {Object.keys(MATERIAL_LABELS).map(matType => {
+                const material = day.materials?.find(m => m.material_type === matType);
+                return (
+                  <div key={matType} className="item-row">
+                    <Chk checked={material?.checked} /> {MATERIAL_LABELS[matType][lang]}
+                    {matType === 'other' && material?.checked && material?.notes && (
+                      <span>: {material.notes}</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
