@@ -210,12 +210,12 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             height: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            font-size: 7pt;
+            font-size: 6.5pt;
           }
           table.main-grid th,
           table.main-grid td {
             border: 1px solid #000;
-            padding: 3px 4px;
+            padding: 2px 3px;
             vertical-align: top;
             word-wrap: break-word;
           }
@@ -223,8 +223,8 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             background: #f0f0f0;
             font-weight: bold;
             text-align: center;
-            font-size: 9pt;
-            padding: 4px;
+            font-size: 8pt;
+            padding: 3px;
           }
           
           /* Column widths */
@@ -234,7 +234,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Day header */
           .day-header {
             font-weight: bold;
-            font-size: 9pt;
+            font-size: 8pt;
           }
           .eca-line {
             font-size: 7pt;
