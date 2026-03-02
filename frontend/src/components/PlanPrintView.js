@@ -461,7 +461,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             ))}
           </tr>
           
-          {/* Type of Taxonomy Row - DOK Levels with FULL descriptions */}
+          {/* Type of Taxonomy Row - DOK Levels with descriptions INLINE (no line breaks) */}
           <tr>
             <td className="row-label">
               Type of<br/>Taxonomy:<br/>Webb (2005)<br/>Levels
@@ -469,20 +469,16 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             {days.map((day, i) => (
               <td key={i}>
                 <div className="dok-item">
-                  <Chk checked={day.dok_levels?.includes(1)} /> Level 1: Memory Thought<br/>
-                  <span style={{fontSize: '6pt', color: '#333', marginLeft: '11px'}}>(Knowledge in or the same way as learned)</span>
+                  <Chk checked={day.dok_levels?.includes(1)} /> Level 1: Memory Thought <span style={{fontSize: '5pt', color: '#333'}}>(Knowledge in same way as learned)</span>
                 </div>
                 <div className="dok-item">
-                  <Chk checked={day.dok_levels?.includes(2)} /> Level 2: Processing<br/>
-                  <span style={{fontSize: '6pt', color: '#333', marginLeft: '11px'}}>(Requires some basic mental reasoning, beyond memory)</span>
+                  <Chk checked={day.dok_levels?.includes(2)} /> Level 2: Processing <span style={{fontSize: '5pt', color: '#333'}}>(Basic mental reasoning beyond memory)</span>
                 </div>
                 <div className="dok-item">
-                  <Chk checked={day.dok_levels?.includes(3)} /> Level 3: Strategic Thinking<br/>
-                  <span style={{fontSize: '6pt', color: '#333', marginLeft: '11px'}}>(Demonstrate knowledge based on complex cognitive demand)</span>
+                  <Chk checked={day.dok_levels?.includes(3)} /> Level 3: Strategic Thinking <span style={{fontSize: '5pt', color: '#333'}}>(Complex cognitive demand)</span>
                 </div>
                 <div className="dok-item">
-                  <Chk checked={day.dok_levels?.includes(4)} /> Level 4: Extended Thought<br/>
-                  <span style={{fontSize: '6pt', color: '#333', marginLeft: '11px'}}>(Extends knowledge to broader contexts)</span>
+                  <Chk checked={day.dok_levels?.includes(4)} /> Level 4: Extended Thought <span style={{fontSize: '5pt', color: '#333'}}>(Broader contexts)</span>
                 </div>
               </td>
             ))}
