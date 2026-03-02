@@ -44,25 +44,25 @@ const formatDate = (dateStr) => {
   return dateStr;
 };
 
-// Print CSS - CENTERED, fits on page
+// Print CSS - WIDER table, slightly larger fonts
 const PRINT_CSS = `
 @page {
   size: 8.5in 11in;
-  margin: 0.25in;
+  margin: 0.2in 0.15in;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   font-family: Arial, sans-serif;
-  font-size: 8pt;
+  font-size: 8.5pt;
   line-height: 1.25;
   color: #000;
 }
 
 .page {
-  width: 8in;
-  height: 10.5in;
+  width: 8.2in;
+  height: 10.6in;
   margin: 0 auto;
   overflow: hidden;
   page-break-after: always;
@@ -74,12 +74,12 @@ body {
 .header { text-align: center; margin-bottom: 5pt; }
 .header img { height: 34px; }
 .header .name { font-size: 11pt; font-weight: bold; }
-.header .info { font-size: 7pt; }
+.header .info { font-size: 7.5pt; }
 
-.date-line { font-size: 8pt; border-bottom: 1pt solid #000; padding: 3pt 0; margin-bottom: 5pt; }
+.date-line { font-size: 8.5pt; border-bottom: 1pt solid #000; padding: 3pt 0; margin-bottom: 5pt; }
 
-.obj-box { border: 1pt solid #000; padding: 5pt 6pt; margin-bottom: 5pt; font-size: 8pt; }
-.skills-box { border: 1pt solid #000; padding: 5pt 6pt; margin-bottom: 6pt; font-size: 8pt; }
+.obj-box { border: 1pt solid #000; padding: 5pt 6pt; margin-bottom: 5pt; font-size: 8.5pt; }
+.skills-box { border: 1pt solid #000; padding: 5pt 6pt; margin-bottom: 6pt; font-size: 8.5pt; }
 .obj-box b, .skills-box b { text-decoration: underline; }
 .skills-box ol { margin: 3pt 0 0 16pt; padding: 0; }
 .skills-box li { margin: 1pt 0; line-height: 1.3; }
@@ -88,61 +88,61 @@ body {
   width: 100%; 
   border-collapse: collapse; 
   table-layout: fixed; 
-  font-size: 6.5pt;
+  font-size: 7pt;
   flex: 1;
 }
 .tbl th, .tbl td { 
   border: 1pt solid #000; 
-  padding: 3pt 2pt; 
+  padding: 3pt 3pt; 
   vertical-align: top; 
 }
 .tbl th { 
   background: #e0e0e0; 
-  font-size: 8pt; 
+  font-size: 8.5pt; 
   text-align: center;
-  padding: 5pt 2pt;
+  padding: 5pt 3pt;
 }
 .tbl .lbl { 
-  width: 10%; 
+  width: 9%; 
   background: #f5f5f5; 
   font-weight: bold;
-  font-size: 7pt;
+  font-size: 7.5pt;
 }
-.tbl .day { width: 18%; }
+.tbl .day { width: 18.2%; }
 
-.day-hdr { font-weight: bold; font-size: 9pt; }
-.eca { font-size: 6pt; margin-top: 2pt; }
-.theme { text-align: center; font-weight: bold; font-size: 8pt; vertical-align: middle; }
+.day-hdr { font-weight: bold; font-size: 9.5pt; }
+.eca { font-size: 6.5pt; margin-top: 2pt; }
+.theme { text-align: center; font-weight: bold; font-size: 8.5pt; vertical-align: middle; }
 
 .chk { 
   display: inline-block; 
-  width: 7pt; 
-  height: 7pt; 
+  width: 7.5pt; 
+  height: 7.5pt; 
   border: 0.75pt solid #000; 
   margin-right: 2pt; 
   vertical-align: middle; 
   text-align: center; 
-  font-size: 5pt; 
-  line-height: 6pt; 
+  font-size: 5.5pt; 
+  line-height: 6.5pt; 
 }
 .chk.x::after { content: "X"; font-weight: bold; }
 
-.itm { display: block; font-size: 6.5pt; line-height: 1.3; margin-bottom: 2pt; }
-.dok { display: block; font-size: 6pt; line-height: 1.25; margin-bottom: 3pt; }
+.itm { display: block; font-size: 7pt; line-height: 1.3; margin-bottom: 2pt; }
+.dok { display: block; font-size: 6.5pt; line-height: 1.25; margin-bottom: 3pt; }
 
 /* Page 2 */
 .title { font-size: 12pt; font-weight: bold; text-align: center; margin: 8pt 0; }
-.info-row { display: flex; justify-content: space-between; border: 1pt solid #000; padding: 8pt; margin-bottom: 10pt; font-size: 9pt; }
+.info-row { display: flex; justify-content: space-between; border: 1pt solid #000; padding: 8pt; margin-bottom: 10pt; font-size: 9.5pt; }
 .std-row { display: flex; gap: 10pt; margin-bottom: 10pt; flex: 1; }
 .std-col { flex: 1; border: 2pt solid #000; padding: 8pt; display: flex; flex-direction: column; }
-.std-hdr { font-weight: bold; font-size: 10pt; border-bottom: 2pt solid #000; padding-bottom: 4pt; margin-bottom: 8pt; }
-.std-itm { font-size: 8pt; margin-bottom: 5pt; line-height: 1.35; }
-.exp-box { border: 1pt solid #000; padding: 6pt; margin-top: auto; min-height: 70pt; font-size: 8pt; }
+.std-hdr { font-weight: bold; font-size: 10.5pt; border-bottom: 2pt solid #000; padding-bottom: 4pt; margin-bottom: 8pt; }
+.std-itm { font-size: 8.5pt; margin-bottom: 5pt; line-height: 1.35; }
+.exp-box { border: 1pt solid #000; padding: 6pt; margin-top: auto; min-height: 70pt; font-size: 8.5pt; }
 .exp-box b { text-decoration: underline; }
-.int-sec { border: 1pt solid #000; padding: 8pt; margin-bottom: 12pt; font-size: 9pt; }
+.int-sec { border: 1pt solid #000; padding: 8pt; margin-bottom: 12pt; font-size: 9.5pt; }
 .int-items { display: flex; flex-wrap: wrap; gap: 10pt; margin-top: 5pt; }
 .sigs { display: flex; justify-content: space-between; margin-top: auto; padding-top: 20pt; }
-.sig { width: 45%; border-top: 1pt solid #000; padding-top: 6pt; text-align: center; font-size: 8pt; }
+.sig { width: 45%; border-top: 1pt solid #000; padding-top: 6pt; text-align: center; font-size: 8.5pt; }
 
 @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 `;
@@ -177,18 +177,18 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
   const getStandardsForWeek = (weekIndex) => plan.standards?.filter(s => s.week_index === weekIndex) || [];
   const getExpectationForWeek = (weekIndex) => plan.expectations?.find(e => e.week_index === weekIndex)?.content || plan.expectations?.find(e => e.week_index === weekIndex)?.text || '';
 
-  // Checkbox - sized to fit
+  // Checkbox - slightly larger
   const Chk = ({ checked }) => (
     <span style={{
       display: 'inline-block',
-      width: '9px',
-      height: '9px',
+      width: '10px',
+      height: '10px',
       border: '1px solid #000',
       marginRight: '3px',
       verticalAlign: 'middle',
       textAlign: 'center',
-      fontSize: '7px',
-      lineHeight: '8px',
+      fontSize: '8px',
+      lineHeight: '9px',
       fontWeight: 'bold'
     }}>{checked ? 'X' : ''}</span>
   );
@@ -202,40 +202,40 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     setTimeout(() => { printWindow.print(); printWindow.close(); }, 300);
   };
 
-  // CENTERED inline styles - sized to fit all content on page
+  // WIDER page with slightly larger fonts
   const pageStyle = { 
-    width: '8in', 
-    height: '10.5in', 
+    width: '8.2in', 
+    height: '10.6in', 
     margin: '0 auto',
     overflow: 'hidden', 
     fontFamily: 'Arial, sans-serif', 
-    fontSize: '9px', 
+    fontSize: '9.5px', 
     lineHeight: '1.25', 
     color: '#000', 
-    padding: '8px',
+    padding: '6px',
     display: 'flex',
     flexDirection: 'column'
   };
   const headerStyle = { textAlign: 'center', marginBottom: '6px' };
-  const dateLineStyle = { fontSize: '9px', borderBottom: '1px solid #000', padding: '4px 0', marginBottom: '6px' };
-  const objBoxStyle = { border: '1px solid #000', padding: '6px 8px', marginBottom: '6px', fontSize: '9px' };
-  const skillsBoxStyle = { border: '1px solid #000', padding: '6px 8px', marginBottom: '8px', fontSize: '9px' };
+  const dateLineStyle = { fontSize: '10px', borderBottom: '1px solid #000', padding: '4px 0', marginBottom: '6px' };
+  const objBoxStyle = { border: '1px solid #000', padding: '6px 8px', marginBottom: '6px', fontSize: '10px' };
+  const skillsBoxStyle = { border: '1px solid #000', padding: '6px 8px', marginBottom: '8px', fontSize: '10px' };
   
-  // Table fills remaining space
-  const tableStyle = { width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', fontSize: '7.5px', flex: 1 };
-  const thStyle = { border: '1px solid #000', padding: '6px 3px', background: '#e0e0e0', fontWeight: 'bold', textAlign: 'center', fontSize: '9px' };
-  const tdStyle = { border: '1px solid #000', padding: '4px 3px', verticalAlign: 'top', fontSize: '7.5px', lineHeight: '1.35' };
-  const lblStyle = { ...tdStyle, width: '10%', background: '#f5f5f5', fontWeight: 'bold', fontSize: '8px' };
-  const itemStyle = { display: 'block', fontSize: '7.5px', lineHeight: '1.4', marginBottom: '3px' };
-  const dokStyle = { display: 'block', fontSize: '7px', lineHeight: '1.3', marginBottom: '4px' };
+  // WIDER table with larger fonts
+  const tableStyle = { width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', fontSize: '8px', flex: 1 };
+  const thStyle = { border: '1px solid #000', padding: '6px 4px', background: '#e0e0e0', fontWeight: 'bold', textAlign: 'center', fontSize: '10px' };
+  const tdStyle = { border: '1px solid #000', padding: '4px 4px', verticalAlign: 'top', fontSize: '8px', lineHeight: '1.35' };
+  const lblStyle = { ...tdStyle, width: '9%', background: '#f5f5f5', fontWeight: 'bold', fontSize: '8.5px' };
+  const itemStyle = { display: 'block', fontSize: '8px', lineHeight: '1.4', marginBottom: '3px' };
+  const dokStyle = { display: 'block', fontSize: '7.5px', lineHeight: '1.3', marginBottom: '4px' };
 
   const WeekPage = ({ days, weekNum, weekStart, weekEnd, objective, skills }) => (
     <div className="page" style={pageStyle}>
       <div className="header" style={headerStyle}>
         {school?.logo_url && <img src={school.logo_url} alt="" style={{ height: '38px' }} />}
-        <div className="name" style={{ fontSize: '13px', fontWeight: 'bold' }}>{school?.name || 'School Name'}</div>
-        {school?.address && <div className="info" style={{ fontSize: '8px' }}>{school.address}</div>}
-        <div className="info" style={{ fontSize: '8px' }}>{school?.phone && `Tel. ${school.phone}`}{school?.email && ` | ${school.email}`}</div>
+        <div className="name" style={{ fontSize: '14px', fontWeight: 'bold' }}>{school?.name || 'School Name'}</div>
+        {school?.address && <div className="info" style={{ fontSize: '9px' }}>{school.address}</div>}
+        <div className="info" style={{ fontSize: '9px' }}>{school?.phone && `Tel. ${school.phone}`}{school?.email && ` | ${school.email}`}</div>
       </div>
       
       <div className="date-line" style={dateLineStyle}>
@@ -253,15 +253,15 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         </ol>
       </div>
       
-      {/* Table fills remaining space - CENTERED */}
+      {/* WIDER table */}
       <table className="tbl" style={tableStyle}>
         <thead>
           <tr>
-            <th className="lbl" style={{ ...thStyle, width: '10%' }}></th>
+            <th className="lbl" style={{ ...thStyle, width: '9%' }}></th>
             {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day, idx) => (
-              <th key={day} className="day" style={{ ...thStyle, width: '18%' }}>
-                <div className="day-hdr" style={{ fontWeight: 'bold', fontSize: '10px' }}>{DAY_LABELS[day][lang]}</div>
-                <div className="eca" style={{ fontSize: '7px', marginTop: '3px' }}>
+              <th key={day} className="day" style={{ ...thStyle, width: '18.2%' }}>
+                <div className="day-hdr" style={{ fontWeight: 'bold', fontSize: '11px' }}>{DAY_LABELS[day][lang]}</div>
+                <div className="eca" style={{ fontSize: '8px', marginTop: '3px' }}>
                   <Chk checked={days[idx]?.eca?.E} />E <Chk checked={days[idx]?.eca?.C} />C <Chk checked={days[idx]?.eca?.A} />A
                 </div>
               </th>
@@ -272,7 +272,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           {/* Day Theme Row */}
           <tr>
             <td className="lbl" style={lblStyle}>Day Theme</td>
-            {days.map((d, i) => <td key={i} className="theme" style={{ ...tdStyle, textAlign: 'center', fontWeight: 'bold', fontSize: '9px', verticalAlign: 'middle' }}>{d.theme || ''}</td>)}
+            {days.map((d, i) => <td key={i} className="theme" style={{ ...tdStyle, textAlign: 'center', fontWeight: 'bold', fontSize: '10px', verticalAlign: 'middle' }}>{d.theme || ''}</td>)}
           </tr>
           
           {/* DOK Levels Row */}
@@ -322,14 +322,14 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
     <div className="page" style={pageStyle}>
       <div className="header" style={headerStyle}>
         {school?.logo_url && <img src={school.logo_url} alt="" style={{ height: '38px' }} />}
-        <div className="name" style={{ fontSize: '13px', fontWeight: 'bold' }}>{school?.name || 'School Name'}</div>
-        {school?.address && <div className="info" style={{ fontSize: '8px' }}>{school.address}</div>}
-        <div className="info" style={{ fontSize: '8px' }}>{school?.phone && `Tel. ${school.phone}`}{school?.email && ` | ${school.email}`}</div>
+        <div className="name" style={{ fontSize: '14px', fontWeight: 'bold' }}>{school?.name || 'School Name'}</div>
+        {school?.address && <div className="info" style={{ fontSize: '9px' }}>{school.address}</div>}
+        <div className="info" style={{ fontSize: '9px' }}>{school?.phone && `Tel. ${school.phone}`}{school?.email && ` | ${school.email}`}</div>
       </div>
       
-      <div className="title" style={{ fontSize: '14px', fontWeight: 'bold', textAlign: 'center', margin: '10px 0' }}>Teacher's Planning</div>
+      <div className="title" style={{ fontSize: '15px', fontWeight: 'bold', textAlign: 'center', margin: '10px 0' }}>Teacher's Planning</div>
       
-      <div className="info-row" style={{ display: 'flex', justifyContent: 'space-between', border: '1px solid #000', padding: '10px', marginBottom: '12px', fontSize: '10px' }}>
+      <div className="info-row" style={{ display: 'flex', justifyContent: 'space-between', border: '1px solid #000', padding: '10px', marginBottom: '12px', fontSize: '11px' }}>
         <div>
           <div style={{ marginBottom: '4px' }}><b>Unit:</b> {plan.unit || '_____'}</div>
           <div style={{ marginBottom: '4px' }}><b>Story:</b> {plan.story || '_____'}</div>
@@ -347,7 +347,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       <div className="std-row" style={{ display: 'flex', gap: '12px', marginBottom: '12px', flex: 1 }}>
         {[1, 2].map(week => (
           <div key={week} className="std-col" style={{ flex: 1, border: '2px solid #000', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-            <div className="std-hdr" style={{ fontWeight: 'bold', fontSize: '12px', borderBottom: '2px solid #000', paddingBottom: '5px', marginBottom: '10px' }}>
+            <div className="std-hdr" style={{ fontWeight: 'bold', fontSize: '13px', borderBottom: '2px solid #000', paddingBottom: '5px', marginBottom: '10px' }}>
               Standard: {week === 1 ? 'First' : 'Second'} Week
             </div>
             {[
@@ -359,12 +359,12 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             ].map(({ key, label }) => {
               const std = getStandardsForWeek(week).find(s => s.domain === key);
               return (
-                <div key={key} className="std-itm" style={{ fontSize: '10px', marginBottom: '7px', lineHeight: '1.4' }}>
+                <div key={key} className="std-itm" style={{ fontSize: '11px', marginBottom: '7px', lineHeight: '1.4' }}>
                   <Chk checked={std?.codes?.length > 0} /> <b>{label}</b>{std?.codes?.length > 0 && ` ${std.codes.join(', ')}`}
                 </div>
               );
             })}
-            <div className="exp-box" style={{ border: '1px solid #000', padding: '8px', marginTop: 'auto', minHeight: '90px', fontSize: '10px' }}>
+            <div className="exp-box" style={{ border: '1px solid #000', padding: '8px', marginTop: 'auto', minHeight: '90px', fontSize: '11px' }}>
               <b style={{ textDecoration: 'underline' }}>Expectations:</b>
               <div style={{ marginTop: '6px' }}>{getExpectationForWeek(week)}</div>
             </div>
@@ -372,7 +372,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         ))}
       </div>
 
-      <div className="int-sec" style={{ border: '1px solid #000', padding: '10px', marginBottom: '14px', fontSize: '10px' }}>
+      <div className="int-sec" style={{ border: '1px solid #000', padding: '10px', marginBottom: '14px', fontSize: '11px' }}>
         <b>Integration with other subjects:</b>
         <div className="int-items" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '8px' }}>
           {[
@@ -385,14 +385,14 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             { key: 'physicalEducation', label: 'Physical Education' },
             { key: 'religion', label: 'Religion' }
           ].map(({ key, label }) => (
-            <span key={key} style={{ fontSize: '10px' }}><Chk checked={plan.subject_integration?.includes(key)} /> {label}</span>
+            <span key={key} style={{ fontSize: '11px' }}><Chk checked={plan.subject_integration?.includes(key)} /> {label}</span>
           ))}
         </div>
       </div>
 
       <div className="sigs" style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto', paddingTop: '24px' }}>
-        <div className="sig" style={{ width: '45%', borderTop: '1px solid #000', paddingTop: '8px', textAlign: 'center', fontSize: '10px' }}>Teacher's Signature / Date</div>
-        <div className="sig" style={{ width: '45%', borderTop: '1px solid #000', paddingTop: '8px', textAlign: 'center', fontSize: '10px' }}>Principal's Signature / Date</div>
+        <div className="sig" style={{ width: '45%', borderTop: '1px solid #000', paddingTop: '8px', textAlign: 'center', fontSize: '11px' }}>Teacher's Signature / Date</div>
+        <div className="sig" style={{ width: '45%', borderTop: '1px solid #000', paddingTop: '8px', textAlign: 'center', fontSize: '11px' }}>Principal's Signature / Date</div>
       </div>
     </div>
   );
@@ -410,7 +410,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
 
         <div className="p-6 bg-slate-200">
           <div ref={printRef}>
-            {/* Page wrapper centers content */}
+            {/* Wider page wrapper */}
             <div className="bg-white shadow mb-6 mx-auto" style={{ width: '8.5in', height: '11in', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <WeekPage days={planDays} weekNum={1} weekStart={plan.week_start} weekEnd={plan.week_end} objective={plan.objective} skills={plan.skills} />
             </div>
