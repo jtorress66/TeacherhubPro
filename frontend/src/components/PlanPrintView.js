@@ -655,11 +655,11 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           </div>
         </div>
 
-        {/* Print Preview Container */}
+        {/* Print Preview Container - Shows what will be printed */}
         <div className="p-6 bg-slate-200">
-          <div ref={printRef} className="preview-wrapper">
-            {/* Page 1: Week 1 Daily Plan - Fixed height with overflow hidden */}
-            <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.2in', overflow: 'hidden' }}>
+          <div ref={printRef}>
+            {/* Page 1: Week 1 Daily Plan */}
+            <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.15in', overflow: 'hidden' }}>
               <WeeklyPlanPage
                 days={planDays}
                 weekNum={1}
@@ -670,9 +670,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
               />
             </div>
 
-            {/* Page 2: Week 2 Daily Plan (if has week 2 data) */}
+            {/* Page 2: Week 2 Daily Plan (if exists) */}
             {(plan.week2_start || plan.week2_end) && (
-              <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.2in', overflow: 'hidden' }}>
+              <div className="bg-white shadow-lg mb-6 mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.15in', overflow: 'hidden' }}>
                 <WeeklyPlanPage
                   days={planDaysWeek2}
                   weekNum={2}
@@ -684,8 +684,8 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
               </div>
             )}
 
-            {/* Page 3: Standards */}
-            <div className="bg-white shadow-lg mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.2in', overflow: 'hidden' }}>
+            {/* Standards Page */}
+            <div className="bg-white shadow-lg mx-auto" style={{ width: '11in', height: '8.5in', padding: '0.15in', overflow: 'hidden' }}>
               <StandardsPage />
             </div>
           </div>
