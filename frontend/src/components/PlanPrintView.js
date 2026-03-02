@@ -550,14 +550,14 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         </div>
       </div>
 
-      {/* Standards Grid - Two Columns */}
-      <div className="standards-grid">
-        <div className="standards-week">
-          <div className="standards-title">Standard: First Week</div>
+      {/* Standards Grid - Two Columns SIDE BY SIDE like reference image */}
+      <div className="standards-grid" style={{ display: 'flex', gap: '20px', marginBottom: '15px' }}>
+        <div className="standards-week" style={{ flex: 1, border: '1px solid #000', padding: '10px' }}>
+          <div className="standards-title" style={{ fontWeight: 'bold', fontSize: '11pt', borderBottom: '2px solid #000', paddingBottom: '6px', marginBottom: '10px' }}>Standard: First Week</div>
           {['listeningAndSpeaking', 'foundationalSkills', 'reading', 'writing', 'language'].map(domain => {
             const standard = getStandardsForWeek(1).find(s => s.domain === domain);
             return (
-              <div key={domain} className="standard-row">
+              <div key={domain} className="standard-row" style={{ fontSize: '10pt', marginBottom: '6px' }}>
                 <Chk checked={standard?.codes?.length > 0} />
                 <strong>{STANDARD_LABELS[domain][lang]}</strong>
                 {standard?.codes?.length > 0 && (
@@ -566,18 +566,18 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
               </div>
             );
           })}
-          <div className="expectations-box">
+          <div className="expectations-box" style={{ border: '1px solid #000', padding: '8px', marginTop: '12px', minHeight: '80px', fontSize: '10pt' }}>
             <strong>Expectations:</strong>
             <div style={{marginTop: '6px'}}>{getExpectationForWeek(1)}</div>
           </div>
         </div>
         
-        <div className="standards-week">
-          <div className="standards-title">Standard: Second Week</div>
+        <div className="standards-week" style={{ flex: 1, border: '1px solid #000', padding: '10px' }}>
+          <div className="standards-title" style={{ fontWeight: 'bold', fontSize: '11pt', borderBottom: '2px solid #000', paddingBottom: '6px', marginBottom: '10px' }}>Standard: Second Week</div>
           {['listeningAndSpeaking', 'foundationalSkills', 'reading', 'writing', 'language'].map(domain => {
             const standard = getStandardsForWeek(2).find(s => s.domain === domain);
             return (
-              <div key={domain} className="standard-row">
+              <div key={domain} className="standard-row" style={{ fontSize: '10pt', marginBottom: '6px' }}>
                 <Chk checked={standard?.codes?.length > 0} />
                 <strong>{STANDARD_LABELS[domain][lang]}</strong>
                 {standard?.codes?.length > 0 && (
@@ -586,7 +586,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
               </div>
             );
           })}
-          <div className="expectations-box">
+          <div className="expectations-box" style={{ border: '1px solid #000', padding: '8px', marginTop: '12px', minHeight: '80px', fontSize: '10pt' }}>
             <strong>Expectations:</strong>
             <div style={{marginTop: '6px'}}>{getExpectationForWeek(2)}</div>
           </div>
