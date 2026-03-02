@@ -4870,6 +4870,106 @@ init_portal_routes(db, get_current_user)
 init_google_classroom_routes(db, get_current_user)
 init_play_to_learn_routes(db)
 
+# ==================== CONTACT FORM ====================
+
+class ContactFormRequest(BaseModel):
+    name: str
+    email: str
+    subject: str
+    message: str
+
+@api_router.post("/contact")
+async def submit_contact_form(form_data: ContactFormRequest):
+    """Handle contact form submissions - sends email to support@teacherhubpro.com"""
+    try:
+        # Email to support (the business receives this)
+        support_email_html = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #16a34a;">New Contact Form Submission</h2>
+            <hr style="border: 1px solid #e5e7eb;">
+            
+            <p><strong>From:</strong> {form_data.name}</p>
+            <p><strong>Email:</strong> <a href="mailto:{form_data.email}">{form_data.email}</a></p>
+            <p><strong>Subject:</strong> {form_data.subject}</p>
+            
+            <h3 style="color: #374151; margin-top: 20px;">Message:</h3>
+            <div style="background-color: #f9fafb; padding: 15px; border-radius: 8px; border-left: 4px solid #16a34a;">
+                {form_data.message.replace(chr(10), '<br>')}
+            </div>
+            
+            <hr style="border: 1px solid #e5e7eb; margin-top: 30px;">
+            <p style="color: #6b7280; font-size: 12px;">
+                This message was sent from the TeacherHubPro contact form.
+            </p>
+        </div>
+        """
+        
+        # Send to support email
+        params = {
+            "from": SENDER_EMAIL,
+            "to": ["support@teacherhubpro.com"],
+            "subject": f"[Contact Form] {form_data.subject}",
+            "html": support_email_html,
+            "reply_to": form_data.email  # So support can reply directly to the sender
+        }
+        
+        email_result = await asyncio.to_thread(resend.Emails.send, params)
+        
+        # Also send a confirmation to the user
+        confirmation_html = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <img src="https://customer-assets.emergentagent.com/job_teachersuite/artifacts/swlef12w_ChatGPT%20Image%20Feb%2015%2C%202026%2C%2009_08_36%20PM.png" alt="TeacherHubPro" style="height: 60px; margin-bottom: 20px;">
+            
+            <h2 style="color: #16a34a;">Thank you for contacting us!</h2>
+            
+            <p>Hi {form_data.name},</p>
+            
+            <p>We've received your message and will get back to you as soon as possible, typically within 24-48 hours.</p>
+            
+            <div style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 0;"><strong>Your message:</strong></p>
+                <p style="color: #374151; margin-top: 10px;">{form_data.message.replace(chr(10), '<br>')}</p>
+            </div>
+            
+            <p>Best regards,<br>The TeacherHubPro Team</p>
+            
+            <hr style="border: 1px solid #e5e7eb; margin-top: 30px;">
+            <p style="color: #6b7280; font-size: 12px;">
+                TeacherHubPro - Empowering Teachers, Inspiring Students<br>
+                <a href="https://teacherhubpro.com" style="color: #16a34a;">www.teacherhubpro.com</a>
+            </p>
+        </div>
+        """
+        
+        confirmation_params = {
+            "from": SENDER_EMAIL,
+            "to": [form_data.email],
+            "subject": "We received your message - TeacherHubPro",
+            "html": confirmation_html
+        }
+        
+        # Try to send confirmation (don't fail if this fails)
+        try:
+            await asyncio.to_thread(resend.Emails.send, confirmation_params)
+        except Exception as e:
+            print(f"Warning: Could not send confirmation email: {e}")
+        
+        return {"success": True, "message": "Message sent successfully"}
+        
+    except Exception as e:
+        error_msg = str(e)
+        print(f"Contact form error: {error_msg}")
+        
+        # Check if it's a Resend test mode limitation
+        if "test mode" in error_msg.lower() or "verify" in error_msg.lower():
+            return {
+                "success": True, 
+                "message": "Message received (Note: Email delivery is in test mode)",
+                "note": "Resend is in test mode. To send to real addresses, verify your domain at resend.com/domains"
+            }
+        
+        raise HTTPException(status_code=500, detail="Failed to send message. Please try again later.")
+
 # ==================== SITEMAP AND ROBOTS.TXT ====================
 
 def get_base_url(request: Request) -> str:
