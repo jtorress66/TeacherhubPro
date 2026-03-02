@@ -101,7 +101,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         <style>
           @page { 
             size: letter landscape;
-            margin: 0.15in 0.2in; 
+            margin: 0.12in 0.15in; 
           }
           * { margin: 0; padding: 0; box-sizing: border-box; }
           html, body { 
@@ -110,8 +110,8 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           }
           body { 
             font-family: Arial, Helvetica, sans-serif; 
-            font-size: 7pt;
-            line-height: 1.05;
+            font-size: 6.5pt;
+            line-height: 1.0;
             color: #000;
           }
           
@@ -130,27 +130,27 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Header - very compact */
           .header {
             text-align: center;
-            padding-bottom: 2px;
-            margin-bottom: 3px;
+            padding-bottom: 1px;
+            margin-bottom: 2px;
             border-bottom: 1.5px solid #333;
             flex-shrink: 0;
           }
           .header-logo {
-            height: 28px;
+            height: 24px;
             object-fit: contain;
-            margin-bottom: 1px;
+            margin-bottom: 0;
           }
           .school-name {
-            font-size: 10pt;
+            font-size: 9pt;
             font-weight: bold;
-            margin: 1px 0;
+            margin: 0;
           }
           .school-info {
-            font-size: 6.5pt;
+            font-size: 6pt;
             color: #333;
           }
           .plan-title {
-            font-size: 9pt;
+            font-size: 8pt;
             font-weight: bold;
             margin-top: 1px;
           }
@@ -159,10 +159,10 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           .info-row {
             display: flex;
             justify-content: space-between;
-            padding: 2px 0;
-            margin-bottom: 3px;
+            padding: 1px 0;
+            margin-bottom: 2px;
             border-bottom: 1px solid #999;
-            font-size: 7.5pt;
+            font-size: 7pt;
             flex-shrink: 0;
           }
           .info-row strong { font-weight: bold; }
@@ -170,9 +170,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Objective box - compact */
           .objective-box {
             border: 1px solid #000;
-            padding: 3px 5px;
-            margin-bottom: 3px;
-            font-size: 7.5pt;
+            padding: 2px 4px;
+            margin-bottom: 2px;
+            font-size: 7pt;
             flex-shrink: 0;
           }
           .objective-box strong {
@@ -183,24 +183,26 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Skills box - compact */
           .skills-box {
             border: 1px solid #000;
-            padding: 3px 5px;
-            margin-bottom: 4px;
-            font-size: 6.5pt;
+            padding: 2px 4px;
+            margin-bottom: 3px;
+            font-size: 6pt;
             flex-shrink: 0;
           }
           .skills-title {
             font-weight: bold;
             text-decoration: underline;
-            margin-bottom: 1px;
+            margin-bottom: 0;
           }
           .skills-list {
-            margin-left: 10px;
+            margin-left: 8px;
+            margin-top: 1px;
           }
           .skills-list li {
             margin-bottom: 0;
+            line-height: 1.1;
           }
           
-          /* Table wrapper - CRITICAL: grows to fill remaining page space */
+          /* Table wrapper - grows to fill remaining page space */
           .table-wrapper {
             flex: 1;
             display: flex;
@@ -215,7 +217,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             height: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            font-size: 6.5pt;
+            font-size: 6pt;
           }
           table.main-grid th,
           table.main-grid td {
@@ -229,7 +231,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             background: #f0f0f0;
             font-weight: bold;
             text-align: center;
-            font-size: 7.5pt;
+            font-size: 7pt;
             padding: 2px;
           }
           
@@ -240,19 +242,19 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Day header cell */
           .day-header {
             font-weight: bold;
-            font-size: 8pt;
+            font-size: 7.5pt;
           }
           .eca-line {
-            font-size: 5.5pt;
-            margin-top: 1px;
+            font-size: 5pt;
+            margin-top: 0;
           }
           
           /* Row label cell */
           .row-label {
             font-weight: bold;
-            font-size: 6pt;
+            font-size: 5.5pt;
             background: #f5f5f5;
-            line-height: 1.1;
+            line-height: 1.0;
           }
           
           /* Checkbox styling */
@@ -272,26 +274,25 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             color: #fff;
           }
           
-          /* Activity/Material items */
+          /* Activity/Material items - very compact */
           .item-row {
-            font-size: 6pt;
-            line-height: 1.15;
+            font-size: 5.5pt;
+            line-height: 1.1;
             margin-bottom: 0;
           }
           
-          /* DOK levels - compact with descriptions */
+          /* DOK levels - compact inline format */
           .dok-item {
-            font-size: 5.5pt;
-            line-height: 1.1;
-            margin-bottom: 1px;
+            font-size: 5pt;
+            line-height: 1.05;
+            margin-bottom: 0;
           }
           .dok-title {
             font-weight: bold;
           }
           .dok-desc {
-            font-size: 5pt;
+            font-size: 4.5pt;
             color: #333;
-            display: inline;
           }
           
           /* Standards page */
