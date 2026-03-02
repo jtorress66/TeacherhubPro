@@ -234,11 +234,28 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             height: 28px;
           }
           
-          /* ROW HEIGHTS - Distribute space proportionally */
-          table.main-grid tbody tr:nth-child(1) { height: 5%; }   /* Day Theme row */
-          table.main-grid tbody tr:nth-child(2) { height: 35%; }  /* DOK Levels row */
-          table.main-grid tbody tr:nth-child(3) { height: 35%; }  /* Activities row */
-          table.main-grid tbody tr:nth-child(4) { height: 25%; }  /* Materials row */
+          /* ROW HEIGHTS - Force rows to fill available space */
+          table.main-grid tbody {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+          }
+          table.main-grid tbody tr {
+            display: flex;
+            flex: 1;
+          }
+          table.main-grid tbody tr:first-child {
+            flex: 0.5; /* Day Theme row smaller */
+          }
+          table.main-grid tbody td {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+          }
+          table.main-grid tbody td.row-label {
+            flex: none;
+            width: 7.5%;
+          }
           
           /* Column widths */
           .col-label { width: 7.5%; }
