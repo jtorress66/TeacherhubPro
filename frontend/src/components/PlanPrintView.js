@@ -502,20 +502,16 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
               {days.map((day, i) => (
                 <td key={i}>
                   <div className="dok-item">
-                    <Chk checked={day.dok_levels?.includes(1)} /> <span className="dok-title">Level 1: Memory Thought</span>
-                    <span className="dok-desc">(Knowledge in or the same way as learned)</span>
+                    <Chk checked={day.dok_levels?.includes(1)} /> <span className="dok-title">Level 1: Memory Thought</span> <span className="dok-desc">(Knowledge in or the same way as learned)</span>
                   </div>
                   <div className="dok-item">
-                    <Chk checked={day.dok_levels?.includes(2)} /> <span className="dok-title">Level 2: Processing</span>
-                    <span className="dok-desc">(Requires some basic mental reasoning, something beyond memory)</span>
+                    <Chk checked={day.dok_levels?.includes(2)} /> <span className="dok-title">Level 2: Processing</span> <span className="dok-desc">(Requires some basic mental reasoning, something beyond memory)</span>
                   </div>
                   <div className="dok-item">
-                    <Chk checked={day.dok_levels?.includes(3)} /> <span className="dok-title">Level 3: Thinking Strategic</span>
-                    <span className="dok-desc">(Demonstrate knowledge based on complex and abstract cognitive demand)</span>
+                    <Chk checked={day.dok_levels?.includes(3)} /> <span className="dok-title">Level 3: Thinking Strategic</span> <span className="dok-desc">(Demonstrate knowledge based on complex and abstract cognitive demand)</span>
                   </div>
                   <div className="dok-item">
-                    <Chk checked={day.dok_levels?.includes(4)} /> <span className="dok-title">Level 4: Thinking Thought Extended</span>
-                    <span className="dok-desc">(Extends knowledge to broader contexts)</span>
+                    <Chk checked={day.dok_levels?.includes(4)} /> <span className="dok-title">Level 4: Thinking Thought Extended</span> <span className="dok-desc">(extends knowledge to broader contexts)</span>
                   </div>
                 </td>
               ))}
