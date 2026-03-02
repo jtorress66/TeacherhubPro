@@ -140,7 +140,13 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-800">{language === 'es' ? 'Correo electrónico' : 'Email'}</h3>
-                    <p className="text-slate-600">support@teacherhubpro.com</p>
+                    <a 
+                      href="mailto:support@teacherhubpro.com" 
+                      className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                      data-testid="support-email-link"
+                    >
+                      support@teacherhubpro.com
+                    </a>
                   </div>
                 </div>
               </CardContent>
