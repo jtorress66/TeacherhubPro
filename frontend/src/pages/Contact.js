@@ -23,15 +23,30 @@ const Contact = () => {
     e.preventDefault();
     setSubmitting(true);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast.success(language === 'es' 
-      ? 'Mensaje enviado. Nos pondremos en contacto pronto.' 
-      : 'Message sent. We\'ll get back to you soon.');
-    
-    setFormData({ name: '', email: '', subject: '', message: '' });
-    setSubmitting(false);
+    try {
+      const API_URL = process.env.REACT_APP_BACKEND_URL;
+      const response = await fetch(`${API_URL}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast.success(language === 'es' 
+          ? 'Mensaje enviado. Nos pondremos en contacto pronto.' 
+          : 'Message sent. We\'ll get back to you soon.');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        toast.error(data.detail || (language === 'es' ? 'Error al enviar mensaje' : 'Failed to send message'));
+      }
+    } catch (error) {
+      console.error('Contact form error:', error);
+      toast.error(language === 'es' ? 'Error al enviar mensaje' : 'Failed to send message');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
