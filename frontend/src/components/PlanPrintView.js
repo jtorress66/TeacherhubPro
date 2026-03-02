@@ -525,6 +525,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           </tr>
         </tbody>
       </table>
+      </div>
     </div>
   );
 
