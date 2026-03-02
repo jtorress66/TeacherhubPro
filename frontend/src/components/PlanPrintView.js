@@ -231,7 +231,14 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
             text-align: center;
             font-size: 6.5pt;
             padding: 1px 2px;
+            height: 28px;
           }
+          
+          /* ROW HEIGHTS - Distribute space proportionally */
+          table.main-grid tbody tr:nth-child(1) { height: 5%; }   /* Day Theme row */
+          table.main-grid tbody tr:nth-child(2) { height: 35%; }  /* DOK Levels row */
+          table.main-grid tbody tr:nth-child(3) { height: 35%; }  /* Activities row */
+          table.main-grid tbody tr:nth-child(4) { height: 25%; }  /* Materials row */
           
           /* Column widths */
           .col-label { width: 7.5%; }
