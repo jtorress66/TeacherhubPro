@@ -268,14 +268,14 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* DOK levels */
           .dok-item {
             font-size: 6pt;
-            line-height: 1.1;
-            margin-bottom: 1px;
+            line-height: 1.05;
+            margin-bottom: 0px;
           }
           
           /* Activity/Material items */
           .item-row {
-            font-size: 6.5pt;
-            line-height: 1.15;
+            font-size: 6pt;
+            line-height: 1.05;
             margin-bottom: 0px;
           }
           
