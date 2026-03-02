@@ -126,39 +126,39 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Header */
           .header {
             text-align: center;
-            padding-bottom: 5px;
-            margin-bottom: 5px;
+            padding-bottom: 4px;
+            margin-bottom: 4px;
             border-bottom: 2px solid #333;
             flex-shrink: 0;
           }
           .header-logo {
-            height: 40px;
+            height: 35px;
             object-fit: contain;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
           }
           .school-name {
-            font-size: 12pt;
+            font-size: 11pt;
             font-weight: bold;
-            margin: 3px 0;
+            margin: 2px 0;
           }
           .school-info {
-            font-size: 8pt;
+            font-size: 7pt;
             color: #333;
           }
           .plan-title {
-            font-size: 11pt;
+            font-size: 10pt;
             font-weight: bold;
-            margin-top: 4px;
+            margin-top: 3px;
           }
           
           /* Info row */
           .info-row {
             display: flex;
             justify-content: space-between;
-            padding: 4px 0;
-            margin-bottom: 5px;
+            padding: 3px 0;
+            margin-bottom: 4px;
             border-bottom: 1px solid #999;
-            font-size: 9pt;
+            font-size: 8pt;
             flex-shrink: 0;
           }
           .info-row strong { font-weight: bold; }
@@ -166,9 +166,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Objective box */
           .objective-box {
             border: 1px solid #000;
-            padding: 5px 8px;
-            margin-bottom: 5px;
-            font-size: 9pt;
+            padding: 4px 6px;
+            margin-bottom: 4px;
+            font-size: 8pt;
             flex-shrink: 0;
           }
           .objective-box strong {
@@ -179,21 +179,21 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
           /* Skills box */
           .skills-box {
             border: 1px solid #000;
-            padding: 4px 8px;
-            margin-bottom: 6px;
-            font-size: 8pt;
+            padding: 3px 6px;
+            margin-bottom: 5px;
+            font-size: 7pt;
             flex-shrink: 0;
           }
           .skills-title {
             font-weight: bold;
             text-decoration: underline;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
           }
           .skills-list {
-            margin-left: 18px;
+            margin-left: 15px;
           }
           .skills-list li {
-            margin-bottom: 2px;
+            margin-bottom: 1px;
           }
           
           /* TABLE WRAPPER - GROWS TO FILL REMAINING SPACE */
