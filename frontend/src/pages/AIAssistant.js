@@ -735,14 +735,14 @@ const AIAssistant = () => {
                     </div>
                   )}
                 </CardHeader>
-                <CardContent className="flex-1 overflow-hidden p-4">
+                <CardContent className="flex-1 overflow-y-auto p-4" style={{ maxHeight: 'calc(100vh - 400px)', minHeight: '400px' }}>
                   {isLoading ? (
                     <div className="flex flex-col items-center justify-center h-full text-slate-500">
                       <Loader2 className="h-8 w-8 animate-spin mb-3" />
                       <p>{language === 'es' ? 'Generando contenido...' : 'Generating content...'}</p>
                     </div>
                   ) : generatedContent ? (
-                    <div className="prose prose-sm max-w-none h-full overflow-y-auto bg-slate-50 p-6 rounded-lg border">
+                    <div className="prose prose-sm max-w-none bg-slate-50 p-6 rounded-lg border">
                       <ReactMarkdown>{generatedContent}</ReactMarkdown>
                     </div>
                   ) : (
