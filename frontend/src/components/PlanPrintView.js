@@ -432,8 +432,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
         </ol>
       </div>
       
-      {/* Main Grid Table */}
-      <table className="main-grid">
+      {/* TABLE WRAPPER - GROWS TO FILL REMAINING PAGE SPACE */}
+      <div className="table-wrapper">
+        <table className="main-grid">
         <thead>
           <tr>
             <th className="col-label"></th>
