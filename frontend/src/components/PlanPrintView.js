@@ -594,9 +594,9 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
       </div>
 
       {/* Integration with other subjects */}
-      <div className="integration-section">
-        <div className="integration-title">Integration with other subjects:</div>
-        <div className="integration-items">
+      <div className="integration-section" style={{ border: '1px solid #000', padding: '10px', marginBottom: '15px', fontSize: '10pt' }}>
+        <div className="integration-title" style={{ fontWeight: 'bold', marginBottom: '8px' }}>Integration with other subjects:</div>
+        <div className="integration-items" style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
           {['mathematics', 'spanish', 'socialStudies', 'science', 'health', 'art', 'physicalEducation', 'religion'].map(subject => (
             <span key={subject}>
               <Chk checked={plan.subject_integration?.includes(subject)} />
