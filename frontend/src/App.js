@@ -55,6 +55,24 @@ import HomeschoolMarketing from "./pages/HomeschoolMarketing";
 import IntegrationsPage from "./pages/IntegrationsPage";
 // Auth Page
 import Auth from "./pages/Auth";
+// Trust Center & Compliance Pages
+import TrustCenter from "./pages/TrustCenter";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import DPA from "./pages/DPA";
+import FERPA from "./pages/FERPA";
+import COPPA from "./pages/COPPA";
+import GDPR from "./pages/GDPR";
+import SLA from "./pages/SLA";
+import SecurityWhitepaper from "./pages/SecurityWhitepaper";
+import AIGovernance from "./pages/AIGovernance";
+import IncidentResponse from "./pages/IncidentResponse";
+import BreachPolicy from "./pages/BreachPolicy";
+import BusinessContinuity from "./pages/BusinessContinuity";
+import VendorManagement from "./pages/VendorManagement";
+import AcceptableUse from "./pages/AcceptableUse";
+import SOC2 from "./pages/SOC2";
+import EnterpriseOverview from "./pages/EnterpriseOverview";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
