@@ -305,6 +305,24 @@ const AppRouter = () => {
       <Route path="/terms-of-use" element={<TermsOfUse />} />
       <Route path="/cookies-policy" element={<CookiesPolicy />} />
       <Route path="/accessibility" element={<Accessibility />} />
+      {/* Trust Center & Compliance Pages (Public) */}
+      <Route path="/trust" element={<TrustCenter />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/dpa" element={<DPA />} />
+      <Route path="/ferpa" element={<FERPA />} />
+      <Route path="/coppa" element={<COPPA />} />
+      <Route path="/gdpr" element={<GDPR />} />
+      <Route path="/sla" element={<SLA />} />
+      <Route path="/security-whitepaper" element={<SecurityWhitepaper />} />
+      <Route path="/ai-governance" element={<AIGovernance />} />
+      <Route path="/incident-response" element={<IncidentResponse />} />
+      <Route path="/breach-policy" element={<BreachPolicy />} />
+      <Route path="/business-continuity" element={<BusinessContinuity />} />
+      <Route path="/vendor-management" element={<VendorManagement />} />
+      <Route path="/acceptable-use" element={<AcceptableUse />} />
+      <Route path="/soc2" element={<SOC2 />} />
+      <Route path="/enterprise-overview" element={<EnterpriseOverview />} />
       {/* Fallback redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
