@@ -1008,6 +1008,7 @@ const Landing = () => {
               <ul className="space-y-2 text-sm text-slate-400">
                 <li><Link to="/privacy-policy" className="hover:text-white transition-colors">{t('landingPrivacyPolicyLink') || 'Privacy Policy'}</Link></li>
                 <li><Link to="/terms-of-use" className="hover:text-white transition-colors">{t('landingTermsOfServiceLink') || 'Terms of Service'}</Link></li>
+                <li><Link to="/trust" className="hover:text-white transition-colors">{language === 'es' ? 'Centro de Confianza' : 'Trust Center'}</Link></li>
               </ul>
             </div>
           </div>
