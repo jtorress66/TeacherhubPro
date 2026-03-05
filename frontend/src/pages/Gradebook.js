@@ -485,6 +485,19 @@ const Gradebook = () => {
     }
   };
 
+  // Share to Google Classroom
+  const shareToGoogleClassroom = (assignment) => {
+    const assignmentLink = `${window.location.origin}/assignment/${assignment.public_token}`;
+    const title = encodeURIComponent(assignment.title);
+    const url = encodeURIComponent(assignmentLink);
+    
+    // Google Classroom share URL format
+    const googleClassroomUrl = `https://classroom.google.com/share?url=${url}&title=${title}`;
+    
+    // Open in new window
+    window.open(googleClassroomUrl, '_blank', 'width=600,height=600');
+  };
+
   // Fetch AI assignments when class changes
   useEffect(() => {
     if (selectedClass) {
