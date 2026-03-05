@@ -392,6 +392,12 @@ const Gradebook = () => {
     
     setSavingAI(true);
     try {
+      console.log('Saving AI Assignment:', {
+        class_id: selectedClass,
+        category_id: newAssignment.category_id,
+        title: aiAssignment.title
+      });
+      
       const response = await axios.post(`${API}/ai-grading/assignments`, {
         class_id: selectedClass,
         category_id: newAssignment.category_id,
@@ -405,6 +411,12 @@ const Gradebook = () => {
         grading_mode: 'ai_suggest',
         ai_generated: true
       }, { withCredentials: true });
+      
+      console.log('Save response:', response.data);
+      
+      if (!response.data?.public_token) {
+        throw new Error('No public token received from server');
+      }
       
       // Get the student link
       const publicLink = `${window.location.origin}/assignment/${response.data.public_token}`;
@@ -433,10 +445,11 @@ const Gradebook = () => {
       });
       
       // Fetch updated AI assignments
-      fetchAIAssignments();
+      await fetchAIAssignments();
     } catch (error) {
       console.error('Save error:', error);
-      toast.error(language === 'es' ? 'Error al guardar' : 'Failed to save');
+      const errorMessage = error.response?.data?.detail || error.message || (language === 'es' ? 'Error al guardar' : 'Failed to save');
+      toast.error(errorMessage);
     } finally {
       setSavingAI(false);
     }
