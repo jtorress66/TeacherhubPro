@@ -1052,6 +1052,292 @@ const Gradebook = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* AI Assignment Generator Dialog */}
+        <Dialog open={showAIGenerator} onOpenChange={setShowAIGenerator}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Brain className="w-5 h-5 text-violet-500" />
+                {language === 'es' ? 'Generar Tarea con IA' : 'Generate Assignment with AI'}
+              </DialogTitle>
+            </DialogHeader>
+            
+            {!aiAssignment ? (
+              <div className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Tema *' : 'Topic *'}</Label>
+                  <Input
+                    value={aiRequest.topic}
+                    onChange={(e) => setAiRequest({...aiRequest, topic: e.target.value})}
+                    placeholder={language === 'es' ? 'Ej: Fracciones, Revolución Americana...' : 'E.g., Fractions, American Revolution...'}
+                    data-testid="ai-topic-input"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label>{language === 'es' ? 'Materia' : 'Subject'}</Label>
+                    <Select value={aiRequest.subject} onValueChange={(v) => setAiRequest({...aiRequest, subject: v})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Math">{language === 'es' ? 'Matemáticas' : 'Math'}</SelectItem>
+                        <SelectItem value="Science">{language === 'es' ? 'Ciencias' : 'Science'}</SelectItem>
+                        <SelectItem value="English">{language === 'es' ? 'Inglés' : 'English'}</SelectItem>
+                        <SelectItem value="History">{language === 'es' ? 'Historia' : 'History'}</SelectItem>
+                        <SelectItem value="Geography">{language === 'es' ? 'Geografía' : 'Geography'}</SelectItem>
+                        <SelectItem value="Art">{language === 'es' ? 'Arte' : 'Art'}</SelectItem>
+                        <SelectItem value="Music">{language === 'es' ? 'Música' : 'Music'}</SelectItem>
+                        <SelectItem value="Other">{language === 'es' ? 'Otro' : 'Other'}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>{language === 'es' ? 'Grado' : 'Grade Level'}</Label>
+                    <Select value={aiRequest.grade_level} onValueChange={(v) => setAiRequest({...aiRequest, grade_level: v})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="K">Kindergarten</SelectItem>
+                        {[1,2,3,4,5,6,7,8,9,10,11,12].map(g => (
+                          <SelectItem key={g} value={String(g)}>{language === 'es' ? `Grado ${g}` : `Grade ${g}`}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>{language === 'es' ? 'Dificultad' : 'Difficulty'}</Label>
+                    <Select value={aiRequest.difficulty} onValueChange={(v) => setAiRequest({...aiRequest, difficulty: v})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="easy">{language === 'es' ? 'Fácil' : 'Easy'}</SelectItem>
+                        <SelectItem value="medium">{language === 'es' ? 'Medio' : 'Medium'}</SelectItem>
+                        <SelectItem value="hard">{language === 'es' ? 'Difícil' : 'Hard'}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Tipos de Preguntas' : 'Question Types'}</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { value: 'multiple_choice', label: language === 'es' ? 'Opción Múltiple' : 'Multiple Choice' },
+                      { value: 'short_answer', label: language === 'es' ? 'Respuesta Corta' : 'Short Answer' },
+                      { value: 'essay', label: language === 'es' ? 'Ensayo' : 'Essay' },
+                      { value: 'true_false', label: language === 'es' ? 'Verdadero/Falso' : 'True/False' },
+                      { value: 'fill_blank', label: language === 'es' ? 'Completar' : 'Fill Blank' },
+                      { value: 'matching', label: language === 'es' ? 'Emparejar' : 'Matching' }
+                    ].map(type => (
+                      <Badge
+                        key={type.value}
+                        variant={aiRequest.question_types.includes(type.value) ? 'default' : 'outline'}
+                        className={`cursor-pointer ${aiRequest.question_types.includes(type.value) ? 'bg-violet-500' : ''}`}
+                        onClick={() => {
+                          const types = aiRequest.question_types.includes(type.value)
+                            ? aiRequest.question_types.filter(t => t !== type.value)
+                            : [...aiRequest.question_types, type.value];
+                          setAiRequest({...aiRequest, question_types: types});
+                        }}
+                      >
+                        {type.label}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>{language === 'es' ? 'Número de Preguntas' : 'Number of Questions'}</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="20"
+                      value={aiRequest.num_questions}
+                      onChange={(e) => setAiRequest({...aiRequest, num_questions: parseInt(e.target.value) || 5})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{language === 'es' ? 'Categoría' : 'Category'}</Label>
+                    <Select value={newAssignment.category_id} onValueChange={(v) => setNewAssignment({...newAssignment, category_id: v})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={language === 'es' ? 'Seleccionar...' : 'Select...'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map(cat => (
+                          <SelectItem key={cat.category_id} value={cat.category_id}>
+                            {language === 'es' ? cat.name_es || cat.name : cat.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Instrucciones Adicionales (opcional)' : 'Additional Instructions (optional)'}</Label>
+                  <Textarea
+                    value={aiRequest.additional_instructions}
+                    onChange={(e) => setAiRequest({...aiRequest, additional_instructions: e.target.value})}
+                    placeholder={language === 'es' ? 'Ej: Enfocarse en problemas de palabra...' : 'E.g., Focus on word problems...'}
+                    rows={2}
+                  />
+                </div>
+
+                <Button
+                  onClick={handleAIGenerate}
+                  disabled={aiGenerating || !aiRequest.topic || aiRequest.question_types.length === 0}
+                  className="w-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600"
+                  data-testid="generate-ai-assignment-btn"
+                >
+                  {aiGenerating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      {language === 'es' ? 'Generando...' : 'Generating...'}
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      {language === 'es' ? 'Generar Tarea' : 'Generate Assignment'}
+                    </>
+                  )}
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4 pt-4">
+                <div className="p-4 bg-violet-50 rounded-lg">
+                  <h3 className="font-bold text-lg text-violet-900">{aiAssignment.title}</h3>
+                  <p className="text-violet-700 mt-1">{aiAssignment.description}</p>
+                  <p className="text-sm text-violet-600 mt-2"><strong>{language === 'es' ? 'Instrucciones:' : 'Instructions:'}</strong> {aiAssignment.instructions}</p>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="font-medium">{language === 'es' ? 'Preguntas Generadas' : 'Generated Questions'} ({aiAssignment.questions?.length})</h4>
+                  {aiAssignment.questions?.map((q, idx) => (
+                    <div key={idx} className="p-3 bg-slate-50 rounded-lg border">
+                      <div className="flex justify-between items-start">
+                        <p className="font-medium">{idx + 1}. {q.question_text}</p>
+                        <Badge variant="outline">{q.points} pts</Badge>
+                      </div>
+                      <Badge className="mt-2 bg-slate-200 text-slate-700">{q.question_type.replace('_', ' ')}</Badge>
+                      {q.options && (
+                        <div className="mt-2 space-y-1">
+                          {q.options.map((opt, oidx) => (
+                            <p key={oidx} className={`text-sm pl-4 ${opt.is_correct ? 'text-green-600 font-medium' : 'text-slate-600'}`}>
+                              {String.fromCharCode(65 + oidx)}. {opt.text} {opt.is_correct && '✓'}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                      {q.correct_answer && (
+                        <p className="text-sm text-green-600 mt-2">{language === 'es' ? 'Respuesta:' : 'Answer:'} {q.correct_answer}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Fecha de Entrega (opcional)' : 'Due Date (optional)'}</Label>
+                  <Input
+                    type="date"
+                    value={newAssignment.due_date}
+                    onChange={(e) => setNewAssignment({...newAssignment, due_date: e.target.value})}
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setAiAssignment(null)}
+                    className="flex-1"
+                  >
+                    {language === 'es' ? 'Regenerar' : 'Regenerate'}
+                  </Button>
+                  <Button
+                    onClick={handleSaveAIAssignment}
+                    disabled={savingAI || !newAssignment.category_id}
+                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    data-testid="save-ai-assignment-btn"
+                  >
+                    {savingAI ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4 mr-2" />
+                    )}
+                    {language === 'es' ? 'Guardar y Obtener Enlace' : 'Save & Get Student Link'}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* AI Assignments Section */}
+        {aiAssignments.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="w-5 h-5 text-violet-500" />
+                {language === 'es' ? 'Tareas con IA' : 'AI Assignments'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {aiAssignments.map(assignment => (
+                  <div 
+                    key={assignment.assignment_id}
+                    className="flex items-center justify-between p-4 bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg border border-violet-200"
+                  >
+                    <div className="flex-1">
+                      <h4 className="font-medium text-slate-900">{assignment.title}</h4>
+                      <div className="flex items-center gap-3 mt-1 text-sm text-slate-600">
+                        <span>{assignment.questions?.length || 0} {language === 'es' ? 'preguntas' : 'questions'}</span>
+                        <span>•</span>
+                        <span>{assignment.submission_count || 0} {language === 'es' ? 'envíos' : 'submissions'}</span>
+                        <span>•</span>
+                        <span>{assignment.graded_count || 0} {language === 'es' ? 'calificados' : 'graded'}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => copyStudentLink(assignment.public_token)}
+                        data-testid={`copy-link-${assignment.assignment_id}`}
+                      >
+                        <Copy className="w-4 h-4 mr-1" />
+                        {language === 'es' ? 'Copiar Enlace' : 'Copy Link'}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.open(`/assignment/${assignment.public_token}`, '_blank')}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-1" />
+                        {language === 'es' ? 'Ver' : 'View'}
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => navigate('/ai-grading')}
+                        className="bg-violet-600 hover:bg-violet-700"
+                      >
+                        <Brain className="w-4 h-4 mr-1" />
+                        {language === 'es' ? 'Calificar' : 'Grade'}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </Layout>
   );
