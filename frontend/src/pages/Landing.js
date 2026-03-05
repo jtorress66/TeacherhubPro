@@ -55,7 +55,7 @@ const AnimatedSection = ({ children, className = '', delay = 0 }) => {
 };
 
 const Landing = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   // Target audience data
   const targetAudience = [
