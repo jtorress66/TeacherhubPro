@@ -2,25 +2,36 @@
 AI Grading and Assignment Generation Routes
 Handles AI-powered assignment creation and grading for TeacherHubPro
 """
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any, Callable
+from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone
 import os
 import json
 import logging
-from motor.motor_asyncio import AsyncIOMotorClient
 
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+router = APIRouter(prefix="/ai-grading", tags=["ai-grading"])
 
-# MongoDB connection will be initialized when routes are registered
+# Configuration
 db = None
-get_current_user_func = None
+_get_current_user_func = None
+
+def init_ai_grading_routes(database, auth_dependency=None):
+    """Initialize routes with database connection and auth dependency"""
+    global db, _get_current_user_func
+    db = database
+    _get_current_user_func = auth_dependency
+
+async def get_current_user(request: Request):
+    """Wrapper to call the actual auth dependency"""
+    if _get_current_user_func:
+        return await _get_current_user_func(request)
+    return None
 
 # Pydantic Models
 class QuestionOption(BaseModel):
@@ -32,10 +43,10 @@ class Question(BaseModel):
     question_type: str  # multiple_choice, short_answer, essay, fill_blank, matching, true_false
     question_text: str
     points: int = 10
-    options: Optional[List[QuestionOption]] = None  # For multiple choice
-    correct_answer: Optional[str] = None  # For short answer, fill blank
-    matching_pairs: Optional[Dict[str, str]] = None  # For matching questions
-    rubric_criteria: Optional[List[str]] = None  # For essay grading
+    options: Optional[List[QuestionOption]] = None
+    correct_answer: Optional[str] = None
+    matching_pairs: Optional[Dict[str, str]] = None
+    rubric_criteria: Optional[List[str]] = None
 
 class AIAssignmentRequest(BaseModel):
     topic: str
@@ -53,7 +64,7 @@ class AIAssignmentCreate(BaseModel):
     title: str
     description: Optional[str] = ""
     instructions: str
-    questions: List[Question]
+    questions: List[Dict[str, Any]]
     points: int = 100
     due_date: Optional[str] = None
     grade_level: str
@@ -63,10 +74,9 @@ class AIAssignmentCreate(BaseModel):
 class StudentSubmissionCreate(BaseModel):
     student_name: str
     student_email: str
-    answers: Dict[str, Any]  # question_id -> answer
+    answers: Dict[str, Any]
 
 class AIGradeRequest(BaseModel):
-    submission_id: str
     auto_approve: bool = False
 
 class ManualGradeUpdate(BaseModel):
@@ -104,28 +114,15 @@ def get_llm_chat(session_id: str, system_message: str) -> LlmChat:
     
     return chat
 
-def init_ai_grading_routes(database, get_current_user=None):
-    """Initialize routes with database connection"""
-    global db, get_current_user_func
-    db = database
-    get_current_user_func = get_current_user
-
 # ==================== AI Assignment Generation ====================
 
-async def get_user_dependency():
-    """Helper to get current user - returns None for public routes"""
-    if get_current_user_func:
-        return Depends(get_current_user_func)
-    return None
-
 @router.post("/generate-assignment")
-async def generate_assignment(request: AIAssignmentRequest):
+async def generate_assignment(request: AIAssignmentRequest, user: dict = Depends(get_current_user)):
     """Generate an AI-powered assignment"""
     try:
-        # Build the prompt for assignment generation
         question_types_str = ", ".join(request.question_types)
         
-        system_message = f"""You are an expert educational content creator. Generate high-quality, age-appropriate assignments for {request.grade_level} grade students.
+        system_message = f"""You are an expert educational content creator. Generate high-quality, age-appropriate assignments for grade {request.grade_level} students.
         
 Your assignments should:
 - Be engaging and educational
@@ -184,33 +181,30 @@ For matching: include "matching_pairs" object"""
         response = await chat.send_message(UserMessage(text=prompt))
         
         # Parse the JSON response
-        try:
-            # Clean the response - remove markdown code blocks if present
-            response_text = response.strip()
-            if response_text.startswith("```"):
-                response_text = response_text.split("```")[1]
-                if response_text.startswith("json"):
-                    response_text = response_text[4:]
-            response_text = response_text.strip()
+        response_text = response.strip()
+        if response_text.startswith("```"):
+            response_text = response_text.split("```")[1]
+            if response_text.startswith("json"):
+                response_text = response_text[4:]
+        response_text = response_text.strip()
+        
+        assignment_data = json.loads(response_text)
+        assignment_data["ai_generated"] = True
+        assignment_data["grade_level"] = request.grade_level
+        
+        return assignment_data
             
-            assignment_data = json.loads(response_text)
-            assignment_data["ai_generated"] = True
-            assignment_data["grade_level"] = request.grade_level
-            
-            return assignment_data
-            
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse AI response: {response[:500]}")
-            raise HTTPException(status_code=500, detail="Failed to parse AI-generated assignment")
-            
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse AI response: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to parse AI-generated assignment")
     except Exception as e:
         logger.error(f"Assignment generation error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to generate assignment: {str(e)}")
 
 
-@router.post("/ai-assignments")
-async def create_ai_assignment(assignment: AIAssignmentCreate, user: dict = None):
-    """Create an AI-generated assignment and save it"""
+@router.post("/assignments")
+async def create_ai_assignment(assignment: AIAssignmentCreate, user: dict = Depends(get_current_user)):
+    """Create and save an AI-generated assignment"""
     if not db:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
@@ -220,13 +214,13 @@ async def create_ai_assignment(assignment: AIAssignmentCreate, user: dict = None
         raise HTTPException(status_code=404, detail="Class not found")
     
     assignment_id = f"aiassign_{uuid.uuid4().hex[:8]}"
-    public_token = uuid.uuid4().hex[:12]  # Token for student access link
+    public_token = uuid.uuid4().hex[:12]
     
     # Process questions and add IDs
     questions_with_ids = []
     total_points = 0
     for i, q in enumerate(assignment.questions):
-        q_dict = q.model_dump()
+        q_dict = dict(q) if not isinstance(q, dict) else q
         if not q_dict.get("question_id"):
             q_dict["question_id"] = f"q{i+1}"
         total_points += q_dict.get("points", 10)
@@ -254,13 +248,13 @@ async def create_ai_assignment(assignment: AIAssignmentCreate, user: dict = None
     
     await db.ai_assignments.insert_one(assignment_doc)
     
-    # Return without _id
-    del assignment_doc["_id"] if "_id" in assignment_doc else None
+    # Remove MongoDB _id before returning
+    assignment_doc.pop("_id", None)
     return assignment_doc
 
 
-@router.get("/ai-assignments")
-async def get_ai_assignments(class_id: Optional[str] = None, user: dict = None):
+@router.get("/assignments")
+async def get_ai_assignments(class_id: Optional[str] = None, user: dict = Depends(get_current_user)):
     """Get all AI assignments for a teacher"""
     if not db:
         raise HTTPException(status_code=500, detail="Database not initialized")
@@ -275,8 +269,8 @@ async def get_ai_assignments(class_id: Optional[str] = None, user: dict = None):
     return assignments
 
 
-@router.get("/ai-assignments/{assignment_id}")
-async def get_ai_assignment(assignment_id: str, user: dict = None):
+@router.get("/assignments/{assignment_id}")
+async def get_ai_assignment(assignment_id: str, user: dict = Depends(get_current_user)):
     """Get a specific AI assignment"""
     if not db:
         raise HTTPException(status_code=500, detail="Database not initialized")
@@ -288,8 +282,8 @@ async def get_ai_assignment(assignment_id: str, user: dict = None):
     return assignment
 
 
-@router.delete("/ai-assignments/{assignment_id}")
-async def delete_ai_assignment(assignment_id: str, user: dict = None):
+@router.delete("/assignments/{assignment_id}")
+async def delete_ai_assignment(assignment_id: str, user: dict = Depends(get_current_user)):
     """Delete an AI assignment"""
     if not db:
         raise HTTPException(status_code=500, detail="Database not initialized")
@@ -298,7 +292,6 @@ async def delete_ai_assignment(assignment_id: str, user: dict = None):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Assignment not found")
     
-    # Also delete related submissions
     await db.ai_submissions.delete_many({"assignment_id": assignment_id})
     
     return {"message": "Assignment deleted"}
@@ -306,7 +299,7 @@ async def delete_ai_assignment(assignment_id: str, user: dict = None):
 
 # ==================== Student Submission (Public - No Auth) ====================
 
-@router.get("/student-assignment/{token}")
+@router.get("/student/{token}")
 async def get_student_assignment(token: str):
     """Get assignment for student submission (PUBLIC - no auth required)"""
     if not db:
@@ -342,7 +335,6 @@ async def get_student_assignment(token: str):
         if q["question_type"] == "multiple_choice":
             student_q["options"] = [{"text": opt["text"]} for opt in q.get("options", [])]
         elif q["question_type"] == "matching":
-            # Shuffle the right side for matching
             pairs = q.get("matching_pairs", {})
             student_q["left_items"] = list(pairs.keys())
             student_q["right_items"] = list(pairs.values())
@@ -354,7 +346,7 @@ async def get_student_assignment(token: str):
     return student_assignment
 
 
-@router.post("/student-assignment/{token}/submit")
+@router.post("/student/{token}/submit")
 async def submit_student_assignment(token: str, submission: StudentSubmissionCreate):
     """Submit assignment answers (PUBLIC - no auth required)"""
     if not db:
@@ -383,7 +375,7 @@ async def submit_student_assignment(token: str, submission: StudentSubmissionCre
         "student_email": submission.student_email.lower(),
         "answers": submission.answers,
         "submitted_at": datetime.now(timezone.utc).isoformat(),
-        "status": "pending",  # pending, grading, graded
+        "status": "pending",
         "ai_score": None,
         "ai_feedback": None,
         "ai_question_scores": None,
@@ -405,8 +397,12 @@ async def submit_student_assignment(token: str, submission: StudentSubmissionCre
 
 # ==================== AI Grading ====================
 
-@router.get("/ai-submissions")
-async def get_submissions(assignment_id: Optional[str] = None, status: Optional[str] = None, user: dict = None):
+@router.get("/submissions")
+async def get_submissions(
+    assignment_id: Optional[str] = None, 
+    status: Optional[str] = None, 
+    user: dict = Depends(get_current_user)
+):
     """Get submissions for grading"""
     if not db:
         raise HTTPException(status_code=500, detail="Database not initialized")
@@ -423,8 +419,8 @@ async def get_submissions(assignment_id: Optional[str] = None, status: Optional[
     return submissions
 
 
-@router.get("/ai-submissions/{submission_id}")
-async def get_submission(submission_id: str, user: dict = None):
+@router.get("/submissions/{submission_id}")
+async def get_submission(submission_id: str, user: dict = Depends(get_current_user)):
     """Get a specific submission with full details"""
     if not db:
         raise HTTPException(status_code=500, detail="Database not initialized")
@@ -445,8 +441,12 @@ async def get_submission(submission_id: str, user: dict = None):
     }
 
 
-@router.post("/ai-submissions/{submission_id}/grade")
-async def ai_grade_submission(submission_id: str, request: AIGradeRequest = None, user: dict = None):
+@router.post("/submissions/{submission_id}/grade")
+async def ai_grade_submission(
+    submission_id: str, 
+    request: AIGradeRequest = None, 
+    user: dict = Depends(get_current_user)
+):
     """Grade a submission using AI"""
     if not db:
         raise HTTPException(status_code=500, detail="Database not initialized")
@@ -489,7 +489,7 @@ Always respond with valid JSON only."""
             student_answer = submission["answers"].get(q_id, "No answer provided")
             
             questions_text += f"""
-Question {q_id} ({q['points']} points) - Type: {q['question_type']}
+Question {q_id} ({q.get('points', 10)} points) - Type: {q['question_type']}
 Question: {q['question_text']}
 """
             if q["question_type"] == "multiple_choice":
@@ -583,6 +583,13 @@ Be age-appropriate in your feedback. For elementary students, be very encouragin
             "status": update_data["status"]
         }
         
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse AI grading response: {str(e)}")
+        await db.ai_submissions.update_one(
+            {"submission_id": submission_id},
+            {"$set": {"status": "grading_failed"}}
+        )
+        raise HTTPException(status_code=500, detail="AI grading failed to parse response")
     except Exception as e:
         logger.error(f"AI grading error: {str(e)}")
         await db.ai_submissions.update_one(
@@ -592,8 +599,8 @@ Be age-appropriate in your feedback. For elementary students, be very encouragin
         raise HTTPException(status_code=500, detail=f"AI grading failed: {str(e)}")
 
 
-@router.put("/ai-submissions/{submission_id}/approve")
-async def approve_grade(submission_id: str, update: ManualGradeUpdate, user: dict = None):
+@router.put("/submissions/{submission_id}/approve")
+async def approve_grade(submission_id: str, update: ManualGradeUpdate, user: dict = Depends(get_current_user)):
     """Approve or adjust AI-suggested grade"""
     if not db:
         raise HTTPException(status_code=500, detail="Database not initialized")
@@ -627,8 +634,8 @@ async def approve_grade(submission_id: str, update: ManualGradeUpdate, user: dic
 
 # ==================== Statistics ====================
 
-@router.get("/ai-grading/stats")
-async def get_grading_stats(user: dict = None):
+@router.get("/stats")
+async def get_grading_stats(user: dict = Depends(get_current_user)):
     """Get AI grading statistics for dashboard"""
     if not db:
         raise HTTPException(status_code=500, detail="Database not initialized")
