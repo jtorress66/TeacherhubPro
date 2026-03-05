@@ -2135,8 +2135,8 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
 5. Implement seating chart drag/drop
 
 ## URLs
-- Frontend: https://educator-compliance.preview.emergentagent.com
-- Backend API: https://educator-compliance.preview.emergentagent.com/api
+- Frontend: https://ai-gradebook.preview.emergentagent.com
+- Backend API: https://ai-gradebook.preview.emergentagent.com/api
 
 ## Database Collections
 - users, user_sessions, schools

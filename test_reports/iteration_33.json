@@ -23,9 +23,9 @@
     "frontend": "100% - Both game types verified via Playwright"
   },
   "test_credentials": {
-    "API_URL": "https://educator-compliance.preview.emergentagent.com",
-    "true_false_game": "https://educator-compliance.preview.emergentagent.com/play-game/test_true_false_1771598782",
-    "quiz_game": "https://educator-compliance.preview.emergentagent.com/play-game/game_f1ca4b814708"
+    "API_URL": "https://ai-gradebook.preview.emergentagent.com",
+    "true_false_game": "https://ai-gradebook.preview.emergentagent.com/play-game/test_true_false_1771598782",
+    "quiz_game": "https://ai-gradebook.preview.emergentagent.com/play-game/game_f1ca4b814708"
   },
   "seed_data_creation": "None - used existing games",
   "retest_needed": false,
@@ -48,7 +48,7 @@
     },
     "frontend_playwright_tests": {
       "true_false_game": {
-        "url": "https://educator-compliance.preview.emergentagent.com/play-game/test_true_false_1771598782",
+        "url": "https://ai-gradebook.preview.emergentagent.com/play-game/test_true_false_1771598782",
         "round1_question": "Cristóbal Colón realizó cuatro viajes al Nuevo Mundo entre 1492 y 1504.",
         "round2_question": "Cristóbal Colón creía que había llegado a las Indias cuando desembarcó en América en 1492.",
         "questions_different": true,
@@ -61,7 +61,7 @@
         ]
       },
       "quiz_game": {
-        "url": "https://educator-compliance.preview.emergentagent.com/play-game/game_f1ca4b814708",
+        "url": "https://ai-gradebook.preview.emergentagent.com/play-game/game_f1ca4b814708",
         "round1_question": "María tiene un jardín cuadrado de 4 metros por cada lado. ¿Cuántos metros cuadrados tiene su jardín?",
         "round2_question": "Ana tiene 4 cajas y en cada caja pone 4 pelotas. ¿Cuántas pelotas tiene en total?",
         "questions_different": true,

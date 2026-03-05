@@ -33,7 +33,7 @@
     "frontend": "100% - All Playwright tests passed"
   },
   "test_credentials": {
-    "API_URL": "https://educator-compliance.preview.emergentagent.com",
+    "API_URL": "https://ai-gradebook.preview.emergentagent.com",
     "test_teacher": "test@school.edu / testpassword",
     "test_sessions": {
       "quiz": "ps_93315ba2253248f1",
@@ -77,7 +77,7 @@
     },
     "frontend_playwright_tests": {
       "memory_game": {
-        "url": "https://educator-compliance.preview.emergentagent.com/play-to-learn/game/ps_aad62777d66f4f75",
+        "url": "https://ai-gradebook.preview.emergentagent.com/play-to-learn/game/ps_aad62777d66f4f75",
         "status": "PASSED",
         "elements_verified": [
           "12 memory cards displayed (6 pairs)",
@@ -89,7 +89,7 @@
         ]
       },
       "fill_blank_game": {
-        "url": "https://educator-compliance.preview.emergentagent.com/play-to-learn/game/ps_2978eb3440bc49a5",
+        "url": "https://ai-gradebook.preview.emergentagent.com/play-to-learn/game/ps_2978eb3440bc49a5",
         "status": "PASSED",
         "elements_verified": [
           "Sentence with blank: 'A _____ is a warm-blooded animal...'",
@@ -99,7 +99,7 @@
         ]
       },
       "quiz_game": {
-        "url": "https://educator-compliance.preview.emergentagent.com/play-to-learn/game/ps_93315ba2253248f1",
+        "url": "https://ai-gradebook.preview.emergentagent.com/play-to-learn/game/ps_93315ba2253248f1",
         "status": "PASSED",
         "elements_verified": [
           "Question displayed with 4 options (A, B, C, D)",
@@ -112,7 +112,7 @@
         ]
       },
       "true_false_game": {
-        "url": "https://educator-compliance.preview.emergentagent.com/play-to-learn/game/ps_c200064a9a864157",
+        "url": "https://ai-gradebook.preview.emergentagent.com/play-to-learn/game/ps_c200064a9a864157",
         "status": "PASSED",
         "elements_verified": [
           "Statement displayed",
@@ -125,7 +125,7 @@
         ]
       },
       "all_modes_selection": {
-        "url": "https://educator-compliance.preview.emergentagent.com/play-to-learn/game/ps_7eca58c929174ef2",
+        "url": "https://ai-gradebook.preview.emergentagent.com/play-to-learn/game/ps_7eca58c929174ef2",
         "status": "PASSED",
         "elements_verified": [
           "'Choose How to Play!' screen",

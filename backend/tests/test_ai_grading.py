@@ -7,7 +7,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://educator-compliance.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://ai-gradebook.preview.emergentagent.com').rstrip('/')
 
 # Test data - will be populated during tests
 TEST_SESSION_TOKEN = "test_session_aigrading_1772730560226"

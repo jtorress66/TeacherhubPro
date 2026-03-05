@@ -20,8 +20,8 @@
     "frontend": "100% - All 5 test criteria passed"
   },
   "test_credentials": {
-    "API_URL": "https://educator-compliance.preview.emergentagent.com",
-    "test_game_url": "https://educator-compliance.preview.emergentagent.com/play-game/game_f1ca4b814708"
+    "API_URL": "https://ai-gradebook.preview.emergentagent.com",
+    "test_game_url": "https://ai-gradebook.preview.emergentagent.com/play-game/game_f1ca4b814708"
   },
   "seed_data_creation": "None - used existing game game_f1ca4b814708",
   "retest_needed": false,
