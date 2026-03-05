@@ -4870,7 +4870,7 @@ init_adaptive_learning_routes(db, get_current_user, EMERGENT_LLM_KEY, FREE_TRIAL
 init_portal_routes(db, get_current_user)
 init_google_classroom_routes(db, get_current_user)
 init_play_to_learn_routes(db)
-init_ai_grading_routes(db)
+init_ai_grading_routes(db, get_current_user)
 
 # ==================== CONTACT FORM ====================
 
