@@ -2157,16 +2157,30 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
     
     # Build student email map for AI submission matching
     student_email_map = {}
+    student_name_map = {}  # Fallback: match by name
     for student in students:
         if student.get("email"):
             student_email_map[student["email"].lower()] = student["student_id"]
+        # Also build name map for fallback matching
+        full_name = f"{student.get('first_name', '')} {student.get('last_name', '')}".strip().lower()
+        if full_name:
+            student_name_map[full_name] = student["student_id"]
     
-    # Build AI grades map (by student email -> assignment)
+    # Build AI grades map (by student email -> assignment, with name fallback)
     ai_grades_map = {}
     for sub in ai_submissions:
         student_email = sub.get("student_email", "").lower()
+        student_name = sub.get("student_name", "").lower().strip()
+        student_id = None
+        
+        # Try email match first
         if student_email in student_email_map:
             student_id = student_email_map[student_email]
+        # Fallback to name match
+        elif student_name in student_name_map:
+            student_id = student_name_map[student_name]
+        
+        if student_id:
             key = f"{student_id}_{sub['assignment_id']}"
             ai_grades_map[key] = {
                 "score": sub["final_score"],
