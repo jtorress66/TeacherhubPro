@@ -424,14 +424,30 @@ async def get_submissions(
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     query = {}
-    if user:
-        query["teacher_id"] = user["user_id"]
+    
     if assignment_id:
         query["assignment_id"] = assignment_id
+    elif user:
+        # Get all classes owned by this teacher
+        teacher_classes = await db.classes.find(
+            {"teacher_id": user["user_id"]}, 
+            {"class_id": 1}
+        ).to_list(100)
+        class_ids = [c["class_id"] for c in teacher_classes]
+        
+        if class_ids:
+            query["$or"] = [
+                {"teacher_id": user["user_id"]},
+                {"class_id": {"$in": class_ids}}
+            ]
+        else:
+            query["teacher_id"] = user["user_id"]
+    
     if status:
         query["status"] = status
     
     submissions = await db.ai_submissions.find(query, {"_id": 0}).sort("submitted_at", -1).to_list(500)
+    return submissions
     return submissions
 
 
