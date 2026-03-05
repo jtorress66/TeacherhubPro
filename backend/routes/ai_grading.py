@@ -205,7 +205,7 @@ For matching: include "matching_pairs" object"""
 @router.post("/assignments")
 async def create_ai_assignment(assignment: AIAssignmentCreate, user: dict = Depends(get_current_user)):
     """Create and save an AI-generated assignment"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     # Verify class exists
@@ -256,7 +256,7 @@ async def create_ai_assignment(assignment: AIAssignmentCreate, user: dict = Depe
 @router.get("/assignments")
 async def get_ai_assignments(class_id: Optional[str] = None, user: dict = Depends(get_current_user)):
     """Get all AI assignments for a teacher"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     query = {}
@@ -272,7 +272,7 @@ async def get_ai_assignments(class_id: Optional[str] = None, user: dict = Depend
 @router.get("/assignments/{assignment_id}")
 async def get_ai_assignment(assignment_id: str, user: dict = Depends(get_current_user)):
     """Get a specific AI assignment"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     assignment = await db.ai_assignments.find_one({"assignment_id": assignment_id}, {"_id": 0})
@@ -285,7 +285,7 @@ async def get_ai_assignment(assignment_id: str, user: dict = Depends(get_current
 @router.delete("/assignments/{assignment_id}")
 async def delete_ai_assignment(assignment_id: str, user: dict = Depends(get_current_user)):
     """Delete an AI assignment"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     result = await db.ai_assignments.delete_one({"assignment_id": assignment_id})
@@ -302,7 +302,7 @@ async def delete_ai_assignment(assignment_id: str, user: dict = Depends(get_curr
 @router.get("/student/{token}")
 async def get_student_assignment(token: str):
     """Get assignment for student submission (PUBLIC - no auth required)"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     assignment = await db.ai_assignments.find_one({"public_token": token}, {"_id": 0})
@@ -349,7 +349,7 @@ async def get_student_assignment(token: str):
 @router.post("/student/{token}/submit")
 async def submit_student_assignment(token: str, submission: StudentSubmissionCreate):
     """Submit assignment answers (PUBLIC - no auth required)"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     assignment = await db.ai_assignments.find_one({"public_token": token}, {"_id": 0})
@@ -404,7 +404,7 @@ async def get_submissions(
     user: dict = Depends(get_current_user)
 ):
     """Get submissions for grading"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     query = {}
@@ -422,7 +422,7 @@ async def get_submissions(
 @router.get("/submissions/{submission_id}")
 async def get_submission(submission_id: str, user: dict = Depends(get_current_user)):
     """Get a specific submission with full details"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     submission = await db.ai_submissions.find_one({"submission_id": submission_id}, {"_id": 0})
@@ -448,7 +448,7 @@ async def ai_grade_submission(
     user: dict = Depends(get_current_user)
 ):
     """Grade a submission using AI"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     submission = await db.ai_submissions.find_one({"submission_id": submission_id}, {"_id": 0})
@@ -602,7 +602,7 @@ Be age-appropriate in your feedback. For elementary students, be very encouragin
 @router.put("/submissions/{submission_id}/approve")
 async def approve_grade(submission_id: str, update: ManualGradeUpdate, user: dict = Depends(get_current_user)):
     """Approve or adjust AI-suggested grade"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     submission = await db.ai_submissions.find_one({"submission_id": submission_id}, {"_id": 0})
@@ -637,7 +637,7 @@ async def approve_grade(submission_id: str, update: ManualGradeUpdate, user: dic
 @router.get("/stats")
 async def get_grading_stats(user: dict = Depends(get_current_user)):
     """Get AI grading statistics for dashboard"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     query = {}
