@@ -260,10 +260,26 @@ async def get_ai_assignments(class_id: Optional[str] = None, user: dict = Depend
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     query = {}
-    if user:
-        query["teacher_id"] = user["user_id"]
+    
+    # If class_id provided, filter by it
     if class_id:
         query["class_id"] = class_id
+    elif user:
+        # Get all classes owned by this teacher first
+        teacher_classes = await db.classes.find(
+            {"teacher_id": user["user_id"]}, 
+            {"class_id": 1}
+        ).to_list(100)
+        class_ids = [c["class_id"] for c in teacher_classes]
+        
+        # Get assignments either by teacher_id OR by class_id
+        if class_ids:
+            query["$or"] = [
+                {"teacher_id": user["user_id"]},
+                {"class_id": {"$in": class_ids}}
+            ]
+        else:
+            query["teacher_id"] = user["user_id"]
     
     assignments = await db.ai_assignments.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
     return assignments
