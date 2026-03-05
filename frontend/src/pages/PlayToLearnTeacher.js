@@ -15,13 +15,14 @@ import {
 import { toast } from 'sonner';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const API = `${window.location.origin}/api`;
 
 const PlayToLearnTeacher = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const [language, setLanguage] = useState('es');
+  const { language } = useLanguage();
   
   // Assignments
   const [assignments, setAssignments] = useState([]);
