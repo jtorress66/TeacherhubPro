@@ -1,0 +1,411 @@
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Textarea } from '../components/ui/textarea';
+import { Badge } from '../components/ui/badge';
+import { 
+  FileText, 
+  Clock, 
+  Send, 
+  CheckCircle2, 
+  AlertCircle,
+  Loader2,
+  BookOpen,
+  GraduationCap
+} from 'lucide-react';
+import { cn } from '../lib/utils';
+import { toast } from 'sonner';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+const StudentAssignment = () => {
+  const { token } = useParams();
+  const [assignment, setAssignment] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState(null);
+  
+  // Form state
+  const [studentName, setStudentName] = useState('');
+  const [studentEmail, setStudentEmail] = useState('');
+  const [answers, setAnswers] = useState({});
+
+  // Fetch assignment
+  useEffect(() => {
+    const fetchAssignment = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/ai-grading/student/${token}`);
+        if (!res.ok) {
+          if (res.status === 404) {
+            setError('Assignment not found or link has expired.');
+          } else {
+            throw new Error('Failed to load assignment');
+          }
+          return;
+        }
+        const data = await res.json();
+        setAssignment(data);
+        
+        // Initialize answers
+        const initialAnswers = {};
+        data.questions.forEach(q => {
+          initialAnswers[q.question_id] = '';
+        });
+        setAnswers(initialAnswers);
+      } catch (err) {
+        console.error('Error:', err);
+        setError('Failed to load assignment. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAssignment();
+  }, [token]);
+
+  // Handle answer change
+  const handleAnswerChange = (questionId, value) => {
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
+  };
+
+  // Submit assignment
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!studentName.trim() || !studentEmail.trim()) {
+      toast.error('Please enter your name and email');
+      return;
+    }
+
+    // Check if all questions are answered
+    const unanswered = assignment.questions.filter(q => !answers[q.question_id]?.trim());
+    if (unanswered.length > 0) {
+      toast.error(`Please answer all questions (${unanswered.length} remaining)`);
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API_URL}/api/ai-grading/student/${token}/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          student_name: studentName,
+          student_email: studentEmail,
+          answers
+        })
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.detail || 'Submission failed');
+      }
+
+      setSubmitted(true);
+      toast.success('Assignment submitted successfully!');
+    } catch (err) {
+      console.error('Submit error:', err);
+      toast.error(err.message || 'Failed to submit. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Render question based on type
+  const renderQuestion = (question, index) => {
+    const { question_id, question_type, question_text, points, options, left_items, right_items } = question;
+
+    return (
+      <Card key={question_id} className="mb-4" data-testid={`question-${question_id}`}>
+        <CardHeader className="pb-3">
+          <div className="flex items-start justify-between">
+            <CardTitle className="text-lg">
+              {index + 1}. {question_text}
+            </CardTitle>
+            <Badge variant="outline" className="ml-2">
+              {points} pts
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {/* Multiple Choice */}
+          {question_type === 'multiple_choice' && (
+            <div className="space-y-2">
+              {options?.map((opt, idx) => (
+                <label
+                  key={idx}
+                  className={cn(
+                    "flex items-center p-3 rounded-lg border cursor-pointer transition-colors",
+                    answers[question_id] === opt.text 
+                      ? "border-violet-500 bg-violet-50" 
+                      : "border-slate-200 hover:bg-slate-50"
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name={question_id}
+                    value={opt.text}
+                    checked={answers[question_id] === opt.text}
+                    onChange={(e) => handleAnswerChange(question_id, e.target.value)}
+                    className="mr-3 w-4 h-4 text-violet-600"
+                  />
+                  <span className="text-slate-700">{opt.text}</span>
+                </label>
+              ))}
+            </div>
+          )}
+
+          {/* True/False */}
+          {question_type === 'true_false' && (
+            <div className="flex gap-4">
+              {['True', 'False'].map((opt) => (
+                <label
+                  key={opt}
+                  className={cn(
+                    "flex-1 flex items-center justify-center p-4 rounded-lg border cursor-pointer transition-colors",
+                    answers[question_id] === opt 
+                      ? "border-violet-500 bg-violet-50" 
+                      : "border-slate-200 hover:bg-slate-50"
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name={question_id}
+                    value={opt}
+                    checked={answers[question_id] === opt}
+                    onChange={(e) => handleAnswerChange(question_id, e.target.value)}
+                    className="mr-2 w-4 h-4 text-violet-600"
+                  />
+                  <span className="font-medium text-slate-700">{opt}</span>
+                </label>
+              ))}
+            </div>
+          )}
+
+          {/* Short Answer */}
+          {question_type === 'short_answer' && (
+            <Input
+              value={answers[question_id] || ''}
+              onChange={(e) => handleAnswerChange(question_id, e.target.value)}
+              placeholder="Type your answer..."
+              className="w-full"
+            />
+          )}
+
+          {/* Fill in the Blank */}
+          {question_type === 'fill_blank' && (
+            <Input
+              value={answers[question_id] || ''}
+              onChange={(e) => handleAnswerChange(question_id, e.target.value)}
+              placeholder="Fill in the blank..."
+              className="w-full"
+            />
+          )}
+
+          {/* Essay */}
+          {question_type === 'essay' && (
+            <Textarea
+              value={answers[question_id] || ''}
+              onChange={(e) => handleAnswerChange(question_id, e.target.value)}
+              placeholder="Write your essay response..."
+              className="w-full min-h-[200px]"
+            />
+          )}
+
+          {/* Matching */}
+          {question_type === 'matching' && (
+            <div className="space-y-3">
+              <p className="text-sm text-slate-600 mb-3">Match items from the left column to the right column</p>
+              {left_items?.map((left, idx) => (
+                <div key={idx} className="flex items-center gap-4">
+                  <span className="w-1/3 p-2 bg-slate-100 rounded">{left}</span>
+                  <span className="text-slate-400">→</span>
+                  <select
+                    value={answers[question_id]?.[left] || ''}
+                    onChange={(e) => {
+                      const newMatches = { ...(answers[question_id] || {}), [left]: e.target.value };
+                      handleAnswerChange(question_id, newMatches);
+                    }}
+                    className="flex-1 p-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                  >
+                    <option value="">Select match...</option>
+                    {right_items?.map((right, ridx) => (
+                      <option key={ridx} value={right}>{right}</option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-violet-50 to-indigo-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-violet-500 mx-auto mb-4" />
+          <p className="text-slate-600">Loading assignment...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <CardContent className="pt-6 text-center">
+            <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <h1 className="text-xl font-bold text-slate-900 mb-2">Assignment Not Found</h1>
+            <p className="text-slate-600">{error}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Submitted state
+  if (submitted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full" data-testid="submission-success">
+          <CardContent className="pt-6 text-center">
+            <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
+            <h1 className="text-xl font-bold text-slate-900 mb-2">Assignment Submitted!</h1>
+            <p className="text-slate-600 mb-4">
+              Your assignment has been submitted successfully. Your teacher will review and grade it soon.
+            </p>
+            <p className="text-sm text-slate-500">
+              A confirmation has been sent to {studentEmail}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Assignment form
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 to-indigo-50 py-8 px-4">
+      <div className="max-w-3xl mx-auto">
+        {/* Header */}
+        <Card className="mb-6" data-testid="assignment-header">
+          <CardHeader>
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-violet-100 rounded-xl">
+                <GraduationCap className="w-8 h-8 text-violet-600" />
+              </div>
+              <div className="flex-1">
+                <CardTitle className="text-2xl">{assignment.title}</CardTitle>
+                <CardDescription className="mt-1">{assignment.class_name}</CardDescription>
+                {assignment.description && (
+                  <p className="text-slate-600 mt-2">{assignment.description}</p>
+                )}
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-4 text-sm">
+              <div className="flex items-center gap-2 text-slate-600">
+                <FileText className="w-4 h-4" />
+                <span>{assignment.questions?.length || 0} questions</span>
+              </div>
+              <div className="flex items-center gap-2 text-slate-600">
+                <BookOpen className="w-4 h-4" />
+                <span>{assignment.total_points} total points</span>
+              </div>
+              {assignment.due_date && (
+                <div className="flex items-center gap-2 text-slate-600">
+                  <Clock className="w-4 h-4" />
+                  <span>Due: {new Date(assignment.due_date).toLocaleDateString()}</span>
+                </div>
+              )}
+            </div>
+            {assignment.instructions && (
+              <div className="mt-4 p-4 bg-violet-50 rounded-lg">
+                <h4 className="font-medium text-violet-800 mb-2">Instructions</h4>
+                <p className="text-slate-700">{assignment.instructions}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Student Info Form */}
+        <form onSubmit={handleSubmit}>
+          <Card className="mb-6" data-testid="student-info-form">
+            <CardHeader>
+              <CardTitle className="text-lg">Your Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="studentName">Full Name *</Label>
+                  <Input
+                    id="studentName"
+                    value={studentName}
+                    onChange={(e) => setStudentName(e.target.value)}
+                    placeholder="Enter your full name"
+                    required
+                    data-testid="student-name-input"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="studentEmail">Email *</Label>
+                  <Input
+                    id="studentEmail"
+                    type="email"
+                    value={studentEmail}
+                    onChange={(e) => setStudentEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    required
+                    data-testid="student-email-input"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Questions */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold text-slate-900">Questions</h2>
+            {assignment.questions?.map((q, idx) => renderQuestion(q, idx))}
+          </div>
+
+          {/* Submit Button */}
+          <div className="mt-8 flex justify-end">
+            <Button
+              type="submit"
+              size="lg"
+              disabled={submitting}
+              className="bg-violet-600 hover:bg-violet-700"
+              data-testid="submit-assignment-btn"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  <Send className="w-5 h-5 mr-2" />
+                  Submit Assignment
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default StudentAssignment;
