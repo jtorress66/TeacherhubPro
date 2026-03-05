@@ -319,9 +319,20 @@ async def delete_ai_assignment(assignment_id: str, user: dict = Depends(get_curr
 async def get_student_assignment(token: str):
     """Get assignment for student submission (PUBLIC - no auth required)"""
     if db is None:
+        logger.error("Database not initialized for student assignment lookup")
         raise HTTPException(status_code=500, detail="Database not initialized")
     
+    logger.info(f"Looking up assignment with public_token: {token}")
+    
     assignment = await db.ai_assignments.find_one({"public_token": token}, {"_id": 0})
+    
+    if not assignment:
+        # Log all tokens for debugging
+        all_tokens = await db.ai_assignments.find({}, {"public_token": 1, "title": 1, "_id": 0}).to_list(20)
+        logger.warning(f"Assignment not found for token: {token}. Available tokens: {[a.get('public_token') for a in all_tokens]}")
+        raise HTTPException(status_code=404, detail="Assignment not found or link expired")
+    
+    logger.info(f"Found assignment: {assignment.get('title')}")
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found or link expired")
     
