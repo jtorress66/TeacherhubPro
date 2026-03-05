@@ -2,6 +2,32 @@
 
 
 
+---
+## Update 2026-03-05 (Session 68) - BUG FIX: AI GRADING PAGE "ERROR LOADING DATA" ✅ FIXED
+
+### Bug Fixed:
+**AI Grading Page showing "Error loading data" after previous updates**
+
+**Root Cause:**
+- The `AIGrading.js` component was using `Authorization: Bearer ${token}` headers for API calls
+- The backend authentication uses cookies (via `credentials: 'include'`), not Bearer tokens
+- The auth token was undefined/invalid, causing 401 Unauthorized responses
+
+**Solution:**
+- Changed all `fetch()` calls in `/app/frontend/src/pages/AIGrading.js` from:
+  ```js
+  fetch(url, { headers: { 'Authorization': `Bearer ${token}` } })
+  ```
+  To:
+  ```js
+  fetch(url, { credentials: 'include' })
+  ```
+- Removed unused `token` from `useAuth()` destructuring
+
+**Files Modified:**
+- `/app/frontend/src/pages/AIGrading.js` - Lines 55-72 (fetchData), 94-129 (handleAIGrade), 132-158 (handleApproveGrade), 161-173 (handleViewSubmission)
+
+**Verified Working:** AI Grading page now loads correctly with stats and submissions
 
 ---
 ## Update 2026-03-05 (Session 68) - GOOGLE CLASSROOM SHARE & TRANSLATION FIX ✅ COMPLETE
