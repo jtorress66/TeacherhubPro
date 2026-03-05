@@ -3,6 +3,99 @@
 
 
 ---
+## Update 2026-03-05 (Session 67) - AI GRADING SYSTEM & ASSIGNMENT GENERATION ✅ COMPLETE
+
+### Feature Implemented:
+**Complete AI Grading System with AI-Powered Assignment Generation**
+
+Built a full AI grading workflow for teachers to create assignments using AI and grade student submissions with grade-level appropriate rubrics.
+
+**Key Changes:**
+1. **Renamed "Gradebook" → "Assignments & Gradebook"** (Tareas y Calificaciones)
+   - Updated navigation sidebar label
+   - Updated page header
+
+2. **AI Assignment Generator (on Gradebook page)**
+   - "Create with AI" button (purple gradient)
+   - Modal with comprehensive options:
+     - Topic input
+     - Subject selection (Math, Science, English, History, etc.)
+     - Grade Level (K-12)
+     - Difficulty (Easy, Medium, Hard)
+     - Question Types: Multiple Choice, Short Answer, Essay, True/False, Fill Blank, Matching
+     - Number of questions (1-20)
+     - Category assignment
+     - Additional instructions
+   - AI generates complete assignment with Claude Sonnet 4.6
+   - Preview generated questions before saving
+   - Automatic public student link generation
+
+3. **AI Grading Page (/ai-grading)**
+   - Stats dashboard (Total Assignments, Submissions, Pending, Review, Graded)
+   - Submissions list with filters (All, Pending, Review, Graded)
+   - Search by student name or assignment
+   - AI Grade button for pending submissions
+   - View detailed submission with AI feedback
+   - Approve/adjust AI-suggested grades
+
+4. **Student Assignment Page (/assignment/:token) - PUBLIC**
+   - No authentication required (per user requirement)
+   - Student info form (name, email)
+   - Question rendering by type (MC, short answer, essay, T/F, fill blank, matching)
+   - Submit button with validation
+   - Success confirmation
+
+5. **Grade-Level Rubrics**
+   - K-3: Very high leniency, focus on effort and participation, spelling doesn't matter
+   - 4-5: Medium-high leniency, focus on comprehension
+   - 6-8: Medium leniency, analysis focus
+   - 9-10: Standard strictness, critical analysis
+   - 11-12: Strict grading, college-level expectations
+
+**Backend API Endpoints:**
+- `POST /api/ai-grading/generate-assignment` - AI generates assignment questions
+- `POST /api/ai-grading/assignments` - Create and save assignment with public token
+- `GET /api/ai-grading/assignments` - List teacher's AI assignments
+- `GET /api/ai-grading/assignments/:id` - Get specific assignment
+- `DELETE /api/ai-grading/assignments/:id` - Delete assignment and submissions
+- `GET /api/ai-grading/student/:token` - Get assignment for student (PUBLIC)
+- `POST /api/ai-grading/student/:token/submit` - Submit answers (PUBLIC)
+- `GET /api/ai-grading/submissions` - List submissions for teacher
+- `GET /api/ai-grading/submissions/:id` - Get submission details
+- `POST /api/ai-grading/submissions/:id/grade` - AI grade submission
+- `PUT /api/ai-grading/submissions/:id/approve` - Approve/adjust grade
+- `GET /api/ai-grading/stats` - Get grading statistics
+
+**Files Created:**
+- `/app/backend/routes/ai_grading.py` - Complete AI grading backend
+- `/app/frontend/src/pages/AIGrading.js` - Teacher AI grading page
+- `/app/frontend/src/pages/StudentAssignment.js` - Public student submission page
+- `/app/backend/tests/test_ai_grading.py` - Backend tests (14 tests)
+
+**Files Modified:**
+- `/app/frontend/src/pages/Gradebook.js` - Renamed title, added AI generator
+- `/app/frontend/src/components/Layout.js` - Navigation label update, added AI Grading link
+- `/app/frontend/src/App.js` - Added routes for new pages
+- `/app/backend/server.py` - Registered ai_grading routes
+
+**Bug Fix:**
+- Fixed MongoDB truth value testing issue (`if not db:` → `if db is None:`) in 11 locations
+
+**Test Results (iteration_67.json):**
+- Backend: 100% (14/14 tests passed)
+- Frontend: 100% (all UI elements verified)
+
+**Important Notes:**
+- Authentication logic NOT touched (per critical user requirement)
+- Student assignment pages are PUBLIC - no login required
+- AI uses Claude Sonnet 4.6 via Emergent LLM Key
+
+### Status:
+✅ **AI GRADING SYSTEM & ASSIGNMENT GENERATION - COMPLETE**
+
+
+
+---
 ## Update 2026-03-05 (Session 66) - P0 TRUST CENTER & LEGAL COMPLIANCE SECTION ✅ COMPLETE
 
 ### Feature Implemented:
