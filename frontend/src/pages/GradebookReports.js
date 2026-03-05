@@ -296,8 +296,17 @@ const GradebookReports = () => {
                   <BookOpen className="h-5 w-5 text-amber-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-slate-800">{reportData?.total_assignments || 0}</p>
-                  <p className="text-xs text-slate-500">{language === 'es' ? 'Tareas' : 'Assignments'}</p>
+                  <p className="text-2xl font-bold text-slate-800">
+                    {(reportData?.total_assignments || 0) + (reportData?.total_ai_assignments || 0)}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    {language === 'es' ? 'Tareas' : 'Assignments'}
+                    {reportData?.total_ai_assignments > 0 && (
+                      <span className="ml-1 text-violet-600">
+                        ({reportData.total_ai_assignments} AI)
+                      </span>
+                    )}
+                  </p>
                 </div>
               </div>
             </CardContent>
