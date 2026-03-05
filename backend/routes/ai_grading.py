@@ -1,0 +1,644 @@
+"""
+AI Grading and Assignment Generation Routes
+Handles AI-powered assignment creation and grading for TeacherHubPro
+"""
+from fastapi import APIRouter, HTTPException, Depends
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict, Any
+import uuid
+from datetime import datetime, timezone
+import os
+import json
+import logging
+from motor.motor_asyncio import AsyncIOMotorClient
+
+from emergentintegrations.llm.chat import LlmChat, UserMessage
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter()
+
+# MongoDB connection will be initialized when routes are registered
+db = None
+
+# Pydantic Models
+class QuestionOption(BaseModel):
+    text: str
+    is_correct: bool = False
+
+class Question(BaseModel):
+    question_id: str = ""
+    question_type: str  # multiple_choice, short_answer, essay, fill_blank, matching, true_false
+    question_text: str
+    points: int = 10
+    options: Optional[List[QuestionOption]] = None  # For multiple choice
+    correct_answer: Optional[str] = None  # For short answer, fill blank
+    matching_pairs: Optional[Dict[str, str]] = None  # For matching questions
+    rubric_criteria: Optional[List[str]] = None  # For essay grading
+
+class AIAssignmentRequest(BaseModel):
+    topic: str
+    grade_level: str  # K, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+    subject: str
+    question_types: List[str]  # multiple_choice, short_answer, essay, fill_blank, matching, true_false
+    num_questions: int = 5
+    difficulty: str = "medium"  # easy, medium, hard
+    language: str = "en"
+    additional_instructions: Optional[str] = None
+
+class AIAssignmentCreate(BaseModel):
+    class_id: str
+    category_id: str
+    title: str
+    description: Optional[str] = ""
+    instructions: str
+    questions: List[Question]
+    points: int = 100
+    due_date: Optional[str] = None
+    grade_level: str
+    grading_mode: str = "ai_suggest"  # auto, ai_suggest, manual
+    ai_generated: bool = False
+
+class StudentSubmissionCreate(BaseModel):
+    student_name: str
+    student_email: str
+    answers: Dict[str, Any]  # question_id -> answer
+
+class AIGradeRequest(BaseModel):
+    submission_id: str
+    auto_approve: bool = False
+
+class ManualGradeUpdate(BaseModel):
+    final_score: float
+    teacher_feedback: Optional[str] = None
+
+# Grade level rubric configurations
+GRADE_LEVEL_RUBRICS = {
+    "K": {"leniency": "very_high", "focus": "effort and participation", "spelling_matters": False},
+    "1": {"leniency": "very_high", "focus": "basic understanding", "spelling_matters": False},
+    "2": {"leniency": "high", "focus": "basic understanding", "spelling_matters": False},
+    "3": {"leniency": "high", "focus": "comprehension", "spelling_matters": False},
+    "4": {"leniency": "medium_high", "focus": "comprehension and expression", "spelling_matters": True},
+    "5": {"leniency": "medium_high", "focus": "comprehension and expression", "spelling_matters": True},
+    "6": {"leniency": "medium", "focus": "analysis and expression", "spelling_matters": True},
+    "7": {"leniency": "medium", "focus": "analysis and critical thinking", "spelling_matters": True},
+    "8": {"leniency": "medium", "focus": "analysis and critical thinking", "spelling_matters": True},
+    "9": {"leniency": "standard", "focus": "critical analysis", "spelling_matters": True},
+    "10": {"leniency": "standard", "focus": "critical analysis", "spelling_matters": True},
+    "11": {"leniency": "strict", "focus": "advanced analysis", "spelling_matters": True},
+    "12": {"leniency": "strict", "focus": "college-level analysis", "spelling_matters": True},
+}
+
+def get_llm_chat(session_id: str, system_message: str) -> LlmChat:
+    """Initialize LLM chat with Claude Sonnet 4.6"""
+    api_key = os.environ.get('EMERGENT_LLM_KEY', '')
+    if not api_key:
+        raise HTTPException(status_code=500, detail="AI service not configured")
+    
+    chat = LlmChat(
+        api_key=api_key,
+        session_id=session_id,
+        system_message=system_message
+    ).with_model("anthropic", "claude-sonnet-4-6")
+    
+    return chat
+
+def init_ai_grading_routes(database):
+    """Initialize routes with database connection"""
+    global db
+    db = database
+
+# ==================== AI Assignment Generation ====================
+
+@router.post("/generate-assignment")
+async def generate_assignment(request: AIAssignmentRequest, user: dict = None):
+    """Generate an AI-powered assignment"""
+    try:
+        # Build the prompt for assignment generation
+        question_types_str = ", ".join(request.question_types)
+        
+        system_message = f"""You are an expert educational content creator. Generate high-quality, age-appropriate assignments for {request.grade_level} grade students.
+        
+Your assignments should:
+- Be engaging and educational
+- Match the difficulty level: {request.difficulty}
+- Be appropriate for grade {request.grade_level}
+- Include clear instructions
+- Have well-structured questions with unambiguous answers for objective questions
+- For essays, provide clear rubric criteria
+
+Always respond with valid JSON only, no additional text."""
+
+        prompt = f"""Create an assignment about "{request.topic}" for {request.subject} class.
+
+Requirements:
+- Grade Level: {request.grade_level}
+- Number of Questions: {request.num_questions}
+- Question Types to include: {question_types_str}
+- Difficulty: {request.difficulty}
+- Language: {"Spanish" if request.language == "es" else "English"}
+{f"- Additional Instructions: {request.additional_instructions}" if request.additional_instructions else ""}
+
+Return a JSON object with this exact structure:
+{{
+    "title": "Assignment title",
+    "description": "Brief description of the assignment",
+    "instructions": "Clear instructions for students",
+    "questions": [
+        {{
+            "question_id": "q1",
+            "question_type": "multiple_choice|short_answer|essay|fill_blank|matching|true_false",
+            "question_text": "The question text",
+            "points": 10,
+            "options": [
+                {{"text": "Option A", "is_correct": true}},
+                {{"text": "Option B", "is_correct": false}}
+            ],
+            "correct_answer": "For short answer/fill_blank/true_false questions",
+            "matching_pairs": {{"left1": "right1", "left2": "right2"}},
+            "rubric_criteria": ["Criterion 1", "Criterion 2"]
+        }}
+    ],
+    "total_points": 100
+}}
+
+For multiple_choice: include "options" array with is_correct flags
+For short_answer/fill_blank: include "correct_answer" 
+For true_false: include "correct_answer" as "true" or "false"
+For essay: include "rubric_criteria" array
+For matching: include "matching_pairs" object"""
+
+        chat = get_llm_chat(
+            session_id=f"assign_gen_{uuid.uuid4().hex[:8]}",
+            system_message=system_message
+        )
+        
+        response = await chat.send_message(UserMessage(text=prompt))
+        
+        # Parse the JSON response
+        try:
+            # Clean the response - remove markdown code blocks if present
+            response_text = response.strip()
+            if response_text.startswith("```"):
+                response_text = response_text.split("```")[1]
+                if response_text.startswith("json"):
+                    response_text = response_text[4:]
+            response_text = response_text.strip()
+            
+            assignment_data = json.loads(response_text)
+            assignment_data["ai_generated"] = True
+            assignment_data["grade_level"] = request.grade_level
+            
+            return assignment_data
+            
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse AI response: {response[:500]}")
+            raise HTTPException(status_code=500, detail="Failed to parse AI-generated assignment")
+            
+    except Exception as e:
+        logger.error(f"Assignment generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate assignment: {str(e)}")
+
+
+@router.post("/ai-assignments")
+async def create_ai_assignment(assignment: AIAssignmentCreate, user: dict = None):
+    """Create an AI-generated assignment and save it"""
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    # Verify class exists
+    class_doc = await db.classes.find_one({"class_id": assignment.class_id}, {"_id": 0})
+    if not class_doc:
+        raise HTTPException(status_code=404, detail="Class not found")
+    
+    assignment_id = f"aiassign_{uuid.uuid4().hex[:8]}"
+    public_token = uuid.uuid4().hex[:12]  # Token for student access link
+    
+    # Process questions and add IDs
+    questions_with_ids = []
+    total_points = 0
+    for i, q in enumerate(assignment.questions):
+        q_dict = q.model_dump()
+        if not q_dict.get("question_id"):
+            q_dict["question_id"] = f"q{i+1}"
+        total_points += q_dict.get("points", 10)
+        questions_with_ids.append(q_dict)
+    
+    assignment_doc = {
+        "assignment_id": assignment_id,
+        "class_id": assignment.class_id,
+        "category_id": assignment.category_id,
+        "teacher_id": user["user_id"] if user else None,
+        "title": assignment.title,
+        "description": assignment.description,
+        "instructions": assignment.instructions,
+        "questions": questions_with_ids,
+        "points": total_points,
+        "due_date": assignment.due_date,
+        "grade_level": assignment.grade_level,
+        "grading_mode": assignment.grading_mode,
+        "ai_generated": assignment.ai_generated,
+        "public_token": public_token,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "submission_count": 0,
+        "graded_count": 0
+    }
+    
+    await db.ai_assignments.insert_one(assignment_doc)
+    
+    # Return without _id
+    del assignment_doc["_id"] if "_id" in assignment_doc else None
+    return assignment_doc
+
+
+@router.get("/ai-assignments")
+async def get_ai_assignments(class_id: Optional[str] = None, user: dict = None):
+    """Get all AI assignments for a teacher"""
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    query = {}
+    if user:
+        query["teacher_id"] = user["user_id"]
+    if class_id:
+        query["class_id"] = class_id
+    
+    assignments = await db.ai_assignments.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return assignments
+
+
+@router.get("/ai-assignments/{assignment_id}")
+async def get_ai_assignment(assignment_id: str, user: dict = None):
+    """Get a specific AI assignment"""
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    assignment = await db.ai_assignments.find_one({"assignment_id": assignment_id}, {"_id": 0})
+    if not assignment:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+    
+    return assignment
+
+
+@router.delete("/ai-assignments/{assignment_id}")
+async def delete_ai_assignment(assignment_id: str, user: dict = None):
+    """Delete an AI assignment"""
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    result = await db.ai_assignments.delete_one({"assignment_id": assignment_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+    
+    # Also delete related submissions
+    await db.ai_submissions.delete_many({"assignment_id": assignment_id})
+    
+    return {"message": "Assignment deleted"}
+
+
+# ==================== Student Submission (Public - No Auth) ====================
+
+@router.get("/student-assignment/{token}")
+async def get_student_assignment(token: str):
+    """Get assignment for student submission (PUBLIC - no auth required)"""
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    assignment = await db.ai_assignments.find_one({"public_token": token}, {"_id": 0})
+    if not assignment:
+        raise HTTPException(status_code=404, detail="Assignment not found or link expired")
+    
+    # Get class info for display
+    class_doc = await db.classes.find_one({"class_id": assignment["class_id"]}, {"_id": 0, "name": 1})
+    
+    # Return assignment without answers for students
+    student_assignment = {
+        "assignment_id": assignment["assignment_id"],
+        "title": assignment["title"],
+        "description": assignment["description"],
+        "instructions": assignment["instructions"],
+        "class_name": class_doc.get("name", "") if class_doc else "",
+        "due_date": assignment.get("due_date"),
+        "total_points": assignment["points"],
+        "questions": []
+    }
+    
+    # Remove correct answers from questions
+    for q in assignment["questions"]:
+        student_q = {
+            "question_id": q["question_id"],
+            "question_type": q["question_type"],
+            "question_text": q["question_text"],
+            "points": q.get("points", 10)
+        }
+        if q["question_type"] == "multiple_choice":
+            student_q["options"] = [{"text": opt["text"]} for opt in q.get("options", [])]
+        elif q["question_type"] == "matching":
+            # Shuffle the right side for matching
+            pairs = q.get("matching_pairs", {})
+            student_q["left_items"] = list(pairs.keys())
+            student_q["right_items"] = list(pairs.values())
+        elif q["question_type"] == "true_false":
+            student_q["options"] = [{"text": "True"}, {"text": "False"}]
+        
+        student_assignment["questions"].append(student_q)
+    
+    return student_assignment
+
+
+@router.post("/student-assignment/{token}/submit")
+async def submit_student_assignment(token: str, submission: StudentSubmissionCreate):
+    """Submit assignment answers (PUBLIC - no auth required)"""
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    assignment = await db.ai_assignments.find_one({"public_token": token}, {"_id": 0})
+    if not assignment:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+    
+    # Check for duplicate submission from same email
+    existing = await db.ai_submissions.find_one({
+        "assignment_id": assignment["assignment_id"],
+        "student_email": submission.student_email.lower()
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="You have already submitted this assignment")
+    
+    submission_id = f"sub_{uuid.uuid4().hex[:8]}"
+    
+    submission_doc = {
+        "submission_id": submission_id,
+        "assignment_id": assignment["assignment_id"],
+        "class_id": assignment["class_id"],
+        "teacher_id": assignment.get("teacher_id"),
+        "student_name": submission.student_name,
+        "student_email": submission.student_email.lower(),
+        "answers": submission.answers,
+        "submitted_at": datetime.now(timezone.utc).isoformat(),
+        "status": "pending",  # pending, grading, graded
+        "ai_score": None,
+        "ai_feedback": None,
+        "ai_question_scores": None,
+        "final_score": None,
+        "teacher_feedback": None,
+        "graded_at": None
+    }
+    
+    await db.ai_submissions.insert_one(submission_doc)
+    
+    # Update assignment submission count
+    await db.ai_assignments.update_one(
+        {"assignment_id": assignment["assignment_id"]},
+        {"$inc": {"submission_count": 1}}
+    )
+    
+    return {"message": "Assignment submitted successfully", "submission_id": submission_id}
+
+
+# ==================== AI Grading ====================
+
+@router.get("/ai-submissions")
+async def get_submissions(assignment_id: Optional[str] = None, status: Optional[str] = None, user: dict = None):
+    """Get submissions for grading"""
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    query = {}
+    if user:
+        query["teacher_id"] = user["user_id"]
+    if assignment_id:
+        query["assignment_id"] = assignment_id
+    if status:
+        query["status"] = status
+    
+    submissions = await db.ai_submissions.find(query, {"_id": 0}).sort("submitted_at", -1).to_list(500)
+    return submissions
+
+
+@router.get("/ai-submissions/{submission_id}")
+async def get_submission(submission_id: str, user: dict = None):
+    """Get a specific submission with full details"""
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    submission = await db.ai_submissions.find_one({"submission_id": submission_id}, {"_id": 0})
+    if not submission:
+        raise HTTPException(status_code=404, detail="Submission not found")
+    
+    # Get assignment for context
+    assignment = await db.ai_assignments.find_one(
+        {"assignment_id": submission["assignment_id"]}, 
+        {"_id": 0}
+    )
+    
+    return {
+        "submission": submission,
+        "assignment": assignment
+    }
+
+
+@router.post("/ai-submissions/{submission_id}/grade")
+async def ai_grade_submission(submission_id: str, request: AIGradeRequest = None, user: dict = None):
+    """Grade a submission using AI"""
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    submission = await db.ai_submissions.find_one({"submission_id": submission_id}, {"_id": 0})
+    if not submission:
+        raise HTTPException(status_code=404, detail="Submission not found")
+    
+    assignment = await db.ai_assignments.find_one(
+        {"assignment_id": submission["assignment_id"]}, 
+        {"_id": 0}
+    )
+    if not assignment:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+    
+    # Update status to grading
+    await db.ai_submissions.update_one(
+        {"submission_id": submission_id},
+        {"$set": {"status": "grading"}}
+    )
+    
+    try:
+        # Get grade level rubric
+        grade_level = assignment.get("grade_level", "6")
+        rubric = GRADE_LEVEL_RUBRICS.get(grade_level, GRADE_LEVEL_RUBRICS["6"])
+        
+        system_message = f"""You are an expert teacher grading student work. 
+Grade Level: {grade_level}
+Grading Leniency: {rubric['leniency']}
+Focus: {rubric['focus']}
+Spelling Strictness: {"Consider spelling errors" if rubric['spelling_matters'] else "Be lenient with spelling for this grade level"}
+
+Be encouraging and constructive in your feedback. For younger students (K-3), focus on effort and participation.
+Always respond with valid JSON only."""
+
+        # Build grading prompt
+        questions_text = ""
+        for q in assignment["questions"]:
+            q_id = q["question_id"]
+            student_answer = submission["answers"].get(q_id, "No answer provided")
+            
+            questions_text += f"""
+Question {q_id} ({q['points']} points) - Type: {q['question_type']}
+Question: {q['question_text']}
+"""
+            if q["question_type"] == "multiple_choice":
+                correct = [opt["text"] for opt in q.get("options", []) if opt.get("is_correct")]
+                questions_text += f"Correct Answer: {correct[0] if correct else 'N/A'}\n"
+            elif q["question_type"] in ["short_answer", "fill_blank", "true_false"]:
+                questions_text += f"Correct Answer: {q.get('correct_answer', 'N/A')}\n"
+            elif q["question_type"] == "matching":
+                questions_text += f"Correct Pairs: {q.get('matching_pairs', {})}\n"
+            elif q["question_type"] == "essay":
+                questions_text += f"Rubric Criteria: {q.get('rubric_criteria', [])}\n"
+            
+            questions_text += f"Student's Answer: {student_answer}\n"
+
+        prompt = f"""Grade this student submission:
+
+Student: {submission['student_name']}
+Assignment: {assignment['title']}
+Total Points: {assignment['points']}
+
+{questions_text}
+
+Return a JSON object with this structure:
+{{
+    "total_score": <number>,
+    "percentage": <number>,
+    "letter_grade": "A/B/C/D/F",
+    "overall_feedback": "Encouraging overall feedback for the student",
+    "question_scores": {{
+        "q1": {{
+            "score": <number>,
+            "max_points": <number>,
+            "feedback": "Specific feedback for this question",
+            "is_correct": true/false
+        }}
+    }}
+}}
+
+Be age-appropriate in your feedback. For elementary students, be very encouraging."""
+
+        chat = get_llm_chat(
+            session_id=f"grade_{submission_id}",
+            system_message=system_message
+        )
+        
+        response = await chat.send_message(UserMessage(text=prompt))
+        
+        # Parse response
+        response_text = response.strip()
+        if response_text.startswith("```"):
+            response_text = response_text.split("```")[1]
+            if response_text.startswith("json"):
+                response_text = response_text[4:]
+        response_text = response_text.strip()
+        
+        grade_result = json.loads(response_text)
+        
+        # Determine final score based on grading mode
+        auto_approve = request.auto_approve if request else False
+        grading_mode = assignment.get("grading_mode", "ai_suggest")
+        
+        update_data = {
+            "ai_score": grade_result["total_score"],
+            "ai_feedback": grade_result["overall_feedback"],
+            "ai_question_scores": grade_result["question_scores"],
+            "ai_percentage": grade_result["percentage"],
+            "ai_letter_grade": grade_result["letter_grade"]
+        }
+        
+        if grading_mode == "auto" or auto_approve:
+            update_data["status"] = "graded"
+            update_data["final_score"] = grade_result["total_score"]
+            update_data["graded_at"] = datetime.now(timezone.utc).isoformat()
+            
+            # Update graded count
+            await db.ai_assignments.update_one(
+                {"assignment_id": submission["assignment_id"]},
+                {"$inc": {"graded_count": 1}}
+            )
+        else:
+            update_data["status"] = "pending_review"
+        
+        await db.ai_submissions.update_one(
+            {"submission_id": submission_id},
+            {"$set": update_data}
+        )
+        
+        return {
+            "message": "Grading complete",
+            "grade_result": grade_result,
+            "status": update_data["status"]
+        }
+        
+    except Exception as e:
+        logger.error(f"AI grading error: {str(e)}")
+        await db.ai_submissions.update_one(
+            {"submission_id": submission_id},
+            {"$set": {"status": "grading_failed"}}
+        )
+        raise HTTPException(status_code=500, detail=f"AI grading failed: {str(e)}")
+
+
+@router.put("/ai-submissions/{submission_id}/approve")
+async def approve_grade(submission_id: str, update: ManualGradeUpdate, user: dict = None):
+    """Approve or adjust AI-suggested grade"""
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    submission = await db.ai_submissions.find_one({"submission_id": submission_id}, {"_id": 0})
+    if not submission:
+        raise HTTPException(status_code=404, detail="Submission not found")
+    
+    was_not_graded = submission["status"] != "graded"
+    
+    await db.ai_submissions.update_one(
+        {"submission_id": submission_id},
+        {"$set": {
+            "final_score": update.final_score,
+            "teacher_feedback": update.teacher_feedback,
+            "status": "graded",
+            "graded_at": datetime.now(timezone.utc).isoformat(),
+            "graded_by": user["user_id"] if user else None
+        }}
+    )
+    
+    # Update graded count if this was newly graded
+    if was_not_graded:
+        await db.ai_assignments.update_one(
+            {"assignment_id": submission["assignment_id"]},
+            {"$inc": {"graded_count": 1}}
+        )
+    
+    return {"message": "Grade approved"}
+
+
+# ==================== Statistics ====================
+
+@router.get("/ai-grading/stats")
+async def get_grading_stats(user: dict = None):
+    """Get AI grading statistics for dashboard"""
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    query = {}
+    if user:
+        query["teacher_id"] = user["user_id"]
+    
+    total_assignments = await db.ai_assignments.count_documents(query)
+    total_submissions = await db.ai_submissions.count_documents(query)
+    pending_grading = await db.ai_submissions.count_documents({**query, "status": "pending"})
+    pending_review = await db.ai_submissions.count_documents({**query, "status": "pending_review"})
+    graded = await db.ai_submissions.count_documents({**query, "status": "graded"})
+    
+    return {
+        "total_assignments": total_assignments,
+        "total_submissions": total_submissions,
+        "pending_grading": pending_grading,
+        "pending_review": pending_review,
+        "graded": graded
+    }
