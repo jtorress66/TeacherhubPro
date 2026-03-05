@@ -30,7 +30,7 @@ import { toast } from 'sonner';
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const AIGrading = () => {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const { language } = useLanguage();
   const navigate = useNavigate();
   const isEs = language === 'es';
