@@ -355,6 +355,117 @@ const Gradebook = () => {
     }
   };
 
+  // AI Assignment Generation Functions
+  const handleAIGenerate = async () => {
+    if (!aiRequest.topic.trim()) {
+      toast.error(language === 'es' ? 'Ingresa un tema' : 'Enter a topic');
+      return;
+    }
+    
+    setAiGenerating(true);
+    try {
+      const response = await axios.post(`${API}/ai-grading/generate-assignment`, {
+        ...aiRequest,
+        language: language
+      }, { withCredentials: true });
+      
+      setAiAssignment(response.data);
+      toast.success(language === 'es' ? 'Tarea generada con IA' : 'AI Assignment generated');
+    } catch (error) {
+      console.error('AI generation error:', error);
+      toast.error(language === 'es' ? 'Error al generar tarea' : 'Failed to generate assignment');
+    } finally {
+      setAiGenerating(false);
+    }
+  };
+
+  const handleSaveAIAssignment = async () => {
+    if (!aiAssignment || !selectedClass) {
+      toast.error(language === 'es' ? 'Selecciona una clase' : 'Select a class');
+      return;
+    }
+    
+    if (!newAssignment.category_id) {
+      toast.error(language === 'es' ? 'Selecciona una categoría' : 'Select a category');
+      return;
+    }
+    
+    setSavingAI(true);
+    try {
+      const response = await axios.post(`${API}/ai-grading/assignments`, {
+        class_id: selectedClass,
+        category_id: newAssignment.category_id,
+        title: aiAssignment.title,
+        description: aiAssignment.description,
+        instructions: aiAssignment.instructions,
+        questions: aiAssignment.questions,
+        points: aiAssignment.total_points || 100,
+        due_date: newAssignment.due_date || null,
+        grade_level: aiRequest.grade_level,
+        grading_mode: 'ai_suggest',
+        ai_generated: true
+      }, { withCredentials: true });
+      
+      // Get the student link
+      const publicLink = `${window.location.origin}/assignment/${response.data.public_token}`;
+      
+      toast.success(
+        <div>
+          <p className="font-medium">{language === 'es' ? '¡Tarea creada!' : 'Assignment created!'}</p>
+          <p className="text-sm mt-1">{language === 'es' ? 'Enlace copiado al portapapeles' : 'Link copied to clipboard'}</p>
+        </div>
+      );
+      
+      // Copy link to clipboard
+      navigator.clipboard.writeText(publicLink);
+      
+      // Reset and close
+      setAiAssignment(null);
+      setShowAIGenerator(false);
+      setAiRequest({
+        topic: '',
+        subject: 'Math',
+        grade_level: '5',
+        question_types: ['multiple_choice', 'short_answer'],
+        num_questions: 5,
+        difficulty: 'medium',
+        additional_instructions: ''
+      });
+      
+      // Fetch updated AI assignments
+      fetchAIAssignments();
+    } catch (error) {
+      console.error('Save error:', error);
+      toast.error(language === 'es' ? 'Error al guardar' : 'Failed to save');
+    } finally {
+      setSavingAI(false);
+    }
+  };
+
+  const fetchAIAssignments = async () => {
+    try {
+      const response = await axios.get(`${API}/ai-grading/assignments${selectedClass ? `?class_id=${selectedClass}` : ''}`, {
+        withCredentials: true
+      });
+      setAiAssignments(response.data);
+    } catch (error) {
+      console.error('Error fetching AI assignments:', error);
+    }
+  };
+
+  // Fetch AI assignments when class changes
+  useEffect(() => {
+    if (selectedClass) {
+      fetchAIAssignments();
+    }
+  }, [selectedClass]);
+
+  const copyStudentLink = (token) => {
+    const link = `${window.location.origin}/assignment/${token}`;
+    navigator.clipboard.writeText(link);
+    toast.success(language === 'es' ? 'Enlace copiado' : 'Link copied');
+  };
+
   // Calculate total weight percentage
   const totalWeight = categories.reduce((sum, cat) => sum + (cat.weight_percent || 0), 0);
 
