@@ -4,7 +4,7 @@ Handles AI-powered assignment creation and grading for TeacherHubPro
 """
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Callable
 import uuid
 from datetime import datetime, timezone
 import os
@@ -20,6 +20,7 @@ router = APIRouter()
 
 # MongoDB connection will be initialized when routes are registered
 db = None
+get_current_user_func = None
 
 # Pydantic Models
 class QuestionOption(BaseModel):
