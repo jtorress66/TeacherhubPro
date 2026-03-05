@@ -12,8 +12,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Skeleton } from '../components/ui/skeleton';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Textarea } from '../components/ui/textarea';
 import { toast } from 'sonner';
-import { Plus, BookOpen, Save, Trash2, FileDown, Settings, FolderPlus, List, Pencil } from 'lucide-react';
+import { Plus, BookOpen, Save, Trash2, FileDown, Settings, FolderPlus, List, Pencil, Sparkles, Brain, Copy, ExternalLink, Loader2 } from 'lucide-react';
 
 const API = `${window.location.origin}/api`;
 
