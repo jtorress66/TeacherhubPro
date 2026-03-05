@@ -2122,7 +2122,7 @@ async def get_gradebook(class_id: str, user: dict = Depends(get_current_user)):
 
 @api_router.get("/gradebook/report/{class_id}")
 async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_user)):
-    """Get gradebook report for a class with student averages"""
+    """Get gradebook report for a class with student averages (includes AI assignments)"""
     class_doc = await db.classes.find_one({"class_id": class_id}, {"_id": 0})
     if not class_doc:
         raise HTTPException(status_code=404, detail="Class not found")
@@ -2134,9 +2134,20 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
     assignments = await db.assignments.find({"class_id": class_id}, {"_id": 0}).to_list(100)
     categories = await db.grade_categories.find({"class_id": class_id}, {"_id": 0}).to_list(50)
     
-    # Get all grades
+    # Get AI assignments for this class
+    ai_assignments = await db.ai_assignments.find({"class_id": class_id}, {"_id": 0}).to_list(100)
+    
+    # Get all regular grades
     assignment_ids = [a["assignment_id"] for a in assignments]
     grades = await db.grades.find({"assignment_id": {"$in": assignment_ids}}, {"_id": 0}).to_list(10000)
+    
+    # Get all AI submissions (graded only)
+    ai_assignment_ids = [a["assignment_id"] for a in ai_assignments]
+    ai_submissions = await db.ai_submissions.find({
+        "assignment_id": {"$in": ai_assignment_ids},
+        "status": "graded",
+        "final_score": {"$ne": None}
+    }, {"_id": 0}).to_list(10000)
     
     # Build grades map
     grades_map = {}
@@ -2144,13 +2155,46 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
         key = f"{grade['student_id']}_{grade['assignment_id']}"
         grades_map[key] = grade
     
-    # Calculate student averages
+    # Build student email map for AI submission matching
+    student_email_map = {}
+    for student in students:
+        if student.get("email"):
+            student_email_map[student["email"].lower()] = student["student_id"]
+    
+    # Build AI grades map (by student email -> assignment)
+    ai_grades_map = {}
+    for sub in ai_submissions:
+        student_email = sub.get("student_email", "").lower()
+        if student_email in student_email_map:
+            student_id = student_email_map[student_email]
+            key = f"{student_id}_{sub['assignment_id']}"
+            ai_grades_map[key] = {
+                "score": sub["final_score"],
+                "ai_score": sub.get("ai_score"),
+                "ai_feedback": sub.get("ai_feedback"),
+                "student_name": sub.get("student_name")
+            }
+    
+    # Combine assignments (regular + AI)
+    all_assignments = assignments.copy()
+    for ai_assign in ai_assignments:
+        all_assignments.append({
+            "assignment_id": ai_assign["assignment_id"],
+            "title": ai_assign["title"],
+            "points": ai_assign["points"],
+            "category_id": ai_assign.get("category_id"),
+            "is_ai": True
+        })
+    
+    # Calculate student averages (including AI assignments)
     student_reports = []
     for student in students:
         total_points = 0
         max_points = 0
         assignments_completed = 0
+        ai_assignments_completed = 0
         
+        # Regular assignments
         for assignment in assignments:
             key = f"{student['student_id']}_{assignment['assignment_id']}"
             grade = grades_map.get(key)
@@ -2159,13 +2203,25 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
                 max_points += assignment['points']
                 assignments_completed += 1
         
+        # AI assignments (match by email)
+        for ai_assign in ai_assignments:
+            key = f"{student['student_id']}_{ai_assign['assignment_id']}"
+            ai_grade = ai_grades_map.get(key)
+            if ai_grade and ai_grade.get('score') is not None:
+                total_points += ai_grade['score']
+                max_points += ai_assign['points']
+                ai_assignments_completed += 1
+        
         average = (total_points / max_points * 100) if max_points > 0 else None
         
         student_reports.append({
             "student_id": student["student_id"],
             "first_name": student.get("first_name", ""),
             "last_name": student.get("last_name", ""),
+            "email": student.get("email", ""),
             "assignments_completed": assignments_completed,
+            "ai_assignments_completed": ai_assignments_completed,
+            "total_assignments_completed": assignments_completed + ai_assignments_completed,
             "total_points": total_points,
             "max_points": max_points,
             "average": average
@@ -2176,7 +2232,9 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
         "class_name": class_doc.get("name", ""),
         "students": student_reports,
         "total_assignments": len(assignments),
-        "categories": categories
+        "total_ai_assignments": len(ai_assignments),
+        "categories": categories,
+        "ai_submissions_count": len(ai_submissions)
     }
 
 # ==================== PARENT PORTAL ENDPOINTS ====================
