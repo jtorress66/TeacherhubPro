@@ -71,15 +71,16 @@ const StudentAssignment = () => {
         });
         setAnswers(initialAnswers);
       } catch (err) {
-        console.error('Error:', err);
-        setError('Failed to load assignment. Please try again later.');
+        console.error('Fetch error:', err);
+        console.error('API URL was:', `${API_URL}/api/ai-grading/student/${token}`);
+        setError(`Failed to load assignment. Error: ${err.message}`);
       } finally {
         setLoading(false);
       }
     };
 
     fetchAssignment();
-  }, [token]);
+  }, [token, API_URL]);
 
   // Handle answer change
   const handleAnswerChange = (questionId, value) => {
