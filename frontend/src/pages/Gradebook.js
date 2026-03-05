@@ -1434,6 +1434,20 @@ const Gradebook = () => {
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => shareToGoogleClassroom(assignment)}
+                        className="border-amber-400 text-amber-700 hover:bg-amber-50"
+                        data-testid={`google-classroom-${assignment.assignment_id}`}
+                      >
+                        <svg className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M21 9h-6c-1.1 0-2 .9-2 2v9h10v-9c0-1.1-.9-2-2-2zm-4 9h-2v-2h2v2zm0-4h-2v-2h2v2zm4 4h-2v-2h2v2zm0-4h-2v-2h2v2z"/>
+                          <path d="M5 21h10v-9c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v9h4zm-2-9h2v2H3v-2zm0 4h2v2H3v-2zm4 2v-2h2v2H7zm0-4v-2h2v2H7z"/>
+                          <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6h2c0-4.42-3.58-8-8-8z"/>
+                        </svg>
+                        Google Classroom
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleDeleteAIAssignment(assignment.assignment_id)}
                         className="text-red-600 hover:bg-red-50"
                       >
