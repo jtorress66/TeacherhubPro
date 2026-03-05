@@ -715,3 +715,19 @@ async def get_grading_stats(user: dict = Depends(get_current_user)):
         "pending_review": pending_review,
         "graded": graded
     }
+
+
+# ==================== Debug Endpoint ====================
+
+@router.get("/debug/tokens")
+async def debug_list_tokens():
+    """Debug endpoint to list all assignment tokens (remove in production)"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    assignments = await db.ai_assignments.find({}, {"_id": 0, "public_token": 1, "title": 1, "created_at": 1}).to_list(50)
+    return {
+        "count": len(assignments),
+        "assignments": assignments
+    }
+
