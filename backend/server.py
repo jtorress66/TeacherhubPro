@@ -3819,7 +3819,7 @@ async def generate_report_card(
     semester_id: Optional[str] = None,
     user: dict = Depends(get_current_user)
 ):
-    """Generate a report card for a student"""
+    """Generate a report card for a student (includes AI assignments)"""
     
     # Get student info
     student = await db.students.find_one({"student_id": student_id}, {"_id": 0})
@@ -3831,20 +3831,26 @@ async def generate_report_card(
     if not class_doc:
         raise HTTPException(status_code=404, detail="Class not found")
     
-    # Get all assignments for this class
+    # Get all regular assignments for this class
     assignments = await db.assignments.find({"class_id": class_id}, {"_id": 0}).to_list(500)
     assignment_ids = [a["assignment_id"] for a in assignments]
+    
+    # Get AI assignments for this class
+    ai_assignments = await db.ai_assignments.find({"class_id": class_id}, {"_id": 0}).to_list(100)
+    ai_assignment_ids = [a["assignment_id"] for a in ai_assignments]
     
     # Build a map of assignment_id -> assignment info (including category)
     assignment_map = {}
     for a in assignments:
         assignment_map[a["assignment_id"]] = a
+    for a in ai_assignments:
+        assignment_map[a["assignment_id"]] = {**a, "is_ai": True}
     
     # Get categories for this class
     categories = await db.grade_categories.find({"class_id": class_id}, {"_id": 0}).to_list(50)
     category_map = {c["category_id"]: c for c in categories}
     
-    # Get all grades for this student from assignments in this class
+    # Get all regular grades for this student from assignments in this class
     all_grades = []
     if assignment_ids:
         grades_cursor = db.grades.find({
@@ -3852,6 +3858,31 @@ async def generate_report_card(
             "assignment_id": {"$in": assignment_ids}
         }, {"_id": 0})
         all_grades = await grades_cursor.to_list(500)
+    
+    # Get AI grades for this student (match by email)
+    student_email = student.get("email", "").lower()
+    ai_grades = []
+    if ai_assignment_ids and student_email:
+        ai_submissions = await db.ai_submissions.find({
+            "assignment_id": {"$in": ai_assignment_ids},
+            "student_email": student_email,
+            "status": "graded",
+            "final_score": {"$ne": None}
+        }, {"_id": 0}).to_list(100)
+        
+        # Convert AI submissions to grade format
+        for sub in ai_submissions:
+            ai_grades.append({
+                "student_id": student_id,
+                "assignment_id": sub["assignment_id"],
+                "score": sub["final_score"],
+                "ai_score": sub.get("ai_score"),
+                "ai_feedback": sub.get("ai_feedback"),
+                "is_ai": True
+            })
+    
+    # Combine all grades
+    all_grades.extend(ai_grades)
     
     # Calculate grade statistics by category
     grade_summary = {}
@@ -3869,12 +3900,17 @@ async def generate_report_card(
         category_info = category_map.get(category_id, {})
         category_name = category_info.get("name", "General")
         
+        # Add AI suffix if it's an AI assignment
+        if assignment.get("is_ai"):
+            category_name = f"{category_name} (AI)"
+        
         if category_name not in grade_summary:
             grade_summary[category_name] = {
                 "category": category_name,
                 "points_earned": 0,
                 "points_possible": 0,
-                "assignments": []
+                "assignments": [],
+                "is_ai": assignment.get("is_ai", False)
             }
         
         # Score is stored in 'score' field, max points comes from assignment
@@ -3905,7 +3941,8 @@ async def generate_report_card(
             "points_earned": data["points_earned"],
             "points_possible": data["points_possible"],
             "percentage": percentage,
-            "assignment_count": len(data["assignments"])
+            "assignment_count": len(data["assignments"]),
+            "is_ai": data.get("is_ai", False)
         })
     
     # Calculate overall GPA (on 4.0 scale)
@@ -3978,6 +4015,7 @@ async def generate_report_card(
             "total_days": total_days,
             "rate": attendance_rate
         },
+        "ai_assignments_included": len(ai_grades) > 0,
         "generated_at": datetime.now(timezone.utc).isoformat()
     }
 
