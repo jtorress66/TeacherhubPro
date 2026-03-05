@@ -359,7 +359,9 @@ const Gradebook = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-heading font-bold text-slate-800">{t('gradebook')}</h1>
+            <h1 className="text-3xl font-heading font-bold text-slate-800">
+              {language === 'es' ? 'Tareas y Calificaciones' : 'Assignments & Gradebook'}
+            </h1>
             <p className="text-slate-500">{t('assignments')}</p>
           </div>
           <div className="flex gap-2 flex-wrap">
