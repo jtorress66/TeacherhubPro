@@ -2,6 +2,44 @@
 
 
 
+
+---
+## Update 2026-03-05 (Session 68) - GOOGLE CLASSROOM SHARE & TRANSLATION FIX ✅ COMPLETE
+
+### Features Implemented:
+
+**1. Google Classroom Share Button for AI Assignments**
+- Added "Google Classroom" button to each AI Assignment card in the Gradebook page
+- Button styled with amber/yellow theme to match Google Classroom branding
+- Clicking opens Google Classroom's native share dialog in a new window
+- Correct URL format: `https://classroom.google.com/share?url={assignmentUrl}&title={title}`
+- Location: `/app/frontend/src/pages/Gradebook.js` lines 489-498 (function), 1434-1447 (button)
+
+**2. Fixed Translation Issue for "Play to Learn" Page**
+- Problem: "Play to Learn" page was not translating to Spanish because it used a local `language` state instead of the global `useLanguage` context
+- Solution: 
+  - Updated `/app/frontend/src/pages/PlayToLearnTeacher.js` to import and use `useLanguage` hook
+  - Removed local `const [language, setLanguage] = useState('es')` state
+  - Removed the useEffect that was setting language from user
+- Result: Page now correctly shows "Jugar y Aprender" when Spanish is selected
+
+**3. Fixed Sidebar Translation for "Play to Learn" Link**
+- Updated `/app/frontend/src/components/Layout.js` line 52
+- Changed from hardcoded `'Play to Learn'` to `language === 'es' ? 'Jugar y Aprender' : 'Play to Learn'`
+
+**Files Modified:**
+- `/app/frontend/src/components/Layout.js` - Line 52: Sidebar translation
+- `/app/frontend/src/pages/PlayToLearnTeacher.js` - Lines 1-25: Import and use global useLanguage hook
+
+**Test Results (iteration_68.json):**
+- Frontend: 100% (all translation and Google Classroom tests passed)
+- No backend changes required
+
+### Status:
+✅ **GOOGLE CLASSROOM SHARE BUTTON - COMPLETE**
+✅ **TRANSLATION FIX FOR PLAY TO LEARN - COMPLETE**
+
+
 ---
 ## Update 2026-03-05 (Session 67) - AI GRADING SYSTEM & ASSIGNMENT GENERATION ✅ COMPLETE
 
