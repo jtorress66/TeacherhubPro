@@ -236,6 +236,11 @@ const AppRouter = () => {
       <Route path="/gradebook/reports" element={
         <ProtectedRoute><GradebookReports /></ProtectedRoute>
       } />
+      <Route path="/ai-grading" element={
+        <ProtectedRoute><AIGrading /></ProtectedRoute>
+      } />
+      {/* Public Student Assignment Route - No Auth Required */}
+      <Route path="/assignment/:token" element={<StudentAssignment />} />
       <Route path="/report-cards" element={
         <ProtectedRoute><ReportCards /></ProtectedRoute>
       } />
