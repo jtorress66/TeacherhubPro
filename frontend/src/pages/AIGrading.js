@@ -30,7 +30,7 @@ import { toast } from 'sonner';
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const AIGrading = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { language } = useLanguage();
   const navigate = useNavigate();
   const isEs = language === 'es';
@@ -96,8 +96,8 @@ const AIGrading = () => {
     try {
       const res = await fetch(`${API_URL}/api/ai-grading/submissions/${submissionId}/grade`, {
         method: 'POST',
-        credentials: 'include',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ auto_approve: autoApprove })
@@ -114,7 +114,7 @@ const AIGrading = () => {
       // If viewing this submission, update it
       if (selectedSubmission?.submission_id === submissionId) {
         const subRes = await fetch(`${API_URL}/api/ai-grading/submissions/${submissionId}`, {
-          credentials: 'include'
+          headers: { 'Authorization': `Bearer ${token}` }
         });
         if (subRes.ok) {
           const data = await subRes.json();
@@ -135,8 +135,8 @@ const AIGrading = () => {
     try {
       const res = await fetch(`${API_URL}/api/ai-grading/submissions/${submissionId}/approve`, {
         method: 'PUT',
-        credentials: 'include',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
@@ -162,7 +162,7 @@ const AIGrading = () => {
   const handleViewSubmission = async (submissionId) => {
     try {
       const res = await fetch(`${API_URL}/api/ai-grading/submissions/${submissionId}`, {
-        credentials: 'include'
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
