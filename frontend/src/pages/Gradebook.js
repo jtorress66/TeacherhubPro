@@ -90,6 +90,22 @@ const Gradebook = () => {
     due_date: '',
     description: ''
   });
+  
+  // AI Assignment Generation State
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiAssignment, setAiAssignment] = useState(null);
+  const [aiRequest, setAiRequest] = useState({
+    topic: '',
+    subject: 'Math',
+    grade_level: '5',
+    question_types: ['multiple_choice', 'short_answer'],
+    num_questions: 5,
+    difficulty: 'medium',
+    additional_instructions: ''
+  });
+  const [aiAssignments, setAiAssignments] = useState([]);
+  const [savingAI, setSavingAI] = useState(false);
 
   useEffect(() => {
     const fetchInitialData = async () => {
