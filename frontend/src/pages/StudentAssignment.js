@@ -37,17 +37,31 @@ const StudentAssignment = () => {
   // Fetch assignment
   useEffect(() => {
     const fetchAssignment = async () => {
+      const apiUrl = `${API_URL}/api/ai-grading/student/${token}`;
+      console.log('Fetching assignment from:', apiUrl);
+      
       try {
-        const res = await fetch(`${API_URL}/api/ai-grading/student/${token}`);
+        const res = await fetch(apiUrl, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+        
+        console.log('Response status:', res.status);
+        
         if (!res.ok) {
           if (res.status === 404) {
             setError('Assignment not found or link has expired.');
           } else {
-            throw new Error('Failed to load assignment');
+            const errorText = await res.text();
+            console.error('Error response:', errorText);
+            throw new Error(`Failed to load assignment: ${res.status}`);
           }
           return;
         }
         const data = await res.json();
+        console.log('Assignment loaded:', data.title);
         setAssignment(data);
         
         // Initialize answers
