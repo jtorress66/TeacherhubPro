@@ -500,6 +500,15 @@ const Gradebook = () => {
               <List className="h-4 w-4 mr-2" />
               {language === 'es' ? 'Ver Tareas' : 'View Assignments'}
             </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowAIGenerator(true)} 
+              className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 hover:from-violet-600 hover:to-purple-600"
+              data-testid="ai-assignment-btn"
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              {language === 'es' ? 'Crear con IA' : 'Create with AI'}
+            </Button>
             <Dialog open={showNewAssignment} onOpenChange={setShowNewAssignment}>
               <DialogTrigger asChild>
                 <Button data-testid="new-assignment-btn">
