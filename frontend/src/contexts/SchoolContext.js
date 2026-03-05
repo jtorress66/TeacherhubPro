@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const SchoolContext = createContext();
 

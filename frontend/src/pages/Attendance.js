@@ -12,7 +12,7 @@ import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
 import { CheckCircle, XCircle, Clock, AlertCircle, Users, Save, FileDown } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const STATUSES = [
   { value: 'present', icon: CheckCircle, color: 'text-green-600 bg-green-50 border-green-200' },

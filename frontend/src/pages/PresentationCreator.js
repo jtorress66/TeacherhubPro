@@ -48,7 +48,7 @@ import {
   Layers
 } from 'lucide-react';
 
-const API = process.env.REACT_APP_BACKEND_URL;
+const API = window.location.origin;
 
 // Slide templates
 const slideTemplates = [

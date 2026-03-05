@@ -12,8 +12,8 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
-const WS_URL = process.env.REACT_APP_BACKEND_URL?.replace('https://', 'wss://').replace('http://', 'ws://');
+const API = `${window.location.origin}/api`;
+const WS_URL = window.location.origin?.replace('https://', 'wss://').replace('http://', 'ws://');
 
 const PlayToLearnHost = () => {
   const { sessionId } = useParams();

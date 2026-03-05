@@ -17,7 +17,7 @@ import {
   BarChart3, Link2, Copy, Share2, X
 } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const AdaptiveLearning = () => {
   const { user } = useAuth();

@@ -9,7 +9,7 @@ import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
 import { Calendar, Plus, ChevronRight, FileDown, Copy } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const PlannerList = () => {
   const navigate = useNavigate();

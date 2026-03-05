@@ -11,7 +11,7 @@ import {
 import { toast } from 'sonner';
 import axios from 'axios';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 // Generate unique session ID
 const generateSessionId = () => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

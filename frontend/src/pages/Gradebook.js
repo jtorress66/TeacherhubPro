@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { toast } from 'sonner';
 import { Plus, BookOpen, Save, Trash2, FileDown, Settings, FolderPlus, List, Pencil } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const DEFAULT_CATEGORIES = [
   { name: 'Homework', name_es: 'Tarea', weight: 25 },

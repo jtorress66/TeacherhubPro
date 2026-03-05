@@ -12,7 +12,7 @@ import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
 import { FileDown, Printer, Users, TrendingUp, Award, BookOpen, BarChart3 } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 // GPA Scale (matching Gradebook.js)
 const GPA_SCALE = {

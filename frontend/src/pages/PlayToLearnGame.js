@@ -13,8 +13,8 @@ import {
 import { toast } from 'sonner';
 import axios from 'axios';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
-const WS_URL = process.env.REACT_APP_BACKEND_URL?.replace('https://', 'wss://').replace('http://', 'ws://');
+const API = `${window.location.origin}/api`;
+const WS_URL = window.location.origin?.replace('https://', 'wss://').replace('http://', 'ws://');
 
 // Word Search Game Component - interactive grid-based word search
 const WordSearchGameComponent = ({ session, language, matchedPairs, setMatchedPairs, setScore, setStreak, handleGameComplete, submitAnswer }) => {

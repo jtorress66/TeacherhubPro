@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { toast } from 'sonner';
 import { Plus, Users, BookOpen, Trash2, Edit, ChevronRight, Upload, Link, Copy, ExternalLink, Mail, Calendar, Loader2 } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const Classes = () => {
   const navigate = useNavigate();

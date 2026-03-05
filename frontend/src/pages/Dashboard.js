@@ -30,7 +30,7 @@ import WelcomeTour from '../components/WelcomeTour';
 import VideoStyleGuide from '../components/VideoStyleGuide';
 import OnboardingBanner from '../components/OnboardingBanner';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const Dashboard = () => {
   const navigate = useNavigate();

@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { toast } from 'sonner';
 import { User, Globe, Shield, Save, Building2, Image, CreditCard, Crown, Users, UserCog, Loader2, CalendarDays, Plus, Edit, Trash2 } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const Settings = () => {
   const { user, updateProfile } = useAuth();

@@ -10,7 +10,7 @@ import {
   CheckCircle, XCircle, Clock, AlertCircle, FileText, GraduationCap
 } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 // GPA Scale
 const GPA_SCALE = {

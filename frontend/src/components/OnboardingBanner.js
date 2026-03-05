@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import OnboardingVideo from './OnboardingVideo';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const OnboardingBanner = ({ onComplete }) => {
   const navigate = useNavigate();

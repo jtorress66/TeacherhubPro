@@ -24,7 +24,7 @@ const Contact = () => {
     setSubmitting(true);
     
     try {
-      const API_URL = process.env.REACT_APP_BACKEND_URL;
+      const API_URL = window.location.origin;
       const response = await fetch(`${API_URL}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

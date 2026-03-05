@@ -21,7 +21,7 @@ import {
   FileSpreadsheet, Download, AlertCircle, CheckCircle2, Link2, ExternalLink
 } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const AdminPanel = () => {
   const { user } = useAuth();

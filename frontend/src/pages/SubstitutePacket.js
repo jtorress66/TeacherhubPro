@@ -12,7 +12,7 @@ import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
 import { Printer, FileText, Users, AlertCircle, Edit2, Save, Loader2 } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const SubstitutePacket = () => {
   const { t, language } = useLanguage();

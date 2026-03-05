@@ -20,7 +20,7 @@ import { ScrollArea } from '../components/ui/scroll-area';
 import { toast } from 'sonner';
 import { Calendar, Plus, Copy, FileDown, Save, Trash2, ChevronLeft, ChevronRight, Printer, BookOpen, Sparkles, Loader2, Wand2, FolderOpen, Star, Clock, Layers, CalendarPlus } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
 const ACTIVITY_TYPES = ['brainstorming', 'buildingBackground', 'vocabularyDevelopment', 'readPages', 'guidedReading', 'oralQuestions', 'comprehensionQuestions', 'exercisePractice', 'other'];

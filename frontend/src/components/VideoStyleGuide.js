@@ -26,7 +26,7 @@ import {
   SkipForward
 } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const VideoStyleGuide = ({ language, run, onClose }) => {
   const [currentStep, setCurrentStep] = useState(0);

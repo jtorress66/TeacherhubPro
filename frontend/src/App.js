@@ -74,7 +74,7 @@ import AcceptableUse from "./pages/AcceptableUse";
 import SOC2 from "./pages/SOC2";
 import EnterpriseOverview from "./pages/EnterpriseOverview";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 // Remove platform badge
 const removePlatformBadge = () => {

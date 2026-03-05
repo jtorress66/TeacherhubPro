@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { Check, Star, Users, Building, Crown, Loader2, BookOpen, Globe, ArrowLeft, AlertCircle } from 'lucide-react';
 import LanguageSelector from '../components/LanguageSelector';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const Pricing = () => {
   const { t, language, toggleLanguage } = useLanguage();

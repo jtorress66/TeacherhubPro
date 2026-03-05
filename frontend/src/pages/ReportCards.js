@@ -21,7 +21,7 @@ import {
   Users, Search, Filter, ChevronRight, Sparkles
 } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const ReportCards = () => {
   const { user } = useAuth();

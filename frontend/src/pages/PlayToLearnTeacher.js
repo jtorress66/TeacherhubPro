@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const PlayToLearnTeacher = () => {
   const navigate = useNavigate();

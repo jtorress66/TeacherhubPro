@@ -13,7 +13,7 @@ import { Separator } from '../components/ui/separator';
 import { toast } from 'sonner';
 import { Calendar, FileDown, Printer, Users, CheckCircle, XCircle, Clock, AlertCircle, TrendingUp } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const AttendanceReports = () => {
   const { t, language } = useLanguage();

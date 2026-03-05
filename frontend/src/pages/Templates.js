@@ -14,7 +14,7 @@ import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
 import { FileText, Plus, Copy, Trash2, Calendar, BookOpen } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${window.location.origin}/api`;
 
 const Templates = () => {
   const navigate = useNavigate();

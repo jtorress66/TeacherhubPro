@@ -18,7 +18,7 @@ import {
   GraduationCap, Target, Clock, ChevronRight, Bot, User, RefreshCw, Printer, FolderOpen
 } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = window.location.origin;
 
 const AIAssistant = () => {
   const { language } = useLanguage();
