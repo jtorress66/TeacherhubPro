@@ -23,7 +23,7 @@
     "frontend": "100% - All Playwright tests passed"
   },
   "test_credentials": {
-    "API_URL": "https://edu-planner-app.preview.emergentagent.com",
+    "API_URL": "https://educator-compliance.preview.emergentagent.com",
     "test_teacher": "test@school.edu / testpassword",
     "test_sessions": {
       "english_true_false": "ps_a32b64e3c7fc4481",
@@ -58,7 +58,7 @@
     },
     "frontend_playwright_tests": {
       "true_false_game": {
-        "url": "https://edu-planner-app.preview.emergentagent.com/play-to-learn/game/ps_a32b64e3c7fc4481",
+        "url": "https://educator-compliance.preview.emergentagent.com/play-to-learn/game/ps_a32b64e3c7fc4481",
         "status": "PASSED",
         "elements_verified": [
           "TRUE_FALSE badge in header",
@@ -73,7 +73,7 @@
         ]
       },
       "fill_blank_game": {
-        "url": "https://edu-planner-app.preview.emergentagent.com/play-to-learn/game/ps_82064f9739a44765",
+        "url": "https://educator-compliance.preview.emergentagent.com/play-to-learn/game/ps_82064f9739a44765",
         "status": "PASSED",
         "elements_verified": [
           "FILL_BLANK badge in header",
