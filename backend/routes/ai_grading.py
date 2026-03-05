@@ -104,10 +104,11 @@ def get_llm_chat(session_id: str, system_message: str) -> LlmChat:
     
     return chat
 
-def init_ai_grading_routes(database):
+def init_ai_grading_routes(database, get_current_user=None):
     """Initialize routes with database connection"""
-    global db
+    global db, get_current_user_func
     db = database
+    get_current_user_func = get_current_user
 
 # ==================== AI Assignment Generation ====================
 
