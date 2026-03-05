@@ -112,8 +112,14 @@ def init_ai_grading_routes(database, get_current_user=None):
 
 # ==================== AI Assignment Generation ====================
 
+async def get_user_dependency():
+    """Helper to get current user - returns None for public routes"""
+    if get_current_user_func:
+        return Depends(get_current_user_func)
+    return None
+
 @router.post("/generate-assignment")
-async def generate_assignment(request: AIAssignmentRequest, user: dict = None):
+async def generate_assignment(request: AIAssignmentRequest):
     """Generate an AI-powered assignment"""
     try:
         # Build the prompt for assignment generation
