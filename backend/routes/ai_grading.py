@@ -658,7 +658,20 @@ async def get_grading_stats(user: dict = Depends(get_current_user)):
     
     query = {}
     if user:
-        query["teacher_id"] = user["user_id"]
+        # Get all classes owned by this teacher
+        teacher_classes = await db.classes.find(
+            {"teacher_id": user["user_id"]}, 
+            {"class_id": 1}
+        ).to_list(100)
+        class_ids = [c["class_id"] for c in teacher_classes]
+        
+        if class_ids:
+            query["$or"] = [
+                {"teacher_id": user["user_id"]},
+                {"class_id": {"$in": class_ids}}
+            ]
+        else:
+            query["teacher_id"] = user["user_id"]
     
     total_assignments = await db.ai_assignments.count_documents(query)
     total_submissions = await db.ai_submissions.count_documents(query)
