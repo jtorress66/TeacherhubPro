@@ -281,7 +281,9 @@ const StudentAssignment = () => {
           <CardContent className="pt-6 text-center">
             <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
             <h1 className="text-xl font-bold text-slate-900 mb-2">Assignment Not Found</h1>
-            <p className="text-slate-600">{error}</p>
+            <p className="text-slate-600 mb-4">{error}</p>
+            <p className="text-xs text-slate-400">API: {API_URL}</p>
+            <p className="text-xs text-slate-400">Token: {token}</p>
           </CardContent>
         </Card>
       </div>
