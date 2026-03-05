@@ -615,55 +615,118 @@ const Gradebook = () => {
               <DialogTitle>{language === 'es' ? 'Lista de Tareas' : 'Assignment List'}</DialogTitle>
             </DialogHeader>
             <div className="space-y-3 pt-4">
-              {assignments.length === 0 ? (
+              {/* AI Assignments Section */}
+              {aiAssignments.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-violet-700 flex items-center gap-2 mb-2">
+                    <Brain className="w-4 h-4" />
+                    {language === 'es' ? 'Tareas con IA' : 'AI Assignments'}
+                  </h4>
+                  {aiAssignments.map(assignment => {
+                    const category = categories.find(c => c.category_id === assignment.category_id);
+                    return (
+                      <div 
+                        key={assignment.assignment_id} 
+                        className="flex items-center justify-between p-4 bg-violet-50 rounded-lg border border-violet-200 hover:bg-violet-100 transition-colors mb-2"
+                      >
+                        <div className="flex-1">
+                          <div className="font-medium text-slate-800 flex items-center gap-2">
+                            {assignment.title}
+                            <Badge className="bg-violet-100 text-violet-700 text-xs">AI</Badge>
+                          </div>
+                          <div className="flex items-center gap-3 mt-1">
+                            <Badge variant="outline" className="text-xs">
+                              {language === 'es' ? category?.name_es : category?.name}
+                            </Badge>
+                            <span className="text-sm text-slate-500">
+                              {assignment.points} {language === 'es' ? 'pts' : 'points'}
+                            </span>
+                            <span className="text-sm text-slate-500">
+                              {assignment.questions?.length || 0} {language === 'es' ? 'preguntas' : 'questions'}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => copyStudentLink(assignment.public_token)}
+                            title={language === 'es' ? 'Copiar enlace' : 'Copy link'}
+                          >
+                            <Copy className="h-4 w-4 text-blue-600" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteAIAssignment(assignment.assignment_id)}
+                          >
+                            <Trash2 className="h-4 w-4 text-red-600" />
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              
+              {/* Regular Assignments Section */}
+              {assignments.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-slate-700 mb-2">
+                    {language === 'es' ? 'Tareas Manuales' : 'Manual Assignments'}
+                  </h4>
+                  {assignments.map(assignment => {
+                    const category = categories.find(c => c.category_id === assignment.category_id);
+                    return (
+                      <div 
+                        key={assignment.assignment_id} 
+                        className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors mb-2"
+                      >
+                        <div className="flex-1">
+                          <div className="font-medium text-slate-800">{assignment.title}</div>
+                          <div className="flex items-center gap-3 mt-1">
+                            <Badge variant="outline" className="text-xs">
+                              {language === 'es' ? category?.name_es : category?.name}
+                            </Badge>
+                            <span className="text-sm text-slate-500">
+                              {assignment.points} {language === 'es' ? 'pts' : 'points'}
+                            </span>
+                            {assignment.due_date && (
+                              <span className="text-sm text-slate-500">
+                                {new Date(assignment.due_date).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setEditingAssignment({...assignment})}
+                            data-testid={`edit-assignment-${assignment.assignment_id}`}
+                          >
+                            <Pencil className="h-4 w-4 text-blue-600" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteAssignment(assignment.assignment_id)}
+                            data-testid={`delete-assignment-${assignment.assignment_id}`}
+                          >
+                            <Trash2 className="h-4 w-4 text-red-600" />
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              
+              {/* Empty state */}
+              {assignments.length === 0 && aiAssignments.length === 0 && (
                 <p className="text-center text-slate-500 py-8">
                   {language === 'es' ? 'No hay tareas creadas' : 'No assignments created'}
                 </p>
-              ) : (
-                assignments.map(assignment => {
-                  const category = categories.find(c => c.category_id === assignment.category_id);
-                  return (
-                    <div 
-                      key={assignment.assignment_id} 
-                      className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors"
-                    >
-                      <div className="flex-1">
-                        <div className="font-medium text-slate-800">{assignment.title}</div>
-                        <div className="flex items-center gap-3 mt-1">
-                          <Badge variant="outline" className="text-xs">
-                            {language === 'es' ? category?.name_es : category?.name}
-                          </Badge>
-                          <span className="text-sm text-slate-500">
-                            {assignment.points} {language === 'es' ? 'pts' : 'points'}
-                          </span>
-                          {assignment.due_date && (
-                            <span className="text-sm text-slate-500">
-                              {new Date(assignment.due_date).toLocaleDateString()}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setEditingAssignment({...assignment})}
-                          data-testid={`edit-assignment-${assignment.assignment_id}`}
-                        >
-                          <Pencil className="h-4 w-4 text-blue-600" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteAssignment(assignment.assignment_id)}
-                          data-testid={`delete-assignment-${assignment.assignment_id}`}
-                        >
-                          <Trash2 className="h-4 w-4 text-red-600" />
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })
               )}
             </div>
           </DialogContent>
