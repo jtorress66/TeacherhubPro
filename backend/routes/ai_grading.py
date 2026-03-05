@@ -246,7 +246,9 @@ async def create_ai_assignment(assignment: AIAssignmentCreate, user: dict = Depe
         "graded_count": 0
     }
     
-    await db.ai_assignments.insert_one(assignment_doc)
+    logger.info(f"Saving AI assignment: {assignment.title} with token: {public_token}")
+    result = await db.ai_assignments.insert_one(assignment_doc)
+    logger.info(f"AI assignment saved with id: {result.inserted_id}")
     
     # Remove MongoDB _id before returning
     assignment_doc.pop("_id", None)
