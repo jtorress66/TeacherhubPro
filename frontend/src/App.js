@@ -55,6 +55,9 @@ import HomeschoolMarketing from "./pages/HomeschoolMarketing";
 import IntegrationsPage from "./pages/IntegrationsPage";
 // Auth Page
 import Auth from "./pages/Auth";
+// AI Grading System
+import AIGrading from "./pages/AIGrading";
+import StudentAssignment from "./pages/StudentAssignment";
 // Trust Center & Compliance Pages
 import TrustCenter from "./pages/TrustCenter";
 import Terms from "./pages/Terms";
