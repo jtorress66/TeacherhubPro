@@ -61,13 +61,6 @@ const PlayToLearnTeacher = () => {
   const [insights, setInsights] = useState(null);
   const [loadingInsights, setLoadingInsights] = useState(false);
 
-  // Update language when user loads
-  useEffect(() => {
-    if (user?.language) {
-      setLanguage(user.language);
-    }
-  }, [user]);
-
   useEffect(() => {
     // Only fetch when auth is done loading and user exists
     if (!authLoading && user) {
