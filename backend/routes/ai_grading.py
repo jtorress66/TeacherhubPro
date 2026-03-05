@@ -326,53 +326,62 @@ async def get_student_assignment(token: str):
     
     logger.info(f"Looking up assignment with public_token: {token}")
     
-    assignment = await db.ai_assignments.find_one({"public_token": token}, {"_id": 0})
-    
-    if not assignment:
-        # Log all tokens for debugging
-        all_tokens = await db.ai_assignments.find({}, {"public_token": 1, "title": 1, "_id": 0}).to_list(20)
-        logger.warning(f"Assignment not found for token: {token}. Available tokens: {[a.get('public_token') for a in all_tokens]}")
-        raise HTTPException(status_code=404, detail="Assignment not found or link expired")
-    
-    logger.info(f"Found assignment: {assignment.get('title')}")
-    if not assignment:
-        raise HTTPException(status_code=404, detail="Assignment not found or link expired")
-    
-    # Get class info for display
-    class_doc = await db.classes.find_one({"class_id": assignment["class_id"]}, {"_id": 0, "name": 1})
-    
-    # Return assignment without answers for students
-    student_assignment = {
-        "assignment_id": assignment["assignment_id"],
-        "title": assignment["title"],
-        "description": assignment["description"],
-        "instructions": assignment["instructions"],
-        "class_name": class_doc.get("name", "") if class_doc else "",
-        "due_date": assignment.get("due_date"),
-        "total_points": assignment["points"],
-        "questions": []
-    }
-    
-    # Remove correct answers from questions
-    for q in assignment["questions"]:
-        student_q = {
-            "question_id": q["question_id"],
-            "question_type": q["question_type"],
-            "question_text": q["question_text"],
-            "points": q.get("points", 10)
-        }
-        if q["question_type"] == "multiple_choice":
-            student_q["options"] = [{"text": opt["text"]} for opt in q.get("options", [])]
-        elif q["question_type"] == "matching":
-            pairs = q.get("matching_pairs", {})
-            student_q["left_items"] = list(pairs.keys())
-            student_q["right_items"] = list(pairs.values())
-        elif q["question_type"] == "true_false":
-            student_q["options"] = [{"text": "True"}, {"text": "False"}]
+    try:
+        assignment = await db.ai_assignments.find_one({"public_token": token}, {"_id": 0})
         
-        student_assignment["questions"].append(student_q)
-    
-    return student_assignment
+        if not assignment:
+            # Log all tokens for debugging
+            all_tokens = await db.ai_assignments.find({}, {"public_token": 1, "title": 1, "_id": 0}).to_list(20)
+            logger.warning(f"Assignment not found for token: {token}. Available tokens: {[a.get('public_token') for a in all_tokens]}")
+            raise HTTPException(status_code=404, detail="Assignment not found or link expired")
+        
+        logger.info(f"Found assignment: {assignment.get('title')}")
+        
+        # Get class info for display (optional, won't fail if class doesn't exist)
+        class_doc = None
+        if assignment.get("class_id"):
+            class_doc = await db.classes.find_one({"class_id": assignment["class_id"]}, {"_id": 0, "name": 1})
+        
+        # Return assignment without answers for students - use .get() for safety
+        student_assignment = {
+            "assignment_id": assignment.get("assignment_id", ""),
+            "title": assignment.get("title", "Untitled Assignment"),
+            "description": assignment.get("description", ""),
+            "instructions": assignment.get("instructions", ""),
+            "class_name": class_doc.get("name", "") if class_doc else "",
+            "due_date": assignment.get("due_date"),
+            "total_points": assignment.get("points", 100),
+            "questions": []
+        }
+        
+        # Remove correct answers from questions
+        questions = assignment.get("questions", [])
+        for q in questions:
+            student_q = {
+                "question_id": q.get("question_id", ""),
+                "question_type": q.get("question_type", "short_answer"),
+                "question_text": q.get("question_text", ""),
+                "points": q.get("points", 10)
+            }
+            question_type = q.get("question_type", "")
+            if question_type == "multiple_choice":
+                student_q["options"] = [{"text": opt.get("text", "")} for opt in q.get("options", [])]
+            elif question_type == "matching":
+                pairs = q.get("matching_pairs", {})
+                student_q["left_items"] = list(pairs.keys()) if pairs else []
+                student_q["right_items"] = list(pairs.values()) if pairs else []
+            elif question_type == "true_false":
+                student_q["options"] = [{"text": "True"}, {"text": "False"}]
+            
+            student_assignment["questions"].append(student_q)
+        
+        return student_assignment
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error processing student assignment request for token {token}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error loading assignment: {str(e)}")
 
 
 @router.post("/student/{token}/submit")
