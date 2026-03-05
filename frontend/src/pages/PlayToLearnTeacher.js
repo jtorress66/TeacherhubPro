@@ -274,7 +274,7 @@ const PlayToLearnTeacher = () => {
           <div>
             <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
               <Gamepad2 className="h-7 w-7 text-purple-600" />
-              Play to Learn
+              {language === 'es' ? 'Jugar y Aprender' : 'Play to Learn'}
             </h1>
             <p className="text-slate-500">
               {language === 'es' 
