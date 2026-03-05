@@ -450,6 +450,25 @@ const Gradebook = () => {
       setAiAssignments(response.data);
     } catch (error) {
       console.error('Error fetching AI assignments:', error);
+      toast.error(language === 'es' ? 'Error al cargar tareas de IA' : 'Error loading AI assignments');
+    }
+  };
+
+  // Delete AI Assignment
+  const handleDeleteAIAssignment = async (assignmentId) => {
+    if (!window.confirm(language === 'es' ? '¿Eliminar esta tarea?' : 'Delete this assignment?')) {
+      return;
+    }
+    
+    try {
+      await axios.delete(`${API}/ai-grading/assignments/${assignmentId}`, {
+        withCredentials: true
+      });
+      toast.success(language === 'es' ? 'Tarea eliminada' : 'Assignment deleted');
+      fetchAIAssignments();
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error(language === 'es' ? 'Error al eliminar' : 'Failed to delete');
     }
   };
 
