@@ -3874,8 +3874,8 @@ async def generate_report_card(
         all_grades = await grades_cursor.to_list(500)
     
     # Get AI grades for this student (match by email or name)
-    student_email = student.get("email", "").lower()
-    student_full_name = f"{student.get('first_name', '')} {student.get('last_name', '')}".strip().lower()
+    student_email = (student.get("email") or "").lower()
+    student_full_name = f"{student.get('first_name', '') or ''} {student.get('last_name', '') or ''}".strip().lower()
     
     ai_grades = []
     if ai_assignment_ids:
