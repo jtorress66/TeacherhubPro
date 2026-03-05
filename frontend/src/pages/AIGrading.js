@@ -54,12 +54,10 @@ const AIGrading = () => {
   // Fetch data
   const fetchData = useCallback(async () => {
     try {
-      const headers = { 'Authorization': `Bearer ${token}` };
-      
       const [statsRes, submissionsRes, assignmentsRes] = await Promise.all([
-        fetch(`${API_URL}/api/ai-grading/stats`, { headers }),
-        fetch(`${API_URL}/api/ai-grading/submissions`, { headers }),
-        fetch(`${API_URL}/api/ai-grading/assignments`, { headers })
+        fetch(`${API_URL}/api/ai-grading/stats`, { credentials: 'include' }),
+        fetch(`${API_URL}/api/ai-grading/submissions`, { credentials: 'include' }),
+        fetch(`${API_URL}/api/ai-grading/assignments`, { credentials: 'include' })
       ]);
 
       if (statsRes.ok) setStats(await statsRes.json());
@@ -71,7 +69,7 @@ const AIGrading = () => {
     } finally {
       setLoading(false);
     }
-  }, [token, isEs]);
+  }, [isEs]);
 
   useEffect(() => {
     fetchData();
