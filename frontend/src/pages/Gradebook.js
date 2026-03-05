@@ -1343,6 +1343,14 @@ const Gradebook = () => {
                         {language === 'es' ? 'Ver' : 'View'}
                       </Button>
                       <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteAIAssignment(assignment.assignment_id)}
+                        className="text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                      <Button
                         size="sm"
                         onClick={() => navigate('/ai-grading')}
                         className="bg-violet-600 hover:bg-violet-700"
