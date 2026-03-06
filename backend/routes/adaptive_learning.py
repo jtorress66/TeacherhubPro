@@ -9,12 +9,18 @@ from datetime import datetime, timezone, timedelta
 import uuid
 import json
 import logging
+import asyncio
 
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/adaptive-learning", tags=["adaptive-learning"])
+
+# Configuration
+AI_TIMEOUT_SECONDS = 90
+MAX_RETRIES = 2
+RETRY_DELAY = 1.0
 
 # These will be set by the main app
 db = None
