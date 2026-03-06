@@ -157,6 +157,11 @@ async def generate_base_items(assignment: dict, variant_seed: str) -> List[dict]
     item_count = assignment.get('item_count', 10)
     language = assignment.get('language', 'en')
     
+    # Configuration for timeout
+    AI_TIMEOUT_SECONDS = 90
+    MAX_RETRIES = 2
+    RETRY_DELAY = 1.0
+    
     # EXPLICIT LANGUAGE DETERMINATION
     is_english = language != 'es'
     lang_name = "ENGLISH" if is_english else "SPANISH"
