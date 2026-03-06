@@ -15,9 +15,11 @@ from models import AIGenerationRequest, AIChatRequest, AIGeneratePresentationReq
 
 logger = logging.getLogger(__name__)
 
-# Retry configuration for LLM calls
+# Configuration for LLM calls
 MAX_RETRIES = 2
 RETRY_DELAY = 1.0  # seconds
+AI_TIMEOUT_SECONDS = 90  # 90 second timeout as recommended by support
+
 router = APIRouter(prefix="/ai", tags=["AI Assistant"])
 
 
