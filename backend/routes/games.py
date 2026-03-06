@@ -10,6 +10,7 @@ from datetime import datetime, timezone, timedelta
 import uuid
 import json
 import logging
+import asyncio
 
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
@@ -25,6 +26,10 @@ router = APIRouter(prefix="/games", tags=["games"])
 
 # Configuration
 MAX_GENERATION_ATTEMPTS = 5  # Increased from 3 for better reliability
+AI_TIMEOUT_SECONDS = 90
+MAX_RETRIES = 2
+RETRY_DELAY = 1.0
+
 db = None
 _get_current_user_func = None
 EMERGENT_LLM_KEY = None
