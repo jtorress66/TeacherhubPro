@@ -240,17 +240,25 @@ async def ai_chat(request: AIChatRequest, current_user: dict = Depends(get_curre
             system_message=system_message
         ).with_model("anthropic", "claude-sonnet-4-20250514")
         
-        # Send message with retry logic
+        # Send message with retry logic and 90-second timeout
         user_message = UserMessage(text=request.message)
         response = None
         last_error = None
         
         for attempt in range(MAX_RETRIES + 1):
             try:
-                response = await chat.send_message(user_message)
+                response = await asyncio.wait_for(
+                    chat.send_message(user_message),
+                    timeout=AI_TIMEOUT_SECONDS
+                )
                 break
+            except asyncio.TimeoutError:
+                last_error = "AI chat timed out after 90 seconds"
+                logger.warning(f"AI chat attempt {attempt + 1} timed out")
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAY)
             except Exception as e:
-                last_error = e
+                last_error = str(e)
                 logger.warning(f"AI chat attempt {attempt + 1} failed: {str(e)}")
                 if attempt < MAX_RETRIES:
                     await asyncio.sleep(RETRY_DELAY)
@@ -258,7 +266,7 @@ async def ai_chat(request: AIChatRequest, current_user: dict = Depends(get_curre
         if response is None:
             raise HTTPException(
                 status_code=503,
-                detail="AI service temporarily unavailable. Please try again."
+                detail="AI response timed out. Please try again."
             )
         
         # Save user message
