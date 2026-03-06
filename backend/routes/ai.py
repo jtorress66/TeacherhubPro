@@ -129,26 +129,35 @@ Please generate high-quality, ready-to-use educational content.
             system_message=system_prompt
         ).with_model("anthropic", "claude-sonnet-4-20250514")
         
-        # Send the message with retry logic
+        # Send the message with retry logic and 90-second timeout
         user_message = UserMessage(text=user_prompt)
         response = None
         last_error = None
         
         for attempt in range(MAX_RETRIES + 1):
             try:
-                response = await chat.send_message(user_message)
+                # Apply 90-second timeout to prevent server from getting stuck
+                response = await asyncio.wait_for(
+                    chat.send_message(user_message),
+                    timeout=AI_TIMEOUT_SECONDS
+                )
                 break  # Success, exit retry loop
+            except asyncio.TimeoutError:
+                last_error = "AI generation timed out after 90 seconds"
+                logger.warning(f"AI generation attempt {attempt + 1} timed out")
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAY)
             except Exception as e:
-                last_error = e
+                last_error = str(e)
                 logger.warning(f"AI generation attempt {attempt + 1} failed: {str(e)}")
                 if attempt < MAX_RETRIES:
                     await asyncio.sleep(RETRY_DELAY)
         
         if response is None:
-            logger.error(f"AI generation failed after {MAX_RETRIES + 1} attempts: {str(last_error)}")
+            logger.error(f"AI generation failed after {MAX_RETRIES + 1} attempts: {last_error}")
             raise HTTPException(
                 status_code=503,
-                detail="AI service temporarily unavailable. Please try again in a moment."
+                detail="AI generation timed out. Please try again - sometimes complex content takes longer to generate."
             )
         
         # Save generation to database
