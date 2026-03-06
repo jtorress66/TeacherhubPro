@@ -127,9 +127,27 @@ Please generate high-quality, ready-to-use educational content.
             system_message=system_prompt
         ).with_model("anthropic", "claude-sonnet-4-20250514")
         
-        # Send the message
+        # Send the message with retry logic
         user_message = UserMessage(text=user_prompt)
-        response = await chat.send_message(user_message)
+        response = None
+        last_error = None
+        
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                response = await chat.send_message(user_message)
+                break  # Success, exit retry loop
+            except Exception as e:
+                last_error = e
+                logger.warning(f"AI generation attempt {attempt + 1} failed: {str(e)}")
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAY)
+        
+        if response is None:
+            logger.error(f"AI generation failed after {MAX_RETRIES + 1} attempts: {str(last_error)}")
+            raise HTTPException(
+                status_code=503,
+                detail="AI service temporarily unavailable. Please try again in a moment."
+            )
         
         # Save generation to database
         generation_id = f"gen_{uuid.uuid4().hex[:12]}"
