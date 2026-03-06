@@ -620,7 +620,33 @@ Be age-appropriate in your feedback. For elementary students, be very encouragin
             system_message=system_message
         )
         
-        response = await chat.send_message(UserMessage(text=prompt))
+        # Apply 90-second timeout with retry logic
+        response = None
+        last_error = None
+        
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                response = await asyncio.wait_for(
+                    chat.send_message(UserMessage(text=prompt)),
+                    timeout=AI_TIMEOUT_SECONDS
+                )
+                break
+            except asyncio.TimeoutError:
+                last_error = "AI grading timed out after 90 seconds"
+                logger.warning(f"AI grading attempt {attempt + 1} timed out")
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAY)
+            except Exception as e:
+                last_error = str(e)
+                logger.warning(f"AI grading attempt {attempt + 1} failed: {str(e)}")
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAY)
+        
+        if response is None:
+            raise HTTPException(
+                status_code=503,
+                detail="AI grading timed out. Please try again."
+            )
         
         # Parse response
         response_text = response.strip()
