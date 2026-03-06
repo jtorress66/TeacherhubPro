@@ -27,7 +27,8 @@ import {
 import { cn } from '../lib/utils';
 import { toast } from 'sonner';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+// Use window.location.origin for production compatibility
+const API_URL = window.location.origin;
 
 const AIGrading = () => {
   const { user, token } = useAuth();
