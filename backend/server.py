@@ -4254,7 +4254,11 @@ IMPORTANT:
 Make the content engaging, age-appropriate, and educational. Start from the student's current level and gradually increase difficulty."""
 
     try:
-        # Initialize AI chat
+        # Initialize AI chat with 90-second timeout
+        AI_TIMEOUT_SECONDS = 90
+        MAX_RETRIES = 2
+        RETRY_DELAY = 1.0
+        
         try:
             chat = LlmChat(
                 api_key=EMERGENT_LLM_KEY,
@@ -4263,7 +4267,37 @@ Make the content engaging, age-appropriate, and educational. Start from the stud
             ).with_model("anthropic", "claude-sonnet-4-20250514")
             
             user_message = UserMessage(text=user_prompt)
-            response = await chat.send_message(user_message)
+            
+            # Apply 90-second timeout with retry logic
+            response = None
+            last_error = None
+            
+            for attempt in range(MAX_RETRIES + 1):
+                try:
+                    response = await asyncio.wait_for(
+                        chat.send_message(user_message),
+                        timeout=AI_TIMEOUT_SECONDS
+                    )
+                    break
+                except asyncio.TimeoutError:
+                    last_error = "AI timed out after 90 seconds"
+                    logger.warning(f"Adaptive learning attempt {attempt + 1}: {last_error}")
+                    if attempt < MAX_RETRIES:
+                        await asyncio.sleep(RETRY_DELAY)
+                except Exception as e:
+                    last_error = str(e)
+                    logger.warning(f"Adaptive learning attempt {attempt + 1} failed: {str(e)}")
+                    if attempt < MAX_RETRIES:
+                        await asyncio.sleep(RETRY_DELAY)
+            
+            if response is None:
+                raise HTTPException(
+                    status_code=503,
+                    detail="AI learning path generation timed out. Please try again."
+                )
+                
+        except HTTPException:
+            raise
         except Exception as ai_error:
             logger.error(f"AI service error: {str(ai_error)}")
             raise HTTPException(
