@@ -229,9 +229,26 @@ async def ai_chat(request: AIChatRequest, current_user: dict = Depends(get_curre
             system_message=system_message
         ).with_model("anthropic", "claude-sonnet-4-20250514")
         
-        # Send message
+        # Send message with retry logic
         user_message = UserMessage(text=request.message)
-        response = await chat.send_message(user_message)
+        response = None
+        last_error = None
+        
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                response = await chat.send_message(user_message)
+                break
+            except Exception as e:
+                last_error = e
+                logger.warning(f"AI chat attempt {attempt + 1} failed: {str(e)}")
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAY)
+        
+        if response is None:
+            raise HTTPException(
+                status_code=503,
+                detail="AI service temporarily unavailable. Please try again."
+            )
         
         # Save user message
         user_msg_id = f"msg_{uuid.uuid4().hex[:12]}"
