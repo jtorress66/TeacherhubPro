@@ -1090,7 +1090,7 @@ FORMAT each day as:
 
 {'IMPORTANTE: Responde completamente en español.' if language == 'es' else 'Please respond in English.'}"""
 
-        # Call AI
+        # Call AI with retry logic
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"customize_{template_id}_{uuid.uuid4().hex[:8]}",
@@ -1098,7 +1098,24 @@ FORMAT each day as:
         ).with_model("anthropic", "claude-sonnet-4-20250514")
         
         user_message = UserMessage(text=prompt)
-        response = await chat.send_message(user_message)
+        response = None
+        last_error = None
+        
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                response = await chat.send_message(user_message)
+                break
+            except Exception as e:
+                last_error = e
+                logger.warning(f"AI customize attempt {attempt + 1} failed: {str(e)}")
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAY)
+        
+        if response is None:
+            raise HTTPException(
+                status_code=503,
+                detail="AI service temporarily unavailable. Please try again."
+            )
         
         # Parse response into days (similar to full week generation)
         day_patterns = [
