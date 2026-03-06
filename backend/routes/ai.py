@@ -1291,7 +1291,7 @@ Template options: "title", "content", "image-left", "image-right", "full-image",
 Use appropriate emojis for the image field to make it visually engaging for kids.
 Make sure each slide has educational value while being fun and engaging."""
 
-        # Call AI with retry logic
+        # Call AI with retry logic and 90-second timeout
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"pres_{uuid.uuid4().hex[:8]}",
@@ -1304,10 +1304,18 @@ Make sure each slide has educational value while being fun and engaging."""
         
         for attempt in range(MAX_RETRIES + 1):
             try:
-                response = await chat.send_message(user_message)
+                response = await asyncio.wait_for(
+                    chat.send_message(user_message),
+                    timeout=AI_TIMEOUT_SECONDS
+                )
                 break
+            except asyncio.TimeoutError:
+                last_error = "AI presentation timed out after 90 seconds"
+                logger.warning(f"AI presentation attempt {attempt + 1} timed out")
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAY)
             except Exception as e:
-                last_error = e
+                last_error = str(e)
                 logger.warning(f"AI presentation attempt {attempt + 1} failed: {str(e)}")
                 if attempt < MAX_RETRIES:
                     await asyncio.sleep(RETRY_DELAY)
@@ -1315,7 +1323,7 @@ Make sure each slide has educational value while being fun and engaging."""
         if response is None:
             raise HTTPException(
                 status_code=503,
-                detail="AI service temporarily unavailable. Please try again."
+                detail="AI presentation generation timed out. Please try again."
             )
         
         # Parse JSON response
