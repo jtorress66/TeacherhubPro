@@ -403,7 +403,17 @@ Output ONLY the JSON. No explanations."""
             ).with_model("anthropic", "claude-sonnet-4-20250514")
             
             user_message = UserMessage(text=user_prompt)
-            response = await chat.send_message(user_message)
+            
+            # Apply 90-second timeout
+            try:
+                response = await asyncio.wait_for(
+                    chat.send_message(user_message),
+                    timeout=AI_TIMEOUT_SECONDS
+                )
+            except asyncio.TimeoutError:
+                last_error = "AI game generation timed out after 90 seconds"
+                logger.warning(f"Attempt {attempt + 1}: {last_error}")
+                continue
             
             # Parse response - handle both string and object responses
             if isinstance(response, str):
