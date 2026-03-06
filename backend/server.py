@@ -2158,27 +2158,58 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
     # Build student email map for AI submission matching
     student_email_map = {}
     student_name_map = {}  # Fallback: match by name
+    student_name_variations = {}  # Multiple name variations
+    
+    def normalize_name(name):
+        """Normalize name for matching - lowercase, remove extra spaces, handle various formats"""
+        if not name:
+            return ""
+        name = name.lower().strip()
+        # Remove extra whitespace
+        name = " ".join(name.split())
+        return name
+    
     for student in students:
+        sid = student["student_id"]
         if student.get("email"):
-            student_email_map[student["email"].lower()] = student["student_id"]
-        # Also build name map for fallback matching
-        full_name = f"{student.get('first_name', '')} {student.get('last_name', '')}".strip().lower()
+            student_email_map[student["email"].lower()] = sid
+        
+        # Build multiple name variations for matching
+        first = student.get('first_name', '').strip()
+        last = student.get('last_name', '').strip()
+        
+        # Standard: "First Last"
+        full_name = normalize_name(f"{first} {last}")
         if full_name:
-            student_name_map[full_name] = student["student_id"]
+            student_name_map[full_name] = sid
+            student_name_variations[full_name] = sid
+        
+        # Variation: "Last, First"
+        if first and last:
+            student_name_variations[normalize_name(f"{last}, {first}")] = sid
+            student_name_variations[normalize_name(f"{last} {first}")] = sid
     
     # Build AI grades map (by student email -> assignment, with name fallback)
     ai_grades_map = {}
     for sub in ai_submissions:
         student_email = sub.get("student_email", "").lower()
-        student_name = sub.get("student_name", "").lower().strip()
+        student_name = normalize_name(sub.get("student_name", ""))
         student_id = None
         
         # Try email match first
         if student_email in student_email_map:
             student_id = student_email_map[student_email]
-        # Fallback to name match
-        elif student_name in student_name_map:
-            student_id = student_name_map[student_name]
+        # Try exact name match
+        elif student_name in student_name_variations:
+            student_id = student_name_variations[student_name]
+        # Try partial name match (first name + part of last name)
+        else:
+            for stored_name, sid in student_name_variations.items():
+                # Check if submission name contains the stored name or vice versa
+                if student_name and stored_name:
+                    if student_name in stored_name or stored_name in student_name:
+                        student_id = sid
+                        break
         
         if student_id:
             key = f"{student_id}_{sub['assignment_id']}"
