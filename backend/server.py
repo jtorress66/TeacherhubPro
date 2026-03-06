@@ -2158,58 +2158,27 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
     # Build student email map for AI submission matching
     student_email_map = {}
     student_name_map = {}  # Fallback: match by name
-    student_name_variations = {}  # Multiple name variations
-    
-    def normalize_name(name):
-        """Normalize name for matching - lowercase, remove extra spaces, handle various formats"""
-        if not name:
-            return ""
-        name = name.lower().strip()
-        # Remove extra whitespace
-        name = " ".join(name.split())
-        return name
-    
     for student in students:
-        sid = student["student_id"]
         if student.get("email"):
-            student_email_map[student["email"].lower()] = sid
-        
-        # Build multiple name variations for matching
-        first = student.get('first_name', '').strip()
-        last = student.get('last_name', '').strip()
-        
-        # Standard: "First Last"
-        full_name = normalize_name(f"{first} {last}")
+            student_email_map[student["email"].lower()] = student["student_id"]
+        # Also build name map for fallback matching
+        full_name = f"{student.get('first_name', '')} {student.get('last_name', '')}".strip().lower()
         if full_name:
-            student_name_map[full_name] = sid
-            student_name_variations[full_name] = sid
-        
-        # Variation: "Last, First"
-        if first and last:
-            student_name_variations[normalize_name(f"{last}, {first}")] = sid
-            student_name_variations[normalize_name(f"{last} {first}")] = sid
+            student_name_map[full_name] = student["student_id"]
     
     # Build AI grades map (by student email -> assignment, with name fallback)
     ai_grades_map = {}
     for sub in ai_submissions:
         student_email = sub.get("student_email", "").lower()
-        student_name = normalize_name(sub.get("student_name", ""))
+        student_name = sub.get("student_name", "").lower().strip()
         student_id = None
         
         # Try email match first
         if student_email in student_email_map:
             student_id = student_email_map[student_email]
-        # Try exact name match
-        elif student_name in student_name_variations:
-            student_id = student_name_variations[student_name]
-        # Try partial name match (first name + part of last name)
-        else:
-            for stored_name, sid in student_name_variations.items():
-                # Check if submission name contains the stored name or vice versa
-                if student_name and stored_name:
-                    if student_name in stored_name or stored_name in student_name:
-                        student_id = sid
-                        break
+        # Fallback to name match
+        elif student_name in student_name_map:
+            student_id = student_name_map[student_name]
         
         if student_id:
             key = f"{student_id}_{sub['assignment_id']}"
@@ -3904,45 +3873,29 @@ async def generate_report_card(
         }, {"_id": 0})
         all_grades = await grades_cursor.to_list(500)
     
-    # Get AI grades for this student (match by email or name - flexible matching)
+    # Get AI grades for this student (match by email or name)
     student_email = (student.get("email") or "").lower()
-    student_first = (student.get('first_name') or '').strip().lower()
-    student_last = (student.get('last_name') or '').strip().lower()
-    student_full_name = f"{student_first} {student_last}".strip()
+    student_full_name = f"{student.get('first_name', '') or ''} {student.get('last_name', '') or ''}".strip().lower()
     
     ai_grades = []
     if ai_assignment_ids:
-        # Get all AI submissions for these assignments first
-        ai_submissions = await db.ai_submissions.find({
-            "assignment_id": {"$in": ai_assignment_ids},
-            "status": "graded",
-            "final_score": {"$ne": None}
-        }, {"_id": 0}).to_list(100)
+        # Build query - match by email OR name
+        match_conditions = []
+        if student_email:
+            match_conditions.append({"student_email": student_email})
+        if student_full_name:
+            match_conditions.append({"student_name": {"$regex": f"^{student_full_name}$", "$options": "i"}})
         
-        # Filter submissions that match this student
-        for sub in ai_submissions:
-            sub_email = (sub.get("student_email") or "").lower()
-            sub_name = (sub.get("student_name") or "").lower().strip()
-            sub_name_normalized = " ".join(sub_name.split())  # Remove extra spaces
+        if match_conditions:
+            ai_submissions = await db.ai_submissions.find({
+                "assignment_id": {"$in": ai_assignment_ids},
+                "$or": match_conditions,
+                "status": "graded",
+                "final_score": {"$ne": None}
+            }, {"_id": 0}).to_list(100)
             
-            matched = False
-            
-            # Try email match first
-            if student_email and sub_email == student_email:
-                matched = True
-            # Try exact name match
-            elif student_full_name and sub_name_normalized == student_full_name:
-                matched = True
-            # Try partial/fuzzy name match
-            elif student_full_name and sub_name_normalized:
-                # Check if names contain each other
-                if student_full_name in sub_name_normalized or sub_name_normalized in student_full_name:
-                    matched = True
-                # Check first name match + partial last name
-                elif student_first and student_first in sub_name_normalized:
-                    matched = True
-            
-            if matched:
+            # Convert AI submissions to grade format
+            for sub in ai_submissions:
                 ai_grades.append({
                     "student_id": student_id,
                     "assignment_id": sub["assignment_id"],
