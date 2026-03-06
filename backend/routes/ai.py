@@ -4,6 +4,7 @@ from datetime import datetime, timezone, timedelta
 import uuid
 import logging
 import re
+import asyncio
 
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
@@ -13,6 +14,10 @@ from utils.constants import EMERGENT_LLM_KEY, AI_SYSTEM_PROMPTS, STANDARDS_INFO,
 from models import AIGenerationRequest, AIChatRequest, AIGeneratePresentationRequest, PresentationCreate, PresentationUpdate
 
 logger = logging.getLogger(__name__)
+
+# Retry configuration for LLM calls
+MAX_RETRIES = 2
+RETRY_DELAY = 1.0  # seconds
 router = APIRouter(prefix="/ai", tags=["AI Assistant"])
 
 
