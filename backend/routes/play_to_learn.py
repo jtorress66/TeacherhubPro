@@ -227,7 +227,31 @@ Variant seed for uniqueness: {variant_seed}
 Return ONLY a valid JSON array with no additional text."""
         )
         
-        response = await chat.send_message(user_message)
+        # Apply 90-second timeout with retry logic
+        response = None
+        last_error = None
+        
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                response = await asyncio.wait_for(
+                    chat.send_message(user_message),
+                    timeout=AI_TIMEOUT_SECONDS
+                )
+                break
+            except asyncio.TimeoutError:
+                last_error = "AI timed out after 90 seconds"
+                print(f"[Play to Learn] Attempt {attempt + 1}: {last_error}")
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAY)
+            except Exception as e:
+                last_error = str(e)
+                print(f"[Play to Learn] Attempt {attempt + 1} failed: {str(e)}")
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAY)
+        
+        if response is None:
+            print(f"[Play to Learn] All attempts failed: {last_error}")
+            return generate_fallback_items(assignment, variant_seed, question_set_id)
         
         # Parse JSON response
         response_text = response.strip()
