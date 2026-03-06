@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 import os
 import json
 import logging
+import asyncio
 
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
@@ -18,6 +19,10 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/ai-grading", tags=["ai-grading"])
 
 # Configuration
+AI_TIMEOUT_SECONDS = 90  # 90 second timeout as recommended by support
+MAX_RETRIES = 2
+RETRY_DELAY = 1.0
+
 db = None
 _get_current_user_func = None
 
