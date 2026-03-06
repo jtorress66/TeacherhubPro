@@ -192,7 +192,34 @@ IMPORTANT: Each question MUST include a "correct_answer" field that matches exac
         ).with_model("anthropic", "claude-sonnet-4-20250514")
         
         user_message = UserMessage(text=user_prompt)
-        response = await chat.send_message(user_message)
+        
+        # Apply 90-second timeout with retry logic
+        response = None
+        last_error = None
+        
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                response = await asyncio.wait_for(
+                    chat.send_message(user_message),
+                    timeout=AI_TIMEOUT_SECONDS
+                )
+                break
+            except asyncio.TimeoutError:
+                last_error = "AI timed out after 90 seconds"
+                logger.warning(f"Adaptive learning attempt {attempt + 1} timed out")
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAY)
+            except Exception as e:
+                last_error = str(e)
+                logger.warning(f"Adaptive learning attempt {attempt + 1} failed: {str(e)}")
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAY)
+        
+        if response is None:
+            raise HTTPException(
+                status_code=503,
+                detail="AI learning path generation timed out. Please try again."
+            )
         
         response_text = response.text.strip()
         if response_text.startswith("```"):
