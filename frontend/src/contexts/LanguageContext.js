@@ -4436,7 +4436,67 @@ const translations = {
     contactEmailSupport: '邮件支持',
     contactHelpCenter: '帮助中心',
     landingCTATitle: '今天就开始简化您的教学工作流程',
-    landingCTASubtitle: '加入使用TeacherHubPro的教育工作者行列，节省时间，保持有序，借助AI更智能地工作。'
+    landingCTASubtitle: '加入使用TeacherHubPro的教育工作者行列，节省时间，保持有序，借助AI更智能地工作。',
+    
+    // Hero Section
+    heroTitle: '教师的智能工作空间',
+    heroSubtitle: '规划课程、管理成绩、追踪考勤、创建课堂材料，通过一个为教师打造的AI平台每周节省数小时。',
+    seeHowItWorks: '了解如何运作',
+    heroSupportingText: '无额外AI费用。为教师、导师、家庭教育者和学校而建。',
+    dashboardLessons: '课程',
+    dashboardStudents: '学生',
+    dashboardAvgGrade: '平均分',
+    hoursSavedPerWeek: '小时节省/周',
+    
+    // Trust Bar
+    trustBuiltForEducators: '为现代教育工作者打造',
+    trustAIIncluded: '每个计划都包含AI',
+    trustSecureEasy: '安全且易于使用',
+    trustReduceWorkload: '旨在减少规划和管理工作量',
+    
+    // Benefits Grid
+    benefitSectionTitle: '教师需要的一切，尽在一处',
+    benefitSectionSubtitle: '停止在文档、电子表格和断开连接的工具之间切换。TeacherHubPro将您的核心教学工作流程整合到一个简单的平台中。',
+    benefitLessonPlanningTitle: '课程规划',
+    benefitLessonPlanningDesc: '通过内置模板和AI支持，更快地创建有组织、可重复使用的课程计划。',
+    benefitGradebookTitle: '成绩簿',
+    benefitGradebookDesc: '使用为真实课堂使用而设计的简洁成绩簿跟踪学生进度。',
+    benefitAttendanceTitle: '考勤追踪',
+    benefitAttendanceDesc: '快速管理考勤，无需额外文书工作即可保持班级记录有序。',
+    benefitAIToolsTitle: 'AI教学工具',
+    benefitAIToolsDesc: '在几秒钟内生成课程创意、活动、写作练习、课堂材料等。',
+    benefitPresentationsTitle: '演示文稿和资源',
+    benefitPresentationsDesc: '更快地构建课堂材料，并在一个工作流程中保持一切连接。',
+    benefitWorkflowTitle: '教师友好的工作流程',
+    benefitWorkflowDesc: '为需要实用工具而非复杂软件的教育工作者而设计。',
+    
+    // Outcomes Section
+    outcomeSectionTitle: '减少行政时间，增加教学时间',
+    outcomePlanFaster: '更快规划',
+    outcomePlanFasterDesc: '创建课程计划、课堂活动和材料，无需每次从头开始。',
+    outcomeStayOrganized: '保持有序',
+    outcomeStayOrganizedDesc: '将成绩、考勤和教学资源保存在一处，而非分散在多个工具中。',
+    outcomeTeachConfidence: '自信教学',
+    outcomeTeachConfidenceDesc: '使用AI和优化的工作流程减轻压力，保持课堂工作顺利进行。',
+    
+    // Social Proof Section
+    socialProofSectionTitle: '为支持真实的课堂工作而构建',
+    socialProofEducators: '专门为教育工作者设计',
+    socialProofSupport: '包括支持资源和引导帮助',
+    socialProofWorkflows: '旨在简化常见的教师工作流程',
+    socialProofSuitable: '适合个人教师、家庭教育者和学校使用',
+    socialProofHelpCenter: '支持资源可用 • 包含帮助中心',
+    
+    // Use Cases Section
+    useCaseSectionTitle: '为不同的教学环境而制作',
+    useCaseClassroomTitle: '课堂教师',
+    useCaseClassroomDesc: '在一处管理规划、评分和日常课堂组织。',
+    useCaseHomeschoolTitle: '家庭教育者',
+    useCaseHomeschoolDesc: '创建灵活的课程工作流程，保持学习计划有序。',
+    useCaseTutorsTitle: '导师和小型学习项目',
+    useCaseTutorsDesc: '跟踪学生工作，规划课程，高效创建资源。',
+    useCaseSchoolsTitle: '学校和团队',
+    useCaseSchoolsDesc: '通过提高一致性和节省时间的平台支持教育工作者。'
   }
 };
 
