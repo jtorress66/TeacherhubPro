@@ -157,38 +157,38 @@ const FeaturesPage = () => {
                 <span className="text-lg font-bold">TeacherHubPro</span>
               </Link>
               <p className="text-sm text-slate-400">
-                {t('footerTagline') || (isEs ? 'El espacio de trabajo más inteligente para profesores.' : 'The smarter workspace for teachers.')}
+                {isEs ? 'El espacio de trabajo más inteligente para profesores.' : 'The smarter workspace for teachers.'}
               </p>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4 text-sm">{t('product') || (isEs ? 'Producto' : 'Product')}</h4>
+              <h4 className="font-semibold mb-4 text-sm">{isEs ? 'Producto' : 'Product'}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/features" className="hover:text-white">{t('features') || (isEs ? 'Funciones' : 'Features')}</Link></li>
-                <li><Link to="/pricing" className="hover:text-white">{t('pricing') || (isEs ? 'Precios' : 'Pricing')}</Link></li>
+                <li><Link to="/features" className="hover:text-white">{isEs ? 'Funciones' : 'Features'}</Link></li>
+                <li><Link to="/pricing" className="hover:text-white">{isEs ? 'Precios' : 'Pricing'}</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4 text-sm">{t('resources') || (isEs ? 'Recursos' : 'Resources')}</h4>
+              <h4 className="font-semibold mb-4 text-sm">{isEs ? 'Recursos' : 'Resources'}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/help" className="hover:text-white">{t('helpCenter') || (isEs ? 'Centro de Ayuda' : 'Help Center')}</Link></li>
-                <li><Link to="/contact" className="hover:text-white">{t('contact') || (isEs ? 'Contacto' : 'Contact')}</Link></li>
+                <li><Link to="/help" className="hover:text-white">{isEs ? 'Centro de Ayuda' : 'Help Center'}</Link></li>
+                <li><Link to="/contact" className="hover:text-white">{isEs ? 'Contacto' : 'Contact'}</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4 text-sm">{t('legal') || (isEs ? 'Legal' : 'Legal')}</h4>
+              <h4 className="font-semibold mb-4 text-sm">Legal</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/privacy-policy" className="hover:text-white">{t('privacyPolicy') || (isEs ? 'Privacidad' : 'Privacy')}</Link></li>
-                <li><Link to="/terms-of-use" className="hover:text-white">{t('termsOfUse') || (isEs ? 'Términos' : 'Terms')}</Link></li>
-                <li><Link to="/trust" className="hover:text-white">{t('trustCenter') || (isEs ? 'Confianza' : 'Trust')}</Link></li>
+                <li><Link to="/privacy-policy" className="hover:text-white">{isEs ? 'Privacidad' : 'Privacy'}</Link></li>
+                <li><Link to="/terms-of-use" className="hover:text-white">{isEs ? 'Términos' : 'Terms'}</Link></li>
+                <li><Link to="/trust" className="hover:text-white">{isEs ? 'Confianza' : 'Trust'}</Link></li>
               </ul>
             </div>
           </div>
 
           <div className="border-t border-slate-800 pt-8 text-center text-sm text-slate-500">
-            © {new Date().getFullYear()} TeacherHubPro. {t('allRightsReserved') || (isEs ? 'Todos los derechos reservados.' : 'All rights reserved.')}
+            © {new Date().getFullYear()} TeacherHubPro. {isEs ? 'Todos los derechos reservados.' : 'All rights reserved.'}
           </div>
         </div>
       </footer>
