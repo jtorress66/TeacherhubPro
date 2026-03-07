@@ -400,13 +400,13 @@ const Pricing = () => {
 
             <nav className="hidden md:flex items-center gap-8">
               <Link to="/features" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                {isEs ? 'Funciones' : 'Features'}
+                {t('navFeatures')}
               </Link>
               <Link to="/pricing" className="text-sm font-medium text-slate-900">
-                {isEs ? 'Precios' : 'Pricing'}
+                {t('navPricing')}
               </Link>
               <Link to="/trust" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                {isEs ? 'Confianza' : 'Trust'}
+                {t('navTrust')}
               </Link>
             </nav>
 
@@ -414,12 +414,12 @@ const Pricing = () => {
               <LanguageSelector />
               <Link to="/auth" className="hidden sm:block">
                 <Button variant="ghost" size="sm">
-                  {isEs ? 'Iniciar Sesión' : 'Log In'}
+                  {t('navLogin')}
                 </Button>
               </Link>
               <Link to="/auth" className="hidden sm:block">
                 <Button size="sm" className="bg-lime-500 hover:bg-lime-600 text-slate-900">
-                  {isEs ? 'Comenzar Gratis' : 'Start Free'}
+                  {t('navStartFree')}
                 </Button>
               </Link>
               <button 
