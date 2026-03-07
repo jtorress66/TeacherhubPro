@@ -1394,7 +1394,67 @@ const translations = {
     contactEmailSupport: 'Soporte por Email',
     contactHelpCenter: 'Centro de Ayuda',
     landingCTATitle: 'Comienza a simplificar tu flujo de trabajo de enseñanza hoy',
-    landingCTASubtitle: 'Únete a los educadores que usan TeacherHubPro para ahorrar tiempo, mantenerse organizados y trabajar más inteligentemente con IA.'
+    landingCTASubtitle: 'Únete a los educadores que usan TeacherHubPro para ahorrar tiempo, mantenerse organizados y trabajar más inteligentemente con IA.',
+    
+    // Hero Section
+    heroTitle: 'El Espacio de Trabajo Más Inteligente para Profesores',
+    heroSubtitle: 'Planifica lecciones, gestiona calificaciones, registra asistencia, crea materiales de clase y ahorra horas cada semana con una plataforma impulsada por IA diseñada para profesores.',
+    seeHowItWorks: 'Ver Cómo Funciona',
+    heroSupportingText: 'Sin cargos extra por IA. Diseñado para profesores, tutores, educadores en casa y escuelas.',
+    dashboardLessons: 'Lecciones',
+    dashboardStudents: 'Estudiantes',
+    dashboardAvgGrade: 'Promedio',
+    hoursSavedPerWeek: 'horas ahorradas/semana',
+    
+    // Trust Bar
+    trustBuiltForEducators: 'Diseñado para educadores modernos',
+    trustAIIncluded: 'IA incluida en cada plan',
+    trustSecureEasy: 'Seguro y fácil de usar',
+    trustReduceWorkload: 'Reduce la carga administrativa',
+    
+    // Benefits Grid
+    benefitSectionTitle: 'Todo lo que los profesores necesitan, en un solo lugar',
+    benefitSectionSubtitle: 'Deja de cambiar entre documentos, hojas de cálculo y herramientas desconectadas. TeacherHubPro reúne tu flujo de trabajo principal en una plataforma simple.',
+    benefitLessonPlanningTitle: 'Planificación de Lecciones',
+    benefitLessonPlanningDesc: 'Crea planes de lección organizados y reutilizables en menos tiempo con plantillas integradas y soporte de IA.',
+    benefitGradebookTitle: 'Libro de Calificaciones',
+    benefitGradebookDesc: 'Registra el progreso de los estudiantes con un libro de calificaciones limpio y sencillo diseñado para el uso real en el aula.',
+    benefitAttendanceTitle: 'Control de Asistencia',
+    benefitAttendanceDesc: 'Gestiona la asistencia rápidamente y mantén los registros de clase organizados sin papeleo extra.',
+    benefitAIToolsTitle: 'Herramientas de IA para Enseñanza',
+    benefitAIToolsDesc: 'Genera ideas de lecciones, actividades, ejercicios de escritura, materiales de clase y más en segundos.',
+    benefitPresentationsTitle: 'Presentaciones y Recursos',
+    benefitPresentationsDesc: 'Crea materiales para clase más rápido y mantén todo conectado en un solo flujo de trabajo.',
+    benefitWorkflowTitle: 'Flujo de Trabajo para Profesores',
+    benefitWorkflowDesc: 'Diseñado para educadores que necesitan herramientas prácticas, no software complejo.',
+    
+    // Outcomes Section
+    outcomeSectionTitle: 'Menos tiempo en administración, más tiempo enseñando',
+    outcomePlanFaster: 'Planifica más rápido',
+    outcomePlanFasterDesc: 'Crea planes de lecciones, actividades de clase y materiales sin empezar desde cero cada vez.',
+    outcomeStayOrganized: 'Mantente organizado',
+    outcomeStayOrganizedDesc: 'Mantén calificaciones, asistencia y recursos de enseñanza en un solo lugar en vez de dispersos en múltiples herramientas.',
+    outcomeTeachConfidence: 'Enseña con confianza',
+    outcomeTeachConfidenceDesc: 'Usa IA y flujos de trabajo optimizados para reducir el estrés y mantener tu trabajo de aula en movimiento.',
+    
+    // Social Proof Section
+    socialProofSectionTitle: 'Construido para apoyar el trabajo real del aula',
+    socialProofEducators: 'Diseñado específicamente para educadores',
+    socialProofSupport: 'Incluye recursos de soporte y ayuda guiada',
+    socialProofWorkflows: 'Construido para simplificar flujos de trabajo comunes de profesores',
+    socialProofSuitable: 'Adecuado para profesores individuales, educadores en casa y uso escolar',
+    socialProofHelpCenter: 'Recursos de ayuda disponibles • Centro de ayuda incluido',
+    
+    // Use Cases Section
+    useCaseSectionTitle: 'Hecho para diferentes entornos de enseñanza',
+    useCaseClassroomTitle: 'Profesores de Aula',
+    useCaseClassroomDesc: 'Gestiona planificación, calificaciones y organización diaria del aula en un solo lugar.',
+    useCaseHomeschoolTitle: 'Educadores en Casa',
+    useCaseHomeschoolDesc: 'Crea flujos de trabajo flexibles para lecciones y mantén los planes de aprendizaje organizados.',
+    useCaseTutorsTitle: 'Tutores y Programas Pequeños',
+    useCaseTutorsDesc: 'Registra el trabajo de los estudiantes, planifica sesiones y crea recursos eficientemente.',
+    useCaseSchoolsTitle: 'Escuelas y Equipos',
+    useCaseSchoolsDesc: 'Apoya a los educadores con una plataforma que mejora la consistencia y ahorra tiempo.'
   },
   fr: {
     // Navigation
