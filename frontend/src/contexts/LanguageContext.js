@@ -3242,7 +3242,67 @@ const translations = {
     contactEmailSupport: 'E-Mail-Support',
     contactHelpCenter: 'Hilfecenter',
     landingCTATitle: 'Vereinfachen Sie noch heute Ihren Unterrichtsablauf',
-    landingCTASubtitle: 'Schließen Sie sich Pädagogen an, die TeacherHubPro nutzen, um Zeit zu sparen, organisiert zu bleiben und intelligenter mit KI zu arbeiten.'
+    landingCTASubtitle: 'Schließen Sie sich Pädagogen an, die TeacherHubPro nutzen, um Zeit zu sparen, organisiert zu bleiben und intelligenter mit KI zu arbeiten.',
+    
+    // Hero Section
+    heroTitle: 'Der Intelligentere Arbeitsplatz für Lehrer',
+    heroSubtitle: 'Planen Sie Unterricht, verwalten Sie Noten, verfolgen Sie Anwesenheit, erstellen Sie Unterrichtsmaterialien und sparen Sie jede Woche Stunden mit einer KI-Plattform für Lehrer.',
+    seeHowItWorks: 'So Funktioniert Es',
+    heroSupportingText: 'Keine zusätzlichen KI-Gebühren. Für Lehrer, Tutoren, Homeschool-Erzieher und Schulen entwickelt.',
+    dashboardLessons: 'Lektionen',
+    dashboardStudents: 'Schüler',
+    dashboardAvgGrade: 'Durchschnitt',
+    hoursSavedPerWeek: 'Stunden gespart/Woche',
+    
+    // Trust Bar
+    trustBuiltForEducators: 'Für moderne Pädagogen entwickelt',
+    trustAIIncluded: 'KI in jedem Plan enthalten',
+    trustSecureEasy: 'Sicher und einfach zu bedienen',
+    trustReduceWorkload: 'Entwickelt zur Reduzierung der Verwaltungsarbeit',
+    
+    // Benefits Grid
+    benefitSectionTitle: 'Alles was Lehrer brauchen, an einem Ort',
+    benefitSectionSubtitle: 'Hören Sie auf, zwischen Dokumenten, Tabellen und unverbundenen Tools zu wechseln. TeacherHubPro bringt Ihren Kernarbeitsablauf in eine einfache Plattform.',
+    benefitLessonPlanningTitle: 'Unterrichtsplanung',
+    benefitLessonPlanningDesc: 'Erstellen Sie organisierte, wiederverwendbare Unterrichtspläne in weniger Zeit mit integrierten Vorlagen und KI-Unterstützung.',
+    benefitGradebookTitle: 'Notenbuch',
+    benefitGradebookDesc: 'Verfolgen Sie den Fortschritt der Schüler mit einem übersichtlichen, einfachen Notenbuch für den echten Unterrichtseinsatz.',
+    benefitAttendanceTitle: 'Anwesenheitsverfolgung',
+    benefitAttendanceDesc: 'Verwalten Sie die Anwesenheit schnell und halten Sie Klassenaufzeichnungen ohne zusätzlichen Papierkram organisiert.',
+    benefitAIToolsTitle: 'KI-Lehrwerkzeuge',
+    benefitAIToolsDesc: 'Generieren Sie Unterrichtsideen, Aktivitäten, Schreibübungen, Unterrichtsmaterialien und mehr in Sekunden.',
+    benefitPresentationsTitle: 'Präsentationen und Ressourcen',
+    benefitPresentationsDesc: 'Erstellen Sie Unterrichtsmaterialien schneller und halten Sie alles in einem Arbeitsablauf verbunden.',
+    benefitWorkflowTitle: 'Lehrerfreundlicher Arbeitsablauf',
+    benefitWorkflowDesc: 'Für Pädagogen entwickelt, die praktische Werkzeuge brauchen, keine komplexe Software.',
+    
+    // Outcomes Section
+    outcomeSectionTitle: 'Weniger Zeit für Verwaltung, mehr Zeit zum Unterrichten',
+    outcomePlanFaster: 'Schneller planen',
+    outcomePlanFasterDesc: 'Erstellen Sie Unterrichtspläne, Klassenaktivitäten und Materialien ohne jedes Mal von vorne anzufangen.',
+    outcomeStayOrganized: 'Organisiert bleiben',
+    outcomeStayOrganizedDesc: 'Halten Sie Noten, Anwesenheit und Lehrressourcen an einem Ort statt über mehrere Tools verstreut.',
+    outcomeTeachConfidence: 'Mit Vertrauen unterrichten',
+    outcomeTeachConfidenceDesc: 'Nutzen Sie KI und optimierte Arbeitsabläufe, um Stress zu reduzieren und Ihre Unterrichtsarbeit am Laufen zu halten.',
+    
+    // Social Proof Section
+    socialProofSectionTitle: 'Entwickelt zur Unterstützung echter Unterrichtsarbeit',
+    socialProofEducators: 'Speziell für Pädagogen entwickelt',
+    socialProofSupport: 'Enthält Support-Ressourcen und geführte Hilfe',
+    socialProofWorkflows: 'Entwickelt zur Vereinfachung gängiger Lehrerarbeitsabläufe',
+    socialProofSuitable: 'Geeignet für Einzellehrer, Homeschool-Erzieher und wachsenden Schuleinsatz',
+    socialProofHelpCenter: 'Support-Ressourcen verfügbar • Hilfecenter enthalten',
+    
+    // Use Cases Section
+    useCaseSectionTitle: 'Für verschiedene Lehrumgebungen gemacht',
+    useCaseClassroomTitle: 'Klassenlehrer',
+    useCaseClassroomDesc: 'Verwalten Sie Planung, Benotung und tägliche Klassenorganisation an einem Ort.',
+    useCaseHomeschoolTitle: 'Homeschool-Erzieher',
+    useCaseHomeschoolDesc: 'Erstellen Sie flexible Unterrichtsabläufe und halten Sie Lernpläne organisiert.',
+    useCaseTutorsTitle: 'Tutoren und kleine Programme',
+    useCaseTutorsDesc: 'Verfolgen Sie Schülerarbeit, planen Sie Sitzungen und erstellen Sie Ressourcen effizient.',
+    useCaseSchoolsTitle: 'Schulen und Teams',
+    useCaseSchoolsDesc: 'Unterstützen Sie Pädagogen mit einer Plattform, die Konsistenz verbessert und Zeit spart.'
   },
   it: {
     // Navigation
