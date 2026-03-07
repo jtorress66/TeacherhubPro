@@ -163,9 +163,9 @@ const Landing = () => {
           language={language}
           headline={isEs ? 'Comienza a simplificar tu flujo de trabajo de enseñanza hoy' : 'Start simplifying your teaching workflow today'}
           subheadline={isEs ? 'Únete a los educadores que usan TeacherHubPro para ahorrar tiempo, mantenerse organizados y trabajar más inteligentemente con IA.' : 'Join educators using TeacherHubPro to save time, stay organized, and work smarter with AI.'}
-          primaryCTA={t('startFreeTrial') || (isEs ? 'Comenzar Prueba Gratis' : 'Start Free Trial')}
+          primaryCTA={isEs ? 'Comenzar Prueba Gratis' : 'Start Free Trial'}
           primaryLink="/auth"
-          secondaryCTA={t('viewPricing') || (isEs ? 'Ver Precios' : 'View Pricing')}
+          secondaryCTA={isEs ? 'Ver Precios' : 'View Pricing'}
           secondaryLink="/pricing"
         />
       </main>
