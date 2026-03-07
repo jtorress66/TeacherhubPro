@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from '../components/ui/button';
 import { 
-  BookOpen, Globe, ArrowRight, Shield, FileText, HelpCircle,
+  ArrowRight, Shield, FileText, HelpCircle,
   Mail, Menu, X
 } from 'lucide-react';
 import LanguageSelector from '../components/LanguageSelector';
@@ -37,25 +37,27 @@ const Landing = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-lime-400 to-lime-600 flex items-center justify-center shadow-md">
-                <BookOpen className="w-5 h-5 text-white" />
-              </div>
+              <img 
+                src="/logo.png" 
+                alt="TeacherHubPro" 
+                className="w-10 h-10 object-contain"
+              />
               <span className="text-xl font-bold text-slate-900">TeacherHubPro</span>
             </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8">
               <Link to="/features" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-                {isEs ? 'Funciones' : 'Features'}
+                {t('features') || (isEs ? 'Funciones' : 'Features')}
               </Link>
               <Link to="/pricing" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-                {isEs ? 'Precios' : 'Pricing'}
+                {t('pricing') || (isEs ? 'Precios' : 'Pricing')}
               </Link>
               <Link to="/trust" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-                {isEs ? 'Confianza' : 'Trust'}
+                {t('trustCenter') || (isEs ? 'Confianza' : 'Trust')}
               </Link>
               <Link to="/contact" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-                {isEs ? 'Contacto' : 'Contact'}
+                {t('contact') || (isEs ? 'Contacto' : 'Contact')}
               </Link>
             </nav>
 
@@ -65,13 +67,13 @@ const Landing = () => {
               
               <Link to="/auth" className="hidden sm:block">
                 <Button variant="ghost" size="sm" className="text-slate-600 hover:text-slate-900">
-                  {isEs ? 'Iniciar Sesión' : 'Log In'}
+                  {t('login') || (isEs ? 'Iniciar Sesión' : 'Log In')}
                 </Button>
               </Link>
               
               <Link to="/auth" className="hidden sm:block">
                 <Button size="sm" className="bg-lime-500 hover:bg-lime-600 text-slate-900 font-medium shadow-sm">
-                  {isEs ? 'Comenzar Gratis' : 'Start Free'}
+                  {t('startFree') || (isEs ? 'Comenzar Gratis' : 'Start Free')}
                   <ArrowRight className="ml-1 w-4 h-4" />
                 </Button>
               </Link>
@@ -95,38 +97,38 @@ const Landing = () => {
                   className="text-sm font-medium text-slate-600 hover:text-slate-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {isEs ? 'Funciones' : 'Features'}
+                  {t('features') || (isEs ? 'Funciones' : 'Features')}
                 </Link>
                 <Link 
                   to="/pricing" 
                   className="text-sm font-medium text-slate-600 hover:text-slate-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {isEs ? 'Precios' : 'Pricing'}
+                  {t('pricing') || (isEs ? 'Precios' : 'Pricing')}
                 </Link>
                 <Link 
                   to="/trust" 
                   className="text-sm font-medium text-slate-600 hover:text-slate-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {isEs ? 'Confianza' : 'Trust'}
+                  {t('trustCenter') || (isEs ? 'Confianza' : 'Trust')}
                 </Link>
                 <Link 
                   to="/contact" 
                   className="text-sm font-medium text-slate-600 hover:text-slate-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {isEs ? 'Contacto' : 'Contact'}
+                  {t('contact') || (isEs ? 'Contacto' : 'Contact')}
                 </Link>
                 <div className="pt-4 border-t border-slate-200 flex flex-col gap-3">
                   <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                     <Button variant="outline" className="w-full">
-                      {isEs ? 'Iniciar Sesión' : 'Log In'}
+                      {t('login') || (isEs ? 'Iniciar Sesión' : 'Log In')}
                     </Button>
                   </Link>
                   <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                     <Button className="w-full bg-lime-500 hover:bg-lime-600 text-slate-900">
-                      {isEs ? 'Comenzar Gratis' : 'Start Free'}
+                      {t('startFree') || (isEs ? 'Comenzar Gratis' : 'Start Free')}
                     </Button>
                   </Link>
                 </div>
@@ -161,9 +163,9 @@ const Landing = () => {
           language={language}
           headline={isEs ? 'Comienza a simplificar tu flujo de trabajo de enseñanza hoy' : 'Start simplifying your teaching workflow today'}
           subheadline={isEs ? 'Únete a los educadores que usan TeacherHubPro para ahorrar tiempo, mantenerse organizados y trabajar más inteligentemente con IA.' : 'Join educators using TeacherHubPro to save time, stay organized, and work smarter with AI.'}
-          primaryCTA={isEs ? 'Comenzar Prueba Gratis' : 'Start Free Trial'}
+          primaryCTA={t('startFreeTrial') || (isEs ? 'Comenzar Prueba Gratis' : 'Start Free Trial')}
           primaryLink="/auth"
-          secondaryCTA={isEs ? 'Ver Precios' : 'View Pricing'}
+          secondaryCTA={t('viewPricing') || (isEs ? 'Ver Precios' : 'View Pricing')}
           secondaryLink="/pricing"
         />
       </main>
@@ -175,51 +177,53 @@ const Landing = () => {
             {/* Brand */}
             <div className="col-span-2 md:col-span-1">
               <Link to="/" className="flex items-center gap-2 mb-4">
-                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-lime-400 to-lime-600 flex items-center justify-center">
-                  <BookOpen className="w-5 h-5 text-white" />
-                </div>
+                <img 
+                  src="/logo.png" 
+                  alt="TeacherHubPro" 
+                  className="w-10 h-10 object-contain"
+                />
                 <span className="text-lg font-bold">TeacherHubPro</span>
               </Link>
               <p className="text-sm text-slate-400 mb-4">
-                {isEs ? 'El espacio de trabajo más inteligente para profesores.' : 'The smarter workspace for teachers.'}
+                {t('footerTagline') || (isEs ? 'El espacio de trabajo más inteligente para profesores.' : 'The smarter workspace for teachers.')}
               </p>
             </div>
 
             {/* Product */}
             <div>
-              <h4 className="font-semibold mb-4 text-sm">{isEs ? 'Producto' : 'Product'}</h4>
+              <h4 className="font-semibold mb-4 text-sm">{t('product') || (isEs ? 'Producto' : 'Product')}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/features" className="hover:text-white transition-colors">{isEs ? 'Funciones' : 'Features'}</Link></li>
-                <li><Link to="/pricing" className="hover:text-white transition-colors">{isEs ? 'Precios' : 'Pricing'}</Link></li>
-                <li><Link to="/integrations" className="hover:text-white transition-colors">{isEs ? 'Integraciones' : 'Integrations'}</Link></li>
+                <li><Link to="/features" className="hover:text-white transition-colors">{t('features') || (isEs ? 'Funciones' : 'Features')}</Link></li>
+                <li><Link to="/pricing" className="hover:text-white transition-colors">{t('pricing') || (isEs ? 'Precios' : 'Pricing')}</Link></li>
+                <li><Link to="/integrations" className="hover:text-white transition-colors">{t('integrations') || (isEs ? 'Integraciones' : 'Integrations')}</Link></li>
               </ul>
             </div>
 
             {/* Resources */}
             <div>
-              <h4 className="font-semibold mb-4 text-sm">{isEs ? 'Recursos' : 'Resources'}</h4>
+              <h4 className="font-semibold mb-4 text-sm">{t('resources') || (isEs ? 'Recursos' : 'Resources')}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/help" className="hover:text-white transition-colors">{isEs ? 'Centro de Ayuda' : 'Help Center'}</Link></li>
-                <li><Link to="/contact" className="hover:text-white transition-colors">{isEs ? 'Contacto' : 'Contact'}</Link></li>
+                <li><Link to="/help" className="hover:text-white transition-colors">{t('helpCenter') || (isEs ? 'Centro de Ayuda' : 'Help Center')}</Link></li>
+                <li><Link to="/contact" className="hover:text-white transition-colors">{t('contact') || (isEs ? 'Contacto' : 'Contact')}</Link></li>
               </ul>
             </div>
 
             {/* Trust */}
             <div>
-              <h4 className="font-semibold mb-4 text-sm">{isEs ? 'Confianza' : 'Trust'}</h4>
+              <h4 className="font-semibold mb-4 text-sm">{t('trust') || (isEs ? 'Confianza' : 'Trust')}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/trust" className="hover:text-white transition-colors">{isEs ? 'Centro de Confianza' : 'Trust Center'}</Link></li>
-                <li><Link to="/privacy-policy" className="hover:text-white transition-colors">{isEs ? 'Privacidad' : 'Privacy'}</Link></li>
-                <li><Link to="/terms-of-use" className="hover:text-white transition-colors">{isEs ? 'Términos' : 'Terms'}</Link></li>
+                <li><Link to="/trust" className="hover:text-white transition-colors">{t('trustCenter') || (isEs ? 'Centro de Confianza' : 'Trust Center')}</Link></li>
+                <li><Link to="/privacy-policy" className="hover:text-white transition-colors">{t('privacyPolicy') || (isEs ? 'Privacidad' : 'Privacy')}</Link></li>
+                <li><Link to="/terms-of-use" className="hover:text-white transition-colors">{t('termsOfUse') || (isEs ? 'Términos' : 'Terms')}</Link></li>
               </ul>
             </div>
 
             {/* Legal */}
             <div>
-              <h4 className="font-semibold mb-4 text-sm">{isEs ? 'Legal' : 'Legal'}</h4>
+              <h4 className="font-semibold mb-4 text-sm">{t('legal') || (isEs ? 'Legal' : 'Legal')}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/cookies-policy" className="hover:text-white transition-colors">{isEs ? 'Cookies' : 'Cookies'}</Link></li>
-                <li><Link to="/accessibility" className="hover:text-white transition-colors">{isEs ? 'Accesibilidad' : 'Accessibility'}</Link></li>
+                <li><Link to="/cookies-policy" className="hover:text-white transition-colors">{t('cookiesPolicy') || (isEs ? 'Cookies' : 'Cookies')}</Link></li>
+                <li><Link to="/accessibility" className="hover:text-white transition-colors">{t('accessibility') || (isEs ? 'Accesibilidad' : 'Accessibility')}</Link></li>
               </ul>
             </div>
           </div>
@@ -228,13 +232,13 @@ const Landing = () => {
           <div className="border-t border-slate-800 pt-8 mb-8">
             <div className="flex items-center justify-center gap-2 text-sm text-slate-400">
               <HelpCircle className="w-4 h-4" />
-              <span>{isEs ? '¿Necesitas ayuda? Nuestros recursos de soporte están aquí para ayudarte a comenzar.' : 'Need help? Our support resources are here to help you get started and keep moving.'}</span>
+              <span>{t('supportNotice') || (isEs ? '¿Necesitas ayuda? Nuestros recursos de soporte están aquí para ayudarte a comenzar.' : 'Need help? Our support resources are here to help you get started and keep moving.')}</span>
             </div>
           </div>
 
           {/* Copyright */}
           <div className="text-center text-sm text-slate-500">
-            © {new Date().getFullYear()} TeacherHubPro. {isEs ? 'Todos los derechos reservados.' : 'All rights reserved.'}
+            © {new Date().getFullYear()} TeacherHubPro. {t('allRightsReserved') || (isEs ? 'Todos los derechos reservados.' : 'All rights reserved.')}
           </div>
         </div>
       </footer>
