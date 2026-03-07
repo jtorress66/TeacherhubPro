@@ -1,29 +1,19 @@
 import { Link } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { ArrowRight } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const CTASection = ({ 
   language = 'en',
   headline,
   subheadline,
-  primaryCTA = 'Start Free Trial',
+  primaryCTA,
   primaryLink = '/auth',
   secondaryCTA,
   secondaryLink,
   variant = 'default' // 'default' | 'dark' | 'gradient'
 }) => {
-  const isEs = language === 'es';
-
-  const defaultHeadline = isEs 
-    ? 'Comienza a simplificar tu flujo de trabajo de enseñanza hoy' 
-    : 'Start simplifying your teaching workflow today';
-  
-  const defaultSubheadline = isEs
-    ? 'Únete a los educadores que usan TeacherHubPro para ahorrar tiempo, mantenerse organizados y trabajar más inteligentemente con IA.'
-    : 'Join educators using TeacherHubPro to save time, stay organized, and work smarter with AI.';
-
-  const defaultPrimaryCTA = isEs ? 'Comenzar Prueba Gratis' : 'Start Free Trial';
-  const defaultSecondaryCTA = isEs ? 'Ver Precios' : 'View Pricing';
+  const { t } = useLanguage();
 
   const bgClasses = {
     default: 'bg-gradient-to-br from-lime-50 via-white to-emerald-50',
@@ -47,10 +37,10 @@ const CTASection = ({
     <section className={`py-20 ${bgClasses[variant]}`}>
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
         <h2 className={`text-3xl sm:text-4xl font-bold ${textClasses[variant]} mb-6`}>
-          {headline || defaultHeadline}
+          {headline || t('landingCTATitle')}
         </h2>
         <p className={`text-lg ${subTextClasses[variant]} mb-10 max-w-2xl mx-auto`}>
-          {subheadline || defaultSubheadline}
+          {subheadline || t('landingCTASubtitle')}
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -64,7 +54,7 @@ const CTASection = ({
               }`}
               data-testid="cta-primary-btn"
             >
-              {primaryCTA || defaultPrimaryCTA}
+              {primaryCTA || t('startFreeTrial')}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
@@ -81,7 +71,7 @@ const CTASection = ({
                 }`}
                 data-testid="cta-secondary-btn"
               >
-                {secondaryCTA || defaultSecondaryCTA}
+                {secondaryCTA || t('viewPricing')}
               </Button>
             </Link>
           )}

@@ -1,39 +1,32 @@
 import { GraduationCap, Home, Users, Building } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const UseCasesSection = ({ language = 'en' }) => {
-  const isEs = language === 'es';
+  const { t } = useLanguage();
 
   const useCases = [
     {
       icon: GraduationCap,
-      title: isEs ? 'Profesores de Aula' : 'Classroom Teachers',
-      description: isEs 
-        ? 'Gestiona planificación, calificaciones y organización diaria del aula en un solo lugar.'
-        : 'Manage planning, grading, and daily classroom organization in one place.',
+      title: t('useCaseClassroomTitle'),
+      description: t('useCaseClassroomDesc'),
       gradient: 'from-purple-500 to-indigo-600'
     },
     {
       icon: Home,
-      title: isEs ? 'Educadores en Casa' : 'Homeschool Educators',
-      description: isEs 
-        ? 'Crea flujos de trabajo flexibles para lecciones y mantén los planes de aprendizaje organizados.'
-        : 'Create flexible lesson workflows and keep learning plans organized.',
+      title: t('useCaseHomeschoolTitle'),
+      description: t('useCaseHomeschoolDesc'),
       gradient: 'from-teal-500 to-cyan-600'
     },
     {
       icon: Users,
-      title: isEs ? 'Tutores y Programas Pequeños' : 'Tutors and Small Learning Programs',
-      description: isEs 
-        ? 'Registra el trabajo de los estudiantes, planifica sesiones y crea recursos eficientemente.'
-        : 'Track student work, plan sessions, and create resources efficiently.',
+      title: t('useCaseTutorsTitle'),
+      description: t('useCaseTutorsDesc'),
       gradient: 'from-amber-500 to-orange-600'
     },
     {
       icon: Building,
-      title: isEs ? 'Escuelas y Equipos' : 'Schools and Teams',
-      description: isEs 
-        ? 'Apoya a los educadores con una plataforma que mejora la consistencia y ahorra tiempo.'
-        : 'Support educators with a platform that improves consistency and saves time.',
+      title: t('useCaseSchoolsTitle'),
+      description: t('useCaseSchoolsDesc'),
       gradient: 'from-blue-500 to-indigo-600'
     }
   ];
@@ -44,7 +37,7 @@ const UseCasesSection = ({ language = 'en' }) => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-            {isEs ? 'Hecho para diferentes entornos de enseñanza' : 'Made for different teaching environments'}
+            {t('useCaseSectionTitle')}
           </h2>
         </div>
 

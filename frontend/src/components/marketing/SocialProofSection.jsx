@@ -1,24 +1,25 @@
 import { CheckCircle, Users, HeadphonesIcon, Workflow, Building } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const SocialProofSection = ({ language = 'en' }) => {
-  const isEs = language === 'es';
+  const { t } = useLanguage();
 
   const trustPoints = [
     {
       icon: Users,
-      text: isEs ? 'Diseñado específicamente para educadores' : 'Designed specifically for educators'
+      text: t('socialProofEducators')
     },
     {
       icon: HeadphonesIcon,
-      text: isEs ? 'Incluye recursos de soporte y ayuda guiada' : 'Includes support resources and guided help'
+      text: t('socialProofSupport')
     },
     {
       icon: Workflow,
-      text: isEs ? 'Construido para simplificar flujos de trabajo comunes de profesores' : 'Built to simplify common teacher workflows'
+      text: t('socialProofWorkflows')
     },
     {
       icon: Building,
-      text: isEs ? 'Adecuado para profesores individuales, educadores en casa y uso escolar' : 'Suitable for individual teachers, homeschool educators, and growing school use'
+      text: t('socialProofSuitable')
     }
   ];
 
@@ -28,7 +29,7 @@ const SocialProofSection = ({ language = 'en' }) => {
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            {isEs ? 'Construido para apoyar el trabajo real del aula' : 'Built to support real classroom work'}
+            {t('socialProofSectionTitle')}
           </h2>
         </div>
 
@@ -54,7 +55,7 @@ const SocialProofSection = ({ language = 'en' }) => {
           <div className="inline-flex items-center gap-2 bg-slate-800/50 rounded-full px-6 py-3 border border-slate-700/50">
             <CheckCircle className="w-5 h-5 text-lime-400" />
             <span className="text-slate-300 text-sm">
-              {isEs ? 'Recursos de ayuda disponibles • Centro de ayuda incluido' : 'Support resources available • Help center included'}
+              {t('socialProofHelpCenter')}
             </span>
           </div>
         </div>
