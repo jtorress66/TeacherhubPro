@@ -32,16 +32,16 @@ const FeaturesPage = () => {
 
             <nav className="hidden md:flex items-center gap-8">
               <Link to="/features" className="text-sm font-medium text-slate-900">
-                {t('features') || (isEs ? 'Funciones' : 'Features')}
+                {isEs ? 'Funciones' : 'Features'}
               </Link>
               <Link to="/pricing" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                {t('pricing') || (isEs ? 'Precios' : 'Pricing')}
+                {isEs ? 'Precios' : 'Pricing'}
               </Link>
               <Link to="/trust" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                {t('trustCenter') || (isEs ? 'Confianza' : 'Trust')}
+                {isEs ? 'Confianza' : 'Trust'}
               </Link>
               <Link to="/contact" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                {t('contact') || (isEs ? 'Contacto' : 'Contact')}
+                {isEs ? 'Contacto' : 'Contact'}
               </Link>
             </nav>
 
@@ -71,16 +71,16 @@ const FeaturesPage = () => {
             <div className="md:hidden py-4 border-t">
               <nav className="flex flex-col gap-4">
                 <Link to="/features" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium">
-                  {t('features') || (isEs ? 'Funciones' : 'Features')}
+                  {isEs ? 'Funciones' : 'Features'}
                 </Link>
                 <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium">
-                  {t('pricing') || (isEs ? 'Precios' : 'Pricing')}
+                  {isEs ? 'Precios' : 'Pricing'}
                 </Link>
                 <Link to="/trust" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium">
-                  {t('trustCenter') || (isEs ? 'Confianza' : 'Trust')}
+                  {isEs ? 'Confianza' : 'Trust'}
                 </Link>
                 <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium">
-                  {t('contact') || (isEs ? 'Contacto' : 'Contact')}
+                  {isEs ? 'Contacto' : 'Contact'}
                 </Link>
                 <div className="pt-4 border-t flex flex-col gap-3">
                   <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
