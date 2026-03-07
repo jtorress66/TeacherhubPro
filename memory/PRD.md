@@ -3,6 +3,50 @@
 
 
 ---
+## Update 2026-03-07 (Session 69) - MARKETING WEBSITE REFACTOR FIXES ✅ COMPLETE
+
+### Bug Fixed:
+**Multi-language support broken on new marketing pages + Missing custom logo**
+
+The previous marketing website refactor introduced regressions where:
+1. Translation keys were showing raw (e.g., "startFree", "featuresHeroTitle") instead of translated text
+2. The pattern `t('key') || fallback` doesn't work because `t()` returns the key name when not found
+
+**Root Cause:**
+- The `t()` function in LanguageContext returns the key name (string) as fallback, which is truthy
+- So `t('missingKey') || 'fallback'` returns `'missingKey'` instead of `'fallback'`
+- Many translation keys used in marketing pages didn't exist in the LanguageContext translations
+
+**Solution:**
+- Converted all marketing page translations to use simple `isEs ? 'Spanish' : 'English'` ternary pattern
+- This is more reliable for marketing content with unique copy
+
+**Files Modified:**
+- `/app/frontend/src/pages/Landing.js` - Fixed header buttons, mobile menu, CTA section
+- `/app/frontend/src/pages/FeaturesPage.js` - Fixed hero section, header buttons, mobile menu, CTA
+- `/app/frontend/src/pages/Pricing.js` - Fixed header buttons
+- `/app/frontend/src/pages/Contact.js` - Fixed all label fields and section headings
+
+**Verified Working (100% Frontend Tests):**
+- ✅ Homepage displays custom logo (/logo.png)
+- ✅ Homepage has working language selector (English/Spanish + 5 more languages)
+- ✅ Homepage text translates correctly when language is switched
+- ✅ Pricing page displays custom logo
+- ✅ Pricing page text translates when language is switched
+- ✅ Features page displays custom logo
+- ✅ Features page text translates when language is switched
+- ✅ Contact page displays custom logo
+- ✅ Contact page has NO fake phone number (only email support)
+- ✅ Contact page text translates when language is switched
+- ✅ User login regression test passed
+
+**Test Report:** `/app/test_reports/iteration_69.json`
+
+### Status:
+✅ **MARKETING WEBSITE REFACTOR FIXES - COMPLETE**
+✅ **ALL P0 REGRESSIONS FIXED**
+
+---
 ## Update 2026-03-05 (Session 68) - BUG FIX: AI GRADING PAGE "ERROR LOADING DATA" ✅ FIXED
 
 ### Bug Fixed:
