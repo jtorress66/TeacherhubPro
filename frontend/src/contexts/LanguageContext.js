@@ -672,7 +672,67 @@ const translations = {
     contactEmailSupport: 'Email Support',
     contactHelpCenter: 'Help Center',
     landingCTATitle: 'Start simplifying your teaching workflow today',
-    landingCTASubtitle: 'Join educators using TeacherHubPro to save time, stay organized, and work smarter with AI.'
+    landingCTASubtitle: 'Join educators using TeacherHubPro to save time, stay organized, and work smarter with AI.',
+    
+    // Hero Section
+    heroTitle: 'The Smarter Workspace for Teachers',
+    heroSubtitle: 'Plan lessons, manage grades, track attendance, create classroom materials, and save hours every week with one AI-powered platform built for teachers.',
+    seeHowItWorks: 'See How It Works',
+    heroSupportingText: 'No extra AI fees. Built for teachers, tutors, homeschool educators, and schools.',
+    dashboardLessons: 'Lessons',
+    dashboardStudents: 'Students',
+    dashboardAvgGrade: 'Avg Grade',
+    hoursSavedPerWeek: 'hours saved/week',
+    
+    // Trust Bar
+    trustBuiltForEducators: 'Built for modern educators',
+    trustAIIncluded: 'AI included in every plan',
+    trustSecureEasy: 'Secure and easy to use',
+    trustReduceWorkload: 'Designed to reduce planning and admin workload',
+    
+    // Benefits Grid
+    benefitSectionTitle: 'Everything teachers need, in one place',
+    benefitSectionSubtitle: 'Stop switching between documents, spreadsheets, and disconnected tools. TeacherHubPro brings your core teaching workflow into one simple platform.',
+    benefitLessonPlanningTitle: 'Lesson Planning',
+    benefitLessonPlanningDesc: 'Create organized, reusable lesson plans in less time with built-in templates and AI support.',
+    benefitGradebookTitle: 'Gradebook',
+    benefitGradebookDesc: 'Track student progress with a clean, simple gradebook built for real classroom use.',
+    benefitAttendanceTitle: 'Attendance Tracking',
+    benefitAttendanceDesc: 'Manage attendance quickly and keep class records organized without extra paperwork.',
+    benefitAIToolsTitle: 'AI Teaching Tools',
+    benefitAIToolsDesc: 'Generate lesson ideas, activities, writing prompts, classroom materials, and more in seconds.',
+    benefitPresentationsTitle: 'Presentations and Resources',
+    benefitPresentationsDesc: 'Build materials for class faster and keep everything connected in one workflow.',
+    benefitWorkflowTitle: 'Teacher-Friendly Workflow',
+    benefitWorkflowDesc: 'Designed for educators who need practical tools, not complex software.',
+    
+    // Outcomes Section
+    outcomeSectionTitle: 'Spend less time on admin and more time teaching',
+    outcomePlanFaster: 'Plan faster',
+    outcomePlanFasterDesc: 'Build lesson plans, classroom activities, and materials without starting from scratch every time.',
+    outcomeStayOrganized: 'Stay organized',
+    outcomeStayOrganizedDesc: 'Keep grades, attendance, and teaching resources in one place instead of scattered across multiple tools.',
+    outcomeTeachConfidence: 'Teach with confidence',
+    outcomeTeachConfidenceDesc: 'Use AI and streamlined workflows to reduce stress and keep your classroom work moving.',
+    
+    // Social Proof Section
+    socialProofSectionTitle: 'Built to support real classroom work',
+    socialProofEducators: 'Designed specifically for educators',
+    socialProofSupport: 'Includes support resources and guided help',
+    socialProofWorkflows: 'Built to simplify common teacher workflows',
+    socialProofSuitable: 'Suitable for individual teachers, homeschool educators, and growing school use',
+    socialProofHelpCenter: 'Support resources available • Help center included',
+    
+    // Use Cases Section
+    useCaseSectionTitle: 'Made for different teaching environments',
+    useCaseClassroomTitle: 'Classroom Teachers',
+    useCaseClassroomDesc: 'Manage planning, grading, and daily classroom organization in one place.',
+    useCaseHomeschoolTitle: 'Homeschool Educators',
+    useCaseHomeschoolDesc: 'Create flexible lesson workflows and keep learning plans organized.',
+    useCaseTutorsTitle: 'Tutors and Small Learning Programs',
+    useCaseTutorsDesc: 'Track student work, plan sessions, and create resources efficiently.',
+    useCaseSchoolsTitle: 'Schools and Teams',
+    useCaseSchoolsDesc: 'Support educators with a platform that improves consistency and saves time.'
   },
   es: {
     // Navigation
