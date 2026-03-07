@@ -1332,7 +1332,9 @@ const translations = {
     contactSubject: 'Asunto',
     contactMessage: 'Mensaje',
     contactEmailSupport: 'Soporte por Email',
-    contactHelpCenter: 'Centro de Ayuda'
+    contactHelpCenter: 'Centro de Ayuda',
+    landingCTATitle: 'Comienza a simplificar tu flujo de trabajo de enseñanza hoy',
+    landingCTASubtitle: 'Únete a los educadores que usan TeacherHubPro para ahorrar tiempo, mantenerse organizados y trabajar más inteligentemente con IA.'
   },
   fr: {
     // Navigation
@@ -1924,7 +1926,9 @@ const translations = {
     contactSubject: 'Sujet',
     contactMessage: 'Message',
     contactEmailSupport: 'Support par Email',
-    contactHelpCenter: 'Centre d\'Aide'
+    contactHelpCenter: 'Centre d\'Aide',
+    landingCTATitle: 'Commencez à simplifier votre flux de travail d\'enseignement dès aujourd\'hui',
+    landingCTASubtitle: 'Rejoignez les éducateurs qui utilisent TeacherHubPro pour gagner du temps, rester organisés et travailler plus intelligemment avec l\'IA.'
   },
   pt: {
     // Navigation
@@ -2459,7 +2463,9 @@ const translations = {
     contactSubject: 'Assunto',
     contactMessage: 'Mensagem',
     contactEmailSupport: 'Suporte por Email',
-    contactHelpCenter: 'Central de Ajuda'
+    contactHelpCenter: 'Central de Ajuda',
+    landingCTATitle: 'Comece a simplificar seu fluxo de trabalho de ensino hoje',
+    landingCTASubtitle: 'Junte-se aos educadores que usam TeacherHubPro para economizar tempo, manter-se organizados e trabalhar de forma mais inteligente com IA.'
   },
   de: {
     // Navigation
@@ -2994,7 +3000,9 @@ const translations = {
     contactSubject: 'Betreff',
     contactMessage: 'Nachricht',
     contactEmailSupport: 'E-Mail-Support',
-    contactHelpCenter: 'Hilfecenter'
+    contactHelpCenter: 'Hilfecenter',
+    landingCTATitle: 'Vereinfachen Sie noch heute Ihren Unterrichtsablauf',
+    landingCTASubtitle: 'Schließen Sie sich Pädagogen an, die TeacherHubPro nutzen, um Zeit zu sparen, organisiert zu bleiben und intelligenter mit KI zu arbeiten.'
   },
   it: {
     // Navigation
@@ -3529,7 +3537,9 @@ const translations = {
     contactSubject: 'Oggetto',
     contactMessage: 'Messaggio',
     contactEmailSupport: 'Supporto Email',
-    contactHelpCenter: 'Centro Assistenza'
+    contactHelpCenter: 'Centro Assistenza',
+    landingCTATitle: 'Inizia a semplificare il tuo flusso di lavoro didattico oggi',
+    landingCTASubtitle: 'Unisciti agli educatori che usano TeacherHubPro per risparmiare tempo, rimanere organizzati e lavorare in modo più intelligente con l\'IA.'
   },
   zh: {
     // Navigation
@@ -4064,7 +4074,9 @@ const translations = {
     contactSubject: '主题',
     contactMessage: '消息',
     contactEmailSupport: '邮件支持',
-    contactHelpCenter: '帮助中心'
+    contactHelpCenter: '帮助中心',
+    landingCTATitle: '今天就开始简化您的教学工作流程',
+    landingCTASubtitle: '加入使用TeacherHubPro的教育工作者行列，节省时间，保持有序，借助AI更智能地工作。'
   }
 };
 
