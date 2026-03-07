@@ -98,48 +98,48 @@ const Contact = () => {
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">{isEs ? 'Nombre' : 'Name'}</Label>
+                  <Label htmlFor="name">{t('contactName')}</Label>
                   <Input 
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     required
-                    placeholder={isEs ? 'Tu nombre' : 'Your name'}
+                    placeholder={language === 'es' ? 'Tu nombre' : 'Your name'}
                     data-testid="contact-name-input"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">{isEs ? 'Correo Electrónico' : 'Email'}</Label>
+                  <Label htmlFor="email">{t('contactEmail')}</Label>
                   <Input 
                     id="email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     required
-                    placeholder={isEs ? 'tu@email.com' : 'you@email.com'}
+                    placeholder={language === 'es' ? 'tu@email.com' : 'you@email.com'}
                     data-testid="contact-email-input"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="subject">{isEs ? 'Asunto' : 'Subject'}</Label>
+                  <Label htmlFor="subject">{t('contactSubject')}</Label>
                   <Input 
                     id="subject"
                     value={formData.subject}
                     onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
                     required
-                    placeholder={isEs ? '¿En qué podemos ayudarte?' : 'How can we help?'}
+                    placeholder={language === 'es' ? '¿En qué podemos ayudarte?' : 'How can we help?'}
                     data-testid="contact-subject-input"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="message">{isEs ? 'Mensaje' : 'Message'}</Label>
+                  <Label htmlFor="message">{t('contactMessage')}</Label>
                   <Textarea 
                     id="message"
                     value={formData.message}
                     onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                     rows={5}
                     required
-                    placeholder={isEs ? 'Cuéntanos más detalles...' : 'Tell us more details...'}
+                    placeholder={language === 'es' ? 'Cuéntanos más detalles...' : 'Tell us more details...'}
                     data-testid="contact-message-input"
                   />
                 </div>
@@ -169,7 +169,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-800">
-                      {isEs ? 'Soporte por Email' : 'Email Support'}
+                      {t('contactEmailSupport')}
                     </h3>
                     <a 
                       href="mailto:support@teacherhubpro.com" 
