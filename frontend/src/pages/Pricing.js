@@ -454,13 +454,15 @@ const Pricing = () => {
       <footer className="bg-slate-900 text-white py-12 border-t border-slate-800">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-lime-400 to-lime-600 flex items-center justify-center">
-              <BookOpen className="w-4 h-4 text-white" />
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="TeacherHubPro" 
+              className="w-10 h-10 object-contain"
+            />
             <span className="text-lg font-bold">TeacherHubPro</span>
           </Link>
           <p className="text-sm text-slate-400">
-            © {new Date().getFullYear()} TeacherHubPro. {isEs ? 'Todos los derechos reservados.' : 'All rights reserved.'}
+            © {new Date().getFullYear()} TeacherHubPro. {t('allRightsReserved') || (isEs ? 'Todos los derechos reservados.' : 'All rights reserved.')}
           </p>
         </div>
       </footer>
