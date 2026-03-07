@@ -7,10 +7,12 @@ import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { toast } from 'sonner';
-import { ArrowLeft, Mail, Phone, MapPin, Send } from 'lucide-react';
+import { ArrowLeft, Mail, HelpCircle, MessageSquare, Send, Clock } from 'lucide-react';
+import LanguageSelector from '../components/LanguageSelector';
 
 const Contact = () => {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
+  const isEs = language === 'es';
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -34,16 +36,16 @@ const Contact = () => {
       const data = await response.json();
       
       if (response.ok) {
-        toast.success(language === 'es' 
+        toast.success(isEs 
           ? 'Mensaje enviado. Nos pondremos en contacto pronto.' 
           : 'Message sent. We\'ll get back to you soon.');
         setFormData({ name: '', email: '', subject: '', message: '' });
       } else {
-        toast.error(data.detail || (language === 'es' ? 'Error al enviar mensaje' : 'Failed to send message'));
+        toast.error(data.detail || (isEs ? 'Error al enviar mensaje' : 'Failed to send message'));
       }
     } catch (error) {
       console.error('Contact form error:', error);
-      toast.error(language === 'es' ? 'Error al enviar mensaje' : 'Failed to send message');
+      toast.error(isEs ? 'Error al enviar mensaje' : 'Failed to send message');
     } finally {
       setSubmitting(false);
     }
@@ -56,75 +58,101 @@ const Contact = () => {
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
             <img 
-              src="https://customer-assets.emergentagent.com/job_teachersuite/artifacts/swlef12w_ChatGPT%20Image%20Feb%2015%2C%202026%2C%2009_08_36%20PM.png"
+              src="/logo.png"
               alt="TeacherHubPro Logo"
               className="h-10 w-10 object-contain"
             />
             <span className="text-xl font-bold text-slate-900">TeacherHubPro</span>
           </Link>
-          <Link to="/" className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-800">
-            <ArrowLeft className="h-4 w-4" />
-            {language === 'es' ? 'Volver al inicio' : 'Back to home'}
-          </Link>
+          <div className="flex items-center gap-4">
+            <LanguageSelector />
+            <Link to="/" className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-800">
+              <ArrowLeft className="h-4 w-4" />
+              {t('backToHome') || (isEs ? 'Volver al inicio' : 'Back to home')}
+            </Link>
+          </div>
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-heading font-bold text-slate-800 mb-8">
-          {language === 'es' ? 'Contacto' : 'Contact Us'}
-        </h1>
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold text-slate-800 mb-3">
+            {t('contactTitle') || (isEs ? 'Contáctanos' : 'Contact Us')}
+          </h1>
+          <p className="text-slate-600 max-w-lg mx-auto">
+            {isEs 
+              ? '¿Tienes preguntas? Estamos aquí para ayudarte. Envíanos un mensaje y te responderemos lo antes posible.'
+              : 'Have questions? We\'re here to help. Send us a message and we\'ll get back to you as soon as possible.'}
+          </p>
+        </div>
 
         <div className="grid md:grid-cols-2 gap-8">
           {/* Contact Form */}
-          <Card>
+          <Card className="border-slate-200">
             <CardHeader>
-              <CardTitle>{language === 'es' ? 'Envíanos un mensaje' : 'Send us a message'}</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-blue-600" />
+                {t('sendMessage') || (isEs ? 'Envíanos un mensaje' : 'Send us a message')}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">{language === 'es' ? 'Nombre' : 'Name'}</Label>
+                  <Label htmlFor="name">{t('name') || (isEs ? 'Nombre' : 'Name')}</Label>
                   <Input 
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     required
+                    placeholder={isEs ? 'Tu nombre' : 'Your name'}
+                    data-testid="contact-name-input"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">{language === 'es' ? 'Correo electrónico' : 'Email'}</Label>
+                  <Label htmlFor="email">{t('email') || (isEs ? 'Correo electrónico' : 'Email')}</Label>
                   <Input 
                     id="email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     required
+                    placeholder={isEs ? 'tu@email.com' : 'you@email.com'}
+                    data-testid="contact-email-input"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="subject">{language === 'es' ? 'Asunto' : 'Subject'}</Label>
+                  <Label htmlFor="subject">{t('subject') || (isEs ? 'Asunto' : 'Subject')}</Label>
                   <Input 
                     id="subject"
                     value={formData.subject}
                     onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
                     required
+                    placeholder={isEs ? '¿En qué podemos ayudarte?' : 'How can we help?'}
+                    data-testid="contact-subject-input"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="message">{language === 'es' ? 'Mensaje' : 'Message'}</Label>
+                  <Label htmlFor="message">{t('message') || (isEs ? 'Mensaje' : 'Message')}</Label>
                   <Textarea 
                     id="message"
                     value={formData.message}
                     onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                     rows={5}
                     required
+                    placeholder={isEs ? 'Cuéntanos más detalles...' : 'Tell us more details...'}
+                    data-testid="contact-message-input"
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={submitting}>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-lime-500 hover:bg-lime-600 text-slate-900 font-medium" 
+                  disabled={submitting}
+                  data-testid="contact-submit-btn"
+                >
                   <Send className="h-4 w-4 mr-2" />
                   {submitting 
-                    ? (language === 'es' ? 'Enviando...' : 'Sending...') 
-                    : (language === 'es' ? 'Enviar mensaje' : 'Send message')}
+                    ? (isEs ? 'Enviando...' : 'Sending...') 
+                    : (isEs ? 'Enviar mensaje' : 'Send message')}
                 </Button>
               </form>
             </CardContent>
@@ -132,14 +160,17 @@ const Contact = () => {
 
           {/* Contact Info */}
           <div className="space-y-6">
-            <Card>
+            {/* Email Support */}
+            <Card className="border-slate-200">
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-blue-100 rounded-lg">
                     <Mail className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-800">{language === 'es' ? 'Correo electrónico' : 'Email'}</h3>
+                    <h3 className="font-semibold text-slate-800">
+                      {t('emailSupport') || (isEs ? 'Soporte por Email' : 'Email Support')}
+                    </h3>
                     <a 
                       href="mailto:support@teacherhubpro.com" 
                       className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -147,43 +178,89 @@ const Contact = () => {
                     >
                       support@teacherhubpro.com
                     </a>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-green-100 rounded-lg">
-                    <Phone className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-800">{language === 'es' ? 'Teléfono' : 'Phone'}</h3>
-                    <p className="text-slate-600">+1 (787) 555-0123</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-purple-100 rounded-lg">
-                    <MapPin className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-800">{language === 'es' ? 'Dirección' : 'Address'}</h3>
-                    <p className="text-slate-600">
-                      San Juan, Puerto Rico 00901
+                    <p className="text-sm text-slate-500 mt-1">
+                      {isEs ? 'Para consultas generales y soporte técnico' : 'For general inquiries and technical support'}
                     </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
+
+            {/* Response Time */}
+            <Card className="border-slate-200">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <Clock className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-800">
+                      {isEs ? 'Tiempo de Respuesta' : 'Response Time'}
+                    </h3>
+                    <p className="text-slate-600">
+                      {isEs ? 'Normalmente respondemos dentro de 24-48 horas' : 'We typically respond within 24-48 hours'}
+                    </p>
+                    <p className="text-sm text-slate-500 mt-1">
+                      {isEs ? 'Lunes a Viernes' : 'Monday through Friday'}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Help Center */}
+            <Card className="border-slate-200">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-purple-100 rounded-lg">
+                    <HelpCircle className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-800">
+                      {t('helpCenter') || (isEs ? 'Centro de Ayuda' : 'Help Center')}
+                    </h3>
+                    <p className="text-slate-600 mb-2">
+                      {isEs ? 'Encuentra respuestas rápidas a preguntas frecuentes' : 'Find quick answers to common questions'}
+                    </p>
+                    <Link 
+                      to="/help" 
+                      className="text-blue-600 hover:text-blue-800 hover:underline text-sm font-medium"
+                    >
+                      {isEs ? 'Visitar Centro de Ayuda →' : 'Visit Help Center →'}
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Support Notice */}
+            <div className="bg-slate-100 rounded-lg p-4 text-center">
+              <p className="text-sm text-slate-600">
+                {isEs 
+                  ? '¿Necesitas ayuda urgente? Nuestro equipo de soporte está comprometido a ayudarte a tener éxito en tu enseñanza.'
+                  : 'Need urgent help? Our support team is committed to helping you succeed in your teaching.'}
+              </p>
+            </div>
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-200 mt-12 py-8 bg-white">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <Link to="/" className="inline-flex items-center gap-2 mb-4">
+            <img 
+              src="/logo.png"
+              alt="TeacherHubPro"
+              className="h-8 w-8 object-contain"
+            />
+            <span className="font-bold text-slate-900">TeacherHubPro</span>
+          </Link>
+          <p className="text-sm text-slate-500">
+            © {new Date().getFullYear()} TeacherHubPro. {t('allRightsReserved') || (isEs ? 'Todos los derechos reservados.' : 'All rights reserved.')}
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
