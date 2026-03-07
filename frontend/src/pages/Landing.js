@@ -161,8 +161,8 @@ const Landing = () => {
         {/* 7. Final CTA */}
         <CTASection 
           language={language}
-          headline={t('landingCTATitle') || (language === 'es' ? 'Comienza a simplificar tu flujo de trabajo de enseñanza hoy' : 'Start simplifying your teaching workflow today')}
-          subheadline={t('landingCTASubtitle') || (language === 'es' ? 'Únete a los educadores que usan TeacherHubPro para ahorrar tiempo, mantenerse organizados y trabajar más inteligentemente con IA.' : 'Join educators using TeacherHubPro to save time, stay organized, and work smarter with AI.')}
+          headline={t('landingCTATitle')}
+          subheadline={t('landingCTASubtitle')}
           primaryCTA={t('startFreeTrial')}
           primaryLink="/auth"
           secondaryCTA={t('viewPricing')}
