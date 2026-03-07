@@ -68,7 +68,7 @@ const Contact = () => {
             <LanguageSelector />
             <Link to="/" className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-800">
               <ArrowLeft className="h-4 w-4" />
-              {t('backToHome') || (isEs ? 'Volver al inicio' : 'Back to home')}
+              {isEs ? 'Volver al inicio' : 'Back to home'}
             </Link>
           </div>
         </div>
@@ -77,7 +77,7 @@ const Contact = () => {
       <main className="max-w-4xl mx-auto px-6 py-12">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-slate-800 mb-3">
-            {t('contactTitle') || (isEs ? 'Contáctanos' : 'Contact Us')}
+            {isEs ? 'Contáctanos' : 'Contact Us'}
           </h1>
           <p className="text-slate-600 max-w-lg mx-auto">
             {isEs 
@@ -92,13 +92,13 @@ const Contact = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageSquare className="h-5 w-5 text-blue-600" />
-                {t('sendMessage') || (isEs ? 'Envíanos un mensaje' : 'Send us a message')}
+                {isEs ? 'Envíanos un mensaje' : 'Send us a message'}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">{t('name') || (isEs ? 'Nombre' : 'Name')}</Label>
+                  <Label htmlFor="name">{isEs ? 'Nombre' : 'Name'}</Label>
                   <Input 
                     id="name"
                     value={formData.name}
@@ -109,7 +109,7 @@ const Contact = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">{t('email') || (isEs ? 'Correo electrónico' : 'Email')}</Label>
+                  <Label htmlFor="email">{isEs ? 'Correo Electrónico' : 'Email'}</Label>
                   <Input 
                     id="email"
                     type="email"
@@ -121,7 +121,7 @@ const Contact = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="subject">{t('subject') || (isEs ? 'Asunto' : 'Subject')}</Label>
+                  <Label htmlFor="subject">{isEs ? 'Asunto' : 'Subject'}</Label>
                   <Input 
                     id="subject"
                     value={formData.subject}
@@ -132,7 +132,7 @@ const Contact = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="message">{t('message') || (isEs ? 'Mensaje' : 'Message')}</Label>
+                  <Label htmlFor="message">{isEs ? 'Mensaje' : 'Message'}</Label>
                   <Textarea 
                     id="message"
                     value={formData.message}
@@ -169,7 +169,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-800">
-                      {t('emailSupport') || (isEs ? 'Soporte por Email' : 'Email Support')}
+                      {isEs ? 'Soporte por Email' : 'Email Support'}
                     </h3>
                     <a 
                       href="mailto:support@teacherhubpro.com" 
@@ -217,7 +217,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-800">
-                      {t('helpCenter') || (isEs ? 'Centro de Ayuda' : 'Help Center')}
+                      {isEs ? 'Centro de Ayuda' : 'Help Center'}
                     </h3>
                     <p className="text-slate-600 mb-2">
                       {isEs ? 'Encuentra respuestas rápidas a preguntas frecuentes' : 'Find quick answers to common questions'}
@@ -257,7 +257,7 @@ const Contact = () => {
             <span className="font-bold text-slate-900">TeacherHubPro</span>
           </Link>
           <p className="text-sm text-slate-500">
-            © {new Date().getFullYear()} TeacherHubPro. {t('allRightsReserved') || (isEs ? 'Todos los derechos reservados.' : 'All rights reserved.')}
+            © {new Date().getFullYear()} TeacherHubPro. {isEs ? 'Todos los derechos reservados.' : 'All rights reserved.'}
           </p>
         </div>
       </footer>
