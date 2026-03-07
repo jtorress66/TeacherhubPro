@@ -10,13 +10,14 @@ import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { toast } from 'sonner';
-import { Check, Star, Users, Building, Crown, Loader2, BookOpen, Globe, ArrowLeft, AlertCircle } from 'lucide-react';
+import { Check, Star, Users, Building, Crown, Loader2, BookOpen, ArrowLeft, ArrowRight, AlertCircle, Menu, X } from 'lucide-react';
 import LanguageSelector from '../components/LanguageSelector';
+import { PricingValueBar, PricingComparison, PricingFAQ, CTASection } from '../components/marketing';
 
 const API = `${window.location.origin}/api`;
 
 const Pricing = () => {
-  const { t, language, toggleLanguage } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,9 +26,14 @@ const Pricing = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [teacherCount, setTeacherCount] = useState(10);
   const [loadingCheckout, setLoadingCheckout] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  // Check if user was redirected due to trial expiration
+  const isEs = language === 'es';
   const trialExpired = location.state?.trialExpired;
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -46,75 +52,87 @@ const Pricing = () => {
   const plans = [
     {
       id: 'individual_monthly',
-      name: t('pricingIndividualMonthly'),
+      name: isEs ? 'Individual Mensual' : 'Individual Monthly',
+      bestFor: isEs ? 'Mejor para profesores que quieren flexibilidad' : 'Best for teachers who want flexibility',
       price: '$9.99',
-      period: '/' + t('pricingMonth'),
-      description: t('pricingIndividualMonthlyDesc'),
+      period: isEs ? '/mes' : '/month',
+      description: isEs 
+        ? 'Accede a planificación de lecciones, libro de calificaciones, asistencia, herramientas de IA y funciones de productividad en una suscripción.'
+        : 'Access lesson planning, gradebook, attendance tracking, AI tools, and classroom productivity features in one subscription.',
       icon: Star,
       features: [
-        t('pricingFeatureLessonPlanner'),
-        t('pricingFeatureAttendanceTracker'),
-        t('pricingFeatureGradebook'),
-        t('pricingFeaturePdfExport'),
-        t('pricingFeatureTemplates'),
-        t('pricingFeatureEmailSupport'),
+        isEs ? 'Planificador de lecciones' : 'Lesson Planner',
+        isEs ? 'Control de asistencia' : 'Attendance Tracker',
+        isEs ? 'Libro de calificaciones' : 'Digital Gradebook',
+        isEs ? 'Herramientas de IA incluidas' : 'AI Tools Included',
+        isEs ? 'Exportación PDF' : 'PDF Export',
+        isEs ? 'Soporte por email' : 'Email Support',
       ],
       popular: false,
-      color: 'bg-slate-50 border-slate-200'
+      color: 'bg-white border-slate-200'
     },
     {
       id: 'individual_yearly',
-      name: t('pricingIndividualYearly'),
+      name: isEs ? 'Individual Anual' : 'Individual Annual',
+      bestFor: isEs ? 'Mejor valor para educadores comprometidos' : 'Best value for committed educators',
       price: '$79',
-      period: '/' + t('pricingYear'),
-      savings: t('pricingSave') + ' $40',
-      description: t('pricingIndividualYearlyDesc'),
+      period: isEs ? '/año' : '/year',
+      savings: isEs ? 'Ahorra $40' : 'Save $40',
+      description: isEs 
+        ? 'Ahorra más con facturación anual mientras mantienes acceso completo a las herramientas de enseñanza y planificación de TeacherHubPro.'
+        : "Save more with annual billing while keeping full access to TeacherHubPro's teaching and planning tools.",
       icon: Crown,
       features: [
-        t('pricingFeatureEverythingMonthly'),
-        t('pricingFeaturePrioritySupport'),
-        t('pricingFeature2MonthsFree'),
-        t('pricingFeatureEarlyAccess'),
+        isEs ? 'Todo lo del plan mensual' : 'Everything in Monthly',
+        isEs ? 'Soporte prioritario' : 'Priority Support',
+        isEs ? '2 meses gratis' : '2 Months Free',
+        isEs ? 'Acceso anticipado a funciones' : 'Early Access to Features',
       ],
       popular: true,
       color: 'bg-lime-50 border-lime-300'
     },
     {
       id: 'school',
-      name: t('pricingSchoolPlanName'),
+      name: isEs ? 'Plan Escolar' : 'School Plan',
+      bestFor: isEs ? 'Mejor para escuelas y equipos educativos' : 'Best for schools and educational teams',
       price: '$6',
-      period: '/' + t('pricingPerTeacher') + '/' + t('pricingMonth'),
+      period: isEs ? '/profesor/mes' : '/teacher/month',
       billedYearly: true,
       minTeachers: 10,
-      description: t('pricingSchoolPlanDesc'),
+      description: isEs 
+        ? 'Apoya a múltiples educadores con una plataforma centralizada diseñada para optimizar planificación, organización y colaboración.'
+        : 'Support multiple educators with a centralized platform designed to streamline planning, organization, and collaboration.',
       icon: Users,
       features: [
-        t('pricingFeatureAllIndividual'),
-        t('pricingFeatureAdminDashboard'),
-        t('pricingFeatureSchoolBranding'),
-        t('pricingFeatureBulkImport'),
-        t('pricingFeatureSchoolReports'),
-        t('pricingFeatureUserManagement'),
+        isEs ? 'Todo lo individual' : 'All Individual Features',
+        isEs ? 'Panel de administrador' : 'Admin Dashboard',
+        isEs ? 'Marca de escuela' : 'School Branding',
+        isEs ? 'Importación masiva' : 'Bulk Import',
+        isEs ? 'Reportes escolares' : 'School Reports',
+        isEs ? 'Gestión de usuarios' : 'User Management',
       ],
       popular: false,
       color: 'bg-blue-50 border-blue-200'
     },
     {
       id: 'district',
-      name: t('pricingDistrictPlanName'),
+      name: isEs ? 'Plan Distrito' : 'District Plan',
+      bestFor: isEs ? 'Mejor para distritos escolares grandes' : 'Best for large school districts',
       price: '$4',
-      period: '/' + t('pricingPerTeacher') + '/' + t('pricingMonth'),
+      period: isEs ? '/profesor/mes' : '/teacher/month',
       billedYearly: true,
       minTeachers: 100,
-      description: t('pricingDistrictPlanDesc'),
+      description: isEs 
+        ? 'Solución completa para distritos con análisis avanzado y soporte dedicado.'
+        : 'Complete solution for districts with advanced analytics and dedicated support.',
       icon: Building,
       features: [
-        t('pricingFeatureAllSchool'),
-        t('pricingFeatureDistrictAnalytics'),
-        t('pricingFeatureSsoIntegration'),
-        t('pricingFeatureDedicatedSupport'),
-        t('pricingFeatureCustomTraining'),
-        t('pricingFeatureApiAccess'),
+        isEs ? 'Todo lo del plan escolar' : 'All School Features',
+        isEs ? 'Análisis de distrito' : 'District Analytics',
+        isEs ? 'Integración SSO' : 'SSO Integration',
+        isEs ? 'Soporte dedicado' : 'Dedicated Support',
+        isEs ? 'Entrenamiento personalizado' : 'Custom Training',
+        isEs ? 'Acceso API' : 'API Access',
       ],
       popular: false,
       color: 'bg-purple-50 border-purple-200'
@@ -123,7 +141,7 @@ const Pricing = () => {
 
   const handleSubscribe = async (planId) => {
     if (!user) {
-      navigate('/login');
+      navigate('/auth');
       return;
     }
 
@@ -160,93 +178,60 @@ const Pricing = () => {
     return 0;
   };
 
-  // Public pricing page wrapper for unauthenticated users
-  const PublicWrapper = ({ children }) => (
-    <div className="min-h-screen paper-bg">
-      {/* Header */}
-      <header className="border-b border-cyan-100/50 bg-gradient-to-r from-cyan-50/95 via-blue-50/90 to-white/95 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-2 sm:gap-4">
-            <img 
-              src="https://customer-assets.emergentagent.com/job_teachersuite/artifacts/swlef12w_ChatGPT%20Image%20Feb%2015%2C%202026%2C%2009_08_36%20PM.png"
-              alt="TeacherHubPro Logo"
-              className="h-12 w-12 sm:h-20 sm:w-20 object-contain"
-            />
-            <div className="flex flex-col">
-              <span className="text-lg sm:text-2xl font-bold text-slate-800">TeacherHubPro</span>
-              <span className="text-xs font-medium text-cyan-600 hidden sm:block">{t('pricingYourDigitalClassroom') || 'Your digital classroom'}</span>
-            </div>
-          </Link>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link to="/">
-              <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('pricingBack') || 'Back'}</span>
-              </Button>
-            </Link>
-            <LanguageSelector variant="compact" dropdownPosition="down" />
-          </div>
-        </div>
-      </header>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        {children}
-      </main>
-      {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-center text-slate-500 text-sm">
-          <p>© 2026 TeacherHubPro. {t('pricingAllRightsReserved') || 'All rights reserved.'}</p>
-        </div>
-      </footer>
-    </div>
-  );
-
   const pricingContent = (
-      <div className="space-y-6 sm:space-y-8">
-        {/* Trial Expired Alert */}
-        {trialExpired && (
-          <Alert className="bg-amber-50 border-amber-200 max-w-2xl mx-auto">
-            <AlertCircle className="h-5 w-5 text-amber-600" />
-            <AlertDescription className="text-amber-800">
-              {t('pricingTrialExpired') || 'Your free trial has expired. Please select a plan to continue using TeacherHubPro.'}
-            </AlertDescription>
-          </Alert>
-        )}
-        
-        {/* Header */}
-        <div className="text-center max-w-2xl mx-auto">
-          <h1 className="text-2xl sm:text-4xl font-heading font-bold text-slate-800 mb-3 sm:mb-4">
-            {t('pricingTitle')}
+    <>
+      {/* Hero Section */}
+      <section className="py-16 bg-gradient-to-b from-white to-slate-50">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
+            {isEs ? 'Precios simples para profesores y educadores' : 'Simple pricing for teachers and educators'}
           </h1>
-          <p className="text-base sm:text-lg text-slate-600">
-            {t('pricingSubtitle')}
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            {isEs 
+              ? 'Elige el plan que se adapte a tu flujo de trabajo de enseñanza. Cada plan incluye las herramientas principales de TeacherHubPro y soporte de IA integrado.'
+              : "Choose the plan that fits your teaching workflow. Every plan includes TeacherHubPro's core tools and built-in AI support."}
           </p>
           
-          {/* Current Status */}
+          {/* Status Badge */}
           {subscriptionStatus && (
-            <div className="mt-4">
+            <div className="mt-6">
               {subscriptionStatus.status === 'admin' && (
-                <Badge className="bg-purple-100 text-purple-800">
-                  {t('pricingAdminAccount') || 'Admin Account - Full Access'}
+                <Badge className="bg-purple-100 text-purple-800 text-sm px-4 py-1">
+                  {isEs ? 'Cuenta de Administrador - Acceso Completo' : 'Admin Account - Full Access'}
                 </Badge>
               )}
-              {subscriptionStatus.status === 'trialing' && subscriptionStatus.plan === 'free_trial' && (
-                <Badge className="bg-amber-100 text-amber-800">
-                  {t('pricingFreeTrial')}: {subscriptionStatus.days_left} {t('pricingDaysRemaining')}
+              {subscriptionStatus.status === 'trialing' && (
+                <Badge className="bg-amber-100 text-amber-800 text-sm px-4 py-1">
+                  {isEs ? 'Prueba Gratis' : 'Free Trial'}: {subscriptionStatus.days_left} {isEs ? 'días restantes' : 'days remaining'}
                 </Badge>
               )}
               {subscriptionStatus.status === 'active' && (
-                <Badge className="bg-green-100 text-green-800">
-                  {t('pricingActiveSubscription')}: {subscriptionStatus.plan}
+                <Badge className="bg-green-100 text-green-800 text-sm px-4 py-1">
+                  {isEs ? 'Suscripción Activa' : 'Active Subscription'}: {subscriptionStatus.plan}
                 </Badge>
               )}
             </div>
           )}
         </div>
+      </section>
 
-        {/* Teacher Count Selector for School/District */}
-        <div className="max-w-md mx-auto bg-white p-4 rounded-lg border shadow-sm">
-          <label className="block text-sm font-medium mb-2">
-            {t('pricingNumberOfTeachers') || 'Number of teachers'} ({t('pricingForSchoolPlans') || 'for school plans'})
+      {/* Trial Expired Alert */}
+      {trialExpired && (
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 -mt-8 mb-8">
+          <Alert className="bg-amber-50 border-amber-200">
+            <AlertCircle className="h-5 w-5 text-amber-600" />
+            <AlertDescription className="text-amber-800">
+              {isEs ? 'Tu prueba gratis ha expirado. Por favor selecciona un plan para continuar usando TeacherHubPro.' : 'Your free trial has expired. Please select a plan to continue using TeacherHubPro.'}
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+
+      {/* Teacher Count for School Plans */}
+      <div className="mx-auto max-w-md px-4 sm:px-6 mb-8">
+        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            {isEs ? 'Número de profesores' : 'Number of teachers'} ({isEs ? 'para planes escolares' : 'for school plans'})
           </label>
           <Input
             type="number"
@@ -257,125 +242,235 @@ const Pricing = () => {
             data-testid="teacher-count-input"
           />
           <p className="text-xs text-slate-500 mt-1">
-            {t('pricingMinTeachers')}
-          </p>
-        </div>
-
-        {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {plans.map((plan) => (
-            <Card 
-              key={plan.id} 
-              className={`relative ${plan.color} ${plan.popular ? 'ring-2 ring-lime-500' : ''}`}
-              data-testid={`plan-card-${plan.id}`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-lime-500 text-white">
-                    {t('pricingMostPopular')}
-                  </Badge>
-                </div>
-              )}
-              
-              <CardHeader className="text-center pb-2">
-                <div className="mx-auto mb-2 p-3 rounded-full bg-white shadow-sm">
-                  <plan.icon className="h-6 w-6 text-slate-700" />
-                </div>
-                <CardTitle className="text-xl font-heading text-slate-800">{plan.name}</CardTitle>
-                <CardDescription className="text-sm text-slate-600">{plan.description}</CardDescription>
-              </CardHeader>
-              
-              <CardContent className="text-center">
-                <div className="mb-4">
-                  <span className="text-4xl font-bold text-slate-900">{plan.price}</span>
-                  <span className="text-slate-600">{plan.period}</span>
-                </div>
-                
-                {plan.savings && (
-                  <Badge variant="secondary" className="mb-4 bg-green-100 text-green-800">
-                    {plan.savings}
-                  </Badge>
-                )}
-                
-                {plan.billedYearly && (
-                  <div className="text-sm text-slate-600 mb-4">
-                    {t('pricingBilledAnnually')}
-                    {['school', 'district'].includes(plan.id) && (
-                      <div className="font-semibold text-slate-800 mt-1">
-                        {teacherCount >= plan.minTeachers ? (
-                          <>
-                            {teacherCount} {t('pricingTeachers') || 'teachers'}: ${calculateSchoolPrice(plan.id, teacherCount)}/{t('pricingYear')}
-                          </>
-                        ) : (
-                          <span className="text-amber-600">
-                            {t('pricingMinimum')} {plan.minTeachers} {t('pricingTeachers') || 'teachers'}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-                
-                <ul className="space-y-2 text-left text-sm">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                      <span className="text-slate-700">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-              
-              <CardFooter>
-                <Button 
-                  className={`w-full ${plan.popular ? 'bg-lime-600 hover:bg-lime-700' : ''}`}
-                  onClick={() => handleSubscribe(plan.id)}
-                  disabled={
-                    loadingCheckout || 
-                    (subscriptionStatus?.status === 'active' && subscriptionStatus?.plan === plan.id) ||
-                    (['school', 'district'].includes(plan.id) && teacherCount < plan.minTeachers)
-                  }
-                  data-testid={`subscribe-btn-${plan.id}`}
-                >
-                  {loadingCheckout && selectedPlan === plan.id ? (
-                    <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {t('pricingProcessing') || 'Processing...'}</>
-                  ) : !user ? (
-                    t('pricingSignUpFree')
-                  ) : subscriptionStatus?.status === 'admin' ? (
-                    t('pricingTestCheckout') || 'Test Checkout'
-                  ) : subscriptionStatus?.status === 'active' && subscriptionStatus?.plan === plan.id ? (
-                    t('pricingCurrentPlan')
-                  ) : (
-                    t('pricingGetStarted') || 'Start Free Trial'
-                  )}
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-
-        {/* FAQ / Additional Info */}
-        <div className="max-w-2xl mx-auto text-center text-sm text-slate-500">
-          <p>
-            {language === 'es' 
-              ? 'Todas las suscripciones incluyen 7 días de prueba gratis. No se cobra hasta que termine la prueba.' 
-              : 'All subscriptions include a 7-day free trial. No charge until trial ends.'}
-          </p>
-          <p className="mt-2">
-            {language === 'es' 
-              ? '¿Preguntas? Contáctanos en support@teacherhubpro.com' 
-              : 'Questions? Contact us at support@teacherhubpro.com'}
+            {isEs ? 'Mínimo 10 profesores para planes escolares' : 'Minimum 10 teachers for school plans'}
           </p>
         </div>
       </div>
+
+      {/* Pricing Cards */}
+      <section className="pb-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {plans.map((plan) => (
+              <Card 
+                key={plan.id} 
+                className={`relative ${plan.color} ${plan.popular ? 'ring-2 ring-lime-500 shadow-lg' : 'shadow-sm'} hover:shadow-lg transition-shadow`}
+                data-testid={`plan-card-${plan.id}`}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <Badge className="bg-lime-500 text-white shadow-md">
+                      {isEs ? 'Mejor Valor' : 'Best Value'}
+                    </Badge>
+                  </div>
+                )}
+                
+                <CardHeader className="text-center pb-2 pt-6">
+                  <div className="mx-auto mb-3 p-3 rounded-xl bg-white shadow-sm border border-slate-100">
+                    <plan.icon className="h-6 w-6 text-slate-700" />
+                  </div>
+                  <CardTitle className="text-xl font-bold text-slate-900">{plan.name}</CardTitle>
+                  <p className="text-xs font-medium text-lime-600 mt-1">{plan.bestFor}</p>
+                </CardHeader>
+                
+                <CardContent className="text-center pt-4">
+                  <div className="mb-4">
+                    <span className="text-4xl font-bold text-slate-900">{plan.price}</span>
+                    <span className="text-slate-600">{plan.period}</span>
+                  </div>
+                  
+                  {plan.savings && (
+                    <Badge variant="secondary" className="mb-4 bg-green-100 text-green-800">
+                      {plan.savings}
+                    </Badge>
+                  )}
+                  
+                  {plan.billedYearly && (
+                    <div className="text-sm text-slate-600 mb-4">
+                      {isEs ? 'Facturado anualmente' : 'Billed annually'}
+                      {['school', 'district'].includes(plan.id) && (
+                        <div className="font-semibold text-slate-800 mt-1">
+                          {teacherCount >= plan.minTeachers ? (
+                            <>
+                              {teacherCount} {isEs ? 'profesores' : 'teachers'}: ${calculateSchoolPrice(plan.id, teacherCount)}/{isEs ? 'año' : 'year'}
+                            </>
+                          ) : (
+                            <span className="text-amber-600">
+                              {isEs ? 'Mínimo' : 'Minimum'} {plan.minTeachers} {isEs ? 'profesores' : 'teachers'}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  <p className="text-sm text-slate-600 mb-6 min-h-[60px]">
+                    {plan.description}
+                  </p>
+                  
+                  <ul className="space-y-2 text-left text-sm mb-6">
+                    {plan.features.map((feature, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <Check className="h-4 w-4 text-lime-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-slate-700">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+                
+                <CardFooter className="pt-0">
+                  <Button 
+                    className={`w-full font-semibold ${plan.popular ? 'bg-lime-500 hover:bg-lime-600 text-slate-900' : 'bg-slate-900 hover:bg-slate-800 text-white'}`}
+                    onClick={() => handleSubscribe(plan.id)}
+                    disabled={
+                      loadingCheckout || 
+                      (subscriptionStatus?.status === 'active' && subscriptionStatus?.plan === plan.id) ||
+                      (['school', 'district'].includes(plan.id) && teacherCount < plan.minTeachers)
+                    }
+                    data-testid={`subscribe-btn-${plan.id}`}
+                  >
+                    {loadingCheckout && selectedPlan === plan.id ? (
+                      <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {isEs ? 'Procesando...' : 'Processing...'}</>
+                    ) : !user ? (
+                      isEs ? 'Comenzar Prueba Gratis' : 'Start Free Trial'
+                    ) : subscriptionStatus?.status === 'admin' ? (
+                      isEs ? 'Probar Checkout' : 'Test Checkout'
+                    ) : subscriptionStatus?.status === 'active' && subscriptionStatus?.plan === plan.id ? (
+                      isEs ? 'Plan Actual' : 'Current Plan'
+                    ) : (
+                      isEs ? 'Comenzar Prueba Gratis' : 'Start Free Trial'
+                    )}
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Value Reassurance Bar */}
+      <section className="py-8 bg-white">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <PricingValueBar language={language} />
+        </div>
+      </section>
+
+      {/* Why It's Worth It */}
+      <PricingComparison language={language} />
+
+      {/* FAQ */}
+      <PricingFAQ language={language} />
+
+      {/* Final CTA */}
+      <CTASection 
+        language={language}
+        headline={isEs ? 'Elige un plan y comienza a ahorrar tiempo' : 'Choose a plan and start saving time'}
+        subheadline={isEs ? 'Obtén las herramientas que necesitas para planificar, organizar y enseñar más eficientemente.' : 'Get the tools you need to plan, organize, and teach more efficiently.'}
+        primaryCTA={isEs ? 'Comenzar Prueba Gratis' : 'Start Free Trial'}
+        primaryLink="/auth"
+        variant="dark"
+      />
+
+      {/* Trial Info */}
+      <div className="py-8 bg-slate-900 text-center">
+        <p className="text-sm text-slate-400">
+          {isEs 
+            ? 'Todas las suscripciones incluyen 7 días de prueba gratis. No se cobra hasta que termine la prueba.' 
+            : 'All subscriptions include a 7-day free trial. No charge until trial ends.'}
+        </p>
+      </div>
+    </>
   );
 
-  // Return appropriate wrapper based on authentication status
+  // Public Pricing Page (unauthenticated)
+  const PublicPricingPage = () => (
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <Link to="/" className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-lime-400 to-lime-600 flex items-center justify-center shadow-md">
+                <BookOpen className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-bold text-slate-900">TeacherHubPro</span>
+            </Link>
+
+            <nav className="hidden md:flex items-center gap-8">
+              <Link to="/features" className="text-sm font-medium text-slate-600 hover:text-slate-900">
+                {isEs ? 'Funciones' : 'Features'}
+              </Link>
+              <Link to="/pricing" className="text-sm font-medium text-slate-900">
+                {isEs ? 'Precios' : 'Pricing'}
+              </Link>
+              <Link to="/trust" className="text-sm font-medium text-slate-600 hover:text-slate-900">
+                {isEs ? 'Confianza' : 'Trust'}
+              </Link>
+            </nav>
+
+            <div className="flex items-center gap-3">
+              <LanguageSelector />
+              <Link to="/auth" className="hidden sm:block">
+                <Button variant="ghost" size="sm">
+                  {isEs ? 'Iniciar Sesión' : 'Log In'}
+                </Button>
+              </Link>
+              <Link to="/auth" className="hidden sm:block">
+                <Button size="sm" className="bg-lime-500 hover:bg-lime-600 text-slate-900">
+                  {isEs ? 'Comenzar Gratis' : 'Start Free'}
+                </Button>
+              </Link>
+              <button 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
+          </div>
+
+          {mobileMenuOpen && (
+            <div className="md:hidden py-4 border-t">
+              <nav className="flex flex-col gap-4">
+                <Link to="/features" onClick={() => setMobileMenuOpen(false)}>{isEs ? 'Funciones' : 'Features'}</Link>
+                <Link to="/pricing" onClick={() => setMobileMenuOpen(false)}>{isEs ? 'Precios' : 'Pricing'}</Link>
+                <Link to="/trust" onClick={() => setMobileMenuOpen(false)}>{isEs ? 'Confianza' : 'Trust'}</Link>
+                <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                  <Button className="w-full bg-lime-500 hover:bg-lime-600 text-slate-900">
+                    {isEs ? 'Comenzar Gratis' : 'Start Free'}
+                  </Button>
+                </Link>
+              </nav>
+            </div>
+          )}
+        </div>
+      </header>
+
+      <main>{pricingContent}</main>
+
+      {/* Footer */}
+      <footer className="bg-slate-900 text-white py-12 border-t border-slate-800">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+          <Link to="/" className="inline-flex items-center gap-2 mb-4">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-lime-400 to-lime-600 flex items-center justify-center">
+              <BookOpen className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-lg font-bold">TeacherHubPro</span>
+          </Link>
+          <p className="text-sm text-slate-400">
+            © {new Date().getFullYear()} TeacherHubPro. {isEs ? 'Todos los derechos reservados.' : 'All rights reserved.'}
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+
+  // Return appropriate version
   if (user) {
     return <Layout>{pricingContent}</Layout>;
   }
   
-  return <PublicWrapper>{pricingContent}</PublicWrapper>;
+  return <PublicPricingPage />;
 };
 
 export default Pricing;
