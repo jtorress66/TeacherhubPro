@@ -2048,7 +2048,67 @@ const translations = {
     contactEmailSupport: 'Support par Email',
     contactHelpCenter: 'Centre d\'Aide',
     landingCTATitle: 'Commencez à simplifier votre flux de travail d\'enseignement dès aujourd\'hui',
-    landingCTASubtitle: 'Rejoignez les éducateurs qui utilisent TeacherHubPro pour gagner du temps, rester organisés et travailler plus intelligemment avec l\'IA.'
+    landingCTASubtitle: 'Rejoignez les éducateurs qui utilisent TeacherHubPro pour gagner du temps, rester organisés et travailler plus intelligemment avec l\'IA.',
+    
+    // Hero Section
+    heroTitle: 'L\'Espace de Travail Intelligent pour les Enseignants',
+    heroSubtitle: 'Planifiez des leçons, gérez les notes, suivez la présence, créez des supports de cours et gagnez des heures chaque semaine avec une plateforme IA conçue pour les enseignants.',
+    seeHowItWorks: 'Voir Comment Ça Marche',
+    heroSupportingText: 'Pas de frais IA supplémentaires. Conçu pour les enseignants, tuteurs, éducateurs à domicile et écoles.',
+    dashboardLessons: 'Leçons',
+    dashboardStudents: 'Élèves',
+    dashboardAvgGrade: 'Moyenne',
+    hoursSavedPerWeek: 'heures gagnées/semaine',
+    
+    // Trust Bar
+    trustBuiltForEducators: 'Conçu pour les éducateurs modernes',
+    trustAIIncluded: 'IA incluse dans chaque plan',
+    trustSecureEasy: 'Sécurisé et facile à utiliser',
+    trustReduceWorkload: 'Conçu pour réduire la charge administrative',
+    
+    // Benefits Grid
+    benefitSectionTitle: 'Tout ce dont les enseignants ont besoin, en un seul endroit',
+    benefitSectionSubtitle: 'Arrêtez de jongler entre documents, tableurs et outils déconnectés. TeacherHubPro rassemble votre flux de travail principal en une plateforme simple.',
+    benefitLessonPlanningTitle: 'Planification de Cours',
+    benefitLessonPlanningDesc: 'Créez des plans de cours organisés et réutilisables en moins de temps avec des modèles intégrés et le support IA.',
+    benefitGradebookTitle: 'Carnet de Notes',
+    benefitGradebookDesc: 'Suivez les progrès des élèves avec un carnet de notes clair et simple conçu pour l\'utilisation réelle en classe.',
+    benefitAttendanceTitle: 'Suivi de Présence',
+    benefitAttendanceDesc: 'Gérez la présence rapidement et gardez les dossiers de classe organisés sans paperasse supplémentaire.',
+    benefitAIToolsTitle: 'Outils IA pour l\'Enseignement',
+    benefitAIToolsDesc: 'Générez des idées de cours, activités, exercices d\'écriture, supports de classe et plus en quelques secondes.',
+    benefitPresentationsTitle: 'Présentations et Ressources',
+    benefitPresentationsDesc: 'Créez des supports de cours plus rapidement et gardez tout connecté dans un flux de travail unique.',
+    benefitWorkflowTitle: 'Flux de Travail Adapté aux Enseignants',
+    benefitWorkflowDesc: 'Conçu pour les éducateurs qui ont besoin d\'outils pratiques, pas de logiciels complexes.',
+    
+    // Outcomes Section
+    outcomeSectionTitle: 'Moins de temps en administration, plus de temps à enseigner',
+    outcomePlanFaster: 'Planifiez plus vite',
+    outcomePlanFasterDesc: 'Créez des plans de cours, activités de classe et supports sans repartir de zéro à chaque fois.',
+    outcomeStayOrganized: 'Restez organisé',
+    outcomeStayOrganizedDesc: 'Gardez notes, présence et ressources pédagogiques en un seul endroit plutôt que dispersées dans plusieurs outils.',
+    outcomeTeachConfidence: 'Enseignez avec confiance',
+    outcomeTeachConfidenceDesc: 'Utilisez l\'IA et des flux de travail optimisés pour réduire le stress et maintenir votre travail de classe en mouvement.',
+    
+    // Social Proof Section
+    socialProofSectionTitle: 'Conçu pour soutenir le vrai travail en classe',
+    socialProofEducators: 'Conçu spécifiquement pour les éducateurs',
+    socialProofSupport: 'Comprend des ressources de support et une aide guidée',
+    socialProofWorkflows: 'Conçu pour simplifier les flux de travail courants des enseignants',
+    socialProofSuitable: 'Adapté aux enseignants individuels, éducateurs à domicile et usage scolaire',
+    socialProofHelpCenter: 'Ressources de support disponibles • Centre d\'aide inclus',
+    
+    // Use Cases Section
+    useCaseSectionTitle: 'Fait pour différents environnements d\'enseignement',
+    useCaseClassroomTitle: 'Enseignants en Classe',
+    useCaseClassroomDesc: 'Gérez planification, notation et organisation quotidienne de la classe en un seul endroit.',
+    useCaseHomeschoolTitle: 'Éducateurs à Domicile',
+    useCaseHomeschoolDesc: 'Créez des flux de travail de cours flexibles et gardez les plans d\'apprentissage organisés.',
+    useCaseTutorsTitle: 'Tuteurs et Petits Programmes',
+    useCaseTutorsDesc: 'Suivez le travail des élèves, planifiez les sessions et créez des ressources efficacement.',
+    useCaseSchoolsTitle: 'Écoles et Équipes',
+    useCaseSchoolsDesc: 'Soutenez les éducateurs avec une plateforme qui améliore la cohérence et fait gagner du temps.'
   },
   pt: {
     // Navigation
