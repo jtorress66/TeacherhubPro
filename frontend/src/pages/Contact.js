@@ -217,7 +217,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-800">
-                      {isEs ? 'Centro de Ayuda' : 'Help Center'}
+                      {t('contactHelpCenter')}
                     </h3>
                     <p className="text-slate-600 mb-2">
                       {isEs ? 'Encuentra respuestas rápidas a preguntas frecuentes' : 'Find quick answers to common questions'}
