@@ -670,7 +670,9 @@ const translations = {
     contactSubject: 'Subject',
     contactMessage: 'Message',
     contactEmailSupport: 'Email Support',
-    contactHelpCenter: 'Help Center'
+    contactHelpCenter: 'Help Center',
+    landingCTATitle: 'Start simplifying your teaching workflow today',
+    landingCTASubtitle: 'Join educators using TeacherHubPro to save time, stay organized, and work smarter with AI.'
   },
   es: {
     // Navigation
