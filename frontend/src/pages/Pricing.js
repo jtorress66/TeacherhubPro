@@ -434,12 +434,12 @@ const Pricing = () => {
           {mobileMenuOpen && (
             <div className="md:hidden py-4 border-t">
               <nav className="flex flex-col gap-4">
-                <Link to="/features" onClick={() => setMobileMenuOpen(false)}>{isEs ? 'Funciones' : 'Features'}</Link>
-                <Link to="/pricing" onClick={() => setMobileMenuOpen(false)}>{isEs ? 'Precios' : 'Pricing'}</Link>
-                <Link to="/trust" onClick={() => setMobileMenuOpen(false)}>{isEs ? 'Confianza' : 'Trust'}</Link>
+                <Link to="/features" onClick={() => setMobileMenuOpen(false)}>{t('navFeatures')}</Link>
+                <Link to="/pricing" onClick={() => setMobileMenuOpen(false)}>{t('navPricing')}</Link>
+                <Link to="/trust" onClick={() => setMobileMenuOpen(false)}>{t('navTrust')}</Link>
                 <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                   <Button className="w-full bg-lime-500 hover:bg-lime-600 text-slate-900">
-                    {isEs ? 'Comenzar Gratis' : 'Start Free'}
+                    {t('navStartFree')}
                   </Button>
                 </Link>
               </nav>
@@ -462,7 +462,7 @@ const Pricing = () => {
             <span className="text-lg font-bold">TeacherHubPro</span>
           </Link>
           <p className="text-sm text-slate-400">
-            © {new Date().getFullYear()} TeacherHubPro. {isEs ? 'Todos los derechos reservados.' : 'All rights reserved.'}
+            © {new Date().getFullYear()} TeacherHubPro. {t('footerAllRightsReserved')}
           </p>
         </div>
       </footer>
