@@ -105,17 +105,15 @@ const FeaturesPage = () => {
         <section className="py-16 lg:py-24 bg-gradient-to-b from-slate-50 to-white">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-6">
-              {isEs ? 'Herramientas poderosas diseñadas para profesores' : 'Powerful tools built for teachers'}
+              {t('featuresHeroTitle')}
             </h1>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              {isEs 
-                ? 'TeacherHubPro reúne las herramientas esenciales que los educadores necesitan para planificar, organizar, crear y gestionar el trabajo del aula más eficientemente.'
-                : 'TeacherHubPro brings together the essential tools educators need to plan, organize, create, and manage classroom work more efficiently.'}
+              {t('featuresHeroSubtitle')}
             </p>
             <div className="mt-8">
               <Link to="/auth">
                 <Button size="lg" className="bg-lime-500 hover:bg-lime-600 text-slate-900 font-semibold px-8">
-                  {isEs ? 'Comenzar Prueba Gratis' : 'Start Free Trial'}
+                  {t('startFreeTrial')}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
@@ -134,11 +132,11 @@ const FeaturesPage = () => {
         {/* Final CTA */}
         <CTASection 
           language={language}
-          headline={isEs ? 'Descubre cómo TeacherHubPro se adapta a tu día de enseñanza' : 'See how TeacherHubPro fits into your teaching day'}
-          subheadline={isEs ? 'Explora la plataforma y descubre una mejor manera de planificar, organizar y enseñar.' : 'Explore the platform and discover a better way to plan, organize, and teach.'}
-          primaryCTA={isEs ? 'Comenzar Prueba Gratis' : 'Start Free Trial'}
+          headline={t('featuresCTATitle')}
+          subheadline={t('featuresCTASubtitle')}
+          primaryCTA={t('startFreeTrial')}
           primaryLink="/auth"
-          secondaryCTA={isEs ? 'Ver Precios' : 'View Pricing'}
+          secondaryCTA={t('viewPricing')}
           secondaryLink="/pricing"
         />
       </main>
