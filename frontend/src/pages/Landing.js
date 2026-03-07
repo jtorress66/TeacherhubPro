@@ -48,16 +48,16 @@ const Landing = () => {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8">
               <Link to="/features" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-                {t('features') || (isEs ? 'Funciones' : 'Features')}
+                {isEs ? 'Funciones' : 'Features'}
               </Link>
               <Link to="/pricing" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-                {t('pricing') || (isEs ? 'Precios' : 'Pricing')}
+                {isEs ? 'Precios' : 'Pricing'}
               </Link>
               <Link to="/trust" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-                {t('trustCenter') || (isEs ? 'Confianza' : 'Trust')}
+                {isEs ? 'Confianza' : 'Trust'}
               </Link>
               <Link to="/contact" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-                {t('contact') || (isEs ? 'Contacto' : 'Contact')}
+                {isEs ? 'Contacto' : 'Contact'}
               </Link>
             </nav>
 
@@ -97,28 +97,28 @@ const Landing = () => {
                   className="text-sm font-medium text-slate-600 hover:text-slate-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {t('features') || (isEs ? 'Funciones' : 'Features')}
+                  {isEs ? 'Funciones' : 'Features'}
                 </Link>
                 <Link 
                   to="/pricing" 
                   className="text-sm font-medium text-slate-600 hover:text-slate-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {t('pricing') || (isEs ? 'Precios' : 'Pricing')}
+                  {isEs ? 'Precios' : 'Pricing'}
                 </Link>
                 <Link 
                   to="/trust" 
                   className="text-sm font-medium text-slate-600 hover:text-slate-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {t('trustCenter') || (isEs ? 'Confianza' : 'Trust')}
+                  {isEs ? 'Confianza' : 'Trust'}
                 </Link>
                 <Link 
                   to="/contact" 
                   className="text-sm font-medium text-slate-600 hover:text-slate-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {t('contact') || (isEs ? 'Contacto' : 'Contact')}
+                  {isEs ? 'Contacto' : 'Contact'}
                 </Link>
                 <div className="pt-4 border-t border-slate-200 flex flex-col gap-3">
                   <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
