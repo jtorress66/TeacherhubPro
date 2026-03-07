@@ -97,38 +97,38 @@ const Landing = () => {
                   className="text-sm font-medium text-slate-600 hover:text-slate-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {isEs ? 'Funciones' : 'Features'}
+                  {t('navFeatures')}
                 </Link>
                 <Link 
                   to="/pricing" 
                   className="text-sm font-medium text-slate-600 hover:text-slate-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {isEs ? 'Precios' : 'Pricing'}
+                  {t('navPricing')}
                 </Link>
                 <Link 
                   to="/trust" 
                   className="text-sm font-medium text-slate-600 hover:text-slate-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {isEs ? 'Confianza' : 'Trust'}
+                  {t('navTrust')}
                 </Link>
                 <Link 
                   to="/contact" 
                   className="text-sm font-medium text-slate-600 hover:text-slate-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {isEs ? 'Contacto' : 'Contact'}
+                  {t('navContact')}
                 </Link>
                 <div className="pt-4 border-t border-slate-200 flex flex-col gap-3">
                   <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                     <Button variant="outline" className="w-full">
-                      {isEs ? 'Iniciar Sesión' : 'Log In'}
+                      {t('navLogin')}
                     </Button>
                   </Link>
                   <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                     <Button className="w-full bg-lime-500 hover:bg-lime-600 text-slate-900">
-                      {isEs ? 'Comenzar Gratis' : 'Start Free'}
+                      {t('navStartFree')}
                     </Button>
                   </Link>
                 </div>
