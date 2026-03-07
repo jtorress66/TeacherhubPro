@@ -3,6 +3,35 @@
 
 
 ---
+## Update 2026-03-07 (Session 70) - FOOTER TRANSLATION FIX ✅ COMPLETE
+
+### Issue:
+Footer and navigation showing raw translation keys (e.g., "product", "resources", "footerTagline", "supportNotice") instead of translated text in Spanish.
+
+### Root Cause:
+The `t()` translation function returns the key name as a string when not found (e.g., `t('product')` returns `"product"`). Since strings are truthy, the fallback pattern `t('key') || fallback` never executes the fallback.
+
+### Solution:
+Replaced all `t('key') || fallback` patterns with direct `isEs ? 'Spanish text' : 'English text'` ternary patterns across all marketing pages.
+
+### Files Modified:
+- `/app/frontend/src/pages/Landing.js` - Desktop nav, mobile nav, footer (5 columns)
+- `/app/frontend/src/pages/FeaturesPage.js` - Desktop nav, mobile nav, footer
+- `/app/frontend/src/pages/Pricing.js` - Desktop nav, footer
+
+### Verified Working:
+- ✅ Homepage footer: Producto, Recursos, Confianza, Legal sections all translate
+- ✅ Footer tagline and copyright translate correctly
+- ✅ Navigation links translate: Funciones/Features, Precios/Pricing, Confianza/Trust, Contacto/Contact
+- ✅ Features page footer translates
+- ✅ Pricing page footer translates
+- ✅ Contact page footer translates
+- ✅ Language selector works correctly
+- ✅ No raw translation keys visible
+
+**Test Report:** `/app/test_reports/iteration_70.json`
+
+---
 ## Update 2026-03-07 (Session 69) - MARKETING WEBSITE REFACTOR FIXES ✅ COMPLETE
 
 ### Bug Fixed:
