@@ -390,21 +390,23 @@ const Pricing = () => {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-lime-400 to-lime-600 flex items-center justify-center shadow-md">
-                <BookOpen className="w-5 h-5 text-white" />
-              </div>
+              <img 
+                src="/logo.png" 
+                alt="TeacherHubPro" 
+                className="w-10 h-10 object-contain"
+              />
               <span className="text-xl font-bold text-slate-900">TeacherHubPro</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-8">
               <Link to="/features" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                {isEs ? 'Funciones' : 'Features'}
+                {t('features') || (isEs ? 'Funciones' : 'Features')}
               </Link>
               <Link to="/pricing" className="text-sm font-medium text-slate-900">
-                {isEs ? 'Precios' : 'Pricing'}
+                {t('pricing') || (isEs ? 'Precios' : 'Pricing')}
               </Link>
               <Link to="/trust" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                {isEs ? 'Confianza' : 'Trust'}
+                {t('trustCenter') || (isEs ? 'Confianza' : 'Trust')}
               </Link>
             </nav>
 
@@ -412,12 +414,12 @@ const Pricing = () => {
               <LanguageSelector />
               <Link to="/auth" className="hidden sm:block">
                 <Button variant="ghost" size="sm">
-                  {isEs ? 'Iniciar Sesión' : 'Log In'}
+                  {t('login') || (isEs ? 'Iniciar Sesión' : 'Log In')}
                 </Button>
               </Link>
               <Link to="/auth" className="hidden sm:block">
                 <Button size="sm" className="bg-lime-500 hover:bg-lime-600 text-slate-900">
-                  {isEs ? 'Comenzar Gratis' : 'Start Free'}
+                  {t('startFree') || (isEs ? 'Comenzar Gratis' : 'Start Free')}
                 </Button>
               </Link>
               <button 
