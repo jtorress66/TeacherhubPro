@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { ArrowRight, Clock, Play } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const HeroSection = ({ language = 'en' }) => {
-  const isEs = language === 'es';
+  const { t } = useLanguage();
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-lime-50/30 pt-8 pb-16 lg:pt-16 lg:pb-24">
@@ -16,14 +17,12 @@ const HeroSection = ({ language = 'en' }) => {
           <div className="text-center lg:text-left">
             {/* Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 leading-[1.1]">
-              {isEs ? 'El Espacio de Trabajo Más Inteligente para Profesores' : 'The Smarter Workspace for Teachers'}
+              {t('heroTitle')}
             </h1>
             
             {/* Subheadline */}
             <p className="mt-6 text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              {isEs 
-                ? 'Planifica lecciones, gestiona calificaciones, registra asistencia, crea materiales de clase y ahorra horas cada semana con una plataforma impulsada por IA diseñada para profesores.'
-                : 'Plan lessons, manage grades, track attendance, create classroom materials, and save hours every week with one AI-powered platform built for teachers.'}
+              {t('heroSubtitle')}
             </p>
             
             {/* CTAs */}
@@ -34,7 +33,7 @@ const HeroSection = ({ language = 'en' }) => {
                   className="w-full sm:w-auto bg-lime-500 hover:bg-lime-600 text-slate-900 font-semibold px-8 py-6 text-lg shadow-lg shadow-lime-500/25 hover:shadow-xl hover:shadow-lime-500/30 transition-all"
                   data-testid="hero-start-trial-btn"
                 >
-                  {isEs ? 'Comenzar Prueba Gratis' : 'Start Free Trial'}
+                  {t('startFreeTrial')}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -46,16 +45,14 @@ const HeroSection = ({ language = 'en' }) => {
                   data-testid="hero-see-how-btn"
                 >
                   <Play className="mr-2 h-5 w-5" />
-                  {isEs ? 'Ver Cómo Funciona' : 'See How It Works'}
+                  {t('seeHowItWorks')}
                 </Button>
               </Link>
             </div>
             
             {/* Supporting line */}
             <p className="mt-6 text-sm text-slate-500">
-              {isEs 
-                ? 'Sin cargos extra por IA. Diseñado para profesores, tutores, educadores en casa y escuelas.'
-                : 'No extra AI fees. Built for teachers, tutors, homeschool educators, and schools.'}
+              {t('heroSupportingText')}
             </p>
           </div>
           
@@ -77,15 +74,15 @@ const HeroSection = ({ language = 'en' }) => {
                 {/* Mini dashboard preview */}
                 <div className="grid grid-cols-3 gap-3 mb-4">
                   <div className="bg-white rounded-lg p-3 border border-slate-100 shadow-sm">
-                    <div className="text-xs text-slate-500 mb-1">{isEs ? 'Lecciones' : 'Lessons'}</div>
+                    <div className="text-xs text-slate-500 mb-1">{t('dashboardLessons')}</div>
                     <div className="text-xl font-bold text-slate-800">24</div>
                   </div>
                   <div className="bg-white rounded-lg p-3 border border-slate-100 shadow-sm">
-                    <div className="text-xs text-slate-500 mb-1">{isEs ? 'Estudiantes' : 'Students'}</div>
+                    <div className="text-xs text-slate-500 mb-1">{t('dashboardStudents')}</div>
                     <div className="text-xl font-bold text-slate-800">86</div>
                   </div>
                   <div className="bg-white rounded-lg p-3 border border-slate-100 shadow-sm">
-                    <div className="text-xs text-slate-500 mb-1">{isEs ? 'Promedio' : 'Avg Grade'}</div>
+                    <div className="text-xs text-slate-500 mb-1">{t('dashboardAvgGrade')}</div>
                     <div className="text-xl font-bold text-lime-600">B+</div>
                   </div>
                 </div>
@@ -105,7 +102,7 @@ const HeroSection = ({ language = 'en' }) => {
               <div>
                 <div className="text-2xl font-bold text-slate-900">5+</div>
                 <div className="text-sm text-slate-600">
-                  {isEs ? 'horas ahorradas/semana' : 'hours saved/week'}
+                  {t('hoursSavedPerWeek')}
                 </div>
               </div>
             </div>

@@ -1,24 +1,25 @@
 import { Shield, Sparkles, Lock, Users } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const TrustBar = ({ language = 'en' }) => {
-  const isEs = language === 'es';
+  const { t } = useLanguage();
 
   const trustItems = [
     {
       icon: Users,
-      text: isEs ? 'Diseñado para educadores modernos' : 'Built for modern educators'
+      text: t('trustBuiltForEducators')
     },
     {
       icon: Sparkles,
-      text: isEs ? 'IA incluida en cada plan' : 'AI included in every plan'
+      text: t('trustAIIncluded')
     },
     {
       icon: Lock,
-      text: isEs ? 'Seguro y fácil de usar' : 'Secure and easy to use'
+      text: t('trustSecureEasy')
     },
     {
       icon: Shield,
-      text: isEs ? 'Reduce la carga administrativa' : 'Designed to reduce planning and admin workload'
+      text: t('trustReduceWorkload')
     }
   ];
 

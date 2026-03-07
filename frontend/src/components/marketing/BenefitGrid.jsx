@@ -1,55 +1,44 @@
 import { Calendar, BookOpen, ClipboardCheck, Sparkles, Presentation, Users } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const BenefitGrid = ({ language = 'en' }) => {
-  const isEs = language === 'es';
+  const { t } = useLanguage();
 
   const benefits = [
     {
       icon: Calendar,
-      title: isEs ? 'Planificación de Lecciones' : 'Lesson Planning',
-      description: isEs 
-        ? 'Crea planes de lección organizados y reutilizables en menos tiempo con plantillas integradas y soporte de IA.'
-        : 'Create organized, reusable lesson plans in less time with built-in templates and AI support.',
+      title: t('benefitLessonPlanningTitle'),
+      description: t('benefitLessonPlanningDesc'),
       color: 'bg-purple-100 text-purple-600'
     },
     {
       icon: BookOpen,
-      title: isEs ? 'Libro de Calificaciones' : 'Gradebook',
-      description: isEs 
-        ? 'Registra el progreso de los estudiantes con un libro de calificaciones limpio y sencillo diseñado para el uso real en el aula.'
-        : 'Track student progress with a clean, simple gradebook built for real classroom use.',
+      title: t('benefitGradebookTitle'),
+      description: t('benefitGradebookDesc'),
       color: 'bg-blue-100 text-blue-600'
     },
     {
       icon: ClipboardCheck,
-      title: isEs ? 'Control de Asistencia' : 'Attendance Tracking',
-      description: isEs 
-        ? 'Gestiona la asistencia rápidamente y mantén los registros de clase organizados sin papeleo extra.'
-        : 'Manage attendance quickly and keep class records organized without extra paperwork.',
+      title: t('benefitAttendanceTitle'),
+      description: t('benefitAttendanceDesc'),
       color: 'bg-teal-100 text-teal-600'
     },
     {
       icon: Sparkles,
-      title: isEs ? 'Herramientas de IA para Enseñanza' : 'AI Teaching Tools',
-      description: isEs 
-        ? 'Genera ideas de lecciones, actividades, ejercicios de escritura, materiales de clase y más en segundos.'
-        : 'Generate lesson ideas, activities, writing prompts, classroom materials, and more in seconds.',
+      title: t('benefitAIToolsTitle'),
+      description: t('benefitAIToolsDesc'),
       color: 'bg-rose-100 text-rose-600'
     },
     {
       icon: Presentation,
-      title: isEs ? 'Presentaciones y Recursos' : 'Presentations and Resources',
-      description: isEs 
-        ? 'Crea materiales para clase más rápido y mantén todo conectado en un solo flujo de trabajo.'
-        : 'Build materials for class faster and keep everything connected in one workflow.',
+      title: t('benefitPresentationsTitle'),
+      description: t('benefitPresentationsDesc'),
       color: 'bg-amber-100 text-amber-600'
     },
     {
       icon: Users,
-      title: isEs ? 'Flujo de Trabajo para Profesores' : 'Teacher-Friendly Workflow',
-      description: isEs 
-        ? 'Diseñado para educadores que necesitan herramientas prácticas, no software complejo.'
-        : 'Designed for educators who need practical tools, not complex software.',
+      title: t('benefitWorkflowTitle'),
+      description: t('benefitWorkflowDesc'),
       color: 'bg-green-100 text-green-600'
     }
   ];
@@ -60,12 +49,10 @@ const BenefitGrid = ({ language = 'en' }) => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-            {isEs ? 'Todo lo que los profesores necesitan, en un solo lugar' : 'Everything teachers need, in one place'}
+            {t('benefitSectionTitle')}
           </h2>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
-            {isEs 
-              ? 'Deja de cambiar entre documentos, hojas de cálculo y herramientas desconectadas. TeacherHubPro reúne tu flujo de trabajo principal en una plataforma simple.'
-              : 'Stop switching between documents, spreadsheets, and disconnected tools. TeacherHubPro brings your core teaching workflow into one simple platform.'}
+            {t('benefitSectionSubtitle')}
           </p>
         </div>
 
