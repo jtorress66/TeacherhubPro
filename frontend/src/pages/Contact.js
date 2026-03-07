@@ -68,7 +68,7 @@ const Contact = () => {
             <LanguageSelector />
             <Link to="/" className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-800">
               <ArrowLeft className="h-4 w-4" />
-              {isEs ? 'Volver al inicio' : 'Back to home'}
+              {t('landingBackToHome') || (language === 'es' ? 'Volver al inicio' : 'Back to home')}
             </Link>
           </div>
         </div>
@@ -77,7 +77,7 @@ const Contact = () => {
       <main className="max-w-4xl mx-auto px-6 py-12">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-slate-800 mb-3">
-            {isEs ? 'Contáctanos' : 'Contact Us'}
+            {t('contactTitle')}
           </h1>
           <p className="text-slate-600 max-w-lg mx-auto">
             {isEs 
@@ -92,7 +92,7 @@ const Contact = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageSquare className="h-5 w-5 text-blue-600" />
-                {isEs ? 'Envíanos un mensaje' : 'Send us a message'}
+                {t('contactSendMessage')}
               </CardTitle>
             </CardHeader>
             <CardContent>
