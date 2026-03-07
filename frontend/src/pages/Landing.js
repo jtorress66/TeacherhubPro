@@ -48,16 +48,16 @@ const Landing = () => {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8">
               <Link to="/features" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-                {isEs ? 'Funciones' : 'Features'}
+                {t('navFeatures')}
               </Link>
               <Link to="/pricing" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-                {isEs ? 'Precios' : 'Pricing'}
+                {t('navPricing')}
               </Link>
               <Link to="/trust" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-                {isEs ? 'Confianza' : 'Trust'}
+                {t('navTrust')}
               </Link>
               <Link to="/contact" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-                {isEs ? 'Contacto' : 'Contact'}
+                {t('navContact')}
               </Link>
             </nav>
 
@@ -67,13 +67,13 @@ const Landing = () => {
               
               <Link to="/auth" className="hidden sm:block">
                 <Button variant="ghost" size="sm" className="text-slate-600 hover:text-slate-900">
-                  {isEs ? 'Iniciar Sesión' : 'Log In'}
+                  {t('navLogin')}
                 </Button>
               </Link>
               
               <Link to="/auth" className="hidden sm:block">
                 <Button size="sm" className="bg-lime-500 hover:bg-lime-600 text-slate-900 font-medium shadow-sm">
-                  {isEs ? 'Comenzar Gratis' : 'Start Free'}
+                  {t('navStartFree')}
                   <ArrowRight className="ml-1 w-4 h-4" />
                 </Button>
               </Link>
