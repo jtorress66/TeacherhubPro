@@ -85,12 +85,12 @@ const FeaturesPage = () => {
                 <div className="pt-4 border-t flex flex-col gap-3">
                   <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                     <Button variant="outline" className="w-full">
-                      {t('login') || (isEs ? 'Iniciar Sesión' : 'Log In')}
+                      {isEs ? 'Iniciar Sesión' : 'Log In'}
                     </Button>
                   </Link>
                   <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                     <Button className="w-full bg-lime-500 hover:bg-lime-600 text-slate-900">
-                      {t('startFree') || (isEs ? 'Comenzar Gratis' : 'Start Free')}
+                      {isEs ? 'Comenzar Gratis' : 'Start Free'}
                     </Button>
                   </Link>
                 </div>
