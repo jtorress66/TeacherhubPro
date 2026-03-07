@@ -257,7 +257,7 @@ const Contact = () => {
             <span className="font-bold text-slate-900">TeacherHubPro</span>
           </Link>
           <p className="text-sm text-slate-500">
-            © {new Date().getFullYear()} TeacherHubPro. {isEs ? 'Todos los derechos reservados.' : 'All rights reserved.'}
+            © {new Date().getFullYear()} TeacherHubPro. {t('footerAllRightsReserved')}
           </p>
         </div>
       </footer>
