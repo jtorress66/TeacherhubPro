@@ -5264,10 +5264,22 @@ api_router.include_router(ai_grading_router)
 # Include the main api_router in the app
 app.include_router(api_router)
 
+# CORS configuration - include custom domain and preview URLs
+CORS_ALLOWED_ORIGINS = [
+    "https://teacherhubpro.com",
+    "https://www.teacherhubpro.com",
+    "https://ai-gradebook.preview.emergentagent.com",
+]
+
+# Also allow any origin from env variable (fallback to allow all for dev)
+env_origins = os.environ.get('CORS_ORIGINS', '')
+if env_origins:
+    CORS_ALLOWED_ORIGINS.extend([o.strip() for o in env_origins.split(',') if o.strip()])
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=CORS_ALLOWED_ORIGINS if CORS_ALLOWED_ORIGINS else ["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
