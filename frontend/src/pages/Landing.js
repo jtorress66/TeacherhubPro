@@ -67,13 +67,13 @@ const Landing = () => {
               
               <Link to="/auth" className="hidden sm:block">
                 <Button variant="ghost" size="sm" className="text-slate-600 hover:text-slate-900">
-                  {t('login') || (isEs ? 'Iniciar Sesión' : 'Log In')}
+                  {isEs ? 'Iniciar Sesión' : 'Log In'}
                 </Button>
               </Link>
               
               <Link to="/auth" className="hidden sm:block">
                 <Button size="sm" className="bg-lime-500 hover:bg-lime-600 text-slate-900 font-medium shadow-sm">
-                  {t('startFree') || (isEs ? 'Comenzar Gratis' : 'Start Free')}
+                  {isEs ? 'Comenzar Gratis' : 'Start Free'}
                   <ArrowRight className="ml-1 w-4 h-4" />
                 </Button>
               </Link>
