@@ -32,16 +32,16 @@ const FeaturesPage = () => {
 
             <nav className="hidden md:flex items-center gap-8">
               <Link to="/features" className="text-sm font-medium text-slate-900">
-                {isEs ? 'Funciones' : 'Features'}
+                {t('navFeatures')}
               </Link>
               <Link to="/pricing" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                {isEs ? 'Precios' : 'Pricing'}
+                {t('navPricing')}
               </Link>
               <Link to="/trust" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                {isEs ? 'Confianza' : 'Trust'}
+                {t('navTrust')}
               </Link>
               <Link to="/contact" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                {isEs ? 'Contacto' : 'Contact'}
+                {t('navContact')}
               </Link>
             </nav>
 
@@ -49,12 +49,12 @@ const FeaturesPage = () => {
               <LanguageSelector />
               <Link to="/auth" className="hidden sm:block">
                 <Button variant="ghost" size="sm">
-                  {isEs ? 'Iniciar Sesión' : 'Log In'}
+                  {t('navLogin')}
                 </Button>
               </Link>
               <Link to="/auth" className="hidden sm:block">
                 <Button size="sm" className="bg-lime-500 hover:bg-lime-600 text-slate-900">
-                  {isEs ? 'Comenzar Gratis' : 'Start Free'}
+                  {t('navStartFree')}
                   <ArrowRight className="ml-1 w-4 h-4" />
                 </Button>
               </Link>
@@ -71,26 +71,26 @@ const FeaturesPage = () => {
             <div className="md:hidden py-4 border-t">
               <nav className="flex flex-col gap-4">
                 <Link to="/features" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium">
-                  {isEs ? 'Funciones' : 'Features'}
+                  {t('navFeatures')}
                 </Link>
                 <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium">
-                  {isEs ? 'Precios' : 'Pricing'}
+                  {t('navPricing')}
                 </Link>
                 <Link to="/trust" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium">
-                  {isEs ? 'Confianza' : 'Trust'}
+                  {t('navTrust')}
                 </Link>
                 <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium">
-                  {isEs ? 'Contacto' : 'Contact'}
+                  {t('navContact')}
                 </Link>
                 <div className="pt-4 border-t flex flex-col gap-3">
                   <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                     <Button variant="outline" className="w-full">
-                      {isEs ? 'Iniciar Sesión' : 'Log In'}
+                      {t('navLogin')}
                     </Button>
                   </Link>
                   <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                     <Button className="w-full bg-lime-500 hover:bg-lime-600 text-slate-900">
-                      {isEs ? 'Comenzar Gratis' : 'Start Free'}
+                      {t('navStartFree')}
                     </Button>
                   </Link>
                 </div>
