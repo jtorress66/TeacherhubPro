@@ -185,45 +185,45 @@ const Landing = () => {
                 <span className="text-lg font-bold">TeacherHubPro</span>
               </Link>
               <p className="text-sm text-slate-400 mb-4">
-                {isEs ? 'El espacio de trabajo más inteligente para profesores.' : 'The smarter workspace for teachers.'}
+                {t('footerTagline')}
               </p>
             </div>
 
             {/* Product */}
             <div>
-              <h4 className="font-semibold mb-4 text-sm">{isEs ? 'Producto' : 'Product'}</h4>
+              <h4 className="font-semibold mb-4 text-sm">{t('footerProduct')}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/features" className="hover:text-white transition-colors">{isEs ? 'Funciones' : 'Features'}</Link></li>
-                <li><Link to="/pricing" className="hover:text-white transition-colors">{isEs ? 'Precios' : 'Pricing'}</Link></li>
-                <li><Link to="/integrations" className="hover:text-white transition-colors">{isEs ? 'Integraciones' : 'Integrations'}</Link></li>
+                <li><Link to="/features" className="hover:text-white transition-colors">{t('footerFeatures')}</Link></li>
+                <li><Link to="/pricing" className="hover:text-white transition-colors">{t('footerPricing')}</Link></li>
+                <li><Link to="/integrations" className="hover:text-white transition-colors">{t('footerIntegrations')}</Link></li>
               </ul>
             </div>
 
             {/* Resources */}
             <div>
-              <h4 className="font-semibold mb-4 text-sm">{isEs ? 'Recursos' : 'Resources'}</h4>
+              <h4 className="font-semibold mb-4 text-sm">{t('footerResources')}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/help" className="hover:text-white transition-colors">{isEs ? 'Centro de Ayuda' : 'Help Center'}</Link></li>
-                <li><Link to="/contact" className="hover:text-white transition-colors">{isEs ? 'Contacto' : 'Contact'}</Link></li>
+                <li><Link to="/help" className="hover:text-white transition-colors">{t('footerHelpCenter')}</Link></li>
+                <li><Link to="/contact" className="hover:text-white transition-colors">{t('footerContact')}</Link></li>
               </ul>
             </div>
 
             {/* Trust */}
             <div>
-              <h4 className="font-semibold mb-4 text-sm">{isEs ? 'Confianza' : 'Trust'}</h4>
+              <h4 className="font-semibold mb-4 text-sm">{t('footerTrust')}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/trust" className="hover:text-white transition-colors">{isEs ? 'Centro de Confianza' : 'Trust Center'}</Link></li>
-                <li><Link to="/privacy-policy" className="hover:text-white transition-colors">{isEs ? 'Privacidad' : 'Privacy'}</Link></li>
-                <li><Link to="/terms-of-use" className="hover:text-white transition-colors">{isEs ? 'Términos' : 'Terms'}</Link></li>
+                <li><Link to="/trust" className="hover:text-white transition-colors">{t('footerTrustCenter')}</Link></li>
+                <li><Link to="/privacy-policy" className="hover:text-white transition-colors">{t('footerPrivacy')}</Link></li>
+                <li><Link to="/terms-of-use" className="hover:text-white transition-colors">{t('footerTerms')}</Link></li>
               </ul>
             </div>
 
             {/* Legal */}
             <div>
-              <h4 className="font-semibold mb-4 text-sm">Legal</h4>
+              <h4 className="font-semibold mb-4 text-sm">{t('footerLegal')}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/cookies-policy" className="hover:text-white transition-colors">Cookies</Link></li>
-                <li><Link to="/accessibility" className="hover:text-white transition-colors">{isEs ? 'Accesibilidad' : 'Accessibility'}</Link></li>
+                <li><Link to="/cookies-policy" className="hover:text-white transition-colors">{t('footerCookies')}</Link></li>
+                <li><Link to="/accessibility" className="hover:text-white transition-colors">{t('footerAccessibility')}</Link></li>
               </ul>
             </div>
           </div>
@@ -232,13 +232,13 @@ const Landing = () => {
           <div className="border-t border-slate-800 pt-8 mb-8">
             <div className="flex items-center justify-center gap-2 text-sm text-slate-400">
               <HelpCircle className="w-4 h-4" />
-              <span>{isEs ? '¿Necesitas ayuda? Nuestros recursos de soporte están aquí para ayudarte a comenzar.' : 'Need help? Our support resources are here to help you get started and keep moving.'}</span>
+              <span>{t('footerSupportNotice')}</span>
             </div>
           </div>
 
           {/* Copyright */}
           <div className="text-center text-sm text-slate-500">
-            © {new Date().getFullYear()} TeacherHubPro. {isEs ? 'Todos los derechos reservados.' : 'All rights reserved.'}
+            © {new Date().getFullYear()} TeacherHubPro. {t('footerAllRightsReserved')}
           </div>
         </div>
       </footer>
