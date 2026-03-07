@@ -400,13 +400,13 @@ const Pricing = () => {
 
             <nav className="hidden md:flex items-center gap-8">
               <Link to="/features" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                {t('features') || (isEs ? 'Funciones' : 'Features')}
+                {isEs ? 'Funciones' : 'Features'}
               </Link>
               <Link to="/pricing" className="text-sm font-medium text-slate-900">
-                {t('pricing') || (isEs ? 'Precios' : 'Pricing')}
+                {isEs ? 'Precios' : 'Pricing'}
               </Link>
               <Link to="/trust" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                {t('trustCenter') || (isEs ? 'Confianza' : 'Trust')}
+                {isEs ? 'Confianza' : 'Trust'}
               </Link>
             </nav>
 
@@ -462,7 +462,7 @@ const Pricing = () => {
             <span className="text-lg font-bold">TeacherHubPro</span>
           </Link>
           <p className="text-sm text-slate-400">
-            © {new Date().getFullYear()} TeacherHubPro. {t('allRightsReserved') || (isEs ? 'Todos los derechos reservados.' : 'All rights reserved.')}
+            © {new Date().getFullYear()} TeacherHubPro. {isEs ? 'Todos los derechos reservados.' : 'All rights reserved.'}
           </p>
         </div>
       </footer>
