@@ -1,5 +1,5 @@
 import { Calendar, BookOpen, ClipboardCheck, Sparkles, Presentation, Users } from 'lucide-react';
-import FeatureDetailPage from '../components/marketing/FeatureDetailPage';
+import FeatureDetailPage from '../../components/marketing/FeatureDetailPage';
 
 const PresentationsFeature = () => {
   const relatedFeatures = [
