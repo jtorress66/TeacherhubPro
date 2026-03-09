@@ -11,3 +11,5 @@ export { default as PricingComparison } from './PricingComparison';
 export { default as PricingFAQ } from './PricingFAQ';
 export { default as FeaturesGroups } from './FeaturesGroups';
 export { default as FeaturesSummary } from './FeaturesSummary';
+export { default as MarketingLayout } from './MarketingLayout';
+export { default as FeatureDetailPage } from './FeatureDetailPage';
