@@ -23,7 +23,7 @@
     "frontend": "100% - Both bugs verified fixed via Playwright"
   },
   "test_credentials": {
-    "API_URL": "https://teacherhub-pro-4.preview.emergentagent.com",
+    "API_URL": "https://teacherhub-ux-fix.preview.emergentagent.com",
     "word_search_game": "test_word_search_1771598782",
     "test_teacher": "test@school.edu / testpassword"
   },
@@ -74,14 +74,14 @@
     },
     "frontend_playwright_tests": {
       "word_search_game": {
-        "url": "https://teacherhub-pro-4.preview.emergentagent.com/play-game/test_word_search_1771598782",
+        "url": "https://teacherhub-ux-fix.preview.emergentagent.com/play-game/test_word_search_1771598782",
         "grid_cells_found": 144,
         "words_displayed": ["FOTOSINTESIS", "MAGNETISMO", "EVAPORACION"],
         "buttons_found": ["Reiniciar Selección", "Terminé"],
         "error_message_found": false
       },
       "play_again_test": {
-        "url": "https://teacherhub-pro-4.preview.emergentagent.com/games",
+        "url": "https://teacherhub-ux-fix.preview.emergentagent.com/games",
         "game_tested": "Progress Test (test_progress_game_1771598787)",
         "play_again_button_found": true,
         "regeneration_api_called": true,

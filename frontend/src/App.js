@@ -76,6 +76,8 @@ import VendorManagement from "./pages/VendorManagement";
 import AcceptableUse from "./pages/AcceptableUse";
 import SOC2 from "./pages/SOC2";
 import EnterpriseOverview from "./pages/EnterpriseOverview";
+// ScrollToTop for route changes
+import ScrollToTop from "./components/ScrollToTop";
 // Feature Detail Pages
 import LessonPlanningFeature from "./pages/features/LessonPlanningFeature";
 import GradebookFeature from "./pages/features/GradebookFeature";
@@ -217,6 +219,8 @@ const AppRouter = () => {
   }
 
   return (
+    <>
+    <ScrollToTop />
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/auth" element={<Auth />} />
@@ -358,6 +362,7 @@ const AppRouter = () => {
       {/* Fallback redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   );
 };
 

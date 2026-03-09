@@ -3,6 +3,24 @@
 
 
 ---
+## Update 2026-03-09 - SCROLL TO TOP ON NAVIGATION FIX (P0 Bug Fix) ✅ COMPLETE
+
+### Issue:
+- Navigating to a new page via React Router did not reset the scroll position, causing a disorienting UX where new pages loaded midway through content.
+
+### Fix:
+- Imported the existing `ScrollToTop` component (`/app/frontend/src/components/ScrollToTop.js`) into `App.js`.
+- Rendered `<ScrollToTop />` inside the `AppRouter` component, before the `<Routes>` block.
+- The component uses `useLocation` + `useEffect` to call `window.scrollTo(0, 0)` on every route change.
+
+### Files Modified:
+- `/app/frontend/src/App.js` — Added import and rendered `<ScrollToTop />`.
+
+### Testing:
+- Verified via Playwright: scrolled to Y=2000 on homepage, clicked a feature card link, confirmed scroll reset to Y=0 on the new page.
+
+---
+
 ## Update 2026-03-09 (Session 73) - CLICKABLE FEATURE CARDS + MOBILE RESPONSIVENESS ✅ COMPLETE
 
 ### Features Implemented:
@@ -2412,8 +2430,8 @@ Build a teacher-focused web app that replaces paper planners with a digital solu
 5. Implement seating chart drag/drop
 
 ## URLs
-- Frontend: https://teacherhub-pro-4.preview.emergentagent.com
-- Backend API: https://teacherhub-pro-4.preview.emergentagent.com/api
+- Frontend: https://teacherhub-ux-fix.preview.emergentagent.com
+- Backend API: https://teacherhub-ux-fix.preview.emergentagent.com/api
 
 ## Database Collections
 - users, user_sessions, schools
