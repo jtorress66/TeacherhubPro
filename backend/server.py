@@ -8,6 +8,11 @@ import logging
 import asyncio
 import base64
 from pathlib import Path
+
+# Load environment FIRST, before any imports that depend on env vars
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
+
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import List, Optional, Dict, Any
 import uuid
@@ -37,13 +42,10 @@ from routes.google_classroom import google_classroom_router, init_google_classro
 from routes.play_to_learn import router as play_to_learn_router, init_play_to_learn_routes
 from routes.ai_grading import router as ai_grading_router, init_ai_grading_routes
 
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
-
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db = client[os.environ.get('DB_NAME', 'teacherhub')]
 
 # JWT Configuration
 JWT_SECRET = os.environ.get('JWT_SECRET', 'teacherhub-secret-key-change-in-production')
