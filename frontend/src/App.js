@@ -76,6 +76,18 @@ import VendorManagement from "./pages/VendorManagement";
 import AcceptableUse from "./pages/AcceptableUse";
 import SOC2 from "./pages/SOC2";
 import EnterpriseOverview from "./pages/EnterpriseOverview";
+// Feature Detail Pages
+import LessonPlanningFeature from "./pages/features/LessonPlanningFeature";
+import GradebookFeature from "./pages/features/GradebookFeature";
+import AttendanceFeature from "./pages/features/AttendanceFeature";
+import AIToolsFeature from "./pages/features/AIToolsFeature";
+import PresentationsFeature from "./pages/features/PresentationsFeature";
+import WorkflowFeature from "./pages/features/WorkflowFeature";
+// Use Case Pages
+import ClassroomTeachersUseCase from "./pages/use-cases/ClassroomTeachersUseCase";
+import HomeschoolUseCase from "./pages/use-cases/HomeschoolUseCase";
+import TutorsUseCase from "./pages/use-cases/TutorsUseCase";
+import SchoolsUseCase from "./pages/use-cases/SchoolsUseCase";
 
 const API = `${window.location.origin}/api`;
 
