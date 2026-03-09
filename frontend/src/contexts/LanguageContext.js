@@ -732,7 +732,136 @@ const translations = {
     useCaseTutorsTitle: 'Tutors and Small Learning Programs',
     useCaseTutorsDesc: 'Track student work, plan sessions, and create resources efficiently.',
     useCaseSchoolsTitle: 'Schools and Teams',
-    useCaseSchoolsDesc: 'Support educators with a platform that improves consistency and saves time.'
+    useCaseSchoolsDesc: 'Support educators with a platform that improves consistency and saves time.',
+    
+    // Feature Detail Pages - Common
+    backToFeatures: 'Back to Features',
+    keyBenefits: 'Key Benefits',
+    howItWorks: 'How It Works',
+    readyToGetStarted: 'Ready to get started?',
+    featureCTASubtitle: 'Join thousands of educators who are already saving time and improving their teaching workflow with TeacherHubPro.',
+    exploreOtherFeatures: 'Explore Other Features',
+    learnMore: 'Learn more',
+    
+    // Lesson Planning Feature
+    featureLessonPlanningTitle: 'Lesson Planning',
+    featureLessonPlanningSubtitle: 'Create organized, reusable lesson plans in less time with built-in templates and AI support.',
+    featureLessonPlanningDescription: 'TeacherHubPro\'s lesson planning tool helps you create comprehensive, standards-aligned lesson plans quickly and efficiently. Use our AI-powered suggestions to generate ideas, find resources, and structure your lessons. Save your plans as templates for future use and share them with colleagues.',
+    featureLessonPlanningBenefit1: 'Create lesson plans up to 5x faster with AI-powered templates',
+    featureLessonPlanningBenefit2: 'Align lessons to curriculum standards automatically',
+    featureLessonPlanningBenefit3: 'Reuse and adapt plans for different classes or years',
+    featureLessonPlanningBenefit4: 'Share plans with colleagues and collaborate in real-time',
+    featureLessonPlanningHowItWorks1: 'Choose a template or start from scratch, then add your learning objectives',
+    featureLessonPlanningHowItWorks2: 'Use AI suggestions to fill in activities, resources, and assessments',
+    featureLessonPlanningHowItWorks3: 'Save, organize, and reuse your plans across classes and semesters',
+    
+    // Gradebook Feature
+    featureGradebookTitle: 'Gradebook',
+    featureGradebookSubtitle: 'Track student progress with a clean, simple gradebook built for real classroom use.',
+    featureGradebookDescription: 'Our gradebook is designed to be intuitive and powerful. Track assignments, calculate grades automatically, and generate progress reports with ease. See individual student performance at a glance and identify students who may need additional support.',
+    featureGradebookBenefit1: 'Automatic grade calculations with customizable weighting',
+    featureGradebookBenefit2: 'Visual progress tracking for each student',
+    featureGradebookBenefit3: 'Generate report cards and progress reports instantly',
+    featureGradebookBenefit4: 'AI-powered insights to identify struggling students',
+    featureGradebookHowItWorks1: 'Set up your classes and add students',
+    featureGradebookHowItWorks2: 'Create assignments and enter grades as you go',
+    featureGradebookHowItWorks3: 'Review analytics and generate reports with one click',
+    
+    // Attendance Feature
+    featureAttendanceTitle: 'Attendance Tracking',
+    featureAttendanceSubtitle: 'Manage attendance quickly and keep class records organized without extra paperwork.',
+    featureAttendanceDescription: 'Say goodbye to paper attendance sheets. Our digital attendance system lets you take attendance in seconds, track patterns, and generate reports for administration. Set up notifications for chronic absenteeism and keep parents informed automatically.',
+    featureAttendanceBenefit1: 'Take attendance in under 30 seconds per class',
+    featureAttendanceBenefit2: 'Automatic pattern detection for chronic absenteeism',
+    featureAttendanceBenefit3: 'Generate attendance reports for administration',
+    featureAttendanceBenefit4: 'Optional parent notifications for absences',
+    featureAttendanceHowItWorks1: 'Open your class and tap to mark present, absent, or tardy',
+    featureAttendanceHowItWorks2: 'Review attendance patterns and trends over time',
+    featureAttendanceHowItWorks3: 'Export reports or share with parents through the portal',
+    
+    // AI Tools Feature
+    featureAIToolsTitle: 'AI Teaching Tools',
+    featureAIToolsSubtitle: 'Generate lesson ideas, activities, writing prompts, classroom materials, and more in seconds.',
+    featureAIToolsDescription: 'Harness the power of AI to supercharge your teaching. Generate lesson ideas tailored to your curriculum, create differentiated worksheets, write engaging discussion questions, and build assessments in minutes instead of hours. Our AI understands educational best practices and grade-level appropriateness.',
+    featureAIToolsBenefit1: 'Generate lesson ideas and activities tailored to your subject',
+    featureAIToolsBenefit2: 'Create differentiated materials for diverse learners',
+    featureAIToolsBenefit3: 'Build assessments and rubrics automatically',
+    featureAIToolsBenefit4: 'No additional AI fees - included in every plan',
+    featureAIToolsHowItWorks1: 'Describe what you need - lesson idea, worksheet, quiz, etc.',
+    featureAIToolsHowItWorks2: 'AI generates options based on your grade level and subject',
+    featureAIToolsHowItWorks3: 'Edit, customize, and save to your resource library',
+    
+    // Presentations Feature
+    featurePresentationsTitle: 'Presentations & Resources',
+    featurePresentationsSubtitle: 'Build materials for class faster and keep everything connected in one workflow.',
+    featurePresentationsDescription: 'Create engaging presentations, worksheets, and classroom resources all in one place. Our presentation builder integrates with your lesson plans so everything stays connected. Use templates designed for education, import existing materials, and share resources with students easily.',
+    featurePresentationsBenefit1: 'Education-focused templates for various subjects',
+    featurePresentationsBenefit2: 'Integrates with lesson plans and gradebook',
+    featurePresentationsBenefit3: 'Easy sharing with students via link or LMS',
+    featurePresentationsBenefit4: 'Import and organize existing resources',
+    featurePresentationsHowItWorks1: 'Choose a template or create from scratch',
+    featurePresentationsHowItWorks2: 'Add content, images, and interactive elements',
+    featurePresentationsHowItWorks3: 'Link to your lesson plan and share with your class',
+    
+    // Workflow Feature
+    featureWorkflowTitle: 'Teacher-Friendly Workflow',
+    featureWorkflowSubtitle: 'Designed for educators who need practical tools, not complex software.',
+    featureWorkflowDescription: 'We built TeacherHubPro specifically for how teachers actually work. Everything is designed to be intuitive, with minimal setup required. Move seamlessly between planning, grading, and communication. Your data syncs automatically, so you can work from any device.',
+    featureWorkflowBenefit1: 'Intuitive interface designed by educators',
+    featureWorkflowBenefit2: 'Works seamlessly across desktop and mobile',
+    featureWorkflowBenefit3: 'Quick setup - start using in minutes',
+    featureWorkflowBenefit4: 'Integrates with existing tools you already use',
+    featureWorkflowHowItWorks1: 'Sign up and set up your classes in minutes',
+    featureWorkflowHowItWorks2: 'Access all tools from one unified dashboard',
+    featureWorkflowHowItWorks3: 'Your data syncs automatically across all your devices',
+    
+    // Classroom Teachers Use Case
+    featureClassroomTeachersTitle: 'For Classroom Teachers',
+    featureClassroomTeachersSubtitle: 'Manage planning, grading, and daily classroom organization in one place.',
+    featureClassroomTeachersDescription: 'As a classroom teacher, you juggle multiple classes, dozens of students, and countless responsibilities. TeacherHubPro brings all your essential tools together so you can spend less time on administration and more time doing what you love - teaching.',
+    featureClassroomTeachersBenefit1: 'Plan lessons for multiple classes in one organized workspace',
+    featureClassroomTeachersBenefit2: 'Track grades and attendance across all your students',
+    featureClassroomTeachersBenefit3: 'Generate parent communication and progress reports',
+    featureClassroomTeachersBenefit4: 'Access your materials from classroom or home',
+    featureClassroomTeachersHowItWorks1: 'Set up your classes and import your student roster',
+    featureClassroomTeachersHowItWorks2: 'Plan lessons, take attendance, and record grades daily',
+    featureClassroomTeachersHowItWorks3: 'Generate reports and communicate with parents through the portal',
+    
+    // Homeschool Use Case
+    featureHomeschoolTitle: 'For Homeschool Educators',
+    featureHomeschoolSubtitle: 'Create flexible lesson workflows and keep learning plans organized.',
+    featureHomeschoolDescription: 'Homeschooling requires flexibility, adaptability, and excellent organization. TeacherHubPro helps you create personalized learning paths for each child, track their progress, and maintain records for compliance. Our AI tools help generate fresh ideas and materials when you need inspiration.',
+    featureHomeschoolBenefit1: 'Create personalized learning paths for each child',
+    featureHomeschoolBenefit2: 'Maintain organized records for compliance requirements',
+    featureHomeschoolBenefit3: 'AI-generated activities and lesson ideas',
+    featureHomeschoolBenefit4: 'Flexible scheduling that adapts to your family\'s needs',
+    featureHomeschoolHowItWorks1: 'Set up profiles for each child you\'re teaching',
+    featureHomeschoolHowItWorks2: 'Create and track progress on personalized learning plans',
+    featureHomeschoolHowItWorks3: 'Generate reports for portfolio reviews or assessments',
+    
+    // Tutors Use Case
+    featureTutorsTitle: 'For Tutors & Small Programs',
+    featureTutorsSubtitle: 'Track student work, plan sessions, and create resources efficiently.',
+    featureTutorsDescription: 'Whether you\'re an independent tutor or running a small learning program, TeacherHubPro helps you stay organized and professional. Track individual student progress, plan effective sessions, and communicate with parents. Scale your operation without losing the personal touch.',
+    featureTutorsBenefit1: 'Track progress for multiple students individually',
+    featureTutorsBenefit2: 'Plan sessions and maintain session notes',
+    featureTutorsBenefit3: 'Generate progress reports for parents',
+    featureTutorsBenefit4: 'Create custom materials for each student\'s needs',
+    featureTutorsHowItWorks1: 'Add your students and their learning goals',
+    featureTutorsHowItWorks2: 'Plan sessions and track progress over time',
+    featureTutorsHowItWorks3: 'Share progress with parents through the parent portal',
+    
+    // Schools Use Case
+    featureSchoolsTitle: 'For Schools & Teams',
+    featureSchoolsSubtitle: 'Support educators with a platform that improves consistency and saves time.',
+    featureSchoolsDescription: 'TeacherHubPro is designed to scale with your school or district. Provide your teachers with consistent, powerful tools that save time and improve outcomes. Administrators can monitor adoption, share resources across the team, and ensure curriculum alignment.',
+    featureSchoolsBenefit1: 'Consistent tools across all teachers in your school',
+    featureSchoolsBenefit2: 'Shared resource library for curriculum materials',
+    featureSchoolsBenefit3: 'Admin dashboard for monitoring and support',
+    featureSchoolsBenefit4: 'Volume pricing for schools and districts',
+    featureSchoolsHowItWorks1: 'Contact us for school or district pricing',
+    featureSchoolsHowItWorks2: 'Onboard teachers with guided setup and training',
+    featureSchoolsHowItWorks3: 'Monitor adoption and provide ongoing support'
   },
   es: {
     // Navigation
