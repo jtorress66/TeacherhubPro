@@ -13,6 +13,7 @@ const SchoolsUseCase = () => {
       featureKey="Schools"
       icon={Building}
       iconColor="bg-blue-100 text-blue-600"
+      heroImage="https://images.unsplash.com/photo-1672917187338-7f81ecac3d3f?w=800&h=600&fit=crop"
       relatedFeatures={relatedFeatures}
     />
   );

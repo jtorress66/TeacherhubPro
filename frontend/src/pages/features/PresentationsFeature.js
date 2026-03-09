@@ -13,6 +13,7 @@ const PresentationsFeature = () => {
       featureKey="Presentations"
       icon={Presentation}
       iconColor="bg-amber-100 text-amber-600"
+      heroImage="https://images.unsplash.com/photo-1766867264693-e34f484d3371?w=800&h=600&fit=crop"
       relatedFeatures={relatedFeatures}
     />
   );

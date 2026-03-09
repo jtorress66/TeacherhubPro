@@ -13,6 +13,7 @@ const AttendanceFeature = () => {
       featureKey="Attendance"
       icon={ClipboardCheck}
       iconColor="bg-teal-100 text-teal-600"
+      heroImage="https://images.unsplash.com/photo-1719159381916-062fa9f435a6?w=800&h=600&fit=crop"
       relatedFeatures={relatedFeatures}
     />
   );

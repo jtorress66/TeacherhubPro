@@ -8,6 +8,7 @@ const FeatureDetailPage = ({
   featureKey,
   icon: Icon,
   iconColor = 'bg-lime-100 text-lime-600',
+  heroImage,
   relatedFeatures = []
 }) => {
   const { t } = useLanguage();
@@ -72,12 +73,21 @@ const FeatureDetailPage = ({
               </div>
             </div>
 
-            {/* Right: Visual placeholder */}
+            {/* Right: Hero image */}
             <div className="relative">
-              <div className="rounded-2xl bg-white shadow-xl border border-slate-200 p-6 sm:p-8">
-                <div className={`w-full h-48 sm:h-64 rounded-xl ${iconColor.replace('text-', 'bg-').replace('-600', '-50')} flex items-center justify-center`}>
-                  <Icon className={`w-16 h-16 sm:w-24 sm:h-24 ${iconColor.split(' ')[1]}`} />
-                </div>
+              <div className="rounded-2xl bg-white shadow-xl border border-slate-200 overflow-hidden">
+                {heroImage ? (
+                  <img 
+                    src={heroImage} 
+                    alt={title}
+                    className="w-full h-64 sm:h-80 object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className={`w-full h-64 sm:h-80 ${iconColor.replace('text-', 'bg-').replace('-600', '-50')} flex items-center justify-center`}>
+                    <Icon className={`w-16 h-16 sm:w-24 sm:h-24 ${iconColor.split(' ')[1]}`} />
+                  </div>
+                )}
               </div>
             </div>
           </div>

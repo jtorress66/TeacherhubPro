@@ -13,6 +13,7 @@ const LessonPlanningFeature = () => {
       featureKey="LessonPlanning"
       icon={Calendar}
       iconColor="bg-purple-100 text-purple-600"
+      heroImage="https://images.unsplash.com/photo-1758685848208-e108b6af94cc?w=800&h=600&fit=crop"
       relatedFeatures={relatedFeatures}
     />
   );

@@ -13,6 +13,7 @@ const AIToolsFeature = () => {
       featureKey="AITools"
       icon={Sparkles}
       iconColor="bg-rose-100 text-rose-600"
+      heroImage="https://images.unsplash.com/photo-1652127691413-6cb8c0304aba?w=800&h=600&fit=crop"
       relatedFeatures={relatedFeatures}
     />
   );

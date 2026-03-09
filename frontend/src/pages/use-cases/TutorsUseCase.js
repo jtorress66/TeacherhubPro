@@ -13,6 +13,7 @@ const TutorsUseCase = () => {
       featureKey="Tutors"
       icon={Users}
       iconColor="bg-amber-100 text-amber-600"
+      heroImage="https://images.unsplash.com/photo-1660128356943-e1f893a56a89?w=800&h=600&fit=crop"
       relatedFeatures={relatedFeatures}
     />
   );
