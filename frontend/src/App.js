@@ -343,6 +343,18 @@ const AppRouter = () => {
       <Route path="/acceptable-use" element={<AcceptableUse />} />
       <Route path="/soc2" element={<SOC2 />} />
       <Route path="/enterprise-overview" element={<EnterpriseOverview />} />
+      {/* Feature Detail Pages (Public) */}
+      <Route path="/features/lesson-planning" element={<LessonPlanningFeature />} />
+      <Route path="/features/gradebook" element={<GradebookFeature />} />
+      <Route path="/features/attendance" element={<AttendanceFeature />} />
+      <Route path="/features/ai-tools" element={<AIToolsFeature />} />
+      <Route path="/features/presentations" element={<PresentationsFeature />} />
+      <Route path="/features/workflow" element={<WorkflowFeature />} />
+      {/* Use Case Pages (Public) */}
+      <Route path="/use-cases/classroom-teachers" element={<ClassroomTeachersUseCase />} />
+      <Route path="/use-cases/homeschool" element={<HomeschoolUseCase />} />
+      <Route path="/use-cases/tutors" element={<TutorsUseCase />} />
+      <Route path="/use-cases/schools" element={<SchoolsUseCase />} />
       {/* Fallback redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
