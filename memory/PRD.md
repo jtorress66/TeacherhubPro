@@ -3,6 +3,30 @@
 
 
 ---
+## Update 2026-03-09 - HERO IMAGES ON ALL DETAIL PAGES ✅ COMPLETE
+
+### What Changed:
+- Replaced icon placeholders on all 10 feature/use-case detail pages with real stock photos from Unsplash/Pexels.
+- Added `heroImage` prop to `FeatureDetailPage.jsx` component.
+
+### Image Mapping:
+| Page | Image Subject |
+|------|--------------|
+| /features/lesson-planning | Teacher at laptop with chalkboard |
+| /features/gradebook | Person grading on Macbook |
+| /features/attendance | Students at desks in classroom |
+| /features/ai-tools | AI robot at table |
+| /features/presentations | Woman presenting with projector |
+| /features/workflow | Whiteboard with post-it notes |
+| /use-cases/classroom-teachers | Teacher engaging children |
+| /use-cases/homeschool | Father and son studying |
+| /use-cases/tutors | Tutor helping student with book |
+| /use-cases/schools | Team meeting around table |
+
+### Testing: All 10 pages verified on desktop and mobile (375px). 100% pass rate.
+
+---
+
 ## Update 2026-03-09 - SCROLL TO TOP ON NAVIGATION FIX (P0 Bug Fix) ✅ COMPLETE
 
 ### Issue:
