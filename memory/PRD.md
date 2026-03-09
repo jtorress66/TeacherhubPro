@@ -6,24 +6,11 @@
 ## Update 2026-03-09 - HERO IMAGES ON ALL DETAIL PAGES ✅ COMPLETE
 
 ### What Changed:
-- Replaced icon placeholders on all 10 feature/use-case detail pages with real stock photos from Unsplash/Pexels.
+- Replaced icon placeholders on all 10 feature/use-case detail pages with AI-generated custom illustrations in brand colors (lime green #84cc16, dark slate #1e293b).
 - Added `heroImage` prop to `FeatureDetailPage.jsx` component.
+- Images hosted on static.prod-images.emergentagent.com (PNG, 1280x896 natural size).
 
-### Image Mapping:
-| Page | Image Subject |
-|------|--------------|
-| /features/lesson-planning | Teacher at laptop with chalkboard |
-| /features/gradebook | Person grading on Macbook |
-| /features/attendance | Students at desks in classroom |
-| /features/ai-tools | AI robot at table |
-| /features/presentations | Woman presenting with projector |
-| /features/workflow | Whiteboard with post-it notes |
-| /use-cases/classroom-teachers | Teacher engaging children |
-| /use-cases/homeschool | Father and son studying |
-| /use-cases/tutors | Tutor helping student with book |
-| /use-cases/schools | Team meeting around table |
-
-### Testing: All 10 pages verified on desktop and mobile (375px). 100% pass rate.
+### Testing: All 10 pages verified on desktop (1920px) and mobile (375px). 20/20 tests passed.
 
 ---
 
