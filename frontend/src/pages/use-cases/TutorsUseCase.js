@@ -1,5 +1,5 @@
 import { GraduationCap, Home, Users, Building } from 'lucide-react';
-import FeatureDetailPage from '../components/marketing/FeatureDetailPage';
+import FeatureDetailPage from '../../components/marketing/FeatureDetailPage';
 
 const TutorsUseCase = () => {
   const relatedFeatures = [
