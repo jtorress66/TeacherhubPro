@@ -13,7 +13,7 @@ const HomeschoolUseCase = () => {
       featureKey="Homeschool"
       icon={Home}
       iconColor="bg-teal-100 text-teal-600"
-      heroImage="https://images.unsplash.com/photo-1758687126404-3437da7244d3?w=800&h=600&fit=crop"
+      heroImage="https://static.prod-images.emergentagent.com/jobs/9651e3ca-5bf4-4d9b-b045-1d41a1fb3908/images/72ce9fb5ddc7fb8402e2640f5fbf6de0072bee3dddd6b602754033de3f46c5f6.png"
       relatedFeatures={relatedFeatures}
     />
   );

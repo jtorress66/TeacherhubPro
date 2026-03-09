@@ -13,7 +13,7 @@ const WorkflowFeature = () => {
       featureKey="Workflow"
       icon={Users}
       iconColor="bg-green-100 text-green-600"
-      heroImage="https://images.unsplash.com/photo-1676276375900-dd41f828c985?w=800&h=600&fit=crop"
+      heroImage="https://static.prod-images.emergentagent.com/jobs/9651e3ca-5bf4-4d9b-b045-1d41a1fb3908/images/5a2ed4799a3fe02962b4c92a379b4dbc0a88bffdf82c40c77a4697dffc7f577a.png"
       relatedFeatures={relatedFeatures}
     />
   );

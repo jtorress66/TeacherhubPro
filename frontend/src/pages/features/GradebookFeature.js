@@ -13,7 +13,7 @@ const GradebookFeature = () => {
       featureKey="Gradebook"
       icon={BookOpen}
       iconColor="bg-blue-100 text-blue-600"
-      heroImage="https://images.unsplash.com/photo-1553861542-15283bc1bcd2?w=800&h=600&fit=crop"
+      heroImage="https://static.prod-images.emergentagent.com/jobs/9651e3ca-5bf4-4d9b-b045-1d41a1fb3908/images/bfdbd47244ff7560ec47551765e0af346961c25df30c91e601e66496ffb3ff15.png"
       relatedFeatures={relatedFeatures}
     />
   );

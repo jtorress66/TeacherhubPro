@@ -13,7 +13,7 @@ const ClassroomTeachersUseCase = () => {
       featureKey="ClassroomTeachers"
       icon={GraduationCap}
       iconColor="bg-purple-100 text-purple-600"
-      heroImage="https://images.pexels.com/photos/8535598/pexels-photo-8535598.jpeg?auto=compress&cs=tinysrgb&w=800"
+      heroImage="https://static.prod-images.emergentagent.com/jobs/9651e3ca-5bf4-4d9b-b045-1d41a1fb3908/images/8d9115998b6703d635009d339aa4714f3dece50cef2cb36dc8b647d8ab8f03af.png"
       relatedFeatures={relatedFeatures}
     />
   );
