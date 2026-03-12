@@ -48,8 +48,19 @@ client = AsyncIOMotorClient(mongo_url)
 # Use database from connection string if available (Atlas auth), fallback to DB_NAME
 try:
     db = client.get_default_database()
-except Exception:
-    db = client[os.environ.get('DB_NAME', 'teacherhub')]
+    logging.info(f"Using database from connection string: {db.name}")
+except Exception as e:
+    # Parse database name from URL path as second attempt
+    from urllib.parse import urlparse
+    _parsed = urlparse(mongo_url.replace('+srv', ''))
+    _url_db = _parsed.path.strip('/') if _parsed.path and _parsed.path.strip('/') else None
+    if _url_db:
+        db = client[_url_db]
+        logging.info(f"Using database from URL path: {_url_db}")
+    else:
+        db_name = os.environ.get('DB_NAME', 'teacherhub')
+        db = client[db_name]
+        logging.info(f"Using database from DB_NAME env var: {db_name}")
 
 # JWT Configuration
 JWT_SECRET = os.environ.get('JWT_SECRET', 'teacherhub-secret-key-change-in-production')
