@@ -11,4 +11,8 @@ load_dotenv(ROOT_DIR / '.env')
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ.get('DB_NAME', 'teacherhub')]
+# Use database from connection string if available (Atlas auth), fallback to DB_NAME
+try:
+    db = client.get_default_database()
+except Exception:
+    db = client[os.environ.get('DB_NAME', 'teacherhub')]
