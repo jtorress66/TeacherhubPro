@@ -1239,7 +1239,10 @@ async def get_students(class_id: str, user: dict = Depends(get_current_user)):
     if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
-    students = await db.students.find({"class_id": class_id}, {"_id": 0}).to_list(100)
+    students = await db.students.find(
+        {"$or": [{"class_id": class_id}, {"class_ids": class_id}]},
+        {"_id": 0}
+    ).to_list(100)
     return [StudentResponse(**s) for s in students]
 
 @api_router.post("/classes/{class_id}/students", response_model=StudentResponse)
@@ -3819,6 +3822,7 @@ async def bulk_import_students(payload: BulkStudentImport, request: Request):
                     update_fields["date_of_birth"] = date_of_birth
                 if gender and gender in ['M', 'F', 'O']:
                     update_fields["gender"] = gender
+                update_fields["class_id"] = payload.class_id
                 await db.students.update_one(
                     {"student_number": student_number, "school_id": payload.school_id},
                     {"$set": update_fields, "$addToSet": {"class_ids": payload.class_id}}
@@ -3838,6 +3842,7 @@ async def bulk_import_students(payload: BulkStudentImport, request: Request):
                 "date_of_birth": date_of_birth or None,
                 "gender": gender if gender in ['M', 'F', 'O'] else None,
                 "school_id": payload.school_id,
+                "class_id": payload.class_id,
                 "class_ids": [payload.class_id],
                 "teacher_id": class_doc.get("teacher_id"),
                 "created_at": datetime.now(timezone.utc).isoformat()
