@@ -3807,7 +3807,23 @@ async def bulk_import_students(payload: BulkStudentImport, request: Request):
                 "school_id": payload.school_id
             })
             if existing:
-                errors.append(f"Student number already exists: {student_number}")
+                # Update existing student and ensure they're in this class
+                update_fields = {
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "name": f"{first_name} {last_name}",
+                }
+                if email:
+                    update_fields["email"] = email
+                if date_of_birth:
+                    update_fields["date_of_birth"] = date_of_birth
+                if gender and gender in ['M', 'F', 'O']:
+                    update_fields["gender"] = gender
+                await db.students.update_one(
+                    {"student_number": student_number, "school_id": payload.school_id},
+                    {"$set": update_fields, "$addToSet": {"class_ids": payload.class_id}}
+                )
+                imported_count += 1
                 continue
             
             student_id = f"student_{uuid.uuid4().hex[:12]}"
