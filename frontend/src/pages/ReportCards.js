@@ -35,6 +35,7 @@ const ReportCards = () => {
   const [classes, setClasses] = useState([]);
   const [students, setStudents] = useState([]);
   const [school, setSchool] = useState(null);
+  const [allSchools, setAllSchools] = useState([]);
   const [semesters, setSemesters] = useState([]);
   
   // Selection state
@@ -73,8 +74,9 @@ const ReportCards = () => {
         axios.get(`${API}/semesters`, { withCredentials: true })
       ]);
       setClasses(classesRes.data || []);
-      // Schools endpoint returns array, get first one (user's school)
+      // Store all schools for class-to-school mapping
       const schoolsData = schoolsRes.data || [];
+      setAllSchools(schoolsData);
       if (schoolsData.length > 0) {
         setSchool(schoolsData[0]);
       }
@@ -290,7 +292,7 @@ const ReportCards = () => {
           printWindow.document.write(`
             <div class="${i < selectedStudents.length - 1 ? 'page-break' : ''}">
               <div class="header">
-                ${school?.logo_url ? `<img src="${school.logo_url}" alt="School Logo" class="school-logo">` : ''}
+                <img src="${school?.logo_url || `${window.location.origin}/logo192.png`}" alt="School Logo" class="school-logo">
                 <h1 class="school-name">${school?.name || 'School Name'}</h1>
                 <p>${school?.address || ''}</p>
                 <h2 class="report-title">${language === 'es' ? 'BOLETA DE CALIFICACIONES' : 'REPORT CARD'}</h2>
@@ -445,6 +447,12 @@ const ReportCards = () => {
                       setSelectedStudent('');
                       setReportData(null);
                       setSelectedStudents([]);
+                      // Match school to the selected class
+                      const classDoc = classes.find(c => c.class_id === v);
+                      if (classDoc?.school_id && allSchools.length > 0) {
+                        const matched = allSchools.find(s => s.school_id === classDoc.school_id);
+                        if (matched) setSchool(matched);
+                      }
                     }}>
                       <SelectTrigger data-testid="class-select">
                         <SelectValue placeholder={language === 'es' ? 'Seleccionar clase' : 'Select class'} />
@@ -544,9 +552,11 @@ const ReportCards = () => {
                   >
                     {/* Header */}
                     <div className="header text-center border-b-2 border-slate-800 pb-4 mb-4">
-                      {school?.logo_url && (
-                        <img src={school.logo_url} alt="School Logo" className="school-logo mx-auto h-20 object-contain mb-2" />
-                      )}
+                      <img 
+                        src={school?.logo_url || `${window.location.origin}/logo192.png`} 
+                        alt="School Logo" 
+                        className="school-logo mx-auto h-20 object-contain mb-2" 
+                      />
                       <h1 className="school-name text-xl font-bold">{school?.name || 'School Name'}</h1>
                       <p className="text-sm text-slate-600">{school?.address}</p>
                       <h2 className="report-title text-lg mt-2 text-slate-700">
@@ -734,6 +744,11 @@ const ReportCards = () => {
                       setSelectedStudent('');
                       setReportData(null);
                       setSelectedStudents([]);
+                      const classDoc = classes.find(c => c.class_id === v);
+                      if (classDoc?.school_id && allSchools.length > 0) {
+                        const matched = allSchools.find(s => s.school_id === classDoc.school_id);
+                        if (matched) setSchool(matched);
+                      }
                     }}>
                       <SelectTrigger>
                         <SelectValue placeholder={language === 'es' ? 'Seleccionar clase' : 'Select class'} />
