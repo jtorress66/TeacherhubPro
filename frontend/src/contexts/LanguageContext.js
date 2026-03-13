@@ -5309,11 +5309,18 @@ const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState(() => {
-    return localStorage.getItem('teacherhub_language') || 'es';
+    // Check URL param first (for SEO/sitemap hreflang links), then localStorage, default to English
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlLang = urlParams.get('lang');
+    if (urlLang && ['en', 'es', 'fr', 'pt', 'de', 'it', 'zh'].includes(urlLang)) {
+      return urlLang;
+    }
+    return localStorage.getItem('teacherhub_language') || 'en';
   });
 
   useEffect(() => {
     localStorage.setItem('teacherhub_language', language);
+    document.documentElement.lang = language;
   }, [language]);
 
   const t = (key) => {
