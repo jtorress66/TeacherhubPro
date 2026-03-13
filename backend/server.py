@@ -1015,8 +1015,12 @@ async def get_school(school_id: str, user: dict = Depends(get_current_user)):
 async def get_classes(user: dict = Depends(get_current_user)):
     """Get classes for current teacher"""
     query = {"teacher_id": user["user_id"]}
-    if user.get("role") in ["admin", "super_admin"]:
-        query = {"school_id": user.get("school_id")}
+    if user.get("role") == "super_admin":
+        query = {}  # Super admin sees all classes
+    elif user.get("role") == "admin":
+        school_id = user.get("school_id")
+        if school_id:
+            query = {"school_id": school_id}
     
     classes = await db.classes.find(query, {"_id": 0}).to_list(100)
     return [ClassResponse(**c) for c in classes]
@@ -3780,12 +3784,14 @@ async def bulk_import_students(payload: BulkStudentImport, request: Request):
     
     for row in payload.data:
         try:
-            first_name = row.get('first_name', '').strip()
-            last_name = row.get('last_name', '').strip()
-            student_number = row.get('student_number', row.get('student_id', '')).strip()
-            email = row.get('email', '').strip()
-            date_of_birth = row.get('date_of_birth', row.get('dob', '')).strip()
-            gender = row.get('gender', '').strip().upper()
+            # Strip BOM and normalize keys (Excel CSVs add \ufeff BOM to first header)
+            clean_row = {k.strip().strip('\ufeff').lower(): v for k, v in row.items()}
+            first_name = clean_row.get('first_name', '').strip()
+            last_name = clean_row.get('last_name', '').strip()
+            student_number = clean_row.get('student_number', clean_row.get('student_id', '')).strip()
+            email = clean_row.get('email', '').strip()
+            date_of_birth = clean_row.get('date_of_birth', clean_row.get('dob', '')).strip()
+            gender = clean_row.get('gender', '').strip().upper()
             
             if not first_name or not last_name:
                 errors.append(f"Missing first_name or last_name: {row}")

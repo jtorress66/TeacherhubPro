@@ -3,6 +3,22 @@
 
 
 ---
+## Update 2026-03-13 - SUPER ADMIN BUGS FIXED ✅
+
+### Bug 1: Bulk CSV Import shows 0 students
+- **Root cause:** Excel-generated CSVs include a BOM character (`\ufeff`) at the start. This made the first header key invisible-wrong (e.g., `\ufefffirst_name` instead of `first_name`), causing all rows to fail validation.
+- **Fix:** Strip BOM from CSV text in frontend (`AdminPanel.js`) and normalize keys in backend (`server.py` line ~3784). Also show import errors in the UI.
+
+### Bug 2: Classes created by Super Admin disappear
+- **Root cause:** GET `/api/classes` filtered by `school_id` for super admins, but the super admin user had no `school_id` set → query returned nothing.
+- **Fix:** Super admin now sees ALL classes (empty query). Admin still filters by school_id.
+
+### Files Modified:
+- `/app/backend/server.py` — Fixed GET /classes query for super_admin + BOM stripping in bulk import
+- `/app/frontend/src/pages/AdminPanel.js` — BOM stripping in CSV parse + show import errors
+
+---
+
 ## Update 2026-03-09 - HERO IMAGES ON ALL DETAIL PAGES ✅ COMPLETE
 
 ### What Changed:

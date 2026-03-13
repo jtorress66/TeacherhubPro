@@ -872,8 +872,10 @@ const AdminPanel = () => {
                         const reader = new FileReader();
                         reader.onload = (event) => {
                           const text = event.target.result;
-                          const lines = text.split('\n').filter(line => line.trim());
-                          const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+                          // Strip BOM character that Excel adds to UTF-8 CSVs
+                          const cleanText = text.replace(/^\ufeff/, '');
+                          const lines = cleanText.split('\n').filter(line => line.trim());
+                          const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/^\ufeff/, ''));
                           const data = [];
                           const errors = [];
                           
@@ -1006,10 +1008,14 @@ const AdminPanel = () => {
                       };
                       
                       const res = await axios.post(endpoint, payload, { withCredentials: true });
+                      const errCount = res.data.errors?.length || 0;
                       setImportResults({
-                        success: true,
-                        message: language === 'es' ? '¡Importación exitosa!' : 'Import successful!',
-                        details: `${res.data.imported_count} ${bulkImportType} ${language === 'es' ? 'importados' : 'imported'}`
+                        success: res.data.imported_count > 0,
+                        message: res.data.imported_count > 0 
+                          ? (language === 'es' ? '¡Importación exitosa!' : 'Import successful!')
+                          : (language === 'es' ? 'No se importaron registros' : 'No records imported'),
+                        details: `${res.data.imported_count} ${bulkImportType} ${language === 'es' ? 'importados' : 'imported'}` +
+                          (errCount > 0 ? ` | ${errCount} ${language === 'es' ? 'errores' : 'errors'}: ${res.data.errors.slice(0, 3).join('; ')}` : '')
                       });
                       setCsvFile(null);
                       setCsvData([]);
