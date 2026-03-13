@@ -134,7 +134,7 @@ const ReportCards = () => {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>${language === 'es' ? 'Boleta de Calificaciones' : 'Report Card'}</title>
+        <title>${language === 'es' ? 'Nota' : 'Report Card'}</title>
         <style>
           @page { size: letter; margin: 0.5in; }
           body { 
@@ -240,7 +240,7 @@ const ReportCards = () => {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>${language === 'es' ? 'Boletas de Calificaciones' : 'Report Cards'}</title>
+        <title>${language === 'es' ? 'Notas' : 'Report Cards'}</title>
         <style>
           @page { size: letter; margin: 0.5in; }
           body { font-family: Arial, sans-serif; font-size: 11pt; }
@@ -295,7 +295,7 @@ const ReportCards = () => {
                 <img src="${school?.logo_url || `${window.location.origin}/logo192.png`}" alt="School Logo" class="school-logo">
                 <h1 class="school-name">${school?.name || 'School Name'}</h1>
                 <p>${school?.address || ''}</p>
-                <h2 class="report-title">${language === 'es' ? 'BOLETA DE CALIFICACIONES' : 'REPORT CARD'}</h2>
+                <h2 class="report-title">${language === 'es' ? 'NOTAS' : 'REPORT CARD'}</h2>
                 <p>${semesters.find(s => s.semester_id === selectedSemester)?.name || ''}</p>
               </div>
               <div class="student-info">
@@ -349,10 +349,10 @@ const ReportCards = () => {
         printWindow.print();
       }, 500);
       
-      toast.success(language === 'es' ? `${selectedStudents.length} boletas generadas` : `${selectedStudents.length} report cards generated`);
+      toast.success(language === 'es' ? `${selectedStudents.length} notas generadas` : `${selectedStudents.length} report cards generated`);
     } catch (error) {
       console.error('Batch generation error:', error);
-      toast.error(language === 'es' ? 'Error al generar boletas' : 'Error generating report cards');
+      toast.error(language === 'es' ? 'Error al generar notas' : 'Error generating report cards');
     } finally {
       setBatchGenerating(false);
       setBatchProgress(0);
@@ -379,10 +379,10 @@ const ReportCards = () => {
               <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600">
                 <GraduationCap className="h-6 w-6 text-white" />
               </div>
-              {language === 'es' ? 'Boletas de Calificaciones' : 'Report Cards'}
+              {language === 'es' ? 'Notas' : 'Report Cards'}
             </h1>
             <p className="text-muted-foreground mt-1">
-              {language === 'es' ? 'Generar e imprimir boletas de calificaciones' : 'Generate and print student report cards'}
+              {language === 'es' ? 'Generar e imprimir notas de estudiantes' : 'Generate and print student report cards'}
             </p>
           </div>
           <div className="flex gap-2">
@@ -501,7 +501,7 @@ const ReportCards = () => {
                     {generating ? (
                       <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {language === 'es' ? 'Generando...' : 'Generating...'}</>
                     ) : (
-                      <><Sparkles className="h-4 w-4 mr-2" /> {language === 'es' ? 'Generar Boleta' : 'Generate Report Card'}</>
+                      <><Sparkles className="h-4 w-4 mr-2" /> {language === 'es' ? 'Generar Nota' : 'Generate Report Card'}</>
                     )}
                   </Button>
                 </CardContent>
@@ -515,7 +515,7 @@ const ReportCards = () => {
                       <FileText className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
                       <p className="text-muted-foreground">
                         {language === 'es' 
-                          ? 'Seleccione un estudiante para generar la boleta de calificaciones'
+                          ? 'Seleccione un estudiante para generar la nota'
                           : 'Select a student to generate the report card'}
                       </p>
                     </div>
@@ -560,7 +560,7 @@ const ReportCards = () => {
                       <h1 className="school-name text-xl font-bold">{school?.name || 'School Name'}</h1>
                       <p className="text-sm text-slate-600">{school?.address}</p>
                       <h2 className="report-title text-lg mt-2 text-slate-700">
-                        {language === 'es' ? 'BOLETA DE CALIFICACIONES' : 'REPORT CARD'}
+                        {language === 'es' ? 'NOTAS' : 'REPORT CARD'}
                       </h2>
                       <p className="text-sm text-slate-500">
                         {semesters.find(s => s.semester_id === selectedSemester)?.name || ''}
@@ -714,7 +714,7 @@ const ReportCards = () => {
                     {language === 'es' ? 'Generación por Lotes' : 'Batch Generation'}
                   </CardTitle>
                   <CardDescription>
-                    {language === 'es' ? 'Genere boletas para múltiples estudiantes' : 'Generate report cards for multiple students'}
+                    {language === 'es' ? 'Genere notas para múltiples estudiantes' : 'Generate report cards for multiple students'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -788,7 +788,7 @@ const ReportCards = () => {
                     ) : (
                       <>
                         <Printer className="h-4 w-4 mr-2" /> 
-                        {language === 'es' ? `Imprimir ${selectedStudents.length} Boletas` : `Print ${selectedStudents.length} Report Cards`}
+                        {language === 'es' ? `Imprimir ${selectedStudents.length} Notas` : `Print ${selectedStudents.length} Report Cards`}
                       </>
                     )}
                   </Button>
