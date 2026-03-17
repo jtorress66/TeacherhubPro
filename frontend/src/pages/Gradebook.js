@@ -240,20 +240,24 @@ const Gradebook = () => {
 
   // Question builder helpers
   const addQuestion = () => {
-    setAssignmentQuestions(prev => [...prev, {
-      question_text: '',
-      question_type: 'multiple_choice',
-      points: 10,
-      instructions: '',
-      options: [
-        { text: '', is_correct: false },
-        { text: '', is_correct: false },
-        { text: '', is_correct: false },
-        { text: '', is_correct: false }
-      ],
-      correct_answer: '',
-      matching_pairs: []
-    }]);
+    setAssignmentQuestions(prev => {
+      const nextNum = prev.length + 1;
+      return [...prev, {
+        question_id: `q${nextNum}`,
+        question_text: '',
+        question_type: 'multiple_choice',
+        points: 10,
+        instructions: '',
+        options: [
+          { text: '', is_correct: false },
+          { text: '', is_correct: false },
+          { text: '', is_correct: false },
+          { text: '', is_correct: false }
+        ],
+        correct_answer: '',
+        matching_pairs: []
+      }];
+    });
   };
 
   const updateQuestion = (index, field, value) => {

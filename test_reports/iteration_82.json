@@ -1,0 +1,75 @@
+{
+  "summary": "Bug fix verified: Teachers can now see student answers when clicking 'View' button in AI Grading. The 'No answer' bug was caused by manual assignments not having question_id fields, which caused frontend lookup to fail. Fix applied in 3 places: backend adds fallback question_ids, frontend uses fallback lookup, and Gradebook now generates question_ids.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_ai_grading_answer_display.py",
+    "/app/test_reports/pytest/pytest_ai_grading_answer_display.xml",
+    ".screenshots/paul_modal.png",
+    ".screenshots/matching_modal.png"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Backend fix (ai_grading.py lines 558-562): get_submission endpoint now adds fallback question_id (q1, q2, etc.) if missing - CORRECT",
+    "Frontend fix (AIGrading.js lines 475-479): Uses same fallback logic `q.question_id || q${idx + 1}` - CORRECT",
+    "Gradebook fix (line 243): addQuestion() now generates question_id: `q${nextNum}` for new questions - CORRECT",
+    "Matching answers display correctly with arrow notation (key → value) per lines 495-496 in AIGrading.js"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_ai_grading_answer_display.py"
+  ],
+  "success_rate": {
+    "backend": "100% (6/6 tests passed)",
+    "frontend": "100% (all features verified via Playwright)"
+  },
+  "test_credentials": {
+    "teacher_login": "email: test@school.edu, password: testpassword",
+    "test_submission_id": "sub_8f94f177",
+    "test_assignment_id": "assign_b3837ab1 (Capital Cities Quiz - created WITHOUT question_id fields)"
+  },
+  "seed_data_creation": "Used pre-existing test data: sub_8f94f177 (Paul Figueroa, Capital Cities Quiz)",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Bug fix verified. The answer display bug in AI Grading was caused by manual assignments not having question_id fields. The fix adds fallback question_ids in 3 places: (1) backend get_submission adds q1, q2 etc. if missing, (2) frontend uses same fallback lookup, (3) Gradebook addQuestion now generates IDs. Test submission sub_8f94f177 demonstrates the fix working.",
+  "features_tested": {
+    "backend_question_id_fallback": {
+      "result": "PASS",
+      "details": "GET /api/ai-grading/submissions/sub_8f94f177 returns questions with question_id populated (q1, q2, q3)"
+    },
+    "frontend_answer_display": {
+      "result": "PASS",
+      "details": "View modal shows 'San Juan', 'United States', 'Tallahassee' correctly"
+    },
+    "matching_answer_rendering": {
+      "result": "PASS", 
+      "details": "Matching answers display with arrow notation: Japan → Tokyo, Brazil → Tokyo, etc."
+    },
+    "no_answer_bug": {
+      "result": "FIXED",
+      "details": "'No answer' text no longer appears for questions that have answers"
+    }
+  },
+  "bug_rca": {
+    "root_cause": "Manual assignments created via Gradebook question builder did not have question_id fields. The frontend lookup `selectedSubmission.answers?.[q.question_id]` returned undefined because q.question_id was empty/missing, causing 'No answer' to display.",
+    "reproduction_steps": [
+      "1. Create manual assignment in Gradebook without question_ids (old behavior)",
+      "2. Student submits answers keyed by position (q1, q2, q3)",
+      "3. Teacher clicks View on AI Grading page",
+      "4. Frontend tries to lookup answers by question_id (which was missing)",
+      "5. All questions show 'No answer'"
+    ],
+    "fix_verification": [
+      "Backend: get_submission endpoint adds fallback q1, q2, etc. if question_id missing",
+      "Frontend: Uses fallback `q.question_id || q${idx+1}` for lookup",
+      "Gradebook: addQuestion() now generates question_id for new questions",
+      "All 3 fixes ensure consistent ID-based answer lookup"
+    ]
+  }
+}

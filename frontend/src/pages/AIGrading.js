@@ -473,10 +473,12 @@ const AIGrading = () => {
                     {isEs ? 'Respuestas del Estudiante' : 'Student Answers'}
                   </h4>
                   {selectedSubmission.assignment?.questions?.map((q, idx) => {
-                    const answer = selectedSubmission.answers?.[q.question_id];
-                    const qScore = selectedSubmission.ai_question_scores?.[q.question_id];
+                    // Use same fallback logic as student page and AI grading backend
+                    const qId = q.question_id || `q${idx + 1}`;
+                    const answer = selectedSubmission.answers?.[qId];
+                    const qScore = selectedSubmission.ai_question_scores?.[qId];
                     return (
-                      <div key={q.question_id} className="p-4 bg-slate-50 rounded-lg">
+                      <div key={qId} className="p-4 bg-slate-50 rounded-lg">
                         <div className="flex items-start justify-between mb-2">
                           <p className="font-medium text-slate-900">
                             {idx + 1}. {q.question_text}
@@ -488,7 +490,12 @@ const AIGrading = () => {
                           )}
                         </div>
                         <p className="text-slate-600 mt-2">
-                          <span className="font-medium">{isEs ? 'Respuesta' : 'Answer'}:</span> {answer || (isEs ? 'Sin respuesta' : 'No answer')}
+                          <span className="font-medium">{isEs ? 'Respuesta' : 'Answer'}:</span>{' '}
+                          {answer 
+                            ? (typeof answer === 'object' 
+                                ? Object.entries(answer).map(([k, v]) => `${k} → ${v}`).join(', ')
+                                : String(answer))
+                            : (isEs ? 'Sin respuesta' : 'No answer')}
                         </p>
                         {qScore?.feedback && (
                           <p className="text-sm text-violet-600 mt-2 italic">

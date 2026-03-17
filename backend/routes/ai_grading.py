@@ -555,6 +555,12 @@ async def get_submission(submission_id: str, user: dict = Depends(get_current_us
             {"_id": 0}
         )
     
+    # Ensure questions have question_id for consistent answer lookup
+    if assignment and "questions" in assignment:
+        for i, q in enumerate(assignment["questions"]):
+            if not q.get("question_id"):
+                q["question_id"] = f"q{i+1}"
+    
     return {
         "submission": submission,
         "assignment": assignment
