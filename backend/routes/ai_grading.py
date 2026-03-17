@@ -544,6 +544,11 @@ async def get_submission(submission_id: str, user: dict = Depends(get_current_us
         {"assignment_id": submission["assignment_id"]}, 
         {"_id": 0}
     )
+    if not assignment:
+        assignment = await db.assignments.find_one(
+            {"assignment_id": submission["assignment_id"]}, 
+            {"_id": 0}
+        )
     
     return {
         "submission": submission,
@@ -565,10 +570,18 @@ async def ai_grade_submission(
     if not submission:
         raise HTTPException(status_code=404, detail="Submission not found")
     
+    is_manual = False
     assignment = await db.ai_assignments.find_one(
         {"assignment_id": submission["assignment_id"]}, 
         {"_id": 0}
     )
+    if not assignment:
+        assignment = await db.assignments.find_one(
+            {"assignment_id": submission["assignment_id"]}, 
+            {"_id": 0}
+        )
+        if assignment:
+            is_manual = True
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
     
@@ -594,8 +607,8 @@ Always respond with valid JSON only."""
 
         # Build grading prompt
         questions_text = ""
-        for q in assignment["questions"]:
-            q_id = q["question_id"]
+        for idx, q in enumerate(assignment["questions"]):
+            q_id = q.get("question_id", f"q{idx+1}")
             student_answer = submission["answers"].get(q_id, "No answer provided")
             
             questions_text += f"""
@@ -605,7 +618,14 @@ Question: {q['question_text']}
             if q["question_type"] == "multiple_choice":
                 correct = [opt["text"] for opt in q.get("options", []) if opt.get("is_correct")]
                 questions_text += f"Correct Answer: {correct[0] if correct else 'N/A'}\n"
-            elif q["question_type"] in ["short_answer", "fill_blank", "true_false"]:
+            elif q["question_type"] == "true_false":
+                # Handle both AI format (correct_answer) and manual format (options with is_correct)
+                correct_answer = q.get("correct_answer", "")
+                if not correct_answer:
+                    correct_opts = [opt["text"] for opt in q.get("options", []) if opt.get("is_correct")]
+                    correct_answer = correct_opts[0] if correct_opts else "N/A"
+                questions_text += f"Correct Answer: {correct_answer}\n"
+            elif q["question_type"] in ["short_answer", "fill_blank"]:
                 questions_text += f"Correct Answer: {q.get('correct_answer', 'N/A')}\n"
             elif q["question_type"] == "matching":
                 questions_text += f"Correct Pairs: {q.get('matching_pairs', {})}\n"
@@ -701,7 +721,8 @@ Be age-appropriate in your feedback. For elementary students, be very encouragin
             update_data["graded_at"] = datetime.now(timezone.utc).isoformat()
             
             # Update graded count
-            await db.ai_assignments.update_one(
+            graded_collection = db.assignments if is_manual else db.ai_assignments
+            await graded_collection.update_one(
                 {"assignment_id": submission["assignment_id"]},
                 {"$inc": {"graded_count": 1}}
             )
@@ -760,10 +781,16 @@ async def approve_grade(submission_id: str, update: ManualGradeUpdate, user: dic
     
     # Update graded count if this was newly graded
     if was_not_graded:
-        await db.ai_assignments.update_one(
+        # Try both collections
+        result = await db.ai_assignments.update_one(
             {"assignment_id": submission["assignment_id"]},
             {"$inc": {"graded_count": 1}}
         )
+        if result.matched_count == 0:
+            await db.assignments.update_one(
+                {"assignment_id": submission["assignment_id"]},
+                {"$inc": {"graded_count": 1}}
+            )
     
     return {"message": "Grade approved"}
 
