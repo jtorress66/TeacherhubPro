@@ -1,0 +1,81 @@
+{
+  "summary": "Frontend testing for TeacherHubPro student assignment page features: per-question instructions, matching questions, inline PDF viewer, PDF answer fields. All 7 requested features tested and working correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    ".screenshots/matching_assignment.png",
+    ".screenshots/pdf_assignment.png",
+    ".screenshots/matching_before_submit.png",
+    ".screenshots/matching_submit_success.png",
+    ".screenshots/pdf_submit_success.png"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "StudentAssignment.js line 192-196: Per-question instructions render correctly in blue info box with Info icon",
+    "StudentAssignment.js line 284-307: Matching question type renders left items with dropdown selectors containing right items",
+    "StudentAssignment.js line 443-469: PDF files render in iframe instead of just download links",
+    "StudentAssignment.js line 499-554: PDF-only assignments show numbered answer fields with Add Answer button",
+    "StudentAssignment.js line 134-146: Matching question answers (object-type) validation handled correctly",
+    "StudentAssignment.js line 600: Submit button appears for PDF-only assignments"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend-only test)",
+    "frontend": "100% (7/7 features verified)"
+  },
+  "test_credentials": "Student pages are public (no auth needed)",
+  "seed_data_creation": "Two pre-created test assignments: token 76006fe2f3f8 (matching questions), token 348d67436aaa (PDF-only)",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Student assignment pages at /assignment/{token} are public. Matching questions store answers as objects keyed by left item. PDF-only assignments use pdfAnswers state array. Both submission flows tested and working.",
+  "features_tested": {
+    "per_question_instructions": {
+      "url": "https://teacherhub-ux-fix.preview.emergentagent.com/assignment/76006fe2f3f8",
+      "test_id": "data-testid='question-instructions-{id}'",
+      "result": "PASS - Blue info box displayed below question headers with Info icon",
+      "sample_instruction": "Choose the best answer from the options below."
+    },
+    "matching_question_type": {
+      "url": "https://teacherhub-ux-fix.preview.emergentagent.com/assignment/76006fe2f3f8",
+      "result": "PASS - Left items (Japan, Brazil, Canada, Egypt) with dropdown selectors containing right items (Tokyo, etc.)",
+      "dropdown_count": 4,
+      "options_per_dropdown": 5
+    },
+    "inline_pdf_viewer": {
+      "url": "https://teacherhub-ux-fix.preview.emergentagent.com/assignment/348d67436aaa",
+      "test_id": "data-testid='pdf-viewer-0', data-testid='pdf-iframe-0'",
+      "result": "PASS - PDF rendered in iframe with download link available",
+      "iframe_src": "https://teacherhub-ux-fix.preview.emergentagent.com/api/files/file_0b3789911cdd.pdf"
+    },
+    "pdf_answer_fields": {
+      "url": "https://teacherhub-ux-fix.preview.emergentagent.com/assignment/348d67436aaa",
+      "test_id": "data-testid='pdf-answer-area', data-testid='pdf-answer-input-{n}'",
+      "result": "PASS - Numbered answer input fields with delete buttons"
+    },
+    "add_answer_button": {
+      "url": "https://teacherhub-ux-fix.preview.emergentagent.com/assignment/348d67436aaa",
+      "test_id": "data-testid='pdf-add-answer-btn'",
+      "result": "PASS - Button adds new numbered answer field"
+    },
+    "matching_submission": {
+      "url": "https://teacherhub-ux-fix.preview.emergentagent.com/assignment/76006fe2f3f8",
+      "result": "PASS - Object-type answers for matching questions submitted without validation errors"
+    },
+    "pdf_only_submit_button": {
+      "url": "https://teacherhub-ux-fix.preview.emergentagent.com/assignment/348d67436aaa",
+      "test_id": "data-testid='submit-assignment-btn'",
+      "result": "PASS - Submit button visible and functional for PDF-only assignments"
+    }
+  },
+  "test_urls": {
+    "matching_assignment": "https://teacherhub-ux-fix.preview.emergentagent.com/assignment/76006fe2f3f8",
+    "pdf_only_assignment": "https://teacherhub-ux-fix.preview.emergentagent.com/assignment/348d67436aaa"
+  }
+}

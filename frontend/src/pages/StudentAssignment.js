@@ -16,7 +16,10 @@ import {
   BookOpen,
   GraduationCap,
   Download,
-  Paperclip
+  Paperclip,
+  Plus,
+  Trash2,
+  Info
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { toast } from 'sonner';
@@ -36,6 +39,8 @@ const StudentAssignment = () => {
   const [studentName, setStudentName] = useState('');
   const [studentEmail, setStudentEmail] = useState('');
   const [answers, setAnswers] = useState({});
+  // PDF answer fields for file-only assignments
+  const [pdfAnswers, setPdfAnswers] = useState([{ id: 1, value: '' }]);
 
   // Fetch assignment
   useEffect(() => {
@@ -83,12 +88,18 @@ const StudentAssignment = () => {
     };
 
     fetchAssignment();
-  }, [token, API_URL]);
+  }, [token]);
 
   // Handle answer change
   const handleAnswerChange = (questionId, value) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
+
+  // Check if this is a PDF-only assignment (has attachments, no questions)
+  const hasPdfAttachments = assignment?.attachments?.some(f => 
+    f.filename?.toLowerCase().endsWith('.pdf') || f.content_type === 'application/pdf'
+  );
+  const isPdfOnlyAssignment = hasPdfAttachments && (!assignment?.questions || assignment.questions.length === 0);
 
   // Submit assignment
   const handleSubmit = async (e) => {
@@ -99,14 +110,40 @@ const StudentAssignment = () => {
       return;
     }
 
-    // Check if all questions are answered
-    const questionList = assignment.questions || [];
-    if (questionList.length === 0) return;
-    
-    const unanswered = questionList.filter(q => !answers[q.question_id]?.trim());
-    if (unanswered.length > 0) {
-      toast.error(`Please answer all questions (${unanswered.length} remaining)`);
-      return;
+    let submissionAnswers = answers;
+
+    if (isPdfOnlyAssignment) {
+      // For PDF-only assignments, validate that at least one answer is filled
+      const filledAnswers = pdfAnswers.filter(a => a.value.trim());
+      if (filledAnswers.length === 0) {
+        toast.error('Please provide at least one answer');
+        return;
+      }
+      // Convert PDF answers to a dict keyed by answer number
+      submissionAnswers = {};
+      pdfAnswers.forEach(a => {
+        if (a.value.trim()) {
+          submissionAnswers[`answer_${a.id}`] = a.value.trim();
+        }
+      });
+    } else {
+      // Check if all questions are answered
+      const questionList = assignment.questions || [];
+      if (questionList.length === 0) return;
+      
+      const unanswered = questionList.filter(q => {
+        const ans = answers[q.question_id];
+        if (!ans) return true;
+        // Matching questions store answers as objects
+        if (q.question_type === 'matching') {
+          return typeof ans !== 'object' || Object.keys(ans).length === 0;
+        }
+        return typeof ans === 'string' && !ans.trim();
+      });
+      if (unanswered.length > 0) {
+        toast.error(`Please answer all questions (${unanswered.length} remaining)`);
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -117,7 +154,7 @@ const StudentAssignment = () => {
         body: JSON.stringify({
           student_name: studentName,
           student_email: studentEmail,
-          answers
+          answers: submissionAnswers
         })
       });
 
@@ -138,7 +175,7 @@ const StudentAssignment = () => {
 
   // Render question based on type
   const renderQuestion = (question, index) => {
-    const { question_id, question_type, question_text, points, options, left_items, right_items } = question;
+    const { question_id, question_type, question_text, points, options, left_items, right_items, instructions } = question;
 
     return (
       <Card key={question_id} className="mb-4" data-testid={`question-${question_id}`}>
@@ -147,10 +184,16 @@ const StudentAssignment = () => {
             <CardTitle className="text-lg">
               {index + 1}. {question_text}
             </CardTitle>
-            <Badge variant="outline" className="ml-2">
+            <Badge variant="outline" className="ml-2 shrink-0">
               {points} pts
             </Badge>
           </div>
+          {instructions && (
+            <div className="flex items-start gap-2 mt-2 p-3 bg-blue-50 rounded-lg border border-blue-100" data-testid={`question-instructions-${question_id}`}>
+              <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+              <p className="text-sm text-blue-700">{instructions}</p>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           {/* Multiple Choice */}
@@ -350,10 +393,18 @@ const StudentAssignment = () => {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-4 text-sm">
-              <div className="flex items-center gap-2 text-slate-600">
-                <FileText className="w-4 h-4" />
-                <span>{assignment.questions?.length || 0} questions</span>
-              </div>
+              {assignment.questions?.length > 0 && (
+                <div className="flex items-center gap-2 text-slate-600">
+                  <FileText className="w-4 h-4" />
+                  <span>{assignment.questions.length} questions</span>
+                </div>
+              )}
+              {isPdfOnlyAssignment && (
+                <div className="flex items-center gap-2 text-slate-600">
+                  <FileText className="w-4 h-4" />
+                  <span>PDF-based test</span>
+                </div>
+              )}
               <div className="flex items-center gap-2 text-slate-600">
                 <BookOpen className="w-4 h-4" />
                 <span>{assignment.total_points} total points</span>
@@ -374,37 +425,130 @@ const StudentAssignment = () => {
           </CardContent>
         </Card>
 
-        {/* File Attachments */}
+        {/* File Attachments - Inline PDF Viewer */}
         {assignment.attachments && assignment.attachments.length > 0 && (
           <Card className="mb-6" data-testid="assignment-attachments">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Paperclip className="w-5 h-5 text-slate-500" />
-                Attached Files
+                {isPdfOnlyAssignment ? 'Test Document' : 'Attached Files'}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                {assignment.attachments.map((file, idx) => (
-                  <a
-                    key={idx}
-                    href={`${API_URL}${file.file_url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border hover:bg-slate-100 transition-colors"
-                    data-testid={`attachment-${idx}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <FileText className="h-5 w-5 text-blue-500 flex-shrink-0" />
-                      <div>
-                        <p className="text-sm font-medium text-slate-700">{file.filename}</p>
-                        <p className="text-xs text-slate-400">{(file.file_size / 1024).toFixed(1)} KB</p>
+              <div className="space-y-4">
+                {assignment.attachments.map((file, idx) => {
+                  const isPdf = file.filename?.toLowerCase().endsWith('.pdf') || file.content_type === 'application/pdf';
+                  const fileUrl = `${API_URL}${file.file_url}`;
+                  
+                  if (isPdf) {
+                    return (
+                      <div key={idx} data-testid={`pdf-viewer-${idx}`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-red-500" />
+                            {file.filename}
+                          </p>
+                          <a
+                            href={fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+                          >
+                            <Download className="h-3 w-3" />
+                            Download
+                          </a>
+                        </div>
+                        <iframe
+                          src={fileUrl}
+                          title={file.filename}
+                          className="w-full border rounded-lg bg-white"
+                          style={{ height: '600px' }}
+                          data-testid={`pdf-iframe-${idx}`}
+                        />
                       </div>
-                    </div>
-                    <Download className="h-4 w-4 text-slate-400" />
-                  </a>
+                    );
+                  }
+                  
+                  // Non-PDF files - show as download links
+                  return (
+                    <a
+                      key={idx}
+                      href={fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border hover:bg-slate-100 transition-colors"
+                      data-testid={`attachment-${idx}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <FileText className="h-5 w-5 text-blue-500 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium text-slate-700">{file.filename}</p>
+                          <p className="text-xs text-slate-400">{(file.file_size / 1024).toFixed(1)} KB</p>
+                        </div>
+                      </div>
+                      <Download className="h-4 w-4 text-slate-400" />
+                    </a>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* PDF-Only Answer Area */}
+        {isPdfOnlyAssignment && (
+          <Card className="mb-6" data-testid="pdf-answer-area">
+            <CardHeader>
+              <CardTitle className="text-lg">Your Answers</CardTitle>
+              <CardDescription>Review the test document above and enter your answers below.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {pdfAnswers.map((answer, idx) => (
+                  <div key={answer.id} className="flex items-start gap-3" data-testid={`pdf-answer-row-${answer.id}`}>
+                    <span className="mt-2 w-8 h-8 flex items-center justify-center rounded-full bg-violet-100 text-violet-700 text-sm font-bold shrink-0">
+                      {answer.id}
+                    </span>
+                    <Input
+                      value={answer.value}
+                      onChange={(e) => {
+                        setPdfAnswers(prev => prev.map(a => 
+                          a.id === answer.id ? { ...a, value: e.target.value } : a
+                        ));
+                      }}
+                      placeholder={`Answer ${answer.id}...`}
+                      className="flex-1"
+                      data-testid={`pdf-answer-input-${answer.id}`}
+                    />
+                    {pdfAnswers.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="shrink-0 text-slate-400 hover:text-red-500"
+                        onClick={() => setPdfAnswers(prev => prev.filter(a => a.id !== answer.id))}
+                        data-testid={`pdf-answer-remove-${answer.id}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
                 ))}
               </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-4"
+                onClick={() => {
+                  const nextId = pdfAnswers.length > 0 ? Math.max(...pdfAnswers.map(a => a.id)) + 1 : 1;
+                  setPdfAnswers(prev => [...prev, { id: nextId, value: '' }]);
+                }}
+                data-testid="pdf-add-answer-btn"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add Answer
+              </Button>
             </CardContent>
           </Card>
         )}
@@ -452,8 +596,8 @@ const StudentAssignment = () => {
             </div>
           )}
 
-          {/* Submit Button - only show if there are questions to answer */}
-          {assignment.questions && assignment.questions.length > 0 && (
+          {/* Submit Button - show for questions OR pdf-only assignments */}
+          {((assignment.questions && assignment.questions.length > 0) || isPdfOnlyAssignment) && (
             <div className="mt-8 flex justify-end">
               <Button
                 type="submit"
@@ -477,8 +621,8 @@ const StudentAssignment = () => {
             </div>
           )}
 
-          {/* File-only assignment message */}
-          {(!assignment.questions || assignment.questions.length === 0) && (
+          {/* File-only assignment message (non-PDF or no submission expected) */}
+          {(!assignment.questions || assignment.questions.length === 0) && !isPdfOnlyAssignment && (
             <Card className="mt-4">
               <CardContent className="pt-6 text-center text-slate-500">
                 <p>This assignment has no online questions. Please review the attached files above.</p>
