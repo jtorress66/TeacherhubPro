@@ -25,6 +25,12 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 
 ---
 
+## Update 2026-03-17 - GOOGLE CLASSROOM SHARE BUTTON IN VIEW ASSIGNMENTS
+- Added Google Classroom share button to both AI and Manual assignment rows in the "View Assignments" dialog
+- Uses existing `shareToGoogleClassroom()` function that opens Google Classroom's share dialog
+- Button styled with amber color, matching the Educational Games page
+- Only shows when assignment has a `public_token`
+
 ## Update 2026-03-17 - BUG FIX: AI GRADING "NO ANSWER" DISPLAY
 - Root cause: Manual assignments created via Gradebook didn't have `question_id` fields
 - Student page generated fallback IDs (q1, q2...) for answer keys, but teacher view tried to look up by undefined question_id
