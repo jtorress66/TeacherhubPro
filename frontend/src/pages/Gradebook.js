@@ -14,7 +14,8 @@ import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Textarea } from '../components/ui/textarea';
 import { toast } from 'sonner';
-import { Plus, BookOpen, Save, Trash2, FileDown, Settings, FolderPlus, List, Pencil, Sparkles, Brain, Copy, ExternalLink, Loader2, Upload, FileText, Check } from 'lucide-react';
+import { previewTestPDF } from '../utils/generateTestPDF';
+import { Plus, BookOpen, Save, Trash2, FileDown, Settings, FolderPlus, List, Pencil, Sparkles, Brain, Copy, ExternalLink, Loader2, Upload, FileText, Check, Printer, FileKey } from 'lucide-react';
 
 const API = `${window.location.origin}/api`;
 
@@ -292,6 +293,29 @@ const Gradebook = () => {
 
   const removeFile = (fileId) => {
     setAssignmentFiles(prev => prev.filter(f => f.file_id !== fileId));
+  };
+
+  // Build PDF data from assignment info
+  const buildPDFData = (assignment, questionsOverride = null) => {
+    const cls = classes.find(c => c.class_id === (assignment.class_id || selectedClass));
+    return {
+      title: assignment.title || newAssignment.title,
+      description: assignment.description || newAssignment.description,
+      questions: questionsOverride || assignment.questions || [],
+      points: assignment.points || newAssignment.points,
+      dueDate: assignment.due_date || newAssignment.due_date || '',
+      teacherName: '', // filled by user context if available
+      className: cls ? `${cls.name} (${cls.grade}-${cls.section})` : ''
+    };
+  };
+
+  const handlePrintTest = (assignment, isAnswerKey = false, questionsOverride = null) => {
+    const data = buildPDFData(assignment, questionsOverride);
+    if (!data.questions || data.questions.length === 0) {
+      toast.error(language === 'es' ? 'No hay preguntas para imprimir' : 'No questions to print');
+      return;
+    }
+    previewTestPDF(data, { isAnswerKey });
   };
 
   // Handle editing an assignment
@@ -954,6 +978,32 @@ const Gradebook = () => {
                     </TabsContent>
                   </Tabs>
 
+                  {/* Preview & Print Buttons (visible when questions exist) */}
+                  {assignmentQuestions.length > 0 && (
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => handlePrintTest(newAssignment, false, assignmentQuestions)}
+                        data-testid="preview-student-pdf-btn"
+                      >
+                        <Printer className="h-4 w-4 mr-2" />
+                        {language === 'es' ? 'PDF Estudiante' : 'Student PDF'}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => handlePrintTest(newAssignment, true, assignmentQuestions)}
+                        data-testid="preview-answer-key-btn"
+                      >
+                        <FileKey className="h-4 w-4 mr-2" />
+                        {language === 'es' ? 'Clave de Respuestas' : 'Answer Key'}
+                      </Button>
+                    </div>
+                  )}
+
                   <Button onClick={handleCreateAssignment} className="w-full" data-testid="create-assignment-submit">
                     {t('save')}
                   </Button>
@@ -1002,6 +1052,26 @@ const Gradebook = () => {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
+                          {assignment.questions && assignment.questions.length > 0 && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handlePrintTest(assignment, false)}
+                                title={language === 'es' ? 'PDF Estudiante' : 'Student PDF'}
+                              >
+                                <Printer className="h-4 w-4 text-slate-600" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handlePrintTest(assignment, true)}
+                                title={language === 'es' ? 'Clave de Respuestas' : 'Answer Key'}
+                              >
+                                <FileKey className="h-4 w-4 text-green-600" />
+                              </Button>
+                            </>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"
@@ -1054,6 +1124,28 @@ const Gradebook = () => {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
+                          {assignment.questions && assignment.questions.length > 0 && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handlePrintTest(assignment, false)}
+                                title={language === 'es' ? 'PDF Estudiante' : 'Student PDF'}
+                                data-testid={`print-student-${assignment.assignment_id}`}
+                              >
+                                <Printer className="h-4 w-4 text-slate-600" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handlePrintTest(assignment, true)}
+                                title={language === 'es' ? 'Clave de Respuestas' : 'Answer Key'}
+                                data-testid={`print-key-${assignment.assignment_id}`}
+                              >
+                                <FileKey className="h-4 w-4 text-green-600" />
+                              </Button>
+                            </>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"
