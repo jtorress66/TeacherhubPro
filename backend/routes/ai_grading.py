@@ -406,15 +406,20 @@ async def get_student_assignment(token: str):
                 "question_id": q.get("question_id", f"q{i+1}"),
                 "question_type": q.get("question_type", "short_answer"),
                 "question_text": q.get("question_text", ""),
-                "points": q.get("points", 10)
+                "points": q.get("points", 10),
+                "instructions": q.get("instructions", "")
             }
             question_type = q.get("question_type", "")
             if question_type == "multiple_choice":
                 student_q["options"] = [{"text": opt.get("text", "")} for opt in q.get("options", [])]
             elif question_type == "matching":
                 pairs = q.get("matching_pairs", {})
-                student_q["left_items"] = list(pairs.keys()) if pairs else []
-                student_q["right_items"] = list(pairs.values()) if pairs else []
+                if isinstance(pairs, list):
+                    student_q["left_items"] = [p.get("left", "") for p in pairs]
+                    student_q["right_items"] = [p.get("right", "") for p in pairs]
+                elif isinstance(pairs, dict):
+                    student_q["left_items"] = list(pairs.keys()) if pairs else []
+                    student_q["right_items"] = list(pairs.values()) if pairs else []
             elif question_type == "true_false":
                 # Manual assignments may already have True/False options
                 opts = q.get("options", [])
@@ -628,7 +633,14 @@ Question: {q['question_text']}
             elif q["question_type"] in ["short_answer", "fill_blank"]:
                 questions_text += f"Correct Answer: {q.get('correct_answer', 'N/A')}\n"
             elif q["question_type"] == "matching":
-                questions_text += f"Correct Pairs: {q.get('matching_pairs', {})}\n"
+                pairs = q.get('matching_pairs', [])
+                if isinstance(pairs, list):
+                    pairs_text = ", ".join(f"{p.get('left','')} → {p.get('right','')}" for p in pairs)
+                elif isinstance(pairs, dict):
+                    pairs_text = ", ".join(f"{k} → {v}" for k, v in pairs.items())
+                else:
+                    pairs_text = str(pairs)
+                questions_text += f"Correct Matches: {pairs_text}\n"
             elif q["question_type"] == "essay":
                 questions_text += f"Rubric Criteria: {q.get('rubric_criteria', [])}\n"
             

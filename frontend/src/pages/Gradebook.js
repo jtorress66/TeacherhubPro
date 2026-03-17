@@ -243,13 +243,15 @@ const Gradebook = () => {
       question_text: '',
       question_type: 'multiple_choice',
       points: 10,
+      instructions: '',
       options: [
         { text: '', is_correct: false },
         { text: '', is_correct: false },
         { text: '', is_correct: false },
         { text: '', is_correct: false }
       ],
-      correct_answer: ''
+      correct_answer: '',
+      matching_pairs: []
     }]);
   };
 
@@ -284,6 +286,28 @@ const Gradebook = () => {
   const removeOption = (qIndex, oIndex) => {
     setAssignmentQuestions(prev => prev.map((q, i) => 
       i === qIndex ? { ...q, options: q.options.filter((_, j) => j !== oIndex) } : q
+    ));
+  };
+
+  // Matching pair helpers
+  const addMatchingPair = (qIndex) => {
+    setAssignmentQuestions(prev => prev.map((q, i) => 
+      i === qIndex ? { ...q, matching_pairs: [...(q.matching_pairs || []), { left: '', right: '' }] } : q
+    ));
+  };
+
+  const updateMatchingPair = (qIndex, pairIndex, side, value) => {
+    setAssignmentQuestions(prev => prev.map((q, i) => {
+      if (i !== qIndex) return q;
+      const pairs = [...(q.matching_pairs || [])];
+      pairs[pairIndex] = { ...pairs[pairIndex], [side]: value };
+      return { ...q, matching_pairs: pairs };
+    }));
+  };
+
+  const removeMatchingPair = (qIndex, pairIndex) => {
+    setAssignmentQuestions(prev => prev.map((q, i) => 
+      i === qIndex ? { ...q, matching_pairs: (q.matching_pairs || []).filter((_, j) => j !== pairIndex) } : q
     ));
   };
 
@@ -803,6 +827,15 @@ const Gradebook = () => {
                           <div className="flex items-start justify-between gap-2">
                             <span className="text-sm font-bold text-slate-400 mt-2 min-w-[28px]">Q{qIdx + 1}</span>
                             <div className="flex-1 space-y-3">
+                              {/* Per-question instructions */}
+                              <Textarea
+                                value={question.instructions || ''}
+                                onChange={(e) => updateQuestion(qIdx, 'instructions', e.target.value)}
+                                placeholder={language === 'es' ? 'Instrucciones para esta pregunta (opcional)...' : 'Instructions for this question (optional)...'}
+                                rows={1}
+                                className="text-sm bg-white border-dashed"
+                                data-testid={`question-instructions-${qIdx}`}
+                              />
                               <Input
                                 value={question.question_text}
                                 onChange={(e) => updateQuestion(qIdx, 'question_text', e.target.value)}
@@ -826,6 +859,12 @@ const Gradebook = () => {
                                         { text: '', is_correct: false },
                                         { text: '', is_correct: false }
                                       ]);
+                                    } else if (v === 'matching' && (!question.matching_pairs || question.matching_pairs.length === 0)) {
+                                      updateQuestion(qIdx, 'matching_pairs', [
+                                        { left: '', right: '' },
+                                        { left: '', right: '' },
+                                        { left: '', right: '' }
+                                      ]);
                                     }
                                   }}
                                 >
@@ -836,6 +875,7 @@ const Gradebook = () => {
                                     <SelectItem value="multiple_choice">{language === 'es' ? 'Opcion Multiple' : 'Multiple Choice'}</SelectItem>
                                     <SelectItem value="true_false">{language === 'es' ? 'Verdadero/Falso' : 'True/False'}</SelectItem>
                                     <SelectItem value="short_answer">{language === 'es' ? 'Respuesta Corta' : 'Short Answer'}</SelectItem>
+                                    <SelectItem value="matching">{language === 'es' ? 'Emparejar' : 'Matching'}</SelectItem>
                                     <SelectItem value="essay">{language === 'es' ? 'Ensayo' : 'Essay'}</SelectItem>
                                   </SelectContent>
                                 </Select>
@@ -919,6 +959,58 @@ const Gradebook = () => {
                                 <p className="text-xs text-slate-400 italic">
                                   {language === 'es' ? 'Las respuestas de ensayo se califican manualmente' : 'Essay answers are graded manually'}
                                 </p>
+                              )}
+
+                              {/* Matching Pairs Editor */}
+                              {question.question_type === 'matching' && (
+                                <div className="space-y-2">
+                                  <div className="grid grid-cols-[1fr_auto_1fr_auto] gap-2 items-center text-xs font-medium text-slate-500 px-1">
+                                    <span>{language === 'es' ? 'Columna A' : 'Column A'}</span>
+                                    <span></span>
+                                    <span>{language === 'es' ? 'Columna B' : 'Column B'}</span>
+                                    <span></span>
+                                  </div>
+                                  {(question.matching_pairs || []).map((pair, pIdx) => (
+                                    <div key={pIdx} className="grid grid-cols-[1fr_auto_1fr_auto] gap-2 items-center">
+                                      <Input
+                                        value={pair.left}
+                                        onChange={(e) => updateMatchingPair(qIdx, pIdx, 'left', e.target.value)}
+                                        placeholder={`${language === 'es' ? 'Elemento' : 'Item'} ${pIdx + 1}`}
+                                        data-testid={`match-left-${qIdx}-${pIdx}`}
+                                      />
+                                      <span className="text-slate-400 text-sm">→</span>
+                                      <Input
+                                        value={pair.right}
+                                        onChange={(e) => updateMatchingPair(qIdx, pIdx, 'right', e.target.value)}
+                                        placeholder={`${language === 'es' ? 'Pareja' : 'Match'} ${pIdx + 1}`}
+                                        data-testid={`match-right-${qIdx}-${pIdx}`}
+                                      />
+                                      {(question.matching_pairs || []).length > 2 && (
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => removeMatchingPair(qIdx, pIdx)}
+                                          className="text-red-500 hover:text-red-700 h-8 w-8 p-0"
+                                        >
+                                          <Trash2 className="h-3 w-3" />
+                                        </Button>
+                                      )}
+                                    </div>
+                                  ))}
+                                  {(question.matching_pairs || []).length < 10 && (
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => addMatchingPair(qIdx)}
+                                      className="text-slate-500"
+                                    >
+                                      <Plus className="h-3 w-3 mr-1" />
+                                      {language === 'es' ? 'Agregar par' : 'Add pair'}
+                                    </Button>
+                                  )}
+                                </div>
                               )}
                             </div>
                             <Button
