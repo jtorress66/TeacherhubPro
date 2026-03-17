@@ -14,7 +14,7 @@ import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Textarea } from '../components/ui/textarea';
 import { toast } from 'sonner';
-import { Plus, BookOpen, Save, Trash2, FileDown, Settings, FolderPlus, List, Pencil, Sparkles, Brain, Copy, ExternalLink, Loader2 } from 'lucide-react';
+import { Plus, BookOpen, Save, Trash2, FileDown, Settings, FolderPlus, List, Pencil, Sparkles, Brain, Copy, ExternalLink, Loader2, Upload, FileText, Check } from 'lucide-react';
 
 const API = `${window.location.origin}/api`;
 
@@ -107,6 +107,11 @@ const Gradebook = () => {
   const [aiAssignments, setAiAssignments] = useState([]);
   const [savingAI, setSavingAI] = useState(false);
 
+  // Assignment Question Builder & File Upload State
+  const [assignmentQuestions, setAssignmentQuestions] = useState([]);
+  const [assignmentFiles, setAssignmentFiles] = useState([]);
+  const [uploadingFile, setUploadingFile] = useState(false);
+
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -191,16 +196,102 @@ const Gradebook = () => {
     try {
       const res = await axios.post(`${API}/assignments`, {
         ...newAssignment,
-        class_id: selectedClass
+        class_id: selectedClass,
+        questions: assignmentQuestions,
+        attachments: assignmentFiles
       }, { withCredentials: true });
       
       setAssignments(prev => [...prev, res.data]);
       setShowNewAssignment(false);
       setNewAssignment({ title: '', category_id: '', points: 100, due_date: '', description: '' });
+      setAssignmentQuestions([]);
+      setAssignmentFiles([]);
       toast.success(language === 'es' ? 'Tarea creada' : 'Assignment created');
     } catch (error) {
       toast.error(t('error'));
     }
+  };
+
+  // Question builder helpers
+  const addQuestion = () => {
+    setAssignmentQuestions(prev => [...prev, {
+      question_text: '',
+      question_type: 'multiple_choice',
+      points: 10,
+      options: [
+        { text: '', is_correct: false },
+        { text: '', is_correct: false },
+        { text: '', is_correct: false },
+        { text: '', is_correct: false }
+      ],
+      correct_answer: ''
+    }]);
+  };
+
+  const updateQuestion = (index, field, value) => {
+    setAssignmentQuestions(prev => prev.map((q, i) => 
+      i === index ? { ...q, [field]: value } : q
+    ));
+  };
+
+  const removeQuestion = (index) => {
+    setAssignmentQuestions(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const updateOption = (qIndex, oIndex, field, value) => {
+    setAssignmentQuestions(prev => prev.map((q, i) => {
+      if (i !== qIndex) return q;
+      const options = q.options.map((opt, j) => {
+        if (field === 'is_correct' && value === true && j !== oIndex) return { ...opt, is_correct: false };
+        if (j !== oIndex) return opt;
+        return { ...opt, [field]: value };
+      });
+      return { ...q, options };
+    }));
+  };
+
+  const addOption = (qIndex) => {
+    setAssignmentQuestions(prev => prev.map((q, i) => 
+      i === qIndex ? { ...q, options: [...q.options, { text: '', is_correct: false }] } : q
+    ));
+  };
+
+  const removeOption = (qIndex, oIndex) => {
+    setAssignmentQuestions(prev => prev.map((q, i) => 
+      i === qIndex ? { ...q, options: q.options.filter((_, j) => j !== oIndex) } : q
+    ));
+  };
+
+  // File upload handler
+  const handleFileUpload = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    setUploadingFile(true);
+    try {
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const res = await axios.post(`${API}/upload-file`, formData, {
+          withCredentials: true,
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        
+        setAssignmentFiles(prev => [...prev, res.data]);
+      }
+      toast.success(language === 'es' ? 'Archivo subido' : 'File uploaded');
+    } catch (error) {
+      const msg = error.response?.data?.detail || (language === 'es' ? 'Error al subir archivo' : 'Failed to upload file');
+      toast.error(msg);
+    } finally {
+      setUploadingFile(false);
+      e.target.value = '';
+    }
+  };
+
+  const removeFile = (fileId) => {
+    setAssignmentFiles(prev => prev.filter(f => f.file_id !== fileId));
   };
 
   // Handle editing an assignment
@@ -554,44 +645,63 @@ const Gradebook = () => {
               <Sparkles className="h-4 w-4 mr-2" />
               {language === 'es' ? 'Crear con IA' : 'Create with AI'}
             </Button>
-            <Dialog open={showNewAssignment} onOpenChange={setShowNewAssignment}>
+            <Dialog open={showNewAssignment} onOpenChange={(open) => {
+              setShowNewAssignment(open);
+              if (!open) { setAssignmentQuestions([]); setAssignmentFiles([]); }
+            }}>
               <DialogTrigger asChild>
                 <Button data-testid="new-assignment-btn">
                   <Plus className="h-4 w-4 mr-2" />
                   {t('createAssignment')}
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>{t('createAssignment')}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 pt-4">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>{t('title')}</Label>
+                      <Input 
+                        value={newAssignment.title}
+                        onChange={(e) => setNewAssignment(prev => ({ ...prev, title: e.target.value }))}
+                        placeholder={language === 'es' ? 'Nombre de la tarea' : 'Assignment name'}
+                        data-testid="assignment-title-input"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t('category')}</Label>
+                      <Select 
+                        value={newAssignment.category_id}
+                        onValueChange={(v) => setNewAssignment(prev => ({ ...prev, category_id: v }))}
+                      >
+                        <SelectTrigger data-testid="assignment-category-select">
+                          <SelectValue placeholder={language === 'es' ? 'Seleccionar...' : 'Select...'} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories.map(cat => (
+                            <SelectItem key={cat.category_id} value={cat.category_id}>
+                              {language === 'es' ? cat.name_es : cat.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
-                    <Label>{t('title')}</Label>
-                    <Input 
-                      value={newAssignment.title}
-                      onChange={(e) => setNewAssignment(prev => ({ ...prev, title: e.target.value }))}
-                      data-testid="assignment-title-input"
+                    <Label>{language === 'es' ? 'Descripcion / Instrucciones' : 'Description / Instructions'}</Label>
+                    <Textarea 
+                      value={newAssignment.description || ''}
+                      onChange={(e) => setNewAssignment(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder={language === 'es' ? 'Instrucciones para los estudiantes...' : 'Instructions for students...'}
+                      rows={2}
+                      data-testid="assignment-description-input"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label>{t('category')}</Label>
-                    <Select 
-                      value={newAssignment.category_id}
-                      onValueChange={(v) => setNewAssignment(prev => ({ ...prev, category_id: v }))}
-                    >
-                      <SelectTrigger data-testid="assignment-category-select">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map(cat => (
-                          <SelectItem key={cat.category_id} value={cat.category_id}>
-                            {language === 'es' ? cat.name_es : cat.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>{t('points')}</Label>
@@ -612,6 +722,238 @@ const Gradebook = () => {
                       />
                     </div>
                   </div>
+
+                  {/* Tabs for Questions and File Upload */}
+                  <Tabs defaultValue="questions" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="questions" className="flex items-center gap-2">
+                        <Pencil className="h-4 w-4" />
+                        {language === 'es' ? 'Crear Preguntas' : 'Build Questions'}
+                        {assignmentQuestions.length > 0 && (
+                          <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                            {assignmentQuestions.length}
+                          </Badge>
+                        )}
+                      </TabsTrigger>
+                      <TabsTrigger value="upload" className="flex items-center gap-2">
+                        <Upload className="h-4 w-4" />
+                        {language === 'es' ? 'Subir Archivo' : 'Upload File'}
+                        {assignmentFiles.length > 0 && (
+                          <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                            {assignmentFiles.length}
+                          </Badge>
+                        )}
+                      </TabsTrigger>
+                    </TabsList>
+
+                    {/* Build Questions Tab */}
+                    <TabsContent value="questions" className="space-y-3 mt-4">
+                      {assignmentQuestions.map((question, qIdx) => (
+                        <div key={qIdx} className="p-4 border rounded-lg bg-slate-50 space-y-3">
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="text-sm font-bold text-slate-400 mt-2 min-w-[28px]">Q{qIdx + 1}</span>
+                            <div className="flex-1 space-y-3">
+                              <Input
+                                value={question.question_text}
+                                onChange={(e) => updateQuestion(qIdx, 'question_text', e.target.value)}
+                                placeholder={language === 'es' ? 'Escribe la pregunta...' : 'Enter question...'}
+                                data-testid={`question-text-${qIdx}`}
+                              />
+                              <div className="flex gap-3 flex-wrap">
+                                <Select 
+                                  value={question.question_type}
+                                  onValueChange={(v) => {
+                                    updateQuestion(qIdx, 'question_type', v);
+                                    if (v === 'true_false') {
+                                      updateQuestion(qIdx, 'options', [
+                                        { text: language === 'es' ? 'Verdadero' : 'True', is_correct: false },
+                                        { text: language === 'es' ? 'Falso' : 'False', is_correct: false }
+                                      ]);
+                                    } else if (v === 'multiple_choice' && question.options.length < 2) {
+                                      updateQuestion(qIdx, 'options', [
+                                        { text: '', is_correct: false },
+                                        { text: '', is_correct: false },
+                                        { text: '', is_correct: false },
+                                        { text: '', is_correct: false }
+                                      ]);
+                                    }
+                                  }}
+                                >
+                                  <SelectTrigger className="w-44" data-testid={`question-type-${qIdx}`}>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="multiple_choice">{language === 'es' ? 'Opcion Multiple' : 'Multiple Choice'}</SelectItem>
+                                    <SelectItem value="true_false">{language === 'es' ? 'Verdadero/Falso' : 'True/False'}</SelectItem>
+                                    <SelectItem value="short_answer">{language === 'es' ? 'Respuesta Corta' : 'Short Answer'}</SelectItem>
+                                    <SelectItem value="essay">{language === 'es' ? 'Ensayo' : 'Essay'}</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <div className="flex items-center gap-2">
+                                  <Input
+                                    type="number"
+                                    value={question.points}
+                                    onChange={(e) => updateQuestion(qIdx, 'points', parseFloat(e.target.value) || 0)}
+                                    className="w-20"
+                                    min="0"
+                                  />
+                                  <span className="text-sm text-slate-500">pts</span>
+                                </div>
+                              </div>
+
+                              {/* Multiple Choice / True-False Options */}
+                              {(question.question_type === 'multiple_choice' || question.question_type === 'true_false') && (
+                                <div className="space-y-2">
+                                  {question.options.map((opt, oIdx) => (
+                                    <div key={oIdx} className="flex items-center gap-2">
+                                      <button
+                                        type="button"
+                                        onClick={() => updateOption(qIdx, oIdx, 'is_correct', true)}
+                                        className={`h-5 w-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                                          opt.is_correct 
+                                            ? 'border-green-500 bg-green-500' 
+                                            : 'border-slate-300 hover:border-slate-400'
+                                        }`}
+                                        data-testid={`option-correct-${qIdx}-${oIdx}`}
+                                      >
+                                        {opt.is_correct && <Check className="h-3 w-3 text-white" />}
+                                      </button>
+                                      <Input
+                                        value={opt.text}
+                                        onChange={(e) => updateOption(qIdx, oIdx, 'text', e.target.value)}
+                                        placeholder={`${language === 'es' ? 'Opcion' : 'Option'} ${String.fromCharCode(65 + oIdx)}`}
+                                        className="flex-1"
+                                        disabled={question.question_type === 'true_false'}
+                                        data-testid={`option-text-${qIdx}-${oIdx}`}
+                                      />
+                                      {question.question_type === 'multiple_choice' && question.options.length > 2 && (
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => removeOption(qIdx, oIdx)}
+                                          className="text-red-500 hover:text-red-700 h-8 w-8 p-0"
+                                        >
+                                          <Trash2 className="h-3 w-3" />
+                                        </Button>
+                                      )}
+                                    </div>
+                                  ))}
+                                  {question.question_type === 'multiple_choice' && question.options.length < 6 && (
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => addOption(qIdx)}
+                                      className="text-slate-500"
+                                    >
+                                      <Plus className="h-3 w-3 mr-1" />
+                                      {language === 'es' ? 'Agregar opcion' : 'Add option'}
+                                    </Button>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Short Answer */}
+                              {question.question_type === 'short_answer' && (
+                                <Input
+                                  value={question.correct_answer || ''}
+                                  onChange={(e) => updateQuestion(qIdx, 'correct_answer', e.target.value)}
+                                  placeholder={language === 'es' ? 'Respuesta correcta' : 'Correct answer'}
+                                  data-testid={`correct-answer-${qIdx}`}
+                                />
+                              )}
+
+                              {/* Essay note */}
+                              {question.question_type === 'essay' && (
+                                <p className="text-xs text-slate-400 italic">
+                                  {language === 'es' ? 'Las respuestas de ensayo se califican manualmente' : 'Essay answers are graded manually'}
+                                </p>
+                              )}
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeQuestion(qIdx)}
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                              data-testid={`remove-question-${qIdx}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addQuestion}
+                        className="w-full border-dashed"
+                        data-testid="add-question-btn"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        {language === 'es' ? 'Agregar Pregunta' : 'Add Question'}
+                      </Button>
+                    </TabsContent>
+
+                    {/* Upload File Tab */}
+                    <TabsContent value="upload" className="space-y-3 mt-4">
+                      <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center hover:border-slate-400 transition-colors">
+                        <Upload className="h-8 w-8 mx-auto text-slate-400 mb-2" />
+                        <p className="text-sm text-slate-600 mb-2">
+                          {language === 'es' ? 'Sube un examen o documento' : 'Upload a test or document'}
+                        </p>
+                        <p className="text-xs text-slate-400 mb-3">
+                          PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, PNG, JPG (max 10MB)
+                        </p>
+                        <label className="cursor-pointer inline-block">
+                          <input
+                            type="file"
+                            className="hidden"
+                            accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.webp"
+                            onChange={handleFileUpload}
+                            multiple
+                            data-testid="file-upload-input"
+                          />
+                          <Button type="button" variant="outline" className="pointer-events-none">
+                            {uploadingFile ? (
+                              <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{language === 'es' ? 'Subiendo...' : 'Uploading...'}</>
+                            ) : (
+                              <>{language === 'es' ? 'Seleccionar Archivo' : 'Choose File'}</>
+                            )}
+                          </Button>
+                        </label>
+                      </div>
+
+                      {/* Uploaded Files List */}
+                      {assignmentFiles.length > 0 && (
+                        <div className="space-y-2">
+                          {assignmentFiles.map((file) => (
+                            <div key={file.file_id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border">
+                              <div className="flex items-center gap-3">
+                                <FileText className="h-5 w-5 text-blue-500 flex-shrink-0" />
+                                <div>
+                                  <p className="text-sm font-medium text-slate-700">{file.filename}</p>
+                                  <p className="text-xs text-slate-400">{(file.file_size / 1024).toFixed(1)} KB</p>
+                                </div>
+                              </div>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeFile(file.file_id)}
+                                className="text-red-500 hover:text-red-700"
+                                data-testid={`remove-file-${file.file_id}`}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </TabsContent>
+                  </Tabs>
+
                   <Button onClick={handleCreateAssignment} className="w-full" data-testid="create-assignment-submit">
                     {t('save')}
                   </Button>

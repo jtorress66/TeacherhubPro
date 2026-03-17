@@ -1,5 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Depends, Body
-from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Depends, Body, UploadFile, File as FastAPIFile
+from fastapi.responses import JSONResponse, PlainTextResponse, FileResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -384,6 +384,8 @@ class AssignmentCreate(BaseModel):
     points: float = 100.0
     due_date: Optional[str] = None
     standards_refs: List[str] = []
+    questions: List[Dict[str, Any]] = []
+    attachments: List[Dict[str, Any]] = []
 
 class AssignmentResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -396,6 +398,8 @@ class AssignmentResponse(BaseModel):
     points: float
     due_date: Optional[str] = None
     standards_refs: List[str] = []
+    questions: List[Dict[str, Any]] = []
+    attachments: List[Dict[str, Any]] = []
     created_at: str
 
 class GradeEntry(BaseModel):
@@ -2008,6 +2012,8 @@ async def create_assignment(assignment_data: AssignmentCreate, user: dict = Depe
         "points": assignment_data.points,
         "due_date": assignment_data.due_date,
         "standards_refs": assignment_data.standards_refs,
+        "questions": assignment_data.questions,
+        "attachments": assignment_data.attachments,
         "created_at": now
     }
     
@@ -2055,6 +2061,48 @@ async def delete_assignment(assignment_id: str, user: dict = Depends(get_current
     await db.assignments.delete_one({"assignment_id": assignment_id})
     await db.grades.delete_many({"assignment_id": assignment_id})
     return {"message": "Assignment deleted"}
+
+# File upload/download endpoints
+@api_router.post("/upload-file")
+async def upload_file(file: UploadFile = FastAPIFile(...), user: dict = Depends(get_current_user)):
+    """Upload a file attachment for an assignment"""
+    allowed_extensions = {'.pdf', '.doc', '.docx', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.ppt', '.pptx', '.xls', '.xlsx'}
+    ext = Path(file.filename).suffix.lower()
+    if ext not in allowed_extensions:
+        raise HTTPException(400, f"File type {ext} not allowed. Allowed: {', '.join(allowed_extensions)}")
+    
+    contents = await file.read()
+    if len(contents) > 10 * 1024 * 1024:
+        raise HTTPException(400, "File size exceeds 10MB limit")
+    
+    file_id = f"file_{uuid.uuid4().hex[:12]}"
+    upload_dir = ROOT_DIR / "uploads"
+    upload_dir.mkdir(exist_ok=True)
+    
+    safe_filename = f"{file_id}{ext}"
+    file_path = upload_dir / safe_filename
+    
+    with open(file_path, "wb") as f:
+        f.write(contents)
+    
+    return {
+        "file_id": file_id,
+        "filename": file.filename,
+        "file_url": f"/api/files/{safe_filename}",
+        "file_size": len(contents),
+        "content_type": file.content_type or "application/octet-stream"
+    }
+
+@api_router.get("/files/{filename}")
+async def serve_file(filename: str):
+    """Serve an uploaded file"""
+    import re
+    if not re.match(r'^file_[a-f0-9]+\.\w+$', filename):
+        raise HTTPException(400, "Invalid filename")
+    file_path = ROOT_DIR / "uploads" / filename
+    if not file_path.exists():
+        raise HTTPException(404, "File not found")
+    return FileResponse(file_path, filename=filename)
 
 @api_router.get("/assignments/{assignment_id}/grades")
 async def get_grades(assignment_id: str, user: dict = Depends(get_current_user)):
