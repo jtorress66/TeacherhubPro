@@ -1,0 +1,88 @@
+{
+  "summary": "PDF-to-Questions parsing feature and all interactive question types fully tested. Backend parse-pdf endpoint works correctly with pdfplumber + Claude AI. Student pages render all 5 question types (multiple_choice, true_false, short_answer, matching, essay) as interactive form fields. Form submission successful.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "StudentAssignment.js",
+        "issues": ["Console shows React hydration warnings about <span> in <select>/<option> - cosmetic only, doesn't affect functionality"]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_pdf_parsing.py",
+    "/app/test_reports/pytest/pytest_pdf_parsing.xml",
+    ".screenshots/science_quiz_assignment.png",
+    ".screenshots/matching_assignment_76006fe2f3f8.png",
+    ".screenshots/submission_complete.png"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Backend /api/ai-grading/parse-pdf endpoint (ai_grading.py line 856-982): Correctly uses pdfplumber for text extraction and Claude Sonnet 4.6 for AI parsing with 90s timeout",
+    "StudentAssignment.js properly renders all 5 question types with correct form controls",
+    "Matching questions use dropdown selectors populated from left_items/right_items",
+    "Per-question instructions display in blue info box (data-testid='question-instructions-{id}')",
+    "No PDF iframe shown when assignment has parsed questions (correct behavior)"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_pdf_parsing.py"
+  ],
+  "success_rate": {
+    "backend": "100% (8/8 tests passed)",
+    "frontend": "100% (all question types render and submit correctly)"
+  },
+  "test_credentials": {
+    "teacher_login": "email: test@school.edu, password: testpassword",
+    "student_test_urls": [
+      "https://teacherhub-ux-fix.preview.emergentagent.com/assignment/32d746a9c0bf",
+      "https://teacherhub-ux-fix.preview.emergentagent.com/assignment/76006fe2f3f8"
+    ]
+  },
+  "seed_data_creation": "Used pre-existing test assignments: token 32d746a9c0bf (Science Quiz with PDF-parsed questions), token 76006fe2f3f8 (Matching & Instructions Demo)",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "PDF-to-questions parsing feature is complete. The parse-pdf endpoint accepts file_url and total_points, extracts text via pdfplumber, and uses Claude AI to convert into structured questions. Student pages at /assignment/{token} are public. All 5 question types render with proper form controls: multiple_choice (radio), true_false (radio), short_answer (input), matching (dropdowns), essay (textarea).",
+  "features_tested": {
+    "POST /api/ai-grading/parse-pdf": {
+      "result": "PASS",
+      "details": "Endpoint extracts text from PDF and returns structured questions with question_type, question_text, points, options/matching_pairs"
+    },
+    "multiple_choice_rendering": {
+      "result": "PASS",
+      "details": "Renders with radio button options"
+    },
+    "true_false_rendering": {
+      "result": "PASS",
+      "details": "Renders with True/False radio options"
+    },
+    "short_answer_rendering": {
+      "result": "PASS",
+      "details": "Renders with text input field"
+    },
+    "matching_rendering": {
+      "result": "PASS",
+      "details": "Renders with left items and dropdown selectors for right items"
+    },
+    "essay_rendering": {
+      "result": "PASS",
+      "details": "Renders with textarea"
+    },
+    "per_question_instructions": {
+      "result": "PASS",
+      "details": "Displays in blue info box with Info icon when present"
+    },
+    "student_submission": {
+      "result": "PASS",
+      "details": "Student can fill all question types and submit successfully"
+    },
+    "no_pdf_iframe_for_parsed": {
+      "result": "PASS",
+      "details": "Assignments with parsed questions show interactive form fields, not PDF iframe"
+    }
+  }
+}

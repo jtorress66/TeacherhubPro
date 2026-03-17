@@ -847,6 +847,141 @@ async def get_grading_stats(user: dict = Depends(get_current_user)):
     }
 
 
+# ==================== PDF to Questions Conversion ====================
+
+class ParsePDFRequest(BaseModel):
+    file_url: str  # e.g. "/api/files/file_xxxx.pdf"
+    total_points: float = 100
+
+@router.post("/parse-pdf")
+async def parse_pdf_to_questions(request: ParsePDFRequest, user: dict = Depends(get_current_user)):
+    """Extract text from a PDF and use AI to convert it into structured questions"""
+    import pdfplumber
+    from pathlib import Path
+    
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    # Resolve file path from URL
+    # file_url looks like "/api/files/file_xxxx.pdf"
+    filename = request.file_url.split("/")[-1]
+    backend_dir = Path(__file__).parent.parent
+    file_path = backend_dir / "uploads" / filename
+    
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="PDF file not found")
+    
+    # Extract text from PDF
+    try:
+        extracted_text = ""
+        with pdfplumber.open(str(file_path)) as pdf:
+            for page_num, page in enumerate(pdf.pages, 1):
+                page_text = page.extract_text()
+                if page_text:
+                    extracted_text += f"\n--- Page {page_num} ---\n{page_text}"
+        
+        if not extracted_text.strip():
+            raise HTTPException(status_code=400, detail="Could not extract text from PDF. The PDF may be image-based or empty.")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"PDF extraction error: {e}")
+        raise HTTPException(status_code=400, detail=f"Failed to read PDF: {str(e)}")
+    
+    # Use AI to parse the extracted text into structured questions
+    try:
+        system_message = """You are an expert at analyzing educational test documents. 
+You receive the extracted text from a PDF test/exam and convert it into structured question objects.
+
+Rules:
+- Identify every question in the document
+- Determine the correct question_type for each: multiple_choice, true_false, short_answer, fill_blank, matching, or essay
+- For multiple_choice: include all options with is_correct set appropriately. If you can determine the correct answer from context, mark it. Otherwise mark all as false.
+- For true_false: set options to [{"text":"True","is_correct":false},{"text":"False","is_correct":false}]. If the answer is determinable, mark the correct one.
+- For matching: include matching_pairs as array of {"left":"...","right":"..."} objects
+- For fill_blank: set the correct_answer if determinable  
+- For short_answer: set the correct_answer if determinable
+- For essay: leave correct_answer empty
+- Assign reasonable point values that sum to the requested total
+- Preserve the original question text as closely as possible
+- If instructions appear before questions, include them in the question's instructions field
+
+Always respond with valid JSON only."""
+
+        prompt = f"""Parse this test document into structured questions. Target total points: {request.total_points}
+
+EXTRACTED PDF TEXT:
+{extracted_text}
+
+Return a JSON object:
+{{
+    "title": "detected test title or empty string",
+    "instructions": "any general instructions found at the top",
+    "questions": [
+        {{
+            "question_id": "q1",
+            "question_text": "the question text",
+            "question_type": "multiple_choice|true_false|short_answer|fill_blank|matching|essay",
+            "points": 10,
+            "instructions": "per-question instructions if any",
+            "options": [{{"text": "Option A", "is_correct": true}}, ...],
+            "correct_answer": "for short_answer/fill_blank",
+            "matching_pairs": [{{"left": "item1", "right": "match1"}}, ...]
+        }}
+    ]
+}}"""
+
+        chat = get_llm_chat(
+            session_id=f"pdf_parse_{uuid.uuid4().hex[:8]}",
+            system_message=system_message
+        )
+        
+        response = await asyncio.wait_for(
+            chat.send_message(UserMessage(text=prompt)),
+            timeout=AI_TIMEOUT_SECONDS
+        )
+        
+        response_text = response.strip()
+        # Clean up markdown code blocks if present
+        if response_text.startswith("```"):
+            response_text = response_text.split("```")[1]
+            if response_text.startswith("json"):
+                response_text = response_text[4:]
+        response_text = response_text.strip()
+        
+        parsed = json.loads(response_text)
+        questions = parsed.get("questions", [])
+        
+        # Ensure each question has proper structure
+        for i, q in enumerate(questions):
+            if not q.get("question_id"):
+                q["question_id"] = f"q{i+1}"
+            if not q.get("options"):
+                q["options"] = []
+            if not q.get("matching_pairs"):
+                q["matching_pairs"] = []
+            if not q.get("correct_answer"):
+                q["correct_answer"] = ""
+            if not q.get("instructions"):
+                q["instructions"] = ""
+        
+        return {
+            "title": parsed.get("title", ""),
+            "instructions": parsed.get("instructions", ""),
+            "questions": questions,
+            "extracted_text_preview": extracted_text[:500]
+        }
+        
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="AI parsing timed out. Please try again.")
+    except json.JSONDecodeError as e:
+        logger.error(f"AI response was not valid JSON: {response_text[:500]}")
+        raise HTTPException(status_code=500, detail="AI returned invalid response. Please try again.")
+    except Exception as e:
+        logger.error(f"PDF parsing AI error: {e}")
+        raise HTTPException(status_code=500, detail=f"AI parsing failed: {str(e)}")
+
+
 # ==================== Debug Endpoint ====================
 
 @router.get("/debug/tokens")

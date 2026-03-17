@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { Textarea } from '../components/ui/textarea';
 import { toast } from 'sonner';
 import { previewTestPDF } from '../utils/generateTestPDF';
-import { Plus, BookOpen, Save, Trash2, FileDown, Settings, FolderPlus, List, Pencil, Sparkles, Brain, Copy, ExternalLink, Loader2, Upload, FileText, Check, Printer, FileKey } from 'lucide-react';
+import { Plus, BookOpen, Save, Trash2, FileDown, Settings, FolderPlus, List, Pencil, Sparkles, Brain, Copy, ExternalLink, Loader2, Upload, FileText, Check, Printer, FileKey, Wand2 } from 'lucide-react';
 
 const API = `${window.location.origin}/api`;
 
@@ -112,6 +112,7 @@ const Gradebook = () => {
   const [assignmentQuestions, setAssignmentQuestions] = useState([]);
   const [assignmentFiles, setAssignmentFiles] = useState([]);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [parsingPdf, setParsingPdf] = useState(false);
 
   // School info cache for PDF/student links
   const [schoolInfo, setSchoolInfo] = useState(null);
@@ -341,6 +342,56 @@ const Gradebook = () => {
 
   const removeFile = (fileId) => {
     setAssignmentFiles(prev => prev.filter(f => f.file_id !== fileId));
+  };
+
+  // Convert uploaded PDF to interactive questions using AI
+  const handleParsePdf = async (file) => {
+    setParsingPdf(true);
+    try {
+      const res = await axios.post(`${API}/ai-grading/parse-pdf`, {
+        file_url: file.file_url,
+        total_points: parseFloat(newAssignment.points) || 100
+      }, { withCredentials: true });
+      
+      const { questions, title, instructions } = res.data;
+      
+      if (!questions || questions.length === 0) {
+        toast.error(language === 'es' ? 'No se encontraron preguntas en el PDF' : 'No questions found in the PDF');
+        return;
+      }
+      
+      // Populate the questions tab with parsed questions
+      setAssignmentQuestions(questions.map(q => ({
+        question_id: q.question_id || `q${Math.random().toString(36).slice(2,8)}`,
+        question_text: q.question_text || '',
+        question_type: q.question_type || 'short_answer',
+        points: q.points || 10,
+        instructions: q.instructions || '',
+        options: q.options || [],
+        correct_answer: q.correct_answer || '',
+        matching_pairs: q.matching_pairs || []
+      })));
+      
+      // Auto-fill title/description if empty
+      if (!newAssignment.title && title) {
+        setNewAssignment(prev => ({ ...prev, title }));
+      }
+      if (!newAssignment.description && instructions) {
+        setNewAssignment(prev => ({ ...prev, description: instructions }));
+      }
+      
+      toast.success(
+        language === 'es' 
+          ? `${questions.length} preguntas extraidas del PDF. Revisa y edita antes de guardar.`
+          : `${questions.length} questions extracted from PDF. Review and edit before saving.`,
+        { duration: 5000 }
+      );
+    } catch (error) {
+      const msg = error.response?.data?.detail || (language === 'es' ? 'Error al analizar el PDF' : 'Failed to parse PDF');
+      toast.error(msg);
+    } finally {
+      setParsingPdf(false);
+    }
   };
 
   // Build PDF data from assignment info
@@ -1079,16 +1130,35 @@ const Gradebook = () => {
                                   <p className="text-xs text-slate-400">{(file.file_size / 1024).toFixed(1)} KB</p>
                                 </div>
                               </div>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeFile(file.file_id)}
-                                className="text-red-500 hover:text-red-700"
-                                data-testid={`remove-file-${file.file_id}`}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              <div className="flex items-center gap-1">
+                                {file.filename?.toLowerCase().endsWith('.pdf') && (
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleParsePdf(file)}
+                                    disabled={parsingPdf}
+                                    className="text-violet-600 border-violet-200 hover:bg-violet-50"
+                                    data-testid={`convert-pdf-${file.file_id}`}
+                                  >
+                                    {parsingPdf ? (
+                                      <><Loader2 className="h-3 w-3 mr-1 animate-spin" />{language === 'es' ? 'Analizando...' : 'Analyzing...'}</>
+                                    ) : (
+                                      <><Wand2 className="h-3 w-3 mr-1" />{language === 'es' ? 'Convertir a Test' : 'Convert to Online Test'}</>
+                                    )}
+                                  </Button>
+                                )}
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removeFile(file.file_id)}
+                                  className="text-red-500 hover:text-red-700"
+                                  data-testid={`remove-file-${file.file_id}`}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
                           ))}
                         </div>
