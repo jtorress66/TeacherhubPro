@@ -1,40 +1,48 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-03-17 - STUDENT LINK & MATCHING FIX ✅ COMPLETE
+
+### What Changed:
+- **Student Link for Manual Assignments**: When teachers create an assignment with questions or file uploads, a unique `public_token` is generated. The student link is automatically copied to clipboard. Teachers can also copy it later from the assignment list (link icon).
+- **Student Assignment Page** (`/assignment/{token}`): Now works for both AI and manual assignments. Shows questions for online answering, file attachments with download links, and handles file-only assignments gracefully.
+- **Matching Questions Preview**: AI assignment preview now renders `matching_pairs` data showing left → right pairs, fixing the empty matching display.
+- **Unified Backend**: The student endpoint (`GET /api/ai-grading/student/{token}`) now checks both `ai_assignments` and `assignments` collections, and the submission endpoint handles both.
+
+### Files Modified:
+- `/app/backend/server.py` — Added `public_token` to AssignmentResponse, generate in create_assignment
+- `/app/backend/routes/ai_grading.py` — Extended student/submit endpoints to check both collections
+- `/app/frontend/src/pages/Gradebook.js` — Added matching_pairs rendering, Copy Link button, student link toast
+- `/app/frontend/src/pages/StudentAssignment.js` — Added file attachments display, conditional questions/submit
+
+### Testing: Backend 100% (7/7), Frontend 100%. Report: `/app/test_reports/iteration_78.json`
+
+---
 ## Update 2026-03-17 - PDF PREVIEW & PRINT FOR TESTS ✅ COMPLETE
 
 ### What Changed:
-- **PDF Generation Utility** (`/app/frontend/src/utils/generateTestPDF.js`): Generates formatted test PDFs using jsPDF with two modes:
-  - **Student Version**: Header (title, teacher, class, date, points), student name line, questions with blank answer spaces, MC bubbles, lined essay space
-  - **Answer Key**: Red "ANSWER KEY" banner, correct answers highlighted in green (filled bubbles for MC/TF, green text for short answer)
-- **Create Assignment Dialog**: "Student PDF" and "Answer Key" buttons appear when questions exist (before Save)
-- **View Assignments List**: Printer and Answer Key icon buttons appear for saved assignments (both manual and AI) that have questions
-- Supports all 4 question types: Multiple Choice, True/False, Short Answer, Essay
+- PDF generation utility (jsPDF) producing Student Version and Answer Key
+- Print buttons in Create Assignment dialog and View Assignments list
+- Supports all question types: MC, T/F, Short Answer, Essay
 
-### Testing: 8/8 frontend test scenarios passed. Report: `/app/test_reports/iteration_77.json`
+### Testing: 8/8 frontend passed. Report: `/app/test_reports/iteration_77.json`
 
 ---
 ## Update 2026-03-17 - ENHANCED CREATE ASSIGNMENT: Question Builder & File Upload ✅ COMPLETE
 
 ### What Changed:
-- Enhanced Create Assignment dialog with two tabs:
-  1. **Build Questions**: Create test questions (MC, T/F, Short Answer, Essay) with per-question points, options, correct answers
-  2. **Upload File**: Upload test files (PDF, DOC, DOCX, PPT, images) up to 10MB
-- Description/Instructions textarea added
-- Backend: `questions` and `attachments` arrays in assignment models, `POST /api/upload-file`, `GET /api/files/{filename}`
+- Build Questions tab (MC, T/F, Short Answer, Essay) + Upload File tab
+- Backend: `questions`, `attachments` arrays, file upload/serve endpoints
 
-### Testing: Backend 94% (15/16), Frontend 100%. Report: `/app/test_reports/iteration_76.json`
+### Testing: Backend 94%, Frontend 100%. Report: `/app/test_reports/iteration_76.json`
 
 ---
-## Update 2026-03-13 - SUPER ADMIN BUGS FIXED ✅
-- Fixed CSV BOM character issue in bulk import
-- Fixed super admin class visibility
-
----
-## Update 2026-03-09 - HERO IMAGES, SCROLL FIX, MARKETING REFACTOR ✅
-- AI-generated hero images on all detail pages
-- Scroll-to-top on navigation fix
+## Earlier Updates (Completed)
+- Super Admin bugs fixed (CSV BOM, class visibility)
+- Hero images on all detail pages
+- Scroll-to-top navigation fix
 - Full marketing website refactor with 7-language support
+- Sitemap with hreflang tags
 
 ---
 
@@ -43,7 +51,7 @@
 2. Sitemap: Comprehensive with hreflang tags
 3. Super Admin Tools: Bulk CSV import, cross-school management
 4. Report Cards: School-specific logo/name with defaults
-5. Assignments & Gradebook: Question builder, file upload, AI generation, PDF print, grade entry
+5. Assignments & Gradebook: Question builder, file upload, PDF print, student links, AI generation, grade entry
 
 ## Blocked Issues (Platform-level)
 - Production Login Failure (MongoDB permissions) — escalated to Emergent Support
