@@ -1,57 +1,50 @@
 # TeacherHub - Product Requirements Document
 
 ---
-## Update 2026-03-17 - STUDENT LINK & MATCHING FIX ✅ COMPLETE
+## Update 2026-03-17 - SCHOOL LOGO ON PDF & STUDENT PAGE ✅ COMPLETE
 
 ### What Changed:
-- **Student Link for Manual Assignments**: When teachers create an assignment with questions or file uploads, a unique `public_token` is generated. The student link is automatically copied to clipboard. Teachers can also copy it later from the assignment list (link icon).
-- **Student Assignment Page** (`/assignment/{token}`): Now works for both AI and manual assignments. Shows questions for online answering, file attachments with download links, and handles file-only assignments gracefully.
-- **Matching Questions Preview**: AI assignment preview now renders `matching_pairs` data showing left → right pairs, fixing the empty matching display.
-- **Unified Backend**: The student endpoint (`GET /api/ai-grading/student/{token}`) now checks both `ai_assignments` and `assignments` collections, and the submission endpoint handles both.
+- **Student Assignment Page**: Shows the actual school logo (from `school.logo_url`) instead of the default GraduationCap icon. Falls back to the icon when no logo is uploaded. Also displays school name alongside class name (e.g., "My School — English 4A").
+- **PDF Generation**: School logo is loaded as base64 and rendered centered at the top of the PDF header. School name appears below the logo, above the test title.
+- **Backend**: Student endpoint (`GET /api/ai-grading/student/{token}`) now looks up school via `class → school_id → school` and returns `school_name` and `school_logo_url`.
+- **Gradebook**: Fetches school info on load and includes it in PDF data.
 
 ### Files Modified:
-- `/app/backend/server.py` — Added `public_token` to AssignmentResponse, generate in create_assignment
-- `/app/backend/routes/ai_grading.py` — Extended student/submit endpoints to check both collections
-- `/app/frontend/src/pages/Gradebook.js` — Added matching_pairs rendering, Copy Link button, student link toast
-- `/app/frontend/src/pages/StudentAssignment.js` — Added file attachments display, conditional questions/submit
+- `/app/backend/routes/ai_grading.py` — Added school lookup and school_name/school_logo_url to student response
+- `/app/frontend/src/pages/StudentAssignment.js` — Conditional school logo/fallback icon, school name display
+- `/app/frontend/src/utils/generateTestPDF.js` — Async logo loading, school logo+name in PDF header
+- `/app/frontend/src/pages/Gradebook.js` — schoolInfo state, fetch on load, passed to buildPDFData
 
-### Testing: Backend 100% (7/7), Frontend 100%. Report: `/app/test_reports/iteration_78.json`
-
----
-## Update 2026-03-17 - PDF PREVIEW & PRINT FOR TESTS ✅ COMPLETE
-
-### What Changed:
-- PDF generation utility (jsPDF) producing Student Version and Answer Key
-- Print buttons in Create Assignment dialog and View Assignments list
-- Supports all question types: MC, T/F, Short Answer, Essay
-
-### Testing: 8/8 frontend passed. Report: `/app/test_reports/iteration_77.json`
+### Testing: Backend 100% (7/7), Frontend 100%. Report: `/app/test_reports/iteration_79.json`
 
 ---
-## Update 2026-03-17 - ENHANCED CREATE ASSIGNMENT: Question Builder & File Upload ✅ COMPLETE
+## Update 2026-03-17 - STUDENT LINK & MATCHING FIX ✅
+- Manual assignments generate shareable student links (`public_token`)
+- Unified student page for both AI and manual assignments
+- Matching questions preview renders left → right pairs
+- Report: `/app/test_reports/iteration_78.json`
 
-### What Changed:
+## Update 2026-03-17 - PDF PREVIEW & PRINT ✅
+- jsPDF Student Version + Answer Key PDFs
+- Print buttons in Create dialog + assignment list
+- Report: `/app/test_reports/iteration_77.json`
+
+## Update 2026-03-17 - QUESTION BUILDER & FILE UPLOAD ✅
 - Build Questions tab (MC, T/F, Short Answer, Essay) + Upload File tab
-- Backend: `questions`, `attachments` arrays, file upload/serve endpoints
+- Report: `/app/test_reports/iteration_76.json`
 
-### Testing: Backend 94%, Frontend 100%. Report: `/app/test_reports/iteration_76.json`
-
----
 ## Earlier Updates (Completed)
 - Super Admin bugs fixed (CSV BOM, class visibility)
-- Hero images on all detail pages
-- Scroll-to-top navigation fix
-- Full marketing website refactor with 7-language support
-- Sitemap with hreflang tags
+- Hero images on all detail pages, scroll-to-top fix
+- Full marketing website refactor with 7-language support, sitemap
 
 ---
 
 ## Core Requirements
 1. Marketing Website: Conversion-focused, mobile-responsive, 7 languages
-2. Sitemap: Comprehensive with hreflang tags
-3. Super Admin Tools: Bulk CSV import, cross-school management
-4. Report Cards: School-specific logo/name with defaults
-5. Assignments & Gradebook: Question builder, file upload, PDF print, student links, AI generation, grade entry
+2. Super Admin Tools: Bulk CSV import, cross-school management
+3. Report Cards: School-specific logo/name with defaults
+4. Assignments & Gradebook: Question builder, file upload, PDF print with school logo, student links, AI generation
 
 ## Blocked Issues (Platform-level)
 - Production Login Failure (MongoDB permissions) — escalated to Emergent Support
@@ -70,14 +63,9 @@
 - Google Classroom full data sync
 
 ## 3rd Party Integrations
-- Emergent-managed Google Auth
-- Stripe (payments)
-- Resend (email - test mode)
-- Anthropic Claude Sonnet 4.6 (via Emergent LLM Key)
-- OpenAI TTS (audio narration)
-- Google Classroom (share link)
+- Emergent-managed Google Auth, Stripe, Resend (test mode)
+- Anthropic Claude Sonnet 4.6, OpenAI TTS, Google Classroom (via Emergent LLM Key)
 - Gemini Nano Banana (image generation via Emergent LLM Key)
 
 ## Test Credentials
-- Email: test@school.edu
-- Password: testpassword
+- Email: test@school.edu / Password: testpassword
