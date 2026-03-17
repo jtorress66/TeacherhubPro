@@ -2297,13 +2297,16 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
             key = f"{student['student_id']}_{assignment['assignment_id']}"
             grade = grades_map.get(key)
             ai_grade = ai_grades_map.get(key)
+            # Use question points sum when available (more accurate for AI-graded tests)
+            questions = assignment.get("questions", [])
+            assign_max = sum(q.get("points", 10) for q in questions) if questions else assignment.get("points", 100)
             if grade and grade.get('score') is not None:
                 total_points += grade['score']
-                max_points += assignment['points']
+                max_points += assign_max
                 assignments_completed += 1
             elif ai_grade and ai_grade.get('score') is not None:
                 total_points += ai_grade['score']
-                max_points += assignment['points']
+                max_points += assign_max
                 assignments_completed += 1
         
         # AI assignments (match by email)
@@ -2312,7 +2315,9 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
             ai_grade = ai_grades_map.get(key)
             if ai_grade and ai_grade.get('score') is not None:
                 total_points += ai_grade['score']
-                max_points += ai_assign['points']
+                ai_questions = ai_assign.get("questions", [])
+                ai_max = sum(q.get("points", 10) for q in ai_questions) if ai_questions else ai_assign.get("points", 100)
+                max_points += ai_max
                 ai_assignments_completed += 1
         
         average = (total_points / max_points * 100) if max_points > 0 else None
@@ -4048,9 +4053,14 @@ async def generate_report_card(
                 "is_ai": assignment.get("is_ai", False)
             }
         
-        # Score is stored in 'score' field, max points comes from assignment
+        # Score is stored in 'score' field, max points comes from assignment questions or top-level
         score = grade.get("score") or 0
-        max_points = assignment.get("points", 100)
+        # Use sum of question points if questions exist (more accurate for AI-graded tests)
+        questions = assignment.get("questions", [])
+        if questions:
+            max_points = sum(q.get("points", 10) for q in questions)
+        else:
+            max_points = assignment.get("points", 100)
         
         grade_summary[category_name]["points_earned"] += score
         grade_summary[category_name]["points_possible"] += max_points

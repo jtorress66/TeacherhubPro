@@ -1,32 +1,24 @@
 # TeacherHub - Product Requirements Document
 
 ---
-## Update 2026-03-17 - GRADE REPORT DISPLAY FIX ✅
+## Update 2026-03-17 - GRADE PERCENTAGE CALCULATION FIX ✅
 
-### Bug: Grades showing in Report Cards but not Grade Report
-- **Root cause 1 (Frontend):** `GradebookReports.js` used `assignments_completed` (regular only) instead of `total_assignments_completed`. Total denominator excluded AI assignments.
-- **Root cause 2 (Backend):** Name matching in Grade Report had None value bug. Also added partial name matching fallback for better student-submission matching.
-- **Files:** `/app/frontend/src/pages/GradebookReports.js` line 396, `/app/backend/server.py` lines 2238-2260
+### Bug: Tests worth 50 points showing as 50% F instead of 100% A
+- **Root cause:** Report Cards and Gradebook Report used `assignment.points` (default 100) for max points, ignoring actual question points sum.
+- **Fix:** Calculate max_points from `sum(q.points for q in questions)` when questions exist, fall back to `assignment.points` otherwise.
+- **Files:** `/app/backend/server.py` — Report Cards (line 4053) and Gradebook Report (lines 2300-2316)
+
+## Update 2026-03-17 - GRADE REPORT DISPLAY FIX ✅
+- Frontend uses total_assignments_completed; backend handles None in names + partial matching
 
 ## Update 2026-03-17 - GRADES FLOW TO REPORTS ✅
-- Both Grade Report and Report Cards now search ai_submissions for ALL assignment IDs (regular + AI)
+- Both reports search ai_submissions for ALL assignment IDs
 
-## Update 2026-03-17 - AI GRADING FIX ✅
-- Grading endpoints check both ai_assignments and assignments collections
-
-## Update 2026-03-17 - AI PLAN FIX ✅
-- check_ai_access accepts "trialing" subscription status
-
-## Update 2026-03-17 - SCHOOL LOGO, STUDENT LINK, PDF, QUESTION BUILDER ✅
-- School logo on PDF + student page
-- Manual assignments get shareable student links
-- jsPDF Student + Answer Key PDFs
-- Build Questions + Upload File tabs
+## Update 2026-03-17 - AI GRADING + PLAN + SCHOOL LOGO + STUDENT LINK + PDF + QUESTION BUILDER ✅
+- All features implemented and tested
 
 ---
 ## Blocked: Production Login/Deployment — escalated to Emergent Support
-
 ## Upcoming (P1): Email lead magnet, referral display, bulk import, parent portal links
 ## Future (P2): Refactor LanguageContext.js/server.py/GamesCreator.js, Google Classroom sync
-
 ## Credentials: test@school.edu / testpassword
