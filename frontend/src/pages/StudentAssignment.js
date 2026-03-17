@@ -14,7 +14,9 @@ import {
   AlertCircle,
   Loader2,
   BookOpen,
-  GraduationCap
+  GraduationCap,
+  Download,
+  Paperclip
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { toast } from 'sonner';
@@ -98,7 +100,10 @@ const StudentAssignment = () => {
     }
 
     // Check if all questions are answered
-    const unanswered = assignment.questions.filter(q => !answers[q.question_id]?.trim());
+    const questionList = assignment.questions || [];
+    if (questionList.length === 0) return;
+    
+    const unanswered = questionList.filter(q => !answers[q.question_id]?.trim());
     if (unanswered.length > 0) {
       toast.error(`Please answer all questions (${unanswered.length} remaining)`);
       return;
@@ -357,6 +362,41 @@ const StudentAssignment = () => {
           </CardContent>
         </Card>
 
+        {/* File Attachments */}
+        {assignment.attachments && assignment.attachments.length > 0 && (
+          <Card className="mb-6" data-testid="assignment-attachments">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Paperclip className="w-5 h-5 text-slate-500" />
+                Attached Files
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {assignment.attachments.map((file, idx) => (
+                  <a
+                    key={idx}
+                    href={`${API_URL}${file.file_url}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border hover:bg-slate-100 transition-colors"
+                    data-testid={`attachment-${idx}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <FileText className="h-5 w-5 text-blue-500 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-slate-700">{file.filename}</p>
+                        <p className="text-xs text-slate-400">{(file.file_size / 1024).toFixed(1)} KB</p>
+                      </div>
+                    </div>
+                    <Download className="h-4 w-4 text-slate-400" />
+                  </a>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Student Info Form */}
         <form onSubmit={handleSubmit}>
           <Card className="mb-6" data-testid="student-info-form">
@@ -393,33 +433,46 @@ const StudentAssignment = () => {
           </Card>
 
           {/* Questions */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold text-slate-900">Questions</h2>
-            {assignment.questions?.map((q, idx) => renderQuestion(q, idx))}
-          </div>
+          {assignment.questions && assignment.questions.length > 0 && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-bold text-slate-900">Questions</h2>
+              {assignment.questions.map((q, idx) => renderQuestion(q, idx))}
+            </div>
+          )}
 
-          {/* Submit Button */}
-          <div className="mt-8 flex justify-end">
-            <Button
-              type="submit"
-              size="lg"
-              disabled={submitting}
-              className="bg-violet-600 hover:bg-violet-700"
-              data-testid="submit-assignment-btn"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                <>
-                  <Send className="w-5 h-5 mr-2" />
-                  Submit Assignment
-                </>
-              )}
-            </Button>
-          </div>
+          {/* Submit Button - only show if there are questions to answer */}
+          {assignment.questions && assignment.questions.length > 0 && (
+            <div className="mt-8 flex justify-end">
+              <Button
+                type="submit"
+                size="lg"
+                disabled={submitting}
+                className="bg-violet-600 hover:bg-violet-700"
+                data-testid="submit-assignment-btn"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5 mr-2" />
+                    Submit Assignment
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+
+          {/* File-only assignment message */}
+          {(!assignment.questions || assignment.questions.length === 0) && (
+            <Card className="mt-4">
+              <CardContent className="pt-6 text-center text-slate-500">
+                <p>This assignment has no online questions. Please review the attached files above.</p>
+              </CardContent>
+            </Card>
+          )}
         </form>
       </div>
     </div>

@@ -400,6 +400,7 @@ class AssignmentResponse(BaseModel):
     standards_refs: List[str] = []
     questions: List[Dict[str, Any]] = []
     attachments: List[Dict[str, Any]] = []
+    public_token: Optional[str] = None
     created_at: str
 
 class GradeEntry(BaseModel):
@@ -2000,6 +2001,7 @@ async def create_assignment(assignment_data: AssignmentCreate, user: dict = Depe
         raise HTTPException(status_code=403, detail="Access denied")
     
     assignment_id = f"assign_{uuid.uuid4().hex[:8]}"
+    public_token = uuid.uuid4().hex[:12]
     now = datetime.now(timezone.utc).isoformat()
     
     assignment_doc = {
@@ -2014,6 +2016,7 @@ async def create_assignment(assignment_data: AssignmentCreate, user: dict = Depe
         "standards_refs": assignment_data.standards_refs,
         "questions": assignment_data.questions,
         "attachments": assignment_data.attachments,
+        "public_token": public_token,
         "created_at": now
     }
     

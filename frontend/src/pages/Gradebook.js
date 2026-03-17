@@ -207,7 +207,20 @@ const Gradebook = () => {
       setNewAssignment({ title: '', category_id: '', points: 100, due_date: '', description: '' });
       setAssignmentQuestions([]);
       setAssignmentFiles([]);
-      toast.success(language === 'es' ? 'Tarea creada' : 'Assignment created');
+      
+      // Copy student link if assignment has questions or files
+      if (res.data.public_token && (assignmentQuestions.length > 0 || assignmentFiles.length > 0)) {
+        const link = `${window.location.origin}/assignment/${res.data.public_token}`;
+        navigator.clipboard.writeText(link).catch(() => {});
+        toast.success(
+          language === 'es' 
+            ? 'Tarea creada. Enlace de estudiante copiado al portapapeles.' 
+            : 'Assignment created. Student link copied to clipboard.',
+          { duration: 5000 }
+        );
+      } else {
+        toast.success(language === 'es' ? 'Tarea creada' : 'Assignment created');
+      }
     } catch (error) {
       toast.error(t('error'));
     }
@@ -1146,6 +1159,21 @@ const Gradebook = () => {
                               </Button>
                             </>
                           )}
+                          {assignment.public_token && (assignment.questions?.length > 0 || assignment.attachments?.length > 0) && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const link = `${window.location.origin}/assignment/${assignment.public_token}`;
+                                navigator.clipboard.writeText(link);
+                                toast.success(language === 'es' ? 'Enlace copiado' : 'Link copied');
+                              }}
+                              title={language === 'es' ? 'Copiar enlace estudiante' : 'Copy student link'}
+                              data-testid={`copy-link-${assignment.assignment_id}`}
+                            >
+                              <ExternalLink className="h-4 w-4 text-violet-600" />
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"
@@ -1780,6 +1808,18 @@ const Gradebook = () => {
                       )}
                       {q.correct_answer && (
                         <p className="text-sm text-green-600 mt-2">{language === 'es' ? 'Respuesta:' : 'Answer:'} {q.correct_answer}</p>
+                      )}
+                      {q.matching_pairs && Object.keys(q.matching_pairs).length > 0 && (
+                        <div className="mt-2 space-y-1">
+                          <p className="text-xs font-medium text-slate-500">{language === 'es' ? 'Emparejar:' : 'Match:'}</p>
+                          {Object.entries(q.matching_pairs).map(([left, right], midx) => (
+                            <div key={midx} className="flex items-center gap-2 text-sm pl-4">
+                              <span className="text-slate-700 font-medium">{left}</span>
+                              <span className="text-slate-400">→</span>
+                              <span className="text-green-600">{right}</span>
+                            </div>
+                          ))}
+                        </div>
                       )}
                     </div>
                   ))}

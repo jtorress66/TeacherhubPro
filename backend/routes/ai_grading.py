@@ -360,6 +360,13 @@ async def get_student_assignment(token: str):
     try:
         assignment = await db.ai_assignments.find_one({"public_token": token}, {"_id": 0})
         
+        # Also check regular assignments collection
+        is_manual = False
+        if not assignment:
+            assignment = await db.assignments.find_one({"public_token": token}, {"_id": 0})
+            if assignment:
+                is_manual = True
+        
         if not assignment:
             # Log all tokens for debugging
             all_tokens = await db.ai_assignments.find({}, {"public_token": 1, "title": 1, "_id": 0}).to_list(20)
@@ -382,14 +389,16 @@ async def get_student_assignment(token: str):
             "class_name": class_doc.get("name", "") if class_doc else "",
             "due_date": assignment.get("due_date"),
             "total_points": assignment.get("points", 100),
-            "questions": []
+            "questions": [],
+            "attachments": assignment.get("attachments", []),
+            "is_manual": is_manual
         }
         
         # Remove correct answers from questions
         questions = assignment.get("questions", [])
-        for q in questions:
+        for i, q in enumerate(questions):
             student_q = {
-                "question_id": q.get("question_id", ""),
+                "question_id": q.get("question_id", f"q{i+1}"),
                 "question_type": q.get("question_type", "short_answer"),
                 "question_text": q.get("question_text", ""),
                 "points": q.get("points", 10)
@@ -402,7 +411,12 @@ async def get_student_assignment(token: str):
                 student_q["left_items"] = list(pairs.keys()) if pairs else []
                 student_q["right_items"] = list(pairs.values()) if pairs else []
             elif question_type == "true_false":
-                student_q["options"] = [{"text": "True"}, {"text": "False"}]
+                # Manual assignments may already have True/False options
+                opts = q.get("options", [])
+                if opts:
+                    student_q["options"] = [{"text": opt.get("text", "")} for opt in opts]
+                else:
+                    student_q["options"] = [{"text": "True"}, {"text": "False"}]
             
             student_assignment["questions"].append(student_q)
         
@@ -422,6 +436,11 @@ async def submit_student_assignment(token: str, submission: StudentSubmissionCre
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     assignment = await db.ai_assignments.find_one({"public_token": token}, {"_id": 0})
+    is_manual = False
+    if not assignment:
+        assignment = await db.assignments.find_one({"public_token": token}, {"_id": 0})
+        if assignment:
+            is_manual = True
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
     
@@ -456,7 +475,8 @@ async def submit_student_assignment(token: str, submission: StudentSubmissionCre
     await db.ai_submissions.insert_one(submission_doc)
     
     # Update assignment submission count
-    await db.ai_assignments.update_one(
+    collection = db.assignments if is_manual else db.ai_assignments
+    await collection.update_one(
         {"assignment_id": assignment["assignment_id"]},
         {"$inc": {"submission_count": 1}}
     )
