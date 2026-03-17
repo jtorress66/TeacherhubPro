@@ -1,14 +1,16 @@
 # TeacherHub - Product Requirements Document
 
 ---
-## Update 2026-03-17 - AI GRADING FIX FOR MANUAL ASSIGNMENTS ✅ COMPLETE
+## Update 2026-03-17 - GRADES FLOW TO REPORT CARDS & GRADE REPORT ✅
 
-### Bug: "Grading failed" and View/Grade buttons not working for manual assignment submissions
-- **Root cause:** Multiple endpoints in `/app/backend/routes/ai_grading.py` only looked up assignments in `ai_assignments` collection, but manual assignments are stored in the `assignments` collection. This caused "Assignment not found" errors for View and Grade operations.
-- **Fix:** Updated `get_submission`, `ai_grade_submission`, and `approve_grade` endpoints to check both `ai_assignments` AND `assignments` collections. Also fixed the grading prompt to handle manual assignment question format (no `question_id`, `true_false` uses options with `is_correct` instead of `correct_answer`).
-- **Testing:** Verified via curl — View returns assignment data, Grade successfully runs AI grading and returns scores/feedback.
+### Bug: AI-graded submissions not appearing in Grade Report or Report Cards
+- **Root cause:** Both endpoints only searched `ai_submissions` for `ai_assignment_ids`. Submissions on manual assignments (in `assignments` collection) were missed.
+- **Fix:** Updated both `GET /api/gradebook/report/{class_id}` and `GET /api/report-cards/generate` to search `ai_submissions` for ALL assignment IDs. Updated grade calculation to check both `grades_map` and `ai_grades_map`.
+- **Files:** `/app/backend/server.py` lines 2220-2302, 3976-4004
 
----
+## Update 2026-03-17 - AI GRADING FIX FOR MANUAL ASSIGNMENTS ✅
+- Extended grading endpoints to check both `ai_assignments` and `assignments` collections
+
 ## Update 2026-03-17 - AI PLAN GENERATION FIX ✅
 - Fixed `check_ai_access()` to accept `"trialing"` subscription status
 
@@ -24,14 +26,12 @@
 ## Update 2026-03-17 - QUESTION BUILDER & FILE UPLOAD ✅
 - Build Questions + Upload File tabs in Create Assignment
 
-## Earlier: Super Admin bugs, hero images, scroll fix, marketing refactor, sitemap
-
 ---
 ## Core Requirements
 1. Marketing Website: Conversion-focused, mobile-responsive, 7 languages
 2. Super Admin Tools: Bulk CSV import, cross-school management
 3. Report Cards: School-specific logo/name
-4. Assignments & Gradebook: Question builder, file upload, PDF print, student links, AI generation, AI grading
+4. Assignments & Gradebook: Question builder, file upload, PDF print, student links, AI generation, AI grading with grade flow to reports
 
 ## Blocked Issues (Platform-level)
 - Production Login/Deployment — escalated to Emergent Support

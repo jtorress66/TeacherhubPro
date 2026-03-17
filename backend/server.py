@@ -2216,10 +2216,11 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
     assignment_ids = [a["assignment_id"] for a in assignments]
     grades = await db.grades.find({"assignment_id": {"$in": assignment_ids}}, {"_id": 0}).to_list(10000)
     
-    # Get all AI submissions (graded only)
+    # Get all AI submissions (graded only) - search BOTH AI and regular assignment IDs
     ai_assignment_ids = [a["assignment_id"] for a in ai_assignments]
+    all_searchable_ids = ai_assignment_ids + assignment_ids
     ai_submissions = await db.ai_submissions.find({
-        "assignment_id": {"$in": ai_assignment_ids},
+        "assignment_id": {"$in": all_searchable_ids},
         "status": "graded",
         "final_score": {"$ne": None}
     }, {"_id": 0}).to_list(10000)
@@ -2283,12 +2284,17 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
         assignments_completed = 0
         ai_assignments_completed = 0
         
-        # Regular assignments
+        # Regular assignments - check both grades_map AND ai_grades_map
         for assignment in assignments:
             key = f"{student['student_id']}_{assignment['assignment_id']}"
             grade = grades_map.get(key)
+            ai_grade = ai_grades_map.get(key)
             if grade and grade.get('score') is not None:
                 total_points += grade['score']
+                max_points += assignment['points']
+                assignments_completed += 1
+            elif ai_grade and ai_grade.get('score') is not None:
+                total_points += ai_grade['score']
                 max_points += assignment['points']
                 assignments_completed += 1
         
@@ -3969,11 +3975,13 @@ async def generate_report_card(
         all_grades = await grades_cursor.to_list(500)
     
     # Get AI grades for this student (match by email or name)
+    # Search BOTH AI assignments and regular assignments for online submissions
     student_email = (student.get("email") or "").lower()
     student_full_name = f"{student.get('first_name', '') or ''} {student.get('last_name', '') or ''}".strip().lower()
     
     ai_grades = []
-    if ai_assignment_ids:
+    all_searchable_ids = ai_assignment_ids + assignment_ids
+    if all_searchable_ids:
         # Build query - match by email OR name
         match_conditions = []
         if student_email:
@@ -3983,7 +3991,7 @@ async def generate_report_card(
         
         if match_conditions:
             ai_submissions = await db.ai_submissions.find({
-                "assignment_id": {"$in": ai_assignment_ids},
+                "assignment_id": {"$in": all_searchable_ids},
                 "$or": match_conditions,
                 "status": "graded",
                 "final_score": {"$ne": None}
