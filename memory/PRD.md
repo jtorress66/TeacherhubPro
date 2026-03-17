@@ -25,6 +25,12 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 
 ---
 
+## Update 2026-03-17 - BUG FIX: AI GRADING "NO ANSWER" DISPLAY
+- Root cause: Manual assignments created via Gradebook didn't have `question_id` fields
+- Student page generated fallback IDs (q1, q2...) for answer keys, but teacher view tried to look up by undefined question_id
+- Fixed in 3 places: backend `get_submission` adds fallback IDs, frontend uses same fallback logic, Gradebook `addQuestion()` now always generates question_id
+- Tested and passing (100% backend 6/6, frontend verified)
+
 ## Update 2026-03-17 - PDF TO INTERACTIVE ONLINE TEST
 - **New endpoint**: `POST /api/ai-grading/parse-pdf` - extracts text from PDF using pdfplumber, sends to Claude AI to parse into structured questions (MC, TF, short answer, matching, essay)
 - **Teacher workflow**: Upload PDF → click "Convert to Online Test" → AI extracts questions → teacher reviews/edits → save assignment → share student link
