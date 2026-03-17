@@ -33,7 +33,7 @@ async def check_ai_access(user: dict) -> bool:
         return True
     
     # Check user subscription status
-    subscription = await db.subscriptions.find_one({"user_id": user_id, "status": "active"})
+    subscription = await db.subscriptions.find_one({"user_id": user_id, "status": {"$in": ["active", "trialing"]}})
     if subscription:
         return True
     
@@ -44,7 +44,7 @@ async def check_ai_access(user: dict) -> bool:
         if school_id:
             school_subscription = await db.subscriptions.find_one({
                 "school_id": school_id, 
-                "status": "active"
+                "status": {"$in": ["active", "trialing"]}
             })
             if school_subscription:
                 return True
