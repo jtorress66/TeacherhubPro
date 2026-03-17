@@ -2238,23 +2238,31 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
         if student.get("email"):
             student_email_map[student["email"].lower()] = student["student_id"]
         # Also build name map for fallback matching
-        full_name = f"{student.get('first_name', '')} {student.get('last_name', '')}".strip().lower()
+        first = student.get('first_name') or ''
+        last = student.get('last_name') or ''
+        full_name = f"{first} {last}".strip().lower()
         if full_name:
             student_name_map[full_name] = student["student_id"]
     
     # Build AI grades map (by student email -> assignment, with name fallback)
     ai_grades_map = {}
     for sub in ai_submissions:
-        student_email = sub.get("student_email", "").lower()
-        student_name = sub.get("student_name", "").lower().strip()
+        student_email = (sub.get("student_email") or "").lower()
+        student_name = (sub.get("student_name") or "").lower().strip()
         student_id = None
         
         # Try email match first
-        if student_email in student_email_map:
+        if student_email and student_email in student_email_map:
             student_id = student_email_map[student_email]
-        # Fallback to name match
-        elif student_name in student_name_map:
+        # Fallback to exact name match
+        elif student_name and student_name in student_name_map:
             student_id = student_name_map[student_name]
+        # Fallback to partial name match (submission name contains student name or vice versa)
+        elif student_name:
+            for map_name, sid in student_name_map.items():
+                if map_name in student_name or student_name in map_name:
+                    student_id = sid
+                    break
         
         if student_id:
             key = f"{student_id}_{sub['assignment_id']}"

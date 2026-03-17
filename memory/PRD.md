@@ -1,50 +1,32 @@
 # TeacherHub - Product Requirements Document
 
 ---
-## Update 2026-03-17 - GRADES FLOW TO REPORT CARDS & GRADE REPORT ✅
+## Update 2026-03-17 - GRADE REPORT DISPLAY FIX ✅
 
-### Bug: AI-graded submissions not appearing in Grade Report or Report Cards
-- **Root cause:** Both endpoints only searched `ai_submissions` for `ai_assignment_ids`. Submissions on manual assignments (in `assignments` collection) were missed.
-- **Fix:** Updated both `GET /api/gradebook/report/{class_id}` and `GET /api/report-cards/generate` to search `ai_submissions` for ALL assignment IDs. Updated grade calculation to check both `grades_map` and `ai_grades_map`.
-- **Files:** `/app/backend/server.py` lines 2220-2302, 3976-4004
+### Bug: Grades showing in Report Cards but not Grade Report
+- **Root cause 1 (Frontend):** `GradebookReports.js` used `assignments_completed` (regular only) instead of `total_assignments_completed`. Total denominator excluded AI assignments.
+- **Root cause 2 (Backend):** Name matching in Grade Report had None value bug. Also added partial name matching fallback for better student-submission matching.
+- **Files:** `/app/frontend/src/pages/GradebookReports.js` line 396, `/app/backend/server.py` lines 2238-2260
 
-## Update 2026-03-17 - AI GRADING FIX FOR MANUAL ASSIGNMENTS ✅
-- Extended grading endpoints to check both `ai_assignments` and `assignments` collections
+## Update 2026-03-17 - GRADES FLOW TO REPORTS ✅
+- Both Grade Report and Report Cards now search ai_submissions for ALL assignment IDs (regular + AI)
 
-## Update 2026-03-17 - AI PLAN GENERATION FIX ✅
-- Fixed `check_ai_access()` to accept `"trialing"` subscription status
+## Update 2026-03-17 - AI GRADING FIX ✅
+- Grading endpoints check both ai_assignments and assignments collections
 
-## Update 2026-03-17 - SCHOOL LOGO ON PDF & STUDENT PAGE ✅
-- School logo + name on student page and PDF header
+## Update 2026-03-17 - AI PLAN FIX ✅
+- check_ai_access accepts "trialing" subscription status
 
-## Update 2026-03-17 - STUDENT LINK & MATCHING FIX ✅
-- Manual assignments get shareable student links; matching preview fixed
-
-## Update 2026-03-17 - PDF PREVIEW & PRINT ✅
+## Update 2026-03-17 - SCHOOL LOGO, STUDENT LINK, PDF, QUESTION BUILDER ✅
+- School logo on PDF + student page
+- Manual assignments get shareable student links
 - jsPDF Student + Answer Key PDFs
-
-## Update 2026-03-17 - QUESTION BUILDER & FILE UPLOAD ✅
-- Build Questions + Upload File tabs in Create Assignment
+- Build Questions + Upload File tabs
 
 ---
-## Core Requirements
-1. Marketing Website: Conversion-focused, mobile-responsive, 7 languages
-2. Super Admin Tools: Bulk CSV import, cross-school management
-3. Report Cards: School-specific logo/name
-4. Assignments & Gradebook: Question builder, file upload, PDF print, student links, AI generation, AI grading with grade flow to reports
+## Blocked: Production Login/Deployment — escalated to Emergent Support
 
-## Blocked Issues (Platform-level)
-- Production Login/Deployment — escalated to Emergent Support
+## Upcoming (P1): Email lead magnet, referral display, bulk import, parent portal links
+## Future (P2): Refactor LanguageContext.js/server.py/GamesCreator.js, Google Classroom sync
 
-## Upcoming Tasks (P1)
-- Email capture lead magnet
-- Referral incentive display
-- Finish bulk data import tools
-- Email Parent Portal links
-
-## Future Tasks (P2)
-- Refactor LanguageContext.js, server.py, GamesCreator.js
-- Google Classroom full data sync
-
-## Test Credentials
-- Email: test@school.edu / Password: testpassword
+## Credentials: test@school.edu / testpassword

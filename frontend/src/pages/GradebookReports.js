@@ -393,7 +393,7 @@ const GradebookReports = () => {
                           </td>
                           <td className="p-3 text-center">
                             <span className="text-slate-600">
-                              {student.assignments_completed || 0} / {reportData.total_assignments || 0}
+                              {student.total_assignments_completed || 0} / {(reportData.total_assignments || 0) + (reportData.total_ai_assignments || 0)}
                             </span>
                           </td>
                           <td className="p-3 text-center">
