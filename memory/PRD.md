@@ -1,59 +1,49 @@
 # TeacherHub - Product Requirements Document
 
 ---
+## Update 2026-03-17 - PDF PREVIEW & PRINT FOR TESTS ✅ COMPLETE
+
+### What Changed:
+- **PDF Generation Utility** (`/app/frontend/src/utils/generateTestPDF.js`): Generates formatted test PDFs using jsPDF with two modes:
+  - **Student Version**: Header (title, teacher, class, date, points), student name line, questions with blank answer spaces, MC bubbles, lined essay space
+  - **Answer Key**: Red "ANSWER KEY" banner, correct answers highlighted in green (filled bubbles for MC/TF, green text for short answer)
+- **Create Assignment Dialog**: "Student PDF" and "Answer Key" buttons appear when questions exist (before Save)
+- **View Assignments List**: Printer and Answer Key icon buttons appear for saved assignments (both manual and AI) that have questions
+- Supports all 4 question types: Multiple Choice, True/False, Short Answer, Essay
+
+### Testing: 8/8 frontend test scenarios passed. Report: `/app/test_reports/iteration_77.json`
+
+---
 ## Update 2026-03-17 - ENHANCED CREATE ASSIGNMENT: Question Builder & File Upload ✅ COMPLETE
 
 ### What Changed:
-- **Enhanced Create Assignment Dialog** in Gradebook page with two new capabilities:
-  1. **Build Questions Tab**: Teachers can create test questions directly in the app
-     - Question types: Multiple Choice, True/False, Short Answer, Essay
-     - Multiple choice: add/remove options, mark correct answer
-     - True/False: auto-populated True/False options with correct answer selection
-     - Short Answer: correct answer input field
-     - Essay: manual grading note
-     - Per-question points allocation
-  2. **Upload File Tab**: Teachers can upload existing test files as attachments
-     - Supported formats: PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, PNG, JPG, JPEG, GIF, WEBP
-     - 10MB file size limit
-     - Multiple file upload support
-     - File list with remove capability
-- **Description/Instructions** textarea added to assignment form
-- Backend models updated to store `questions` and `attachments` arrays
-- New endpoints: `POST /api/upload-file`, `GET /api/files/{filename}`
+- Enhanced Create Assignment dialog with two tabs:
+  1. **Build Questions**: Create test questions (MC, T/F, Short Answer, Essay) with per-question points, options, correct answers
+  2. **Upload File**: Upload test files (PDF, DOC, DOCX, PPT, images) up to 10MB
+- Description/Instructions textarea added
+- Backend: `questions` and `attachments` arrays in assignment models, `POST /api/upload-file`, `GET /api/files/{filename}`
 
-### Files Modified:
-- `/app/backend/server.py` — Updated AssignmentCreate/AssignmentResponse models, create_assignment endpoint, added upload-file and serve-file endpoints
-- `/app/frontend/src/pages/Gradebook.js` — Enhanced Create Assignment dialog with question builder and file upload tabs, added helper functions
-
-### Testing: Backend 94% (15/16), Frontend 100%. Test report: `/app/test_reports/iteration_76.json`
+### Testing: Backend 94% (15/16), Frontend 100%. Report: `/app/test_reports/iteration_76.json`
 
 ---
 ## Update 2026-03-13 - SUPER ADMIN BUGS FIXED ✅
-
-### Bug 1: Bulk CSV Import shows 0 students
-- **Root cause:** Excel-generated CSVs include a BOM character at the start, causing all rows to fail validation.
-- **Fix:** Strip BOM from CSV text in frontend and normalize keys in backend.
-
-### Bug 2: Classes created by Super Admin disappear
-- **Root cause:** GET /api/classes filtered by school_id for super admins, but super admin had no school_id.
-- **Fix:** Super admin now sees ALL classes.
+- Fixed CSV BOM character issue in bulk import
+- Fixed super admin class visibility
 
 ---
-## Update 2026-03-09 - HERO IMAGES ON ALL DETAIL PAGES ✅ COMPLETE
-- Replaced icon placeholders on all 10 feature/use-case detail pages with AI-generated custom illustrations.
-
----
-## Update 2026-03-09 - SCROLL TO TOP ON NAVIGATION FIX ✅ COMPLETE
-- Fixed React Router not resetting scroll position on page navigation.
+## Update 2026-03-09 - HERO IMAGES, SCROLL FIX, MARKETING REFACTOR ✅
+- AI-generated hero images on all detail pages
+- Scroll-to-top on navigation fix
+- Full marketing website refactor with 7-language support
 
 ---
 
 ## Core Requirements
-1. **Marketing Website:** Conversion-focused, mobile-responsive, fully translated into 7 languages
-2. **Sitemap:** Comprehensive sitemap with hreflang tags for Google Search Console
-3. **Super Admin Tools:** Bulk student/teacher CSV import, cross-school class management
-4. **Report Cards:** School-specific logo/name with default fallback, accurate translations
-5. **Assignments & Gradebook:** Question builder, file upload, AI assignment generation, grade entry
+1. Marketing Website: Conversion-focused, mobile-responsive, 7 languages
+2. Sitemap: Comprehensive with hreflang tags
+3. Super Admin Tools: Bulk CSV import, cross-school management
+4. Report Cards: School-specific logo/name with defaults
+5. Assignments & Gradebook: Question builder, file upload, AI generation, PDF print, grade entry
 
 ## Blocked Issues (Platform-level)
 - Production Login Failure (MongoDB permissions) — escalated to Emergent Support
@@ -78,6 +68,7 @@
 - Anthropic Claude Sonnet 4.6 (via Emergent LLM Key)
 - OpenAI TTS (audio narration)
 - Google Classroom (share link)
+- Gemini Nano Banana (image generation via Emergent LLM Key)
 
 ## Test Credentials
 - Email: test@school.edu
