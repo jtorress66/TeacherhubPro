@@ -377,8 +377,11 @@ async def get_student_assignment(token: str):
         
         # Get class info for display (optional, won't fail if class doesn't exist)
         class_doc = None
+        school_doc = None
         if assignment.get("class_id"):
-            class_doc = await db.classes.find_one({"class_id": assignment["class_id"]}, {"_id": 0, "name": 1})
+            class_doc = await db.classes.find_one({"class_id": assignment["class_id"]}, {"_id": 0, "name": 1, "school_id": 1})
+            if class_doc and class_doc.get("school_id"):
+                school_doc = await db.schools.find_one({"school_id": class_doc["school_id"]}, {"_id": 0, "name": 1, "logo_url": 1})
         
         # Return assignment without answers for students - use .get() for safety
         student_assignment = {
@@ -387,6 +390,8 @@ async def get_student_assignment(token: str):
             "description": assignment.get("description", ""),
             "instructions": assignment.get("instructions", ""),
             "class_name": class_doc.get("name", "") if class_doc else "",
+            "school_name": school_doc.get("name", "") if school_doc else "",
+            "school_logo_url": school_doc.get("logo_url", "") if school_doc else "",
             "due_date": assignment.get("due_date"),
             "total_points": assignment.get("points", 100),
             "questions": [],

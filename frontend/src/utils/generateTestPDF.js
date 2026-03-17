@@ -1,13 +1,38 @@
 import jsPDF from 'jspdf';
 
 /**
+ * Load an image URL as base64 data URL for jsPDF
+ */
+function loadImageAsBase64(url) {
+  return new Promise((resolve) => {
+    if (!url) { resolve(null); return; }
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        resolve({ data: canvas.toDataURL('image/png'), width: img.naturalWidth, height: img.naturalHeight });
+      } catch {
+        resolve(null);
+      }
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
+/**
  * Generate a formatted test PDF (Student Version or Answer Key)
- * @param {Object} testData - { title, description, questions, points, dueDate, teacherName, className }
- * @param {Object} options - { isAnswerKey: false }
+ * @param {Object} testData - { title, description, questions, points, dueDate, teacherName, className, schoolName, schoolLogoUrl }
+ * @param {Object} options - { isAnswerKey: false, logoBase64: null }
  * @returns {jsPDF} doc instance
  */
 export function generateTestPDF(testData, options = {}) {
-  const { isAnswerKey = false } = options;
+  const { isAnswerKey = false, logoBase64 = null } = options;
   const doc = new jsPDF('p', 'mm', 'letter');
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 18;
@@ -20,6 +45,27 @@ export function generateTestPDF(testData, options = {}) {
       y = 18;
     }
   };
+
+  // ── School Logo ──
+  if (logoBase64) {
+    try {
+      const logoH = 14;
+      const aspect = logoBase64.width / logoBase64.height;
+      const logoW = logoH * aspect;
+      doc.addImage(logoBase64.data, 'PNG', pageWidth / 2 - logoW / 2, y, logoW, logoH);
+      y += logoH + 3;
+    } catch { /* skip logo on error */ }
+  }
+
+  // ── School Name ──
+  if (testData.schoolName) {
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(80, 80, 80);
+    doc.text(testData.schoolName, pageWidth / 2, y, { align: 'center' });
+    doc.setTextColor(0, 0, 0);
+    y += 6;
+  }
 
   // ── Header ──
   doc.setFontSize(18);
@@ -277,8 +323,9 @@ export function generateTestPDF(testData, options = {}) {
 /**
  * Open test PDF in new browser tab for preview & print
  */
-export function previewTestPDF(testData, options = {}) {
-  const doc = generateTestPDF(testData, options);
+export async function previewTestPDF(testData, options = {}) {
+  const logoBase64 = await loadImageAsBase64(testData.schoolLogoUrl);
+  const doc = generateTestPDF(testData, { ...options, logoBase64 });
   const blobUrl = doc.output('bloburl');
   window.open(blobUrl, '_blank');
 }
@@ -286,9 +333,10 @@ export function previewTestPDF(testData, options = {}) {
 /**
  * Download test PDF
  */
-export function downloadTestPDF(testData, options = {}) {
+export async function downloadTestPDF(testData, options = {}) {
   const { isAnswerKey = false } = options;
-  const doc = generateTestPDF(testData, options);
+  const logoBase64 = await loadImageAsBase64(testData.schoolLogoUrl);
+  const doc = generateTestPDF(testData, { ...options, logoBase64 });
   const suffix = isAnswerKey ? '_answer_key' : '_student';
   const safeName = (testData.title || 'test').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 40);
   doc.save(`${safeName}${suffix}.pdf`);

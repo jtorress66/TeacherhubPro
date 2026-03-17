@@ -113,6 +113,9 @@ const Gradebook = () => {
   const [assignmentFiles, setAssignmentFiles] = useState([]);
   const [uploadingFile, setUploadingFile] = useState(false);
 
+  // School info cache for PDF/student links
+  const [schoolInfo, setSchoolInfo] = useState(null);
+
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -123,6 +126,14 @@ const Gradebook = () => {
         
         setClasses(classesRes.data);
         setSemesters(semestersRes.data);
+        
+        // Fetch school info from first class's school_id
+        if (classesRes.data.length > 0 && classesRes.data[0].school_id) {
+          try {
+            const schoolRes = await axios.get(`${API}/schools/${classesRes.data[0].school_id}`, { withCredentials: true });
+            setSchoolInfo(schoolRes.data);
+          } catch { /* school info optional */ }
+        }
         
         // Set active semester as default
         const activeSem = semestersRes.data.find(s => s.is_active);
@@ -317,8 +328,10 @@ const Gradebook = () => {
       questions: questionsOverride || assignment.questions || [],
       points: assignment.points || newAssignment.points,
       dueDate: assignment.due_date || newAssignment.due_date || '',
-      teacherName: '', // filled by user context if available
-      className: cls ? `${cls.name} (${cls.grade}-${cls.section})` : ''
+      teacherName: '',
+      className: cls ? `${cls.name} (${cls.grade}-${cls.section})` : '',
+      schoolName: schoolInfo?.name || '',
+      schoolLogoUrl: schoolInfo?.logo_url || ''
     };
   };
 
