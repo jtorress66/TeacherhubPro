@@ -2240,7 +2240,9 @@ async def get_gradebook(class_id: str, user: dict = Depends(get_current_user)):
         key = f"{grade['student_id']}_{grade['assignment_id']}"
         grades_map[key] = grade
     
-    # Merge AI-graded submissions into grades_map (don't overwrite manual grades)
+    # Merge AI-graded submissions into grades_map
+    # ONLY for assignments that already exist in the manual assignments list
+    # (i.e., manual assignments submitted via student link and AI-graded)
     for sub in ai_submissions:
         sub_email = (sub.get("student_email") or "").lower().strip()
         sub_name = (sub.get("student_name") or "").strip()
@@ -2256,7 +2258,8 @@ async def get_gradebook(class_id: str, user: dict = Depends(get_current_user)):
         
         if student_id:
             assign_id = sub.get("assignment_id") or sub.get("ai_assignment_id")
-            if assign_id:
+            # Only add grades for assignments that exist in the Gradebook
+            if assign_id and assign_id in assignment_ids:
                 key = f"{student_id}_{assign_id}"
                 if key not in grades_map:  # Don't overwrite manual grades
                     grades_map[key] = {
@@ -2269,22 +2272,10 @@ async def get_gradebook(class_id: str, user: dict = Depends(get_current_user)):
                         "is_ai_graded": True
                     }
     
-    # Merge AI assignments into the assignments list
-    all_assignments = list(assignments)
-    for ai_assign in ai_assignments_list:
-        all_assignments.append({
-            "assignment_id": ai_assign["assignment_id"],
-            "class_id": class_id,
-            "category_id": ai_assign.get("category_id"),
-            "title": ai_assign.get("title", "AI Assignment"),
-            "points": ai_assign.get("points", 100),
-            "is_ai": True
-        })
-    
     return {
         "class_id": class_id,
         "students": students,
-        "assignments": all_assignments,
+        "assignments": assignments,
         "categories": categories,
         "grades": grades_map
     }
