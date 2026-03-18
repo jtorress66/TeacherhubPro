@@ -25,6 +25,13 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 
 ---
 
+## Update 2026-03-18 - FIX: PDF to Interactive Test Conversion (2 bugs)
+- Bug 1 (Parse failure): Added retry logic — 3 attempts on backend, 3 on frontend with reconnection toast for cold starts
+- Bug 2 (Questions bundled): Rewrote AI prompt with explicit rules for individual question splitting + examples. Result: 34 individual questions from a 38-question exam (was 4-8 bundled sections before)
+- Each fill-in-the-blank sentence, true/false statement, and MC item is now its own question
+- Word banks and section instructions properly placed in the `instructions` field
+- Tested: 34 questions extracted, all types (fill_blank, true_false, multiple_choice, essay, short_answer) verified
+
 ## Update 2026-03-18 - FIX: Student Assignment Links Not Showing PDF Content
 - Root cause: Old code explicitly filtered OUT PDF attachments from student assignment page (`!f.filename?.endsWith('.pdf')`)
 - Fix: Show ALL attachments (including PDFs) on student page via new `AssignmentFiles.jsx` component
