@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import os
 import json
 import logging
@@ -859,43 +859,45 @@ class ParsePDFRequest(BaseModel):
     file_url: str  # e.g. "/api/files/file_xxxx.pdf"
     total_points: float = 100
 
-@router.post("/parse-pdf")
-async def parse_pdf_to_questions(request: ParsePDFRequest, user: dict = Depends(get_current_user)):
-    """Extract text from a PDF and use AI to convert it into structured questions"""
+
+async def _run_pdf_parse_task(job_id: str, file_url: str, total_points: float):
+    """Background task that parses PDF and stores result in MongoDB"""
     import pdfplumber
     from pathlib import Path
     
-    if db is None:
-        raise HTTPException(status_code=500, detail="Database not initialized")
-    
-    # Resolve file path from URL
-    # file_url looks like "/api/files/file_xxxx.pdf"
-    filename = request.file_url.split("/")[-1]
-    backend_dir = Path(__file__).parent.parent
-    file_path = backend_dir / "uploads" / filename
-    
-    if not file_path.exists():
-        raise HTTPException(status_code=404, detail="PDF file not found")
-    
-    # Extract text from PDF
     try:
-        extracted_text = ""
-        with pdfplumber.open(str(file_path)) as pdf:
-            for page_num, page in enumerate(pdf.pages, 1):
-                page_text = page.extract_text()
-                if page_text:
-                    extracted_text += f"\n--- Page {page_num} ---\n{page_text}"
+        # Resolve file path
+        filename = file_url.split("/")[-1]
+        backend_dir = Path(__file__).parent.parent
+        file_path = backend_dir / "uploads" / filename
+        
+        if not file_path.exists():
+            await db.generation_jobs.update_one(
+                {"job_id": job_id},
+                {"$set": {"status": "failed", "error": "PDF file not found"}}
+            )
+            return
+        
+        # Extract text from PDF (run in thread pool to avoid blocking event loop)
+        def extract_pdf_text(filepath):
+            text = ""
+            with pdfplumber.open(str(filepath)) as pdf:
+                for page_num, page in enumerate(pdf.pages, 1):
+                    page_text = page.extract_text()
+                    if page_text:
+                        text += f"\n--- Page {page_num} ---\n{page_text}"
+            return text
+        
+        extracted_text = await asyncio.to_thread(extract_pdf_text, file_path)
         
         if not extracted_text.strip():
-            raise HTTPException(status_code=400, detail="Could not extract text from PDF. The PDF may be image-based or empty.")
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"PDF extraction error: {e}")
-        raise HTTPException(status_code=400, detail=f"Failed to read PDF: {str(e)}")
-    
-    # Use AI to parse the extracted text into structured questions
-    try:
+            await db.generation_jobs.update_one(
+                {"job_id": job_id},
+                {"$set": {"status": "failed", "error": "Could not extract text from PDF. The PDF may be image-based or empty."}}
+            )
+            return
+        
+        # AI prompt for question extraction
         system_message = """You are an expert at converting educational test documents into structured digital question data.
 
 CRITICAL RULES FOR QUESTION SPLITTING:
@@ -917,7 +919,7 @@ EXAMPLE - WRONG (do NOT do this):
 
 Always respond with valid JSON only. No markdown, no explanation text."""
 
-        prompt = f"""Convert this test into individual structured questions. Target total points: {request.total_points}
+        prompt = f"""Convert this test into individual structured questions. Target total points: {total_points}
 
 Each numbered item, each fill-in-the-blank sentence, each true/false statement, and each multiple choice item MUST be a SEPARATE question object.
 
@@ -950,7 +952,6 @@ REMEMBER: If a section has 6 fill-in-the-blank sentences, output 6 question obje
         )
         
         response = None
-        last_error = None
         for attempt in range(MAX_RETRIES + 1):
             try:
                 response = await asyncio.wait_for(
@@ -959,16 +960,18 @@ REMEMBER: If a section has 6 fill-in-the-blank sentences, output 6 question obje
                 )
                 break
             except (asyncio.TimeoutError, Exception) as e:
-                last_error = e
                 logger.warning(f"PDF parse AI attempt {attempt + 1} failed: {e}")
                 if attempt < MAX_RETRIES:
                     await asyncio.sleep(RETRY_DELAY)
         
         if not response:
-            raise HTTPException(status_code=504, detail=f"AI parsing timed out after {MAX_RETRIES + 1} attempts. Please try again.")
+            await db.generation_jobs.update_one(
+                {"job_id": job_id},
+                {"$set": {"status": "failed", "error": "AI parsing timed out. Please try again."}}
+            )
+            return
         
         response_text = response.strip()
-        # Clean up markdown code blocks if present
         if response_text.startswith("```"):
             response_text = response_text.split("```")[1]
             if response_text.startswith("json"):
@@ -978,7 +981,6 @@ REMEMBER: If a section has 6 fill-in-the-blank sentences, output 6 question obje
         parsed = json.loads(response_text)
         questions = parsed.get("questions", [])
         
-        # Ensure each question has proper structure
         for i, q in enumerate(questions):
             if not q.get("question_id"):
                 q["question_id"] = f"q{i+1}"
@@ -991,21 +993,94 @@ REMEMBER: If a section has 6 fill-in-the-blank sentences, output 6 question obje
             if not q.get("instructions"):
                 q["instructions"] = ""
         
-        return {
+        result = {
             "title": parsed.get("title", ""),
             "instructions": parsed.get("instructions", ""),
             "questions": questions,
             "extracted_text_preview": extracted_text[:500]
         }
         
-    except asyncio.TimeoutError:
-        raise HTTPException(status_code=504, detail="AI parsing timed out. Please try again.")
+        await db.generation_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {"status": "completed", "result": result, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        
     except json.JSONDecodeError as e:
-        logger.error(f"AI response was not valid JSON: {response_text[:500]}")
-        raise HTTPException(status_code=500, detail="AI returned invalid response. Please try again.")
+        logger.error(f"AI response was not valid JSON for job {job_id}")
+        await db.generation_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {"status": "failed", "error": "AI returned invalid response. Please try again."}}
+        )
     except Exception as e:
-        logger.error(f"PDF parsing AI error: {e}")
-        raise HTTPException(status_code=500, detail=f"AI parsing failed: {str(e)}")
+        logger.error(f"PDF parsing error for job {job_id}: {e}")
+        await db.generation_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {"status": "failed", "error": f"PDF parsing failed: {str(e)}"}}
+        )
+
+
+@router.post("/parse-pdf")
+async def parse_pdf_async(request: ParsePDFRequest, user: dict = Depends(get_current_user)):
+    """Start PDF parsing in background and return job ID immediately"""
+    import pdfplumber
+    from pathlib import Path
+    
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    # Quick validation: check file exists before starting the job
+    filename = request.file_url.split("/")[-1]
+    backend_dir = Path(__file__).parent.parent
+    file_path = backend_dir / "uploads" / filename
+    
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="PDF file not found")
+    
+    job_id = f"pdf_{uuid.uuid4().hex[:12]}"
+    
+    await db.generation_jobs.insert_one({
+        "job_id": job_id,
+        "status": "processing",
+        "job_type": "pdf_parse",
+        "user_id": user.get("user_id"),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    # Create background task - it runs on the same event loop but doesn't block the response
+    asyncio.create_task(_run_pdf_parse_task(job_id, request.file_url, request.total_points))
+    
+    return {"job_id": job_id, "status": "processing"}
+
+
+@router.get("/parse-pdf/{job_id}")
+async def get_pdf_parse_status(job_id: str, user: dict = Depends(get_current_user)):
+    """Poll for PDF parsing result"""
+    job = await db.generation_jobs.find_one({"job_id": job_id}, {"_id": 0})
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    if job["status"] == "completed":
+        result = job.get("result", {})
+        await db.generation_jobs.delete_one({"job_id": job_id})
+        return {"status": "completed", **result}
+    elif job["status"] == "failed":
+        error = job.get("error", "Unknown error")
+        await db.generation_jobs.delete_one({"job_id": job_id})
+        raise HTTPException(status_code=500, detail=error)
+    
+    # Stale job check (processing > 5 minutes)
+    created_at = job.get("created_at", "")
+    if created_at:
+        try:
+            created_time = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+            if datetime.now(timezone.utc) - created_time > timedelta(minutes=5):
+                await db.generation_jobs.delete_one({"job_id": job_id})
+                raise HTTPException(status_code=500, detail="PDF parsing timed out. Please try again.")
+        except ValueError:
+            pass
+    
+    return {"status": "processing"}
 
 
 # ==================== Debug Endpoint ====================

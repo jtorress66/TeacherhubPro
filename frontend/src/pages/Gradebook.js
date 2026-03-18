@@ -381,23 +381,20 @@ const Gradebook = () => {
     setAssignmentFiles(prev => prev.filter(f => f.file_id !== fileId));
   };
 
-  // Convert uploaded PDF to interactive questions using AI
+  // Convert uploaded PDF to interactive questions using AI (async with polling)
   const handleParsePdf = async (file) => {
     setParsingPdf(true);
     try {
-      let res = null;
-      let lastError = null;
-      
-      // Retry up to 3 times for cold start / timeout issues
+      // Step 1: Start the parse job (returns immediately with job_id)
+      let startRes = null;
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
-          res = await axios.post(`${API}/ai-grading/parse-pdf`, {
+          startRes = await axios.post(`${API}/ai-grading/parse-pdf`, {
             file_url: file.file_url,
             total_points: parseFloat(newAssignment.points) || 100
-          }, { withCredentials: true, timeout: 120000 });
+          }, { withCredentials: true, timeout: 30000 });
           break;
         } catch (err) {
-          lastError = err;
           const status = err.response?.status;
           if ((status === 504 || status === 502 || err.code === 'ECONNABORTED') && attempt < 2) {
             toast.info(language === 'es' ? 'Reconectando al servidor...' : 'Connecting to server... Retrying');
@@ -408,44 +405,67 @@ const Gradebook = () => {
         }
       }
       
-      if (!res) throw lastError;
+      if (!startRes) throw new Error('Failed to start PDF parsing');
       
-      const { questions, title, instructions } = res.data;
+      const jobId = startRes.data.job_id;
+      toast.info(language === 'es' ? 'Analizando PDF con IA...' : 'Analyzing PDF with AI... This may take up to a minute.');
       
-      if (!questions || questions.length === 0) {
-        toast.error(language === 'es' ? 'No se encontraron preguntas en el PDF' : 'No questions found in the PDF');
-        return;
+      // Step 2: Poll for result
+      const maxPolls = 60; // 60 * 2.5s = 150 seconds max
+      for (let i = 0; i < maxPolls; i++) {
+        await new Promise(r => setTimeout(r, 2500));
+        
+        try {
+          const pollRes = await axios.get(`${API}/ai-grading/parse-pdf/${jobId}`, {
+            withCredentials: true, timeout: 15000
+          });
+          
+          if (pollRes.data.status === 'completed') {
+            const res = { data: pollRes.data };
+            
+            // Success - process the questions
+            if (res.data.questions && res.data.questions.length > 0) {
+              const questionsWithIds = res.data.questions.map((q, idx) => ({
+                ...q,
+                question_id: q.question_id || `q${idx + 1}`
+              }));
+              setAssignmentQuestions(questionsWithIds);
+              
+              if (res.data.title && !newAssignment.title) {
+                setNewAssignment(prev => ({ ...prev, title: res.data.title }));
+              }
+              
+              toast.success(
+                language === 'es'
+                  ? `Se extrajeron ${questionsWithIds.length} preguntas del PDF`
+                  : `Extracted ${questionsWithIds.length} questions from PDF`
+              );
+            } else {
+              toast.warning(
+                language === 'es'
+                  ? 'No se encontraron preguntas en el PDF'
+                  : 'No questions found in the PDF'
+              );
+            }
+            return;
+          } else if (pollRes.data.status === 'processing') {
+            continue;
+          }
+        } catch (pollErr) {
+          const pollStatus = pollErr.response?.status;
+          if (pollStatus >= 500 || pollStatus === 404 || pollErr.code === 'ECONNABORTED') continue;
+          throw pollErr;
+        }
       }
       
-      // Populate the questions tab with parsed questions
-      setAssignmentQuestions(questions.map(q => ({
-        question_id: q.question_id || `q${Math.random().toString(36).slice(2,8)}`,
-        question_text: q.question_text || '',
-        question_type: q.question_type || 'short_answer',
-        points: q.points || 10,
-        instructions: q.instructions || '',
-        options: q.options || [],
-        correct_answer: q.correct_answer || '',
-        matching_pairs: q.matching_pairs || []
-      })));
+      // If we get here, polling timed out
+      toast.error(language === 'es' ? 'El análisis tardó demasiado. Intente de nuevo.' : 'Analysis took too long. Please try again.');
       
-      // Auto-fill title/description if empty
-      if (!newAssignment.title && title) {
-        setNewAssignment(prev => ({ ...prev, title }));
-      }
-      if (!newAssignment.description && instructions) {
-        setNewAssignment(prev => ({ ...prev, description: instructions }));
-      }
-      
-      toast.success(
-        language === 'es' 
-          ? `${questions.length} preguntas extraidas del PDF. Revisa y edita antes de guardar.`
-          : `${questions.length} questions extracted from PDF. Review and edit before saving.`,
-        { duration: 5000 }
-      );
     } catch (error) {
-      const msg = error.response?.data?.detail || (language === 'es' ? 'Error al analizar el PDF' : 'Failed to parse PDF');
-      toast.error(msg);
+      console.error('PDF parse error:', error);
+      toast.error(
+        language === 'es' ? 'Error al analizar el PDF' : 'Failed to parse PDF'
+      );
     } finally {
       setParsingPdf(false);
     }
