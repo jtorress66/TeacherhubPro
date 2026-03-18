@@ -25,6 +25,14 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 
 ---
 
+## Update 2026-03-18 - FIX: PDF Parse 504 Timeout → Async Pattern
+- Root cause: parse-pdf endpoint was synchronous (AI takes 30-90s, production proxy kills at ~30s → 504)
+- Fix: Converted to same async pattern as AI generation: POST returns immediately with job_id (203ms), background task processes PDF, frontend polls GET /parse-pdf/{job_id}
+- POST /api/ai-grading/parse-pdf → returns job_id instantly
+- GET /api/ai-grading/parse-pdf/{job_id} → polls for result
+- Frontend polls every 2.5s with 150s max timeout
+- Tested: POST in 203ms, 34 questions / 42pts extracted correctly
+
 ## Update 2026-03-18 - FIX: PDF to Interactive Test Conversion (2 bugs)
 - Bug 1 (Parse failure): Added retry logic — 3 attempts on backend, 3 on frontend with reconnection toast for cold starts
 - Bug 2 (Questions bundled): Rewrote AI prompt with explicit rules for individual question splitting + examples. Result: 34 individual questions from a 38-question exam (was 4-8 bundled sections before)
