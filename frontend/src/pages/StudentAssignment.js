@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { toast } from 'sonner';
+import AssignmentFiles from '../components/AssignmentFiles';
 
 // Use window.location.origin for production compatibility
 const API_URL = window.location.origin;
@@ -391,47 +392,8 @@ const StudentAssignment = () => {
           </CardContent>
         </Card>
 
-        {/* Non-PDF File Attachments (only show non-PDF files as reference) */}
-        {assignment.attachments && assignment.attachments.length > 0 && assignment.attachments.some(f => 
-          !f.filename?.toLowerCase().endsWith('.pdf') && f.content_type !== 'application/pdf'
-        ) && (
-          <Card className="mb-6" data-testid="assignment-attachments">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Paperclip className="w-5 h-5 text-slate-500" />
-                Attached Files
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {assignment.attachments.filter(f => 
-                  !f.filename?.toLowerCase().endsWith('.pdf') && f.content_type !== 'application/pdf'
-                ).map((file, idx) => {
-                  const fileUrl = `${API_URL}${file.file_url}`;
-                  return (
-                    <a
-                      key={idx}
-                      href={fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border hover:bg-slate-100 transition-colors"
-                      data-testid={`attachment-${idx}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <FileText className="h-5 w-5 text-blue-500 flex-shrink-0" />
-                        <div>
-                          <p className="text-sm font-medium text-slate-700">{file.filename}</p>
-                          <p className="text-xs text-slate-400">{(file.file_size / 1024).toFixed(1)} KB</p>
-                        </div>
-                      </div>
-                      <Download className="h-4 w-4 text-slate-400" />
-                    </a>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* File Attachments */}
+        <AssignmentFiles attachments={assignment.attachments} apiUrl={API_URL} />
 
         {/* Student Info Form */}
         <form onSubmit={handleSubmit}>
@@ -505,7 +467,11 @@ const StudentAssignment = () => {
           {(!assignment.questions || assignment.questions.length === 0) && (
             <Card className="mt-4">
               <CardContent className="pt-6 text-center text-slate-500">
-                <p>This assignment has no online questions yet. Please check back later or contact your teacher.</p>
+                {assignment.attachments && assignment.attachments.length > 0 ? (
+                  <p>Review the attached file(s) above. Your teacher may provide separate instructions for submission.</p>
+                ) : (
+                  <p>This assignment has no online questions yet. Please check back later or contact your teacher.</p>
+                )}
               </CardContent>
             </Card>
           )}
