@@ -25,11 +25,17 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 
 ---
 
-## Update 2026-03-18 - FIX: AI GENERATION 504 TIMEOUT
-- Root cause: AI generation took 30-90 seconds; production proxy timed out at ~30s returning 504
-- Fix: Implemented async background job pattern — POST /api/ai/generate-async returns immediately with job_id, GET /api/ai/generate-async/{job_id} polls for result
-- Updated both AIAssistant.js and LessonPlanner.js to use async polling (2s intervals, 2min max)
-- Tested: Full lesson plan generated (5875 chars) with zero timeout risk
+## Update 2026-03-18 - FIX: AI GENERATION "JOB NOT FOUND" (P0)
+- Root cause: Backend runs with `--workers 4` (uvicorn). Jobs were stored in an in-memory Python dict. Worker 1 creates the job, Worker 2/3/4 polls and finds nothing → 404 "Job not found"
+- Fix: Replaced in-memory `_generation_jobs` dict with MongoDB `generation_jobs` collection. All workers now share the same job store.
+- Background task `_run_generation_task` now accepts serialized dict (not Pydantic model) to avoid cross-worker issues
+- Frontend (AIAssistant.js, LessonPlanner.js) now treats 404 during polling as transient (retries instead of failing)
+- Stale job cleanup: jobs processing > 5 minutes are auto-failed
+- Tested: 100% backend (5/5 endpoints verified via testing agent)
+
+## Update 2026-03-18 - FIX: AI GENERATION 504 TIMEOUT (previous)
+- Implemented async background job pattern — POST /api/ai/generate-async returns immediately with job_id, GET /api/ai/generate-async/{job_id} polls for result
+- Updated both AIAssistant.js and LessonPlanner.js to use async polling with retry on cold starts
 
 ## Update 2026-03-18 - CRITICAL FIX: GRADES NOT SHOWING IN GRADEBOOK/REPORTS
 - Root cause: Gradebook endpoint GET /api/gradebook/{class_id} ONLY queried `grades` collection, completely missing AI-graded submissions from `ai_submissions`
