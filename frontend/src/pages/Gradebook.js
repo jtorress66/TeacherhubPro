@@ -81,7 +81,7 @@ const Gradebook = () => {
   const [showNewAssignment, setShowNewAssignment] = useState(false);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [showAssignmentList, setShowAssignmentList] = useState(false);
-  const [editingAssignment, setEditingAssignment] = useState(null);
+  const [editingAssignmentId, setEditingAssignmentId] = useState(null);
   const [newCategory, setNewCategory] = useState({ name: '', name_es: '', weight: 10 });
   const [editingCategory, setEditingCategory] = useState(null);
   const [newAssignment, setNewAssignment] = useState({
@@ -207,35 +207,68 @@ const Gradebook = () => {
     }
 
     try {
-      const res = await axios.post(`${API}/assignments`, {
-        ...newAssignment,
-        class_id: selectedClass,
-        questions: assignmentQuestions,
-        attachments: assignmentFiles
-      }, { withCredentials: true });
+      if (editingAssignmentId) {
+        // UPDATE existing assignment
+        const res = await axios.put(`${API}/assignments/${editingAssignmentId}`, {
+          ...newAssignment,
+          class_id: selectedClass,
+          questions: assignmentQuestions,
+          attachments: assignmentFiles
+        }, { withCredentials: true });
+        
+        setAssignments(prev => prev.map(a => 
+          a.assignment_id === editingAssignmentId ? res.data : a
+        ));
+        toast.success(language === 'es' ? 'Tarea actualizada' : 'Assignment updated');
+      } else {
+        // CREATE new assignment
+        const res = await axios.post(`${API}/assignments`, {
+          ...newAssignment,
+          class_id: selectedClass,
+          questions: assignmentQuestions,
+          attachments: assignmentFiles
+        }, { withCredentials: true });
+        
+        setAssignments(prev => [...prev, res.data]);
+        
+        // Copy student link if assignment has questions or files
+        if (res.data.public_token && (assignmentQuestions.length > 0 || assignmentFiles.length > 0)) {
+          const link = `${window.location.origin}/assignment/${res.data.public_token}`;
+          navigator.clipboard.writeText(link).catch(() => {});
+          toast.success(
+            language === 'es' 
+              ? 'Tarea creada. Enlace de estudiante copiado al portapapeles.' 
+              : 'Assignment created. Student link copied to clipboard.',
+            { duration: 5000 }
+          );
+        } else {
+          toast.success(language === 'es' ? 'Tarea creada' : 'Assignment created');
+        }
+      }
       
-      setAssignments(prev => [...prev, res.data]);
       setShowNewAssignment(false);
+      setEditingAssignmentId(null);
       setNewAssignment({ title: '', category_id: '', points: 100, due_date: '', description: '' });
       setAssignmentQuestions([]);
       setAssignmentFiles([]);
-      
-      // Copy student link if assignment has questions or files
-      if (res.data.public_token && (assignmentQuestions.length > 0 || assignmentFiles.length > 0)) {
-        const link = `${window.location.origin}/assignment/${res.data.public_token}`;
-        navigator.clipboard.writeText(link).catch(() => {});
-        toast.success(
-          language === 'es' 
-            ? 'Tarea creada. Enlace de estudiante copiado al portapapeles.' 
-            : 'Assignment created. Student link copied to clipboard.',
-          { duration: 5000 }
-        );
-      } else {
-        toast.success(language === 'es' ? 'Tarea creada' : 'Assignment created');
-      }
     } catch (error) {
       toast.error(t('error'));
     }
+  };
+
+  // Open the create/edit dialog pre-populated for editing
+  const handleOpenEditDialog = (assignment) => {
+    setNewAssignment({
+      title: assignment.title || '',
+      category_id: assignment.category_id || '',
+      points: assignment.points || 100,
+      due_date: assignment.due_date || '',
+      description: assignment.description || ''
+    });
+    setAssignmentQuestions(assignment.questions || []);
+    setAssignmentFiles(assignment.attachments || []);
+    setEditingAssignmentId(assignment.assignment_id);
+    setShowNewAssignment(true);
   };
 
   // Question builder helpers
@@ -421,28 +454,6 @@ const Gradebook = () => {
       return;
     }
     previewTestPDF(data, { isAnswerKey });
-  };
-
-  // Handle editing an assignment
-  const handleEditAssignment = async () => {
-    if (!editingAssignment) return;
-    try {
-      await axios.put(`${API}/assignments/${editingAssignment.assignment_id}`, {
-        title: editingAssignment.title,
-        category_id: editingAssignment.category_id,
-        points: editingAssignment.points,
-        due_date: editingAssignment.due_date,
-        description: editingAssignment.description
-      }, { withCredentials: true });
-      
-      setAssignments(prev => prev.map(a => 
-        a.assignment_id === editingAssignment.assignment_id ? editingAssignment : a
-      ));
-      setEditingAssignment(null);
-      toast.success(language === 'es' ? 'Tarea actualizada' : 'Assignment updated');
-    } catch (error) {
-      toast.error(t('error'));
-    }
   };
 
   // Handle deleting an assignment
@@ -776,7 +787,12 @@ const Gradebook = () => {
             </Button>
             <Dialog open={showNewAssignment} onOpenChange={(open) => {
               setShowNewAssignment(open);
-              if (!open) { setAssignmentQuestions([]); setAssignmentFiles([]); }
+              if (!open) { 
+                setAssignmentQuestions([]); 
+                setAssignmentFiles([]); 
+                setEditingAssignmentId(null);
+                setNewAssignment({ title: '', category_id: '', points: 100, due_date: '', description: '' });
+              }
             }}>
               <DialogTrigger asChild>
                 <Button data-testid="new-assignment-btn">
@@ -786,7 +802,7 @@ const Gradebook = () => {
               </DialogTrigger>
               <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>{t('createAssignment')}</DialogTitle>
+                  <DialogTitle>{editingAssignmentId ? (language === 'es' ? 'Editar Tarea' : 'Edit Assignment') : t('createAssignment')}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 pt-4">
                   {/* Basic Info */}
@@ -1197,7 +1213,7 @@ const Gradebook = () => {
                   )}
 
                   <Button onClick={handleCreateAssignment} className="w-full" data-testid="create-assignment-submit">
-                    {t('save')}
+                    {editingAssignmentId ? (language === 'es' ? 'Actualizar Tarea' : 'Update Assignment') : t('save')}
                   </Button>
                 </div>
               </DialogContent>
@@ -1369,7 +1385,7 @@ const Gradebook = () => {
                               <ExternalLink className="h-4 w-4 text-violet-600" />
                             </Button>
                           )}
-                          {assignment.public_token && (
+                          {assignment.public_token && (assignment.questions?.length > 0 || assignment.attachments?.length > 0) && (
                             <Button
                               variant="ghost"
                               size="sm"
@@ -1388,7 +1404,7 @@ const Gradebook = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setEditingAssignment({...assignment})}
+                            onClick={() => handleOpenEditDialog(assignment)}
                             data-testid={`edit-assignment-${assignment.assignment_id}`}
                           >
                             <Pencil className="h-4 w-4 text-blue-600" />
@@ -1415,71 +1431,6 @@ const Gradebook = () => {
                 </p>
               )}
             </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Edit Assignment Dialog */}
-        <Dialog open={!!editingAssignment} onOpenChange={(open) => !open && setEditingAssignment(null)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{language === 'es' ? 'Editar Tarea' : 'Edit Assignment'}</DialogTitle>
-            </DialogHeader>
-            {editingAssignment && (
-              <div className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <Label>{t('title')}</Label>
-                  <Input 
-                    value={editingAssignment.title}
-                    onChange={(e) => setEditingAssignment(prev => ({ ...prev, title: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('category')}</Label>
-                  <Select 
-                    value={editingAssignment.category_id}
-                    onValueChange={(v) => setEditingAssignment(prev => ({ ...prev, category_id: v }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map(cat => (
-                        <SelectItem key={cat.category_id} value={cat.category_id}>
-                          {language === 'es' ? cat.name_es : cat.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>{t('points')}</Label>
-                    <Input 
-                      type="number"
-                      value={editingAssignment.points}
-                      onChange={(e) => setEditingAssignment(prev => ({ ...prev, points: parseFloat(e.target.value) }))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('dueDate')}</Label>
-                    <Input 
-                      type="date"
-                      value={editingAssignment.due_date || ''}
-                      onChange={(e) => setEditingAssignment(prev => ({ ...prev, due_date: e.target.value }))}
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button onClick={handleEditAssignment} className="flex-1">
-                    <Save className="h-4 w-4 mr-2" />
-                    {t('save')}
-                  </Button>
-                  <Button variant="outline" onClick={() => setEditingAssignment(null)}>
-                    {language === 'es' ? 'Cancelar' : 'Cancel'}
-                  </Button>
-                </div>
-              </div>
-            )}
           </DialogContent>
         </Dialog>
 

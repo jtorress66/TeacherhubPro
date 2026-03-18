@@ -1,0 +1,94 @@
+{
+  "summary": "BUG FIX VERIFIED: Assignment student links 'no online questions' bug - Both fixes confirmed working. 1) Google Classroom share button now only shows for assignments WITH questions/attachments. 2) Edit button opens full dialog pre-populated with existing data including questions, with 'Update Assignment' button for PUT request.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "Gradebook table",
+        "issue": "React hydration warning: <span> cannot be child of <th>/<tbody>/<tr>/<td> - doesn't affect functionality",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_assignment_edit_share_fix.py",
+    "/app/test_reports/pytest/pytest_assignment_edit_share.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Gradebook.js lines 1373-1403: Share buttons correctly conditional on `assignment.questions?.length > 0 || assignment.attachments?.length > 0`",
+    "Gradebook.js lines 260-272: handleOpenEditDialog correctly populates form fields, questions array, and attachments array from existing assignment",
+    "Gradebook.js line 805: Dialog title correctly shows 'Edit Assignment' when editingAssignmentId is set",
+    "Gradebook.js lines 210-222: handleCreateAssignment correctly uses PUT for updates when editingAssignmentId exists",
+    "server.py lines 2062-2076: PUT /api/assignments/{assignment_id} endpoint properly updates all fields including questions and attachments"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_assignment_edit_share_fix.py"
+  ],
+  "success_rate": {
+    "backend": "100% - 9/9 tests passed",
+    "frontend": "100% - All flows verified"
+  },
+  "test_credentials": {
+    "email": "test@school.edu",
+    "password": "testpassword"
+  },
+  "seed_data_creation": "Test assignments created and cleaned up during backend tests",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Assignment edit/share bug fix verified. Gradebook page at /gradebook shows View Assignments dialog with correct conditional buttons. Known test tokens: '2ae35432d130' (3 questions), '348d67436aaa' (0 questions/PDF only). Student page at /assignment/{token} works for both cases.",
+  "features_tested": {
+    "PUT /api/assignments/{id} - Update assignment with questions": {
+      "result": "PASS",
+      "details": "Created assignment without questions, then updated via PUT to add questions - questions persisted correctly"
+    },
+    "Gradebook page loads": {
+      "result": "PASS",
+      "details": "Page loads with category cards, grade entry table, AI Assignments section"
+    },
+    "View Assignments dialog": {
+      "result": "PASS",
+      "details": "Shows both AI Assignments and Manual Assignments with correct action buttons"
+    },
+    "Share buttons conditional on questions/attachments": {
+      "result": "PASS",
+      "details": "Assignment 'Test Assignment for Edit' (no questions) shows only Edit/Delete. Assignments with questions show Print/Copy Link/Google Classroom buttons"
+    },
+    "Edit button opens pre-populated dialog": {
+      "result": "PASS",
+      "details": "Edit dialog shows 'Edit Assignment' title, title pre-populated with 'Test Assignment for Edit', category 'Tarea' selected, points 100, Build Questions tab available"
+    },
+    "Student page with questions (2ae35432d130)": {
+      "result": "PASS",
+      "details": "Shows 3 questions with proper UI: multiple choice, true/false, short answer. Name/email inputs and Submit button visible"
+    },
+    "Student page with 0 questions (348d67436aaa)": {
+      "result": "PASS",
+      "details": "Shows helpful message: 'This assignment has no online questions yet. Please check back later or contact your teacher.'"
+    }
+  },
+  "bug_fix_verification": {
+    "original_bug": "Assignment student links show 'no online questions' because: 1) Google Classroom share was showing for assignments without questions. 2) No way to edit existing assignment to add questions.",
+    "fix_applied": [
+      "1. Share buttons (Google Classroom, Copy Link) now conditional: only render when `assignment.questions?.length > 0 || assignment.attachments?.length > 0`",
+      "2. handleOpenEditDialog function populates form state (title, category, points, due_date, description), questions array, and attachments array",
+      "3. Dialog title shows 'Edit Assignment' in edit mode via `editingAssignmentId` state check",
+      "4. Submit button shows 'Update Assignment' in edit mode",
+      "5. handleCreateAssignment uses PUT request when editingAssignmentId is set"
+    ],
+    "fix_verified": true,
+    "test_evidence": [
+      "Backend: 9/9 pytest tests passed including create-then-update flow",
+      "Frontend: Screenshot shows 'Test Assignment for Edit' with only Edit/Delete buttons (no share)",
+      "Frontend: Screenshot shows assignments with questions have full button set",
+      "Frontend: Edit dialog screenshot shows pre-populated fields and 'Update Assignment' button",
+      "Student page: Token 2ae35432d130 shows 3 questions correctly",
+      "Student page: Token 348d67436aaa shows 'no online questions' message"
+    ]
+  }
+}
