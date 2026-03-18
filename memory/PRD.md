@@ -25,6 +25,16 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 
 ---
 
+## Update 2026-03-18 - FIX: Student Assignment Links Not Showing PDF Content
+- Root cause: Old code explicitly filtered OUT PDF attachments from student assignment page (`!f.filename?.endsWith('.pdf')`)
+- Fix: Show ALL attachments (including PDFs) on student page via new `AssignmentFiles.jsx` component
+- Used DOM injection (useEffect + innerHTML) to bypass Emergent preview editor caching hidden styles
+- Improved no-questions message: "Review the attached file(s) above" when attachments exist
+- Fixed Google Classroom share button: now only shows for assignments WITH questions/attachments
+- Added full edit capability for existing assignments (reuses Create dialog, saves via PUT)
+- Production assignment `e24d64cecdb1` has 1 PDF: `chapter eight sixth grade exam.pdf` — will show after deploy
+- Tested: 100% frontend (student pages with/without questions, gradebook share gating)
+
 ## Update 2026-03-18 - FIX: Assignment Links "No Questions" + Edit Capability
 - Fixed Google Classroom share button showing for assignments WITHOUT questions (now gated same as copy link)
 - Added full assignment edit capability: Edit button opens the Create dialog pre-populated with existing data (title, category, points, questions, files)
