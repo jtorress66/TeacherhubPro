@@ -1,0 +1,86 @@
+{
+  "summary": "Bug fix verified: Grade Report and Report Card now correctly show grades from AI-graded assignments using token-based name matching. The names_match() helper function properly handles partial names (e.g., 'Paul Figueroa' matches 'Paul J. Figueroa Mendez'). All 19 tests pass.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_grade_report_name_matching.py",
+    "/app/test_reports/pytest/pytest_grade_report_name_matching.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "names_match() helper (server.py:135-155): Token-based matching correctly strips middle initials (like 'J.'), ignores Spanish particles ('de', 'la', etc.), and matches if all submission name parts are in roster OR if 2+ significant parts match - CORRECT",
+    "Grade Report query (server.py:2246-2253): Uses $or to search both assignment_id AND ai_assignment_id fields for compatibility - CORRECT",
+    "Grade Report name matching (server.py:2285-2289): Uses names_match() instead of substring matching for flexible name comparison - CORRECT",
+    "Report Card (server.py:4026-4054): Fetches all graded submissions and matches in Python using names_match() - CORRECT"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_grade_report_name_matching.py"
+  ],
+  "success_rate": {
+    "backend": "100% (19/19 tests passed)"
+  },
+  "test_credentials": {
+    "teacher_login": "email: test@school.edu, password: testpassword",
+    "class_id": "class_d79a6790",
+    "students_tested": [
+      "student_40da2916 (Maria Garcia)",
+      "student_ea7cb18e5b4f (Maria Garcia)",
+      "student_test_69652647 (Paul J. Figueroa Mendez) - temporary test data"
+    ]
+  },
+  "seed_data_used": "Existing graded ai_submissions: Mari Garcia→aiassign_83a2256e (80 pts), Maria Garcia→aiassign_5aa71494 (66 pts)",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Bug fix verified. The Grade Report and Report Card endpoints now use names_match() for flexible name matching. Test confirms 'Paul Figueroa' matches 'Paul J. Figueroa Mendez'. Both endpoints correctly query $or on assignment_id and ai_assignment_id for ai_submissions collection.",
+  "features_tested": {
+    "grade_report_shows_ai_grades": {
+      "result": "PASS",
+      "details": "GET /api/gradebook/report/class_d79a6790 returns ai_submissions_count: 2, total_ai_assignments: 2"
+    },
+    "report_card_shows_ai_grades": {
+      "result": "PASS",
+      "details": "GET /api/report-cards/generate shows 'Tarea (AI)' category with correct points"
+    },
+    "name_matching_partial_names": {
+      "result": "PASS",
+      "details": "Paul Figueroa (submission) correctly matched Paul J. Figueroa Mendez (roster) - 1 AI assignment completed, 85 points"
+    },
+    "name_matching_middle_initials": {
+      "result": "PASS",
+      "details": "names_match() strips single-character tokens like 'J.' from comparison"
+    },
+    "name_matching_spanish_particles": {
+      "result": "PASS",
+      "details": "names_match() ignores particles: 'de', 'la', 'del', 'el', 'los', 'las', 'san'"
+    },
+    "grade_report_counts_ai_completed": {
+      "result": "PASS",
+      "details": "students[].ai_assignments_completed correctly incremented when AI submissions match"
+    },
+    "report_card_gpa_calculation": {
+      "result": "PASS",
+      "details": "GPA calculated correctly (e.g., 85% -> 3.5 GPA)"
+    },
+    "report_card_assignment_titles_scores": {
+      "result": "PASS",
+      "details": "grades[] array includes category, points_earned, points_possible, percentage, assignment_count"
+    }
+  },
+  "bug_rca": {
+    "root_cause": "Previous implementation used substring matching (student_name in submission) which failed when submission name was shorter than roster name (e.g., 'Paul Figueroa' doesn't contain 'Paul J. Figueroa Mendez'). Also, query only searched assignment_id field, missing ai_assignment_id.",
+    "fix_applied": [
+      "1. Added names_match() helper function for token-based matching at server.py:135-155",
+      "2. Grade Report query now uses $or for both assignment_id and ai_assignment_id at server.py:2246-2253",
+      "3. Grade Report uses names_match() at server.py:2287",
+      "4. Report Card uses names_match() at server.py:4044"
+    ],
+    "verification": "Created test student 'Paul J. Figueroa Mendez' and submission from 'Paul Figueroa'. Both Grade Report and Report Card correctly showed the AI grade (85 points) for this student."
+  }
+}

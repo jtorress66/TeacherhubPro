@@ -130,6 +130,30 @@ api_router = APIRouter(prefix="/api")
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# ==================== HELPER FUNCTIONS ====================
+
+def names_match(roster_name: str, submission_name: str) -> bool:
+    """Check if a submission name matches a roster name using token-based matching.
+    Handles middle initials, partial names, and name particles."""
+    r_parts = set(roster_name.lower().split())
+    s_parts = set(submission_name.lower().split())
+    # Remove single-character tokens (initials like 'j.', 'o.') and common particles
+    particles = {'de', 'la', 'del', 'el', 'los', 'las', 'san', 'a', 'e', 'y'}
+    r_clean = {p.rstrip('.') for p in r_parts} - particles
+    s_clean = {p.rstrip('.') for p in s_parts} - particles
+    # Remove single-char initials from comparison
+    r_significant = {p for p in r_clean if len(p) > 1}
+    s_significant = {p for p in s_clean if len(p) > 1}
+    if not s_significant or not r_significant:
+        return False
+    # If all submission name parts are in roster name parts → match
+    if s_significant.issubset(r_significant):
+        return True
+    # If at least 2 significant parts match → match
+    if len(s_significant & r_significant) >= 2:
+        return True
+    return False
+
 # ==================== PYDANTIC MODELS ====================
 
 # User Models
@@ -2216,11 +2240,14 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
     assignment_ids = [a["assignment_id"] for a in assignments]
     grades = await db.grades.find({"assignment_id": {"$in": assignment_ids}}, {"_id": 0}).to_list(10000)
     
-    # Get all AI submissions (graded only) - search BOTH AI and regular assignment IDs
+    # Get all AI submissions (graded only) - search BOTH field names for compatibility
     ai_assignment_ids = [a["assignment_id"] for a in ai_assignments]
     all_searchable_ids = ai_assignment_ids + assignment_ids
     ai_submissions = await db.ai_submissions.find({
-        "assignment_id": {"$in": all_searchable_ids},
+        "$or": [
+            {"assignment_id": {"$in": all_searchable_ids}},
+            {"ai_assignment_id": {"$in": all_searchable_ids}}
+        ],
         "status": "graded",
         "final_score": {"$ne": None}
     }, {"_id": 0}).to_list(10000)
@@ -2254,24 +2281,23 @@ async def get_gradebook_report(class_id: str, user: dict = Depends(get_current_u
         # Try email match first
         if student_email and student_email in student_email_map:
             student_id = student_email_map[student_email]
-        # Fallback to exact name match
-        elif student_name and student_name in student_name_map:
-            student_id = student_name_map[student_name]
-        # Fallback to partial name match (submission name contains student name or vice versa)
+        # Fallback to token-based name matching
         elif student_name:
             for map_name, sid in student_name_map.items():
-                if map_name in student_name or student_name in map_name:
+                if names_match(map_name, student_name):
                     student_id = sid
                     break
         
         if student_id:
-            key = f"{student_id}_{sub['assignment_id']}"
-            ai_grades_map[key] = {
-                "score": sub["final_score"],
-                "ai_score": sub.get("ai_score"),
-                "ai_feedback": sub.get("ai_feedback"),
-                "student_name": sub.get("student_name")
-            }
+            assign_id = sub.get("assignment_id") or sub.get("ai_assignment_id")
+            if assign_id:
+                key = f"{student_id}_{assign_id}"
+                ai_grades_map[key] = {
+                    "score": sub["final_score"],
+                    "ai_score": sub.get("ai_score"),
+                    "ai_feedback": sub.get("ai_feedback"),
+                    "student_name": sub.get("student_name")
+                }
     
     # Combine assignments (regular + AI)
     all_assignments = assignments.copy()
@@ -3996,25 +4022,31 @@ async def generate_report_card(
     all_searchable_ids = ai_assignment_ids + assignment_ids
     if all_searchable_ids:
         # Build query - match by email OR name
-        match_conditions = []
-        if student_email:
-            match_conditions.append({"student_email": student_email})
-        if student_full_name:
-            match_conditions.append({"student_name": {"$regex": f"^{student_full_name}$", "$options": "i"}})
+        # Get ALL graded submissions for the class's assignments, then match by name in Python
+        all_ai_submissions = await db.ai_submissions.find({
+            "$or": [
+                {"assignment_id": {"$in": all_searchable_ids}},
+                {"ai_assignment_id": {"$in": all_searchable_ids}}
+            ],
+            "status": "graded",
+            "final_score": {"$ne": None}
+        }, {"_id": 0}).to_list(1000)
         
-        if match_conditions:
-            ai_submissions = await db.ai_submissions.find({
-                "assignment_id": {"$in": all_searchable_ids},
-                "$or": match_conditions,
-                "status": "graded",
-                "final_score": {"$ne": None}
-            }, {"_id": 0}).to_list(100)
+        # Filter to this student using flexible name matching
+        for sub in all_ai_submissions:
+            sub_email = (sub.get("student_email") or "").lower().strip()
+            sub_name = (sub.get("student_name") or "").strip()
             
-            # Convert AI submissions to grade format
-            for sub in ai_submissions:
+            matched = False
+            if student_email and sub_email == student_email:
+                matched = True
+            elif student_full_name and sub_name:
+                matched = names_match(student_full_name, sub_name)
+            
+            if matched:
                 ai_grades.append({
                     "student_id": student_id,
-                    "assignment_id": sub["assignment_id"],
+                    "assignment_id": sub.get("assignment_id") or sub.get("ai_assignment_id"),
                     "score": sub["final_score"],
                     "ai_score": sub.get("ai_score"),
                     "ai_feedback": sub.get("ai_feedback"),
