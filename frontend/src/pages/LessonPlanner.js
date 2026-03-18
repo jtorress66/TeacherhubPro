@@ -694,8 +694,7 @@ const LessonPlanner = () => {
 
     setAIGenerating(true);
     try {
-      // Start async generation
-      const startRes = await axios.post(`${API}/ai/generate-async`, {
+      const requestBody = {
         tool_type: 'lesson_plan',
         subject: aiForm.subject,
         grade_level: aiForm.grade_level,
@@ -707,18 +706,44 @@ const LessonPlanner = () => {
         additional_instructions: language === 'es' 
           ? 'Genera un plan de lección semanal estructurado con objetivos, actividades diarias y materiales.'
           : 'Generate a structured weekly lesson plan with objectives, daily activities, and materials.'
-      }, { withCredentials: true });
-      
-      const jobId = startRes.data.job_id;
-      
-      // Poll for results
-      let aiContent = null;
-      for (let i = 0; i < 60; i++) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        const pollRes = await axios.get(`${API}/ai/generate-async/${jobId}`, { withCredentials: true });
-        if (pollRes.data.status === 'completed') {
-          aiContent = pollRes.data.content;
+      };
+
+      // Start async generation with retry on 504/502
+      let jobId = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const startRes = await axios.post(`${API}/ai/generate-async`, requestBody, {
+            withCredentials: true, timeout: 30000
+          });
+          jobId = startRes.data.job_id;
           break;
+        } catch (err) {
+          const status = err.response?.status;
+          if ((status === 504 || status === 502 || err.code === 'ECONNABORTED') && attempt < 2) {
+            await new Promise(r => setTimeout(r, 3000));
+            continue;
+          }
+          throw err;
+        }
+      }
+
+      if (!jobId) throw new Error('Failed to start generation');
+      
+      // Poll for results with resilience to transient errors
+      let aiContent = null;
+      for (let i = 0; i < 50; i++) {
+        await new Promise(resolve => setTimeout(resolve, 2500));
+        try {
+          const pollRes = await axios.get(`${API}/ai/generate-async/${jobId}`, {
+            withCredentials: true, timeout: 15000
+          });
+          if (pollRes.data.status === 'completed') {
+            aiContent = pollRes.data.content;
+            break;
+          }
+        } catch (pollErr) {
+          if (pollErr.response?.status >= 500 || pollErr.code === 'ECONNABORTED') continue;
+          throw pollErr;
         }
       }
       

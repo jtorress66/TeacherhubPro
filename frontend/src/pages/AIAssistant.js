@@ -207,35 +207,57 @@ const AIAssistant = () => {
     setIsLoading(true);
     setGeneratedContent('');
 
-    try {
-      // Start async generation
-      const startRes = await axios.post(`${API_URL}/api/ai/generate-async`, genForm, {
-        withCredentials: true
-      });
-      const jobId = startRes.data.job_id;
+    // Helper to start the async job with retries (handles server cold starts / 504s)
+    const startJob = async (retries = 3) => {
+      for (let attempt = 0; attempt < retries; attempt++) {
+        try {
+          const res = await axios.post(`${API_URL}/api/ai/generate-async`, genForm, {
+            withCredentials: true, timeout: 30000
+          });
+          return res.data.job_id;
+        } catch (err) {
+          const status = err.response?.status;
+          if ((status === 504 || status === 502 || err.code === 'ECONNABORTED') && attempt < retries - 1) {
+            toast.info(language === 'es' ? 'Conectando con el servidor... Reintentando' : 'Connecting to server... Retrying');
+            await new Promise(r => setTimeout(r, 3000));
+            continue;
+          }
+          throw err;
+        }
+      }
+    };
 
-      // Poll for results
-      const pollInterval = 2000;
-      const maxPolls = 60; // 2 minutes max
+    try {
+      const jobId = await startJob();
+
+      // Poll for results with retry on transient errors
+      const pollInterval = 2500;
+      const maxPolls = 50;
       for (let i = 0; i < maxPolls; i++) {
         await new Promise(resolve => setTimeout(resolve, pollInterval));
-        const pollRes = await axios.get(`${API_URL}/api/ai/generate-async/${jobId}`, {
-          withCredentials: true
-        });
-        if (pollRes.data.status === 'completed') {
-          setGeneratedContent(pollRes.data.content);
-          if (pollRes.data.generation_id) {
-            setCurrentGenerationId(pollRes.data.generation_id);
-            sessionStorage.setItem('ai_current_generation_id', pollRes.data.generation_id);
+        try {
+          const pollRes = await axios.get(`${API_URL}/api/ai/generate-async/${jobId}`, {
+            withCredentials: true, timeout: 15000
+          });
+          if (pollRes.data.status === 'completed') {
+            setGeneratedContent(pollRes.data.content);
+            if (pollRes.data.generation_id) {
+              setCurrentGenerationId(pollRes.data.generation_id);
+              sessionStorage.setItem('ai_current_generation_id', pollRes.data.generation_id);
+            }
+            toast.success(language === 'es' ? '¡Contenido generado! Usa el botón Guardar para guardarlo.' : 'Content generated! Use the Save button to save it.');
+            setIsLoading(false);
+            return;
           }
-          toast.success(language === 'es' ? '¡Contenido generado! Usa el botón Guardar para guardarlo.' : 'Content generated! Use the Save button to save it.');
-          setIsLoading(false);
-          return;
+        } catch (pollErr) {
+          // Ignore transient poll errors, keep polling
+          if (pollErr.response?.status >= 500 || pollErr.code === 'ECONNABORTED') continue;
+          throw pollErr;
         }
       }
       toast.error(language === 'es' ? 'La generación tomó demasiado tiempo. Intenta de nuevo.' : 'Generation took too long. Please try again.');
     } catch (error) {
-      toast.error(error.response?.data?.detail || error.message);
+      toast.error(error.response?.data?.detail || (language === 'es' ? 'Error al generar contenido. Intenta de nuevo.' : 'Failed to generate content. Please try again.'));
     } finally {
       setIsLoading(false);
     }
