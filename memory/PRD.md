@@ -25,6 +25,13 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 
 ---
 
+## Update 2026-03-18 - BUG FIX: GRADES NOT FLOWING TO REPORTS
+- Root cause: Substring name matching failed when student typed "Paul Figueroa" but roster had "Paul J. Figueroa Mendez"
+- Also: query only searched `assignment_id`, missing `ai_assignment_id` for older submissions
+- Added `names_match()` helper (token-based: splits names, strips initials/particles, checks subset matching)
+- Fixed both Grade Report AND Report Card endpoints
+- Tested: 100% (19/19 backend tests), token matching verified for partial names, middle initials, Spanish particles
+
 ## Update 2026-03-17 - GOOGLE CLASSROOM SHARE BUTTON IN VIEW ASSIGNMENTS
 - Added Google Classroom share button to both AI and Manual assignment rows in the "View Assignments" dialog
 - Uses existing `shareToGoogleClassroom()` function that opens Google Classroom's share dialog
