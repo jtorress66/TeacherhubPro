@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Component } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import axios from "axios";
@@ -127,27 +127,65 @@ if (typeof window !== 'undefined') {
   window.addEventListener('load', removePlatformBadge);
 }
 
-// Protected Route component with subscription check
+// Error Boundary to catch component crashes and show recovery UI instead of blank screen
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('App Error Boundary caught:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', fontFamily: 'system-ui, sans-serif' }}>
+          <div style={{ textAlign: 'center', padding: '2rem', maxWidth: '400px' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>!</div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1e293b', marginBottom: '0.5rem' }}>Something went wrong</h2>
+            <p style={{ color: '#64748b', marginBottom: '1.5rem', fontSize: '0.875rem' }}>The page encountered an error. Please reload to continue.</p>
+            <button
+              onClick={() => window.location.reload()}
+              style={{ background: '#0f766e', color: 'white', border: 'none', padding: '0.625rem 1.5rem', borderRadius: '0.5rem', cursor: 'pointer', fontSize: '0.875rem', fontWeight: '500' }}
+            >
+              Reload Page
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// Protected Route component - does NOT re-verify auth on every navigation if user is already authenticated
 const ProtectedRoute = ({ children, requireSubscription = true }) => {
   const { user, loading, checkAuth } = useAuth();
-  const [isChecking, setIsChecking] = useState(true);
+  const [isChecking, setIsChecking] = useState(!user);
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
   const [subLoading, setSubLoading] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
-    // Skip if user came from AuthCallback
-    if (location.state?.user) {
+    // If user is already authenticated (from login or initial checkAuth), skip re-verification
+    if (user) {
       setIsChecking(false);
       return;
     }
 
+    // Only verify with API when user is not yet in context
     const verify = async () => {
       await checkAuth();
       setIsChecking(false);
     };
     verify();
-  }, [checkAuth, location.state]);
+  }, [user, checkAuth]);
 
   // Check subscription status after user is verified
   useEffect(() => {
@@ -162,7 +200,8 @@ const ProtectedRoute = ({ children, requireSubscription = true }) => {
         setSubscriptionStatus(res.data);
       } catch (error) {
         console.error('Error checking subscription:', error);
-        setSubscriptionStatus({ has_access: false, status: 'none' });
+        // On error, assume access to avoid blocking navigation
+        setSubscriptionStatus({ has_access: true, status: 'unknown' });
       } finally {
         setSubLoading(false);
       }
@@ -221,6 +260,7 @@ const AppRouter = () => {
   return (
     <>
     <ScrollToTop />
+    <ErrorBoundary>
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/auth" element={<Auth />} />
@@ -362,24 +402,27 @@ const AppRouter = () => {
       {/* Fallback redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </ErrorBoundary>
     </>
   );
 };
 
 function App() {
   return (
-    <ThemeProvider>
-      <LanguageProvider>
-        <AuthProvider>
-          <SchoolProvider>
-            <BrowserRouter>
-              <Toaster position="top-right" richColors />
-              <AppRouter />
-            </BrowserRouter>
-          </SchoolProvider>
-        </AuthProvider>
-      </LanguageProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <SchoolProvider>
+              <BrowserRouter>
+                <Toaster position="top-right" richColors />
+                <AppRouter />
+              </BrowserRouter>
+            </SchoolProvider>
+          </AuthProvider>
+        </LanguageProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 
