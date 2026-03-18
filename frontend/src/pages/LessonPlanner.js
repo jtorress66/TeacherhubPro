@@ -694,7 +694,8 @@ const LessonPlanner = () => {
 
     setAIGenerating(true);
     try {
-      const response = await axios.post(`${API}/ai/generate`, {
+      // Start async generation
+      const startRes = await axios.post(`${API}/ai/generate-async`, {
         tool_type: 'lesson_plan',
         subject: aiForm.subject,
         grade_level: aiForm.grade_level,
@@ -707,11 +708,25 @@ const LessonPlanner = () => {
           ? 'Genera un plan de lección semanal estructurado con objetivos, actividades diarias y materiales.'
           : 'Generate a structured weekly lesson plan with objectives, daily activities, and materials.'
       }, { withCredentials: true });
+      
+      const jobId = startRes.data.job_id;
+      
+      // Poll for results
+      let aiContent = null;
+      for (let i = 0; i < 60; i++) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        const pollRes = await axios.get(`${API}/ai/generate-async/${jobId}`, { withCredentials: true });
+        if (pollRes.data.status === 'completed') {
+          aiContent = pollRes.data.content;
+          break;
+        }
+      }
+      
+      if (!aiContent) {
+        throw new Error(language === 'es' ? 'La generación tomó demasiado tiempo' : 'Generation timed out');
+      }
 
       // Parse the AI response and populate form fields
-      const aiContent = response.data.content;
-      
-      // Extract objective from AI content (usually the first main section)
       const objectiveMatch = aiContent.match(/(?:Learning Objectives?|Objetivos?)[:\s]*([^\n]+)/i);
       const objective = objectiveMatch ? objectiveMatch[1].trim() : aiForm.topic;
       
@@ -720,7 +735,6 @@ const LessonPlanner = () => {
         ...prev,
         objective: objective,
         story: aiForm.topic,
-        // Store the full AI content in notes for the first day
         days: prev.days.map((day, i) => {
           if (i === 0) {
             return {

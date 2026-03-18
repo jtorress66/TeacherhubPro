@@ -25,6 +25,12 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 
 ---
 
+## Update 2026-03-18 - FIX: AI GENERATION 504 TIMEOUT
+- Root cause: AI generation took 30-90 seconds; production proxy timed out at ~30s returning 504
+- Fix: Implemented async background job pattern — POST /api/ai/generate-async returns immediately with job_id, GET /api/ai/generate-async/{job_id} polls for result
+- Updated both AIAssistant.js and LessonPlanner.js to use async polling (2s intervals, 2min max)
+- Tested: Full lesson plan generated (5875 chars) with zero timeout risk
+
 ## Update 2026-03-18 - CRITICAL FIX: GRADES NOT SHOWING IN GRADEBOOK/REPORTS
 - Root cause: Gradebook endpoint GET /api/gradebook/{class_id} ONLY queried `grades` collection, completely missing AI-graded submissions from `ai_submissions`
 - When teachers graded through AI Grading page, scores went to `ai_submissions` but never appeared in Gradebook grid

@@ -208,17 +208,32 @@ const AIAssistant = () => {
     setGeneratedContent('');
 
     try {
-      const response = await axios.post(`${API_URL}/api/ai/generate`, genForm, {
+      // Start async generation
+      const startRes = await axios.post(`${API_URL}/api/ai/generate-async`, genForm, {
         withCredentials: true
       });
+      const jobId = startRes.data.job_id;
 
-      setGeneratedContent(response.data.content);
-      // Save the generation ID for persistence
-      if (response.data.generation_id) {
-        setCurrentGenerationId(response.data.generation_id);
-        sessionStorage.setItem('ai_current_generation_id', response.data.generation_id);
+      // Poll for results
+      const pollInterval = 2000;
+      const maxPolls = 60; // 2 minutes max
+      for (let i = 0; i < maxPolls; i++) {
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
+        const pollRes = await axios.get(`${API_URL}/api/ai/generate-async/${jobId}`, {
+          withCredentials: true
+        });
+        if (pollRes.data.status === 'completed') {
+          setGeneratedContent(pollRes.data.content);
+          if (pollRes.data.generation_id) {
+            setCurrentGenerationId(pollRes.data.generation_id);
+            sessionStorage.setItem('ai_current_generation_id', pollRes.data.generation_id);
+          }
+          toast.success(language === 'es' ? '¡Contenido generado! Usa el botón Guardar para guardarlo.' : 'Content generated! Use the Save button to save it.');
+          setIsLoading(false);
+          return;
+        }
       }
-      toast.success(language === 'es' ? '¡Contenido generado! Usa el botón Guardar para guardarlo.' : 'Content generated! Use the Save button to save it.');
+      toast.error(language === 'es' ? 'La generación tomó demasiado tiempo. Intenta de nuevo.' : 'Generation took too long. Please try again.');
     } catch (error) {
       toast.error(error.response?.data?.detail || error.message);
     } finally {

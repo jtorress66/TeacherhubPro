@@ -22,6 +22,139 @@ AI_TIMEOUT_SECONDS = 90  # 90 second timeout as recommended by support
 
 router = APIRouter(prefix="/ai", tags=["AI Assistant"])
 
+# In-memory store for async generation jobs
+_generation_jobs = {}
+
+
+async def _run_generation_task(job_id: str, request, user_id: str):
+    """Background task that runs AI generation and stores result"""
+    try:
+        system_prompt = AI_SYSTEM_PROMPTS.get(request.tool_type, AI_SYSTEM_PROMPTS.get("chat", "You are a helpful educational AI assistant."))
+        
+        language_instruction = "Respond entirely in Spanish." if request.language == "es" else "Respond entirely in English."
+        
+        standards_context = ""
+        if request.standards_framework == "both":
+            standards_context = f"Use BOTH: {STANDARDS_INFO.get('common_core', {}).get('name', 'Common Core')} and {STANDARDS_INFO.get('pr_core', {}).get('name', 'PR Core')}."
+        elif request.standards_framework == "pr_core":
+            standards_context = f"Use Puerto Rico Standards."
+        else:
+            standards_context = f"Use Common Core State Standards."
+        
+        user_prompt = f"""{language_instruction}
+
+Generate content for:
+- Subject: {request.subject}
+- Grade Level: {request.grade_level}
+- Topic: {request.topic}
+- Difficulty: {request.difficulty_level}
+{f'- Duration: {request.duration_minutes} minutes' if request.duration_minutes else ''}
+{f'- Number of questions: {request.num_questions}' if request.tool_type == 'quiz' else ''}
+
+Standards Framework: {standards_context}
+
+{f'Additional Instructions: {request.additional_instructions}' if request.additional_instructions else ''}
+
+Please generate high-quality, ready-to-use educational content."""
+
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"gen_{job_id}",
+            system_message=system_prompt
+        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        
+        response = None
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                response = await asyncio.wait_for(
+                    chat.send_message(UserMessage(text=user_prompt)),
+                    timeout=AI_TIMEOUT_SECONDS
+                )
+                break
+            except (asyncio.TimeoutError, Exception) as e:
+                logger.warning(f"Async AI attempt {attempt + 1} failed: {e}")
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAY)
+        
+        if not response:
+            _generation_jobs[job_id] = {
+                "status": "failed",
+                "error": "AI generation failed after all retries. Please try again."
+            }
+            return
+        
+        # Save to database
+        generation_id = f"gen_{uuid.uuid4().hex[:12]}"
+        generation_doc = {
+            "generation_id": generation_id,
+            "user_id": user_id,
+            "tool_type": request.tool_type,
+            "subject": request.subject,
+            "grade_level": request.grade_level,
+            "topic": request.topic,
+            "content": response,
+            "metadata": {
+                "difficulty": request.difficulty_level,
+                "duration": request.duration_minutes,
+                "num_questions": request.num_questions
+            },
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.ai_generations.insert_one(generation_doc)
+        
+        _generation_jobs[job_id] = {
+            "status": "completed",
+            "result": {
+                "generation_id": generation_id,
+                "tool_type": request.tool_type,
+                "content": response,
+                "metadata": generation_doc["metadata"],
+                "created_at": generation_doc["created_at"]
+            }
+        }
+    except Exception as e:
+        logger.error(f"Async AI generation error for job {job_id}: {e}")
+        _generation_jobs[job_id] = {
+            "status": "failed",
+            "error": f"AI generation failed: {str(e)}"
+        }
+
+
+@router.post("/generate-async")
+async def generate_content_async(request: AIGenerationRequest, current_user: dict = Depends(get_current_user)):
+    """Start AI content generation in background and return job ID immediately"""
+    has_access = await check_ai_access(current_user)
+    if not has_access:
+        raise HTTPException(status_code=403, detail="AI access requires an active subscription or trial")
+    
+    job_id = f"job_{uuid.uuid4().hex[:12]}"
+    _generation_jobs[job_id] = {"status": "processing"}
+    
+    # Start background task
+    asyncio.create_task(_run_generation_task(job_id, request, current_user.get("user_id")))
+    
+    return {"job_id": job_id, "status": "processing"}
+
+
+@router.get("/generate-async/{job_id}")
+async def get_generation_status(job_id: str, current_user: dict = Depends(get_current_user)):
+    """Poll for async generation result"""
+    job = _generation_jobs.get(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    if job["status"] == "completed":
+        # Clean up after retrieval
+        result = job["result"]
+        del _generation_jobs[job_id]
+        return {"status": "completed", **result}
+    elif job["status"] == "failed":
+        error = job.get("error", "Unknown error")
+        del _generation_jobs[job_id]
+        raise HTTPException(status_code=500, detail=error)
+    
+    return {"status": "processing"}
+
 
 async def check_ai_access(user: dict) -> bool:
     """Check if user has access to AI features (admin, paid subscription, school subscription, or trial)"""
