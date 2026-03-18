@@ -1,0 +1,85 @@
+{
+  "summary": "Bug fix verified: Gradebook, Grade Report, and Report Card endpoints now correctly show AI-graded submissions. The GET /api/gradebook/{class_id} endpoint merges AI grades into grades_map with is_ai_graded=True flag and includes AI assignments with is_ai=True. All 18 tests pass.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_gradebook_ai_grades_integration.py",
+    "/app/test_reports/pytest/pytest_gradebook_ai_grades.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Gradebook endpoint (server.py:2190-2290): Correctly queries ai_submissions collection with $or for both assignment_id and ai_assignment_id fields. Merges AI grades into grades_map only if key doesn't exist (preserving manual grades). AI assignments added to assignments list with is_ai=True.",
+    "Grade Report endpoint (server.py:2292-2442): Uses token-based name matching via names_match() helper. Correctly counts ai_assignments_completed per student.",
+    "Report Card endpoint (server.py:4039-4211): Fetches AI submissions and matches by email first, then by name using names_match(). AI grades categorized with '(AI)' suffix.",
+    "names_match() helper (server.py:135-155): Handles partial names, middle initials, and Spanish name particles correctly."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_gradebook_ai_grades_integration.py"
+  ],
+  "success_rate": {
+    "backend": "100% (18/18 tests passed)"
+  },
+  "test_credentials": {
+    "teacher_login": "email: test@school.edu, password: testpassword",
+    "class_id": "class_d79a6790"
+  },
+  "seed_data_used": {
+    "manual_grades": "assign_a7a55e0a: Maria Garcia 35pts, Maria Garcia (student_ea7cb18e5b4f) 28pts, Carlos Lopez 32pts",
+    "ai_grades": "aiassign_5aa71494: Maria Garcia 66pts (100%), aiassign_83a2256e: exists but matched to different student"
+  },
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Bug fix verified. Gradebook now merges AI grades from ai_submissions collection. Test file test_gradebook_ai_grades_integration.py covers all three endpoints (gradebook, report, report-card) and name matching. Use class_d79a6790 with test@school.edu credentials for testing.",
+  "features_tested": {
+    "gradebook_returns_ai_assignments": {
+      "result": "PASS",
+      "details": "GET /api/gradebook/class_d79a6790 returns 2 AI assignments with is_ai=True: aiassign_5aa71494 (Basic Math Fun!, 66pts) and aiassign_83a2256e (Charlotte's Web Novel Quiz, 100pts)"
+    },
+    "gradebook_merges_ai_grades": {
+      "result": "PASS",
+      "details": "grades_map includes student_ea7cb18e5b4f_aiassign_5aa71494 with score=66, is_ai_graded=true"
+    },
+    "manual_grades_not_overwritten": {
+      "result": "PASS",
+      "details": "Manual grades (e.g., student_40da2916_assign_a7a55e0a=35pts) preserved without is_ai_graded flag"
+    },
+    "grade_report_counts_ai": {
+      "result": "PASS",
+      "details": "Report shows total_ai_assignments=2, ai_submissions_count=2"
+    },
+    "grade_report_student_ai_completed": {
+      "result": "PASS",
+      "details": "Maria Garcia shows ai_assignments_completed=1, total_assignments_completed=2"
+    },
+    "report_card_shows_ai_category": {
+      "result": "PASS",
+      "details": "Report Card shows 'Tarea (AI)' category with 66/66 points (100%)"
+    },
+    "name_matching_partial": {
+      "result": "PASS",
+      "details": "Verified via ai_submissions_count=2 matching students by name"
+    },
+    "data_consistency": {
+      "result": "PASS",
+      "details": "AI assignment count consistent between gradebook (2) and report (2)"
+    }
+  },
+  "bug_rca": {
+    "root_cause": "Gradebook endpoint only queried the 'grades' collection, missing AI-graded submissions stored in 'ai_submissions' collection. When teachers used AI Grading, scores were saved to ai_submissions but never appeared in the Gradebook grid.",
+    "fix_applied": [
+      "1. Added query to ai_submissions collection at server.py:2216-2223 with $or for both assignment_id and ai_assignment_id fields",
+      "2. Built student lookup maps for email and name matching at server.py:2226-2235",
+      "3. Merged AI grades into grades_map at server.py:2243-2270, using names_match() for flexible matching",
+      "4. Added AI assignments to assignments list at server.py:2272-2282 with is_ai=True flag",
+      "5. Manual grades take precedence (key not overwritten at server.py:2261)"
+    ],
+    "verification": "Confirmed via API: grades_map now includes AI grade entry with is_ai_graded=true, and assignments array includes AI assignments with is_ai=true"
+  }
+}

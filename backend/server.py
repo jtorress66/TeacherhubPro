@@ -2205,16 +2205,86 @@ async def get_gradebook(class_id: str, user: dict = Depends(get_current_user)):
     assignment_ids = [a["assignment_id"] for a in assignments]
     grades = await db.grades.find({"assignment_id": {"$in": assignment_ids}}, {"_id": 0}).to_list(10000)
     
+    # Also get AI-graded submissions for this class's assignments
+    # These come from students submitting via the public link and being graded through AI Grading
+    ai_assignments_list = await db.ai_assignments.find({"class_id": class_id}, {"_id": 0}).to_list(100)
+    ai_assignment_ids = [a["assignment_id"] for a in ai_assignments_list]
+    all_searchable_ids = assignment_ids + ai_assignment_ids
+    
+    ai_submissions = []
+    if all_searchable_ids:
+        ai_submissions = await db.ai_submissions.find({
+            "$or": [
+                {"assignment_id": {"$in": all_searchable_ids}},
+                {"ai_assignment_id": {"$in": all_searchable_ids}}
+            ],
+            "status": "graded",
+            "final_score": {"$ne": None}
+        }, {"_id": 0}).to_list(10000)
+    
+    # Build student lookup maps for name matching
+    student_email_map = {}
+    student_name_map = {}
+    for student in students:
+        if student.get("email"):
+            student_email_map[student["email"].lower()] = student["student_id"]
+        first = student.get('first_name') or ''
+        last = student.get('last_name') or ''
+        full_name = f"{first} {last}".strip().lower()
+        if full_name:
+            student_name_map[full_name] = student["student_id"]
+    
     # Organize grades by student and assignment
     grades_map = {}
     for grade in grades:
         key = f"{grade['student_id']}_{grade['assignment_id']}"
         grades_map[key] = grade
     
+    # Merge AI-graded submissions into grades_map (don't overwrite manual grades)
+    for sub in ai_submissions:
+        sub_email = (sub.get("student_email") or "").lower().strip()
+        sub_name = (sub.get("student_name") or "").strip()
+        student_id = None
+        
+        if sub_email and sub_email in student_email_map:
+            student_id = student_email_map[sub_email]
+        elif sub_name:
+            for map_name, sid in student_name_map.items():
+                if names_match(map_name, sub_name):
+                    student_id = sid
+                    break
+        
+        if student_id:
+            assign_id = sub.get("assignment_id") or sub.get("ai_assignment_id")
+            if assign_id:
+                key = f"{student_id}_{assign_id}"
+                if key not in grades_map:  # Don't overwrite manual grades
+                    grades_map[key] = {
+                        "grade_id": sub.get("submission_id", ""),
+                        "assignment_id": assign_id,
+                        "student_id": student_id,
+                        "score": sub["final_score"],
+                        "status": "graded",
+                        "comment": sub.get("ai_feedback", ""),
+                        "is_ai_graded": True
+                    }
+    
+    # Merge AI assignments into the assignments list
+    all_assignments = list(assignments)
+    for ai_assign in ai_assignments_list:
+        all_assignments.append({
+            "assignment_id": ai_assign["assignment_id"],
+            "class_id": class_id,
+            "category_id": ai_assign.get("category_id"),
+            "title": ai_assign.get("title", "AI Assignment"),
+            "points": ai_assign.get("points", 100),
+            "is_ai": True
+        })
+    
     return {
         "class_id": class_id,
         "students": students,
-        "assignments": assignments,
+        "assignments": all_assignments,
         "categories": categories,
         "grades": grades_map
     }
