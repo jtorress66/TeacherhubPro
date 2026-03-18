@@ -251,7 +251,9 @@ const AIAssistant = () => {
           }
         } catch (pollErr) {
           // Ignore transient poll errors, keep polling
-          if (pollErr.response?.status >= 500 || pollErr.code === 'ECONNABORTED') continue;
+          // Treat 404 as transient too (server may have restarted, job is in MongoDB)
+          const pollStatus = pollErr.response?.status;
+          if (pollStatus >= 500 || pollStatus === 404 || pollErr.code === 'ECONNABORTED') continue;
           throw pollErr;
         }
       }

@@ -22,38 +22,45 @@ AI_TIMEOUT_SECONDS = 90  # 90 second timeout as recommended by support
 
 router = APIRouter(prefix="/ai", tags=["AI Assistant"])
 
-# In-memory store for async generation jobs
-_generation_jobs = {}
-
-
-async def _run_generation_task(job_id: str, request, user_id: str):
-    """Background task that runs AI generation and stores result"""
+async def _run_generation_task(job_id: str, request_data: dict, user_id: str):
+    """Background task that runs AI generation and stores result in MongoDB"""
     try:
-        system_prompt = AI_SYSTEM_PROMPTS.get(request.tool_type, AI_SYSTEM_PROMPTS.get("chat", "You are a helpful educational AI assistant."))
+        tool_type = request_data.get("tool_type", "chat")
+        system_prompt = AI_SYSTEM_PROMPTS.get(tool_type, AI_SYSTEM_PROMPTS.get("chat", "You are a helpful educational AI assistant."))
         
-        language_instruction = "Respond entirely in Spanish." if request.language == "es" else "Respond entirely in English."
+        language = request_data.get("language", "en")
+        language_instruction = "Respond entirely in Spanish." if language == "es" else "Respond entirely in English."
         
+        standards_framework = request_data.get("standards_framework", "common_core")
         standards_context = ""
-        if request.standards_framework == "both":
+        if standards_framework == "both":
             standards_context = f"Use BOTH: {STANDARDS_INFO.get('common_core', {}).get('name', 'Common Core')} and {STANDARDS_INFO.get('pr_core', {}).get('name', 'PR Core')}."
-        elif request.standards_framework == "pr_core":
+        elif standards_framework == "pr_core":
             standards_context = f"Use Puerto Rico Standards."
         else:
             standards_context = f"Use Common Core State Standards."
         
+        subject = request_data.get("subject", "")
+        grade_level = request_data.get("grade_level", "")
+        topic = request_data.get("topic", "")
+        difficulty_level = request_data.get("difficulty_level", "medium")
+        duration_minutes = request_data.get("duration_minutes")
+        num_questions = request_data.get("num_questions")
+        additional_instructions = request_data.get("additional_instructions")
+        
         user_prompt = f"""{language_instruction}
 
 Generate content for:
-- Subject: {request.subject}
-- Grade Level: {request.grade_level}
-- Topic: {request.topic}
-- Difficulty: {request.difficulty_level}
-{f'- Duration: {request.duration_minutes} minutes' if request.duration_minutes else ''}
-{f'- Number of questions: {request.num_questions}' if request.tool_type == 'quiz' else ''}
+- Subject: {subject}
+- Grade Level: {grade_level}
+- Topic: {topic}
+- Difficulty: {difficulty_level}
+{f'- Duration: {duration_minutes} minutes' if duration_minutes else ''}
+{f'- Number of questions: {num_questions}' if tool_type == 'quiz' else ''}
 
 Standards Framework: {standards_context}
 
-{f'Additional Instructions: {request.additional_instructions}' if request.additional_instructions else ''}
+{f'Additional Instructions: {additional_instructions}' if additional_instructions else ''}
 
 Please generate high-quality, ready-to-use educational content."""
 
@@ -77,47 +84,55 @@ Please generate high-quality, ready-to-use educational content."""
                     await asyncio.sleep(RETRY_DELAY)
         
         if not response:
-            _generation_jobs[job_id] = {
-                "status": "failed",
-                "error": "AI generation failed after all retries. Please try again."
-            }
+            await db.generation_jobs.update_one(
+                {"job_id": job_id},
+                {"$set": {"status": "failed", "error": "AI generation failed after all retries. Please try again.", "updated_at": datetime.now(timezone.utc).isoformat()}}
+            )
             return
         
-        # Save to database
+        # Save to ai_generations collection
         generation_id = f"gen_{uuid.uuid4().hex[:12]}"
         generation_doc = {
             "generation_id": generation_id,
             "user_id": user_id,
-            "tool_type": request.tool_type,
-            "subject": request.subject,
-            "grade_level": request.grade_level,
-            "topic": request.topic,
+            "tool_type": tool_type,
+            "subject": subject,
+            "grade_level": grade_level,
+            "topic": topic,
             "content": response,
             "metadata": {
-                "difficulty": request.difficulty_level,
-                "duration": request.duration_minutes,
-                "num_questions": request.num_questions
+                "difficulty": difficulty_level,
+                "duration": duration_minutes,
+                "num_questions": num_questions
             },
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         await db.ai_generations.insert_one(generation_doc)
         
-        _generation_jobs[job_id] = {
-            "status": "completed",
-            "result": {
-                "generation_id": generation_id,
-                "tool_type": request.tool_type,
-                "content": response,
-                "metadata": generation_doc["metadata"],
-                "created_at": generation_doc["created_at"]
-            }
-        }
+        # Update job status in MongoDB
+        await db.generation_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {
+                "status": "completed",
+                "result": {
+                    "generation_id": generation_id,
+                    "tool_type": tool_type,
+                    "content": response,
+                    "metadata": generation_doc["metadata"],
+                    "created_at": generation_doc["created_at"]
+                },
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
     except Exception as e:
         logger.error(f"Async AI generation error for job {job_id}: {e}")
-        _generation_jobs[job_id] = {
-            "status": "failed",
-            "error": f"AI generation failed: {str(e)}"
-        }
+        try:
+            await db.generation_jobs.update_one(
+                {"job_id": job_id},
+                {"$set": {"status": "failed", "error": f"AI generation failed: {str(e)}", "updated_at": datetime.now(timezone.utc).isoformat()}}
+            )
+        except Exception:
+            pass
 
 
 @router.post("/generate-async")
@@ -128,30 +143,63 @@ async def generate_content_async(request: AIGenerationRequest, current_user: dic
         raise HTTPException(status_code=403, detail="AI access requires an active subscription or trial")
     
     job_id = f"job_{uuid.uuid4().hex[:12]}"
-    _generation_jobs[job_id] = {"status": "processing"}
+    
+    # Store job in MongoDB so all workers can access it
+    await db.generation_jobs.insert_one({
+        "job_id": job_id,
+        "status": "processing",
+        "user_id": current_user.get("user_id"),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    # Serialize request data for the background task (can't pass Pydantic model across workers)
+    request_data = {
+        "tool_type": request.tool_type,
+        "subject": request.subject,
+        "grade_level": request.grade_level,
+        "topic": request.topic,
+        "language": request.language,
+        "standards_framework": request.standards_framework,
+        "difficulty_level": request.difficulty_level,
+        "duration_minutes": request.duration_minutes,
+        "num_questions": request.num_questions,
+        "additional_instructions": request.additional_instructions,
+    }
     
     # Start background task
-    asyncio.create_task(_run_generation_task(job_id, request, current_user.get("user_id")))
+    asyncio.create_task(_run_generation_task(job_id, request_data, current_user.get("user_id")))
     
     return {"job_id": job_id, "status": "processing"}
 
 
 @router.get("/generate-async/{job_id}")
 async def get_generation_status(job_id: str, current_user: dict = Depends(get_current_user)):
-    """Poll for async generation result"""
-    job = _generation_jobs.get(job_id)
+    """Poll for async generation result - reads from MongoDB shared across all workers"""
+    job = await db.generation_jobs.find_one({"job_id": job_id}, {"_id": 0})
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     
     if job["status"] == "completed":
+        result = job.get("result", {})
         # Clean up after retrieval
-        result = job["result"]
-        del _generation_jobs[job_id]
+        await db.generation_jobs.delete_one({"job_id": job_id})
         return {"status": "completed", **result}
     elif job["status"] == "failed":
         error = job.get("error", "Unknown error")
-        del _generation_jobs[job_id]
+        await db.generation_jobs.delete_one({"job_id": job_id})
         raise HTTPException(status_code=500, detail=error)
+    
+    # Check for stale jobs (processing > 5 minutes)
+    created_at = job.get("created_at", "")
+    if created_at:
+        try:
+            created_time = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+            if datetime.now(timezone.utc) - created_time > timedelta(minutes=5):
+                await db.generation_jobs.delete_one({"job_id": job_id})
+                raise HTTPException(status_code=500, detail="AI generation timed out. Please try again.")
+        except ValueError:
+            pass
     
     return {"status": "processing"}
 

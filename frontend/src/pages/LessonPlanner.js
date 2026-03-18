@@ -742,7 +742,7 @@ const LessonPlanner = () => {
             break;
           }
         } catch (pollErr) {
-          if (pollErr.response?.status >= 500 || pollErr.code === 'ECONNABORTED') continue;
+          if (pollErr.response?.status >= 500 || pollErr.response?.status === 404 || pollErr.code === 'ECONNABORTED') continue;
           throw pollErr;
         }
       }
