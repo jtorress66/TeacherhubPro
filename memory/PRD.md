@@ -25,6 +25,13 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 
 ---
 
+## Update 2026-03-18 - FIX: BLANK SCREEN ON TAB NAVIGATION (P0)
+- Root cause: `ProtectedRoute` called `checkAuth()` API on EVERY route change. On production cold starts, the `/api/auth/me` call fails → `setUser(null)` → redirect/crash → blank screen
+- Fix 1: ProtectedRoute now skips `checkAuth()` when user already exists in AuthContext. Navigation is instant with zero API dependency.
+- Fix 2: Added `ErrorBoundary` component (App.js) to catch any component crashes and show a "Reload Page" recovery UI instead of blank screen
+- Fix 3: Subscription check error now defaults to `has_access: true` to avoid blocking navigation when API is temporarily unavailable
+- Tested: 100% frontend (10/10 navigation tests passed including rapid navigation)
+
 ## Update 2026-03-18 - FIX: AI GENERATION "JOB NOT FOUND" (P0)
 - Root cause: Backend runs with `--workers 4` (uvicorn). Jobs were stored in an in-memory Python dict. Worker 1 creates the job, Worker 2/3/4 polls and finds nothing → 404 "Job not found"
 - Fix: Replaced in-memory `_generation_jobs` dict with MongoDB `generation_jobs` collection. All workers now share the same job store.
