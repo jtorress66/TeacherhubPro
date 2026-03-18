@@ -25,6 +25,13 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 
 ---
 
+## Update 2026-03-18 - FIX: Assignment Links "No Questions" + Edit Capability
+- Fixed Google Classroom share button showing for assignments WITHOUT questions (now gated same as copy link)
+- Added full assignment edit capability: Edit button opens the Create dialog pre-populated with existing data (title, category, points, questions, files)
+- Save in edit mode uses PUT to update instead of creating new assignment
+- Teachers can now add/modify questions on existing assignments
+- Tested: 100% (backend 9/9, frontend all flows)
+
 ## Update 2026-03-18 - FIX: BLANK SCREEN ON TAB NAVIGATION (P0)
 - Root cause: `ProtectedRoute` called `checkAuth()` API on EVERY route change. On production cold starts, the `/api/auth/me` call fails → `setUser(null)` → redirect/crash → blank screen
 - Fix 1: ProtectedRoute now skips `checkAuth()` when user already exists in AuthContext. Navigation is instant with zero API dependency.
