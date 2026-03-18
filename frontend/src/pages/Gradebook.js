@@ -385,10 +385,30 @@ const Gradebook = () => {
   const handleParsePdf = async (file) => {
     setParsingPdf(true);
     try {
-      const res = await axios.post(`${API}/ai-grading/parse-pdf`, {
-        file_url: file.file_url,
-        total_points: parseFloat(newAssignment.points) || 100
-      }, { withCredentials: true });
+      let res = null;
+      let lastError = null;
+      
+      // Retry up to 3 times for cold start / timeout issues
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          res = await axios.post(`${API}/ai-grading/parse-pdf`, {
+            file_url: file.file_url,
+            total_points: parseFloat(newAssignment.points) || 100
+          }, { withCredentials: true, timeout: 120000 });
+          break;
+        } catch (err) {
+          lastError = err;
+          const status = err.response?.status;
+          if ((status === 504 || status === 502 || err.code === 'ECONNABORTED') && attempt < 2) {
+            toast.info(language === 'es' ? 'Reconectando al servidor...' : 'Connecting to server... Retrying');
+            await new Promise(r => setTimeout(r, 3000));
+            continue;
+          }
+          throw err;
+        }
+      }
+      
+      if (!res) throw lastError;
       
       const { questions, title, instructions } = res.data;
       

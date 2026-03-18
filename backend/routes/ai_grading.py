@@ -896,56 +896,76 @@ async def parse_pdf_to_questions(request: ParsePDFRequest, user: dict = Depends(
     
     # Use AI to parse the extracted text into structured questions
     try:
-        system_message = """You are an expert at analyzing educational test documents. 
-You receive the extracted text from a PDF test/exam and convert it into structured question objects.
+        system_message = """You are an expert at converting educational test documents into structured digital question data.
 
-Rules:
-- Identify every question in the document
-- Determine the correct question_type for each: multiple_choice, true_false, short_answer, fill_blank, matching, or essay
-- For multiple_choice: include all options with is_correct set appropriately. If you can determine the correct answer from context, mark it. Otherwise mark all as false.
-- For true_false: set options to [{"text":"True","is_correct":false},{"text":"False","is_correct":false}]. If the answer is determinable, mark the correct one.
-- For matching: include matching_pairs as array of {"left":"...","right":"..."} objects
-- For fill_blank: set the correct_answer if determinable  
-- For short_answer: set the correct_answer if determinable
-- For essay: leave correct_answer empty
-- Assign reasonable point values that sum to the requested total
-- Preserve the original question text as closely as possible
-- If instructions appear before questions, include them in the question's instructions field
+CRITICAL RULES FOR QUESTION SPLITTING:
+1. Every NUMBERED item (1, 2, 3... or a, b, c...) within a section is its OWN separate question.
+2. A section header like "A. Vocabulary (5 pts)" is NOT a question - it is context that goes in the "instructions" field.
+3. Fill-in-the-blank: EACH sentence with a blank is ONE separate question. A word bank with 6 sentences = 6 individual questions.
+4. True/False: EACH statement is ONE separate question.
+5. Multiple Choice: EACH numbered question with its answer options is ONE separate question.
+6. Matching: Group matching items into ONE question with matching_pairs.
+7. Short Answer / Essay: EACH writing prompt is ONE separate question.
+8. Word banks, reading passages, and section instructions go in the "instructions" field of each question they belong to.
 
-Always respond with valid JSON only."""
+EXAMPLE - CORRECT splitting for a fill-in-the-blank section with word bank:
+  Section text: "Word Bank: apple, banana, cherry. 1. I ate a ___. 2. She likes ___. 3. The ___ is red."
+  Result: 3 separate questions, each with instructions="Word Bank: apple, banana, cherry"
+  
+EXAMPLE - WRONG (do NOT do this):
+  Bundling all 3 sentences into 1 question.
 
-        prompt = f"""Parse this test document into structured questions. Target total points: {request.total_points}
+Always respond with valid JSON only. No markdown, no explanation text."""
+
+        prompt = f"""Convert this test into individual structured questions. Target total points: {request.total_points}
+
+Each numbered item, each fill-in-the-blank sentence, each true/false statement, and each multiple choice item MUST be a SEPARATE question object.
 
 EXTRACTED PDF TEXT:
 {extracted_text}
 
-Return a JSON object:
+Return valid JSON:
 {{
-    "title": "detected test title or empty string",
-    "instructions": "any general instructions found at the top",
+    "title": "test title if found",
+    "instructions": "general test instructions if any",
     "questions": [
         {{
             "question_id": "q1",
-            "question_text": "the question text",
+            "question_text": "the individual question text (ONE sentence/item only)",
             "question_type": "multiple_choice|true_false|short_answer|fill_blank|matching|essay",
-            "points": 10,
-            "instructions": "per-question instructions if any",
-            "options": [{{"text": "Option A", "is_correct": true}}, ...],
-            "correct_answer": "for short_answer/fill_blank",
-            "matching_pairs": [{{"left": "item1", "right": "match1"}}, ...]
+            "points": 1,
+            "instructions": "word bank, reading passage, or section context relevant to this question",
+            "options": [{{"text": "Option A", "is_correct": true}}],
+            "correct_answer": "answer for short_answer/fill_blank",
+            "matching_pairs": [{{"left": "item1", "right": "match1"}}]
         }}
     ]
-}}"""
+}}
+
+REMEMBER: If a section has 6 fill-in-the-blank sentences, output 6 question objects. If there are 5 true/false statements, output 5 question objects. Total should be approximately 30-40 individual questions for a full exam."""
 
         chat = get_llm_chat(
             session_id=f"pdf_parse_{uuid.uuid4().hex[:8]}",
             system_message=system_message
         )
         
-        response = await asyncio.wait_for(
-            chat.send_message(UserMessage(text=prompt)),
-            timeout=AI_TIMEOUT_SECONDS
-        )
+        response = None
+        last_error = None
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                response = await asyncio.wait_for(
+                    chat.send_message(UserMessage(text=prompt)),
+                    timeout=AI_TIMEOUT_SECONDS
+                )
+                break
+            except (asyncio.TimeoutError, Exception) as e:
+                last_error = e
+                logger.warning(f"PDF parse AI attempt {attempt + 1} failed: {e}")
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAY)
+        
+        if not response:
+            raise HTTPException(status_code=504, detail=f"AI parsing timed out after {MAX_RETRIES + 1} attempts. Please try again.")
         
         response_text = response.strip()
         # Clean up markdown code blocks if present
