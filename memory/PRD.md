@@ -25,6 +25,15 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 
 ---
 
+## Update 2026-03-18 - CRITICAL FIX: GRADES NOT SHOWING IN GRADEBOOK/REPORTS
+- Root cause: Gradebook endpoint GET /api/gradebook/{class_id} ONLY queried `grades` collection, completely missing AI-graded submissions from `ai_submissions`
+- When teachers graded through AI Grading page, scores went to `ai_submissions` but never appeared in Gradebook grid
+- Fix: Gradebook endpoint now merges AI-graded submissions into grades_map using names_match()
+- AI assignments are now included in the assignments list (with is_ai=True flag)
+- Manual grades take precedence over AI grades (won't be overwritten)
+- All three views (Gradebook, Grade Report, Report Card) now consistently show ALL grades
+- Tested: 100% (18/18 backend tests)
+
 ## Update 2026-03-18 - BUG FIX: GRADES NOT FLOWING TO REPORTS
 - Root cause: Substring name matching failed when student typed "Paul Figueroa" but roster had "Paul J. Figueroa Mendez"
 - Also: query only searched `assignment_id`, missing `ai_assignment_id` for older submissions
