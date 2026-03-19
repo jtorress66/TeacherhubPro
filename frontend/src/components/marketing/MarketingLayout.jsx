@@ -174,7 +174,8 @@ const MarketingLayout = ({ children }) => {
           </div>
 
           <div className="border-t border-slate-800 pt-8 text-center text-sm text-slate-500">
-            © {new Date().getFullYear()} TeacherHubPro. {t('footerAllRightsReserved')}
+            <p>© {new Date().getFullYear()} TeacherHubPro. {t('footerAllRightsReserved')}</p>
+            <p className="mt-1 text-slate-600 text-xs">v2.0.0</p>
           </div>
         </div>
       </footer>

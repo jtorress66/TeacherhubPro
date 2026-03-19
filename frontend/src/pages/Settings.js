@@ -855,6 +855,14 @@ const Settings = () => {
           </DialogContent>
         </Dialog>
       </div>
+      
+      {/* App Version */}
+      <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700" data-testid="settings-app-version">
+        <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+          <span>TeacherHubPro v2.0.0</span>
+          <span>© {new Date().getFullYear()} All rights reserved</span>
+        </div>
+      </div>
     </Layout>
   );
 };

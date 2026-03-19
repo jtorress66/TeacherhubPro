@@ -121,7 +121,7 @@ SUBSCRIPTION_PLANS = {
 FREE_TRIAL_DAYS = 7
 
 # Create the main app
-app = FastAPI(title="TeacherHubPro API", version="1.0.0")
+app = FastAPI(title="TeacherHubPro API", version="2.0.0")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
@@ -4262,7 +4262,7 @@ async def generate_report_card(
 @api_router.get("/health")
 async def health_check():
     """Health check endpoint"""
-    return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
+    return {"status": "healthy", "version": "2.0.0", "timestamp": datetime.now(timezone.utc).isoformat()}
 
 # TTS Request Model
 class TTSRequest(BaseModel):

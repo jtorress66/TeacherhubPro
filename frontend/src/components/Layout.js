@@ -281,6 +281,10 @@ const Layout = ({ children }) => {
               <LogOut className="h-4 w-4 mr-2" />
               {t('logout')}
             </Button>
+            
+            <p className="text-[10px] text-center text-slate-400 dark:text-slate-600 mt-3 select-none" data-testid="app-version">
+              TeacherHubPro v2.0.0
+            </p>
           </div>
         </div>
       </aside>
