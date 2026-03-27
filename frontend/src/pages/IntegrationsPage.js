@@ -124,9 +124,7 @@ const IntegrationsPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
-                <BookOpen className="h-5 w-5 text-white" />
-              </div>
+              <img src="/logo.png" alt="TeacherHubPro" className="w-10 h-10 object-contain" />
               <span className="text-xl font-bold text-slate-800">TeacherHubPro</span>
             </Link>
             <div className="flex items-center gap-4">
@@ -336,9 +334,7 @@ const IntegrationsPage = () => {
       <footer className="bg-slate-900 text-white py-12 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
-              <BookOpen className="h-5 w-5 text-white" />
-            </div>
+            <img src="/logo.png" alt="TeacherHubPro" className="w-10 h-10 object-contain" />
             <span className="text-xl font-bold">TeacherHubPro</span>
           </div>
           <p className="text-slate-400 mb-6">
