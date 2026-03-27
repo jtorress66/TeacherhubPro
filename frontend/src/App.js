@@ -78,6 +78,10 @@ import SOC2 from "./pages/SOC2";
 import EnterpriseOverview from "./pages/EnterpriseOverview";
 // ScrollToTop for route changes
 import ScrollToTop from "./components/ScrollToTop";
+// Leads Dashboard (Admin)
+import LeadsDashboard from "./pages/LeadsDashboard";
+// Chatbot Widget for marketing pages
+import ChatbotWidget from "./components/ChatbotWidget";
 // Feature Detail Pages
 import LessonPlanningFeature from "./pages/features/LessonPlanningFeature";
 import GradebookFeature from "./pages/features/GradebookFeature";
@@ -249,6 +253,8 @@ const ProtectedRoute = ({ children, requireSubscription = true }) => {
 };
 
 // App Router component to handle session_id detection
+const MARKETING_PATHS = ['/', '/auth', '/features', '/pricing', '/contact', '/trust', '/homeschool', '/ai-features', '/integrations', '/enterprise-overview', '/help'];
+
 const AppRouter = () => {
   const location = useLocation();
 
@@ -256,6 +262,10 @@ const AppRouter = () => {
   if (location.hash?.includes('session_id=')) {
     return <AuthCallback />;
   }
+
+  const showChatbot = MARKETING_PATHS.includes(location.pathname) ||
+    location.pathname.startsWith('/features/') ||
+    location.pathname.startsWith('/use-cases/');
 
   return (
     <>
@@ -337,6 +347,9 @@ const AppRouter = () => {
       <Route path="/admin" element={
         <ProtectedRoute requireSubscription={false}><AdminPanel /></ProtectedRoute>
       } />
+      <Route path="/leads" element={
+        <ProtectedRoute requireSubscription={false}><LeadsDashboard /></ProtectedRoute>
+      } />
       {/* Parent Portal (Public - no auth required) */}
       <Route path="/portal/:token" element={<ParentPortal />} />
       {/* Homeschool Parent Portal (Public - token-based) */}
@@ -403,6 +416,7 @@ const AppRouter = () => {
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
     </ErrorBoundary>
+    {showChatbot && <ChatbotWidget />}
     </>
   );
 };

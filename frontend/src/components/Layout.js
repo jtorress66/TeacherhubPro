@@ -30,7 +30,8 @@ import {
   Brain,
   TrendingUp,
   Gamepad2,
-  Rocket
+  Rocket,
+  MessageCircle
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -65,7 +66,8 @@ const Layout = ({ children }) => {
     { path: '/settings', icon: Settings, label: t('settings'), gradient: 'from-slate-400 to-slate-600' },
     // Super Admin only
     ...(user?.role === 'super_admin' ? [
-      { path: '/admin', icon: Shield, label: 'Admin Panel', superAdmin: true, gradient: 'from-violet-400 to-violet-600' }
+      { path: '/admin', icon: Shield, label: 'Admin Panel', superAdmin: true, gradient: 'from-violet-400 to-violet-600' },
+      { path: '/leads', icon: MessageCircle, label: 'Leads', superAdmin: true, gradient: 'from-teal-400 to-teal-600' }
     ] : [])
   ];
 

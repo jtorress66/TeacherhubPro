@@ -33,8 +33,8 @@ export default function LeadsDashboard() {
     setLoading(true);
     try {
       const [leadsRes, statsRes] = await Promise.all([
-        axios.get(`${API}/chatbot/leads`, { withCredentials: true }),
-        axios.get(`${API}/chatbot/leads/stats`, { withCredentials: true })
+        axios.get(`${API}/api/chatbot/leads`, { withCredentials: true }),
+        axios.get(`${API}/api/chatbot/leads/stats`, { withCredentials: true })
       ]);
       setLeads(leadsRes.data.leads || []);
       setStats(statsRes.data);

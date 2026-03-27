@@ -10,7 +10,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { CheckCircle, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import LanguageSelector from '../components/LanguageSelector';
-import ChatbotWidget from '../components/ChatbotWidget';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -293,7 +292,6 @@ const Auth = () => {
       <footer className="py-6 px-4 text-center text-sm text-slate-500">
         © {new Date().getFullYear()} TeacherHubPro. {t('landingAllRightsReserved') || 'All rights reserved.'}
       </footer>
-      <ChatbotWidget />
     </div>
   );
 };
