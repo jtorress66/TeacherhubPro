@@ -41,6 +41,7 @@ from routes.portal import router as portal_router, init_portal_routes
 from routes.google_classroom import google_classroom_router, init_google_classroom_routes
 from routes.play_to_learn import router as play_to_learn_router, init_play_to_learn_routes
 from routes.ai_grading import router as ai_grading_router, init_ai_grading_routes
+from routes.chatbot import router as chatbot_router, init_db as init_chatbot_db
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
@@ -5239,6 +5240,7 @@ init_portal_routes(db, get_current_user)
 init_google_classroom_routes(db, get_current_user)
 init_play_to_learn_routes(db)
 init_ai_grading_routes(db, get_current_user)
+init_chatbot_db(db)
 
 # ==================== CONTACT FORM ====================
 
@@ -5474,6 +5476,7 @@ api_router.include_router(portal_router)
 api_router.include_router(google_classroom_router)
 api_router.include_router(play_to_learn_router)
 api_router.include_router(ai_grading_router)
+api_router.include_router(chatbot_router)
 
 # Include the main api_router in the app
 app.include_router(api_router)

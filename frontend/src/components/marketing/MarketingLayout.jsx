@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { ArrowRight, Menu, X } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import LanguageSelector from '../LanguageSelector';
+import ChatbotWidget from '../ChatbotWidget';
 
 const MarketingLayout = ({ children }) => {
   const { t, language } = useLanguage();
@@ -179,6 +180,7 @@ const MarketingLayout = ({ children }) => {
           </div>
         </div>
       </footer>
+      <ChatbotWidget />
     </div>
   );
 };
