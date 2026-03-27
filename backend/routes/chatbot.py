@@ -194,16 +194,70 @@ async def _send_lead_notification(lead: dict):
 
 # --- Routes ---
 
-# Banned phrases that indicate identity breaking - filter these from history
-_BANNED_PHRASES = ["i'm claude", "i am claude", "created by anthropic", "made by anthropic",
-                   "not affiliated", "not actually affiliated", "i should clarify",
-                   "as an ai", "i'm an ai assistant", "i don't have access to"]
+# Phrases that indicate the LLM broke character - used for filtering
+_IDENTITY_BREAK_PHRASES = [
+    "i'm claude", "i am claude", "i'm an ai assistant created by",
+    "created by anthropic", "made by anthropic", "developed by anthropic",
+    "not affiliated", "not actually affiliated", "i should clarify",
+    "i don't have access to pricing", "i can't provide quotes",
+    "as an ai language model", "as an ai,", "i'm an ai",
+    "i am an ai", "i'm not actually", "i am not actually",
+    "fictional", "roleplaying", "role-playing", "appears to be a",
+    "i was roleplaying", "i don't represent"
+]
+
+# Fallback responses when the LLM breaks character
+_PRICING_FALLBACK = (
+    "Great question! Here are our plans:\n\n"
+    "- Individual Monthly: $9.99/month (all features included)\n"
+    "- Individual Annual: $79/year (save $40, 2 months free!)\n"
+    "- School Plan: $6/teacher/month (billed annually, min 10 teachers)\n"
+    "- District Plan: $4/teacher/month (billed annually, min 100 teachers)\n\n"
+    "Plus you can start with a free trial — full access, no credit card needed! "
+    "Would you like to try it out, or do you have questions about a specific plan?"
+)
+
+_IDENTITY_FALLBACK = (
+    "I'm Ed, your TeacherHubPro assistant! I'm here to help you explore our platform, "
+    "answer your questions about features and pricing, and get you set up. "
+    "What would you like to know?"
+)
 
 
 def _is_clean_message(content: str) -> bool:
-    """Check if a message is clean (doesn't contain identity-breaking phrases)."""
+    """Check if a message doesn't contain identity-breaking phrases."""
     lower = content.lower()
-    return not any(phrase in lower for phrase in _BANNED_PHRASES)
+    return not any(phrase in lower for phrase in _IDENTITY_BREAK_PHRASES)
+
+
+def _sanitize_response(response: str, user_message: str) -> str:
+    """Post-process LLM response to catch identity breaks and pricing inaccuracies."""
+    lower = response.lower()
+    
+    # Layer 1: Catch any identity breaks
+    if any(phrase in lower for phrase in _IDENTITY_BREAK_PHRASES):
+        user_lower = user_message.lower()
+        if any(w in user_lower for w in ["price", "pricing", "cost", "how much", "plan", "subscribe"]):
+            return _PRICING_FALLBACK
+        return _IDENTITY_FALLBACK
+    
+    # Layer 2: If user asked about pricing but response doesn't have real prices, replace
+    user_lower = user_message.lower()
+    is_pricing_question = any(w in user_lower for w in ["price", "pricing", "cost", "how much", "plan", "plans", "subscribe", "subscription"])
+    if is_pricing_question:
+        has_real_prices = ("9.99" in response and "$79" in response) or ("$6" in response and "$4" in response)
+        has_fake_plans = any(p in lower for p in ["basic plan", "professional plan", "premium plan", "starter plan", "pro plan"])
+        if has_fake_plans or not has_real_prices:
+            return _PRICING_FALLBACK
+    
+    return response
+
+
+# The initial assistant message to anchor Ed's identity in every conversation
+_ED_ANCHOR_MESSAGE = {
+    "role": "assistant",
+    "content": "Hi! I'm Ed, your TeacherHubPro assistant. I can help you with features, pricing, or getting started with a free trial. What can I help you with today?"
+}
 
 
 @router.post("/message")
@@ -229,8 +283,9 @@ async def chat_message(msg: ChatMessage):
         system += f"\n\n=== CURRENT VISITOR CONTEXT ===\n{context_note}"
 
     try:
-        # Load conversation history from MongoDB, filtering out corrupted messages
-        initial_messages = []
+        # Build conversation history: start with Ed's anchor message, then clean MongoDB history
+        initial_messages = [_ED_ANCHOR_MESSAGE.copy()]
+
         if db is not None:
             session_doc = await db.chatbot_sessions.find_one(
                 {"session_id": session_id}, {"_id": 0}
@@ -238,7 +293,7 @@ async def chat_message(msg: ChatMessage):
             if session_doc and session_doc.get("messages"):
                 for prev_msg in session_doc["messages"][-10:]:
                     content = prev_msg.get("content", "")
-                    # Skip assistant messages that broke character
+                    # Skip any assistant messages that broke character
                     if prev_msg["role"] == "assistant" and not _is_clean_message(content):
                         continue
                     initial_messages.append({
@@ -246,11 +301,12 @@ async def chat_message(msg: ChatMessage):
                         "content": content
                     })
 
+        # Use a unique session_id per call so the library never loads stale history
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
-            session_id=f"chatbot_{session_id}",
+            session_id=f"ed_{uuid.uuid4().hex}",
             system_message=system,
-            initial_messages=initial_messages if initial_messages else None
+            initial_messages=initial_messages
         ).with_model("anthropic", "claude-sonnet-4-20250514")
 
         response = await asyncio.wait_for(
@@ -258,7 +314,10 @@ async def chat_message(msg: ChatMessage):
             timeout=30
         )
 
-        # Store conversation in MongoDB
+        # Post-process: catch any identity breaks and replace with safe fallback
+        response = _sanitize_response(response, msg.message)
+
+        # Store the clean conversation in MongoDB
         if db is not None:
             await db.chatbot_sessions.update_one(
                 {"session_id": session_id},
