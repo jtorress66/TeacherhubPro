@@ -85,7 +85,7 @@ const ChatbotWidget = () => {
     setShowBubblePulse(false);
     if (!hasGreeted) {
       setHasGreeted(true);
-      addBotMessage("Hi! Welcome to TeacherHubPro. I can help you find the right solution, answer questions, or help you get started. Which best describes you?");
+      addBotMessage("Hi there! I'm Ed, your TeacherHubPro assistant. I can help you explore features, answer questions, or get you started with a free trial. Which best describes you?");
       setStep("role");
     }
   };
@@ -249,10 +249,10 @@ const ChatbotWidget = () => {
       {/* Header */}
       <div className="bg-teal-700 text-white px-4 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-xs font-bold">TP</div>
+          <div className="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-xs font-bold">Ed</div>
           <div>
-            <p className="text-sm font-semibold leading-tight">TeacherHubPro</p>
-            <p className="text-[10px] text-teal-200 leading-tight">Sales Assistant</p>
+            <p className="text-sm font-semibold leading-tight">Ed</p>
+            <p className="text-[10px] text-teal-200 leading-tight">TeacherHubPro Assistant</p>
           </div>
         </div>
         <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-teal-600 rounded" data-testid="chatbot-close">
