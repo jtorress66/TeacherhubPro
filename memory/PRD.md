@@ -25,6 +25,20 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 
 ---
 
+
+## Update 2026-03-27 - FEATURE: AI Lead-Generation Chatbot
+- Claude-powered chatbot widget on all marketing/auth pages (/, /auth, /features, /pricing, /contact, /trust, etc.)
+- Qualification flow: role selection → interest selection → free-form AI chat → lead capture form
+- Lead scoring: high (district/admin/enterprise), medium (teacher with email), low (other)
+- MongoDB collections: `leads` (captured contacts), `chatbot_sessions` (conversation history)
+- Backend routes: POST /api/chatbot/message (Claude AI chat), POST /api/chatbot/lead (capture + score), GET /api/chatbot/leads (admin), GET /api/chatbot/leads/stats (admin)
+- Admin LeadsDashboard at /leads: stats cards, search, priority filter, lead details with chat summaries
+- Resend email notification for high-priority leads (requires NOTIFICATION_EMAIL env var to activate)
+- Chatbot conditionally rendered only on marketing pages via MARKETING_PATHS in App.js
+- ScrollToTop component fixes page navigation scroll position
+- Tested: 100% backend (13/13), 100% frontend (all UI tests passed)
+- Key files: `/app/backend/routes/chatbot.py`, `/app/frontend/src/components/ChatbotWidget.jsx`, `/app/frontend/src/pages/LeadsDashboard.js`
+
 ## Update 2026-03-18 - FIX: PDF Parse 504 Timeout → Async Pattern
 - Root cause: parse-pdf endpoint was synchronous (AI takes 30-90s, production proxy kills at ~30s → 504)
 - Fix: Converted to same async pattern as AI generation: POST returns immediately with job_id (203ms), background task processes PDF, frontend polls GET /parse-pdf/{job_id}
