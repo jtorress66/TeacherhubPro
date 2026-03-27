@@ -39,6 +39,12 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 - Tested: 100% backend (13/13), 100% frontend (all UI tests passed)
 - Key files: `/app/backend/routes/chatbot.py`, `/app/frontend/src/components/ChatbotWidget.jsx`, `/app/frontend/src/pages/LeadsDashboard.js`
 
+## Update 2026-03-27 - FIX: Chatbot identity & pricing
+- System prompt hardened: bot now NEVER identifies as Claude/Anthropic, NEVER mentions competitors, NEVER disclaims affiliation with TeacherHubPro
+- Added explicit pricing data: Free Trial, $9.99/mo Individual, $79/yr Annual, $6/teacher School, $4/teacher District
+- Tested: identity challenge, pricing question, competitor redirect — all correct
+
+
 ## Update 2026-03-18 - FIX: PDF Parse 504 Timeout → Async Pattern
 - Root cause: parse-pdf endpoint was synchronous (AI takes 30-90s, production proxy kills at ~30s → 504)
 - Fix: Converted to same async pattern as AI generation: POST returns immediately with job_id (203ms), background task processes PDF, frontend polls GET /parse-pdf/{job_id}
