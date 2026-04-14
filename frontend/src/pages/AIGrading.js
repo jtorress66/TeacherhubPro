@@ -93,10 +93,11 @@ const AIGrading = () => {
     return matchesFilter && matchesSearch;
   });
 
-  // AI Grade a submission
+  // AI Grade a submission (async polling to avoid 504 timeouts)
   const handleAIGrade = async (submissionId, autoApprove = false) => {
     setGrading(true);
     try {
+      // Step 1: Start the grading job
       const res = await fetch(`${API_URL}/api/ai-grading/submissions/${submissionId}/grade`, {
         method: 'POST',
         headers: {
@@ -106,27 +107,43 @@ const AIGrading = () => {
         body: JSON.stringify({ auto_approve: autoApprove })
       });
 
-      if (!res.ok) throw new Error('Grading failed');
-      
-      const result = await res.json();
-      toast.success(isEs ? 'Calificación completada' : 'Grading complete');
-      
-      // Refresh data
-      await fetchData();
-      
-      // If viewing this submission, update it
-      if (selectedSubmission?.submission_id === submissionId) {
-        const subRes = await fetch(`${API_URL}/api/ai-grading/submissions/${submissionId}`, {
+      if (!res.ok) throw new Error('Failed to start grading');
+      const { job_id } = await res.json();
+
+      // Step 2: Poll for result
+      const maxAttempts = 60; // 2 minutes max
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        await new Promise(r => setTimeout(r, 2000));
+        const pollRes = await fetch(`${API_URL}/api/ai-grading/grade-status/${job_id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (subRes.ok) {
-          const data = await subRes.json();
-          setSelectedSubmission({ ...data.submission, assignment: data.assignment });
+        if (!pollRes.ok) continue;
+        const pollData = await pollRes.json();
+
+        if (pollData.status === 'completed') {
+          toast.success(isEs ? 'Calificación completada' : 'Grading complete');
+          await fetchData();
+          if (selectedSubmission?.submission_id === submissionId) {
+            const subRes = await fetch(`${API_URL}/api/ai-grading/submissions/${submissionId}`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (subRes.ok) {
+              const data = await subRes.json();
+              setSelectedSubmission({ ...data.submission, assignment: data.assignment });
+            }
+          }
+          setGrading(false);
+          return;
+        }
+        if (pollData.status === 'failed') {
+          throw new Error(pollData.error || 'Grading failed');
         }
       }
+      throw new Error('Grading timed out');
     } catch (error) {
       console.error('Grading error:', error);
-      toast.error(isEs ? 'Error al calificar' : 'Grading failed');
+      toast.error(isEs ? 'Error al calificar' : 'Grading failed. Please try again.');
+      await fetchData();
     } finally {
       setGrading(false);
     }

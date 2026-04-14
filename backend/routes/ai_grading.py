@@ -573,7 +573,7 @@ async def ai_grade_submission(
     request: AIGradeRequest = None, 
     user: dict = Depends(get_current_user)
 ):
-    """Grade a submission using AI"""
+    """Start grading a submission using AI (async polling pattern to avoid 504s)."""
     if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
@@ -581,29 +581,52 @@ async def ai_grade_submission(
     if not submission:
         raise HTTPException(status_code=404, detail="Submission not found")
     
-    is_manual = False
     assignment = await db.ai_assignments.find_one(
-        {"assignment_id": submission["assignment_id"]}, 
-        {"_id": 0}
+        {"assignment_id": submission["assignment_id"]}, {"_id": 0}
     )
+    is_manual = False
     if not assignment:
         assignment = await db.assignments.find_one(
-            {"assignment_id": submission["assignment_id"]}, 
-            {"_id": 0}
+            {"assignment_id": submission["assignment_id"]}, {"_id": 0}
         )
         if assignment:
             is_manual = True
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
     
-    # Update status to grading
+    # Create a grading job in MongoDB
+    job_id = f"grade_{uuid.uuid4().hex[:12]}"
+    auto_approve = request.auto_approve if request else False
+    
+    await db.grading_jobs.insert_one({
+        "job_id": job_id,
+        "submission_id": submission_id,
+        "status": "processing",
+        "result": None,
+        "error": None,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    # Update submission status to grading
     await db.ai_submissions.update_one(
         {"submission_id": submission_id},
         {"$set": {"status": "grading"}}
     )
     
+    # Fire background task
+    asyncio.create_task(_run_grading_task(
+        job_id, submission_id, submission, assignment, is_manual, auto_approve
+    ))
+    
+    return {"job_id": job_id, "status": "processing"}
+
+
+async def _run_grading_task(
+    job_id: str, submission_id: str, submission: dict, 
+    assignment: dict, is_manual: bool, auto_approve: bool
+):
+    """Background task that performs the actual AI grading."""
     try:
-        # Get grade level rubric
         grade_level = assignment.get("grade_level", "6")
         rubric = GRADE_LEVEL_RUBRICS.get(grade_level, GRADE_LEVEL_RUBRICS["6"])
         
@@ -630,7 +653,6 @@ Question: {q['question_text']}
                 correct = [opt["text"] for opt in q.get("options", []) if opt.get("is_correct")]
                 questions_text += f"Correct Answer: {correct[0] if correct else 'N/A'}\n"
             elif q["question_type"] == "true_false":
-                # Handle both AI format (correct_answer) and manual format (options with is_correct)
                 correct_answer = q.get("correct_answer", "")
                 if not correct_answer:
                     correct_opts = [opt["text"] for opt in q.get("options", []) if opt.get("is_correct")]
@@ -679,11 +701,10 @@ Return a JSON object with this structure:
 Be age-appropriate in your feedback. For elementary students, be very encouraging."""
 
         chat = get_llm_chat(
-            session_id=f"grade_{submission_id}",
+            session_id=f"grade_{job_id}",
             system_message=system_message
         )
         
-        # Apply 90-second timeout with retry logic
         response = None
         last_error = None
         
@@ -695,21 +716,18 @@ Be age-appropriate in your feedback. For elementary students, be very encouragin
                 )
                 break
             except asyncio.TimeoutError:
-                last_error = "AI grading timed out after 90 seconds"
-                logger.warning(f"AI grading attempt {attempt + 1} timed out")
+                last_error = "AI grading timed out"
+                logger.warning(f"AI grading attempt {attempt + 1} timed out for job {job_id}")
                 if attempt < MAX_RETRIES:
                     await asyncio.sleep(RETRY_DELAY)
             except Exception as e:
                 last_error = str(e)
-                logger.warning(f"AI grading attempt {attempt + 1} failed: {str(e)}")
+                logger.warning(f"AI grading attempt {attempt + 1} failed for job {job_id}: {e}")
                 if attempt < MAX_RETRIES:
                     await asyncio.sleep(RETRY_DELAY)
         
         if response is None:
-            raise HTTPException(
-                status_code=503,
-                detail="AI grading timed out. Please try again."
-            )
+            raise Exception(last_error or "AI grading timed out")
         
         # Parse response
         response_text = response.strip()
@@ -722,7 +740,6 @@ Be age-appropriate in your feedback. For elementary students, be very encouragin
         grade_result = json.loads(response_text)
         
         # Determine final score based on grading mode
-        auto_approve = request.auto_approve if request else False
         grading_mode = assignment.get("grading_mode", "ai_suggest")
         
         update_data = {
@@ -738,7 +755,6 @@ Be age-appropriate in your feedback. For elementary students, be very encouragin
             update_data["final_score"] = grade_result["total_score"]
             update_data["graded_at"] = datetime.now(timezone.utc).isoformat()
             
-            # Update graded count
             graded_collection = db.assignments if is_manual else db.ai_assignments
             await graded_collection.update_one(
                 {"assignment_id": submission["assignment_id"]},
@@ -752,26 +768,56 @@ Be age-appropriate in your feedback. For elementary students, be very encouragin
             {"$set": update_data}
         )
         
-        return {
-            "message": "Grading complete",
-            "grade_result": grade_result,
-            "status": update_data["status"]
-        }
+        # Mark job complete
+        await db.grading_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {
+                "status": "completed",
+                "result": {"grade_result": grade_result, "submission_status": update_data["status"]}
+            }}
+        )
         
     except json.JSONDecodeError as e:
-        logger.error(f"Failed to parse AI grading response: {str(e)}")
+        logger.error(f"Failed to parse AI grading response for job {job_id}: {e}")
         await db.ai_submissions.update_one(
             {"submission_id": submission_id},
             {"$set": {"status": "grading_failed"}}
         )
-        raise HTTPException(status_code=500, detail="AI grading failed to parse response")
+        await db.grading_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {"status": "failed", "error": "AI response was not valid JSON"}}
+        )
     except Exception as e:
-        logger.error(f"AI grading error: {str(e)}")
+        logger.error(f"AI grading error for job {job_id}: {e}")
         await db.ai_submissions.update_one(
             {"submission_id": submission_id},
             {"$set": {"status": "grading_failed"}}
         )
-        raise HTTPException(status_code=500, detail=f"AI grading failed: {str(e)}")
+        await db.grading_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {"status": "failed", "error": str(e)}}
+        )
+
+
+@router.get("/grade-status/{job_id}")
+async def get_grading_status(job_id: str, user: dict = Depends(get_current_user)):
+    """Poll the status of a grading job."""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    job = await db.grading_jobs.find_one({"job_id": job_id}, {"_id": 0})
+    if not job:
+        raise HTTPException(status_code=404, detail="Grading job not found")
+    
+    if job["status"] == "completed":
+        await db.grading_jobs.delete_one({"job_id": job_id})
+        return {"status": "completed", "result": job.get("result")}
+    
+    if job["status"] == "failed":
+        await db.grading_jobs.delete_one({"job_id": job_id})
+        return {"status": "failed", "error": job.get("error", "Grading failed")}
+    
+    return {"status": "processing"}
 
 
 @router.put("/submissions/{submission_id}/approve")
