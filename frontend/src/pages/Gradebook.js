@@ -2036,16 +2036,25 @@ const Gradebook = () => {
                       {q.correct_answer && (
                         <p className="text-sm text-green-600 mt-2">{language === 'es' ? 'Respuesta:' : 'Answer:'} {q.correct_answer}</p>
                       )}
-                      {q.matching_pairs && Object.keys(q.matching_pairs).length > 0 && (
+                      {q.matching_pairs && (Array.isArray(q.matching_pairs) ? q.matching_pairs.length > 0 : Object.keys(q.matching_pairs).length > 0) && (
                         <div className="mt-2 space-y-1">
                           <p className="text-xs font-medium text-slate-500">{language === 'es' ? 'Emparejar:' : 'Match:'}</p>
-                          {Object.entries(q.matching_pairs).map(([left, right], midx) => (
-                            <div key={midx} className="flex items-center gap-2 text-sm pl-4">
-                              <span className="text-slate-700 font-medium">{left}</span>
-                              <span className="text-slate-400">→</span>
-                              <span className="text-green-600">{right}</span>
-                            </div>
-                          ))}
+                          {(Array.isArray(q.matching_pairs) 
+                            ? q.matching_pairs.map((p, midx) => (
+                                <div key={midx} className="flex items-center gap-2 text-sm pl-4">
+                                  <span className="text-slate-700 font-medium">{p.left || p.term || ''}</span>
+                                  <span className="text-slate-400">→</span>
+                                  <span className="text-green-600">{p.right || p.definition || ''}</span>
+                                </div>
+                              ))
+                            : Object.entries(q.matching_pairs).map(([left, right], midx) => (
+                                <div key={midx} className="flex items-center gap-2 text-sm pl-4">
+                                  <span className="text-slate-700 font-medium">{left}</span>
+                                  <span className="text-slate-400">→</span>
+                                  <span className="text-green-600">{right}</span>
+                                </div>
+                              ))
+                          )}
                         </div>
                       )}
                     </div>

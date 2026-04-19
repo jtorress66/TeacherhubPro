@@ -295,6 +295,94 @@ export function generateTestPDF(testData, options = {}) {
         break;
       }
 
+      case 'fill_blank': {
+        checkPage(10);
+        if (isAnswerKey && q.correct_answer) {
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(34, 139, 34);
+          doc.text(`Answer: ${q.correct_answer}`, indent, y);
+          doc.setTextColor(0, 0, 0);
+          doc.setFont('helvetica', 'normal');
+          y += 7;
+        } else {
+          doc.setFontSize(10);
+          doc.text('Answer:', indent, y);
+          doc.setDrawColor(180, 180, 180);
+          doc.setLineWidth(0.3);
+          doc.line(indent + 17, y + 1, pageWidth - margin, y + 1);
+          y += 7;
+        }
+        break;
+      }
+
+      case 'matching': {
+        // matching_pairs can be an object {left: right} or array [{left, right}]
+        let pairs = [];
+        if (q.matching_pairs) {
+          if (Array.isArray(q.matching_pairs)) {
+            pairs = q.matching_pairs.map(p => ({ left: p.left || p.term || '', right: p.right || p.definition || '' }));
+          } else if (typeof q.matching_pairs === 'object') {
+            pairs = Object.entries(q.matching_pairs).map(([left, right]) => ({ left, right }));
+          }
+        }
+
+        if (pairs.length === 0) break;
+
+        const colA_x = indent;
+        const colB_x = indent + contentWidth / 2 + 5;
+        const lineH = 7;
+
+        // Column headers
+        checkPage(lineH * (pairs.length + 2));
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Column A', colA_x, y);
+        doc.text('Column B', colB_x, y);
+        doc.setFont('helvetica', 'normal');
+        y += lineH;
+
+        // Shuffle column B for student version (show correct order in answer key)
+        const rightItems = pairs.map(p => p.right);
+        if (!isAnswerKey) {
+          for (let i = rightItems.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [rightItems[i], rightItems[j]] = [rightItems[j], rightItems[i]];
+          }
+        }
+
+        doc.setFontSize(10);
+        pairs.forEach((pair, pi) => {
+          checkPage(lineH);
+          const label = String.fromCharCode(65 + pi);
+          const numLabel = `${pi + 1}.`;
+
+          // Column A: numbered items
+          doc.text(`${numLabel} ${pair.left}`, colA_x, y);
+
+          if (isAnswerKey) {
+            // Show correct match in green
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(34, 139, 34);
+            doc.text(`${label}. ${pair.right}`, colB_x, y);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont('helvetica', 'normal');
+          } else {
+            // Show shuffled column B with letter labels and blank for answer
+            doc.text(`${label}. ${rightItems[pi]}`, colB_x, y);
+            // Answer blank next to Column A item
+            doc.setDrawColor(180, 180, 180);
+            doc.setLineWidth(0.3);
+            const blankX = colA_x + contentWidth / 2 - 15;
+            doc.line(blankX, y + 1, blankX + 10, y + 1);
+            doc.setDrawColor(0, 0, 0);
+          }
+          y += lineH;
+        });
+        y += 3;
+        break;
+      }
+
       default:
         break;
     }
