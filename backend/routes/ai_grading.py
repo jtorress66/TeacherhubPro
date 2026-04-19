@@ -115,7 +115,7 @@ def get_llm_chat(session_id: str, system_message: str) -> LlmChat:
         api_key=api_key,
         session_id=session_id,
         system_message=system_message
-    ).with_model("anthropic", "claude-sonnet-4-6")
+    ).with_model("anthropic", "claude-sonnet-4-20250514")
     
     return chat
 
@@ -123,7 +123,45 @@ def get_llm_chat(session_id: str, system_message: str) -> LlmChat:
 
 @router.post("/generate-assignment")
 async def generate_assignment(request: AIAssignmentRequest, user: dict = Depends(get_current_user)):
-    """Generate an AI-powered assignment"""
+    """Start AI assignment generation (async polling to avoid 504 timeouts)."""
+    job_id = f"assigngen_{uuid.uuid4().hex[:12]}"
+    
+    await db.generation_jobs.insert_one({
+        "job_id": job_id,
+        "type": "assignment_generation",
+        "status": "processing",
+        "result": None,
+        "error": None,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    asyncio.create_task(_run_assignment_generation(job_id, request))
+    return {"job_id": job_id, "status": "processing"}
+
+
+@router.get("/generate-assignment-status/{job_id}")
+async def get_assignment_generation_status(job_id: str, user: dict = Depends(get_current_user)):
+    """Poll status of assignment generation job."""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    job = await db.generation_jobs.find_one({"job_id": job_id}, {"_id": 0})
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    if job["status"] == "completed":
+        await db.generation_jobs.delete_one({"job_id": job_id})
+        return {"status": "completed", "result": job.get("result")}
+    
+    if job["status"] == "failed":
+        await db.generation_jobs.delete_one({"job_id": job_id})
+        return {"status": "failed", "error": job.get("error", "Generation failed")}
+    
+    return {"status": "processing"}
+
+
+async def _run_assignment_generation(job_id: str, request: AIAssignmentRequest):
+    """Background task for AI assignment generation."""
     try:
         question_types_str = ", ".join(request.question_types)
         
@@ -179,14 +217,11 @@ For essay: include "rubric_criteria" array
 For matching: include "matching_pairs" object"""
 
         chat = get_llm_chat(
-            session_id=f"assign_gen_{uuid.uuid4().hex[:8]}",
+            session_id=f"assign_gen_{job_id}",
             system_message=system_message
         )
         
-        # Apply 90-second timeout with retry logic
         response = None
-        last_error = None
-        
         for attempt in range(MAX_RETRIES + 1):
             try:
                 response = await asyncio.wait_for(
@@ -195,23 +230,17 @@ For matching: include "matching_pairs" object"""
                 )
                 break
             except asyncio.TimeoutError:
-                last_error = "AI generation timed out after 90 seconds"
-                logger.warning(f"AI assignment generation attempt {attempt + 1} timed out")
+                logger.warning(f"AI assignment gen attempt {attempt + 1} timed out for {job_id}")
                 if attempt < MAX_RETRIES:
                     await asyncio.sleep(RETRY_DELAY)
             except Exception as e:
-                last_error = str(e)
-                logger.warning(f"AI assignment generation attempt {attempt + 1} failed: {str(e)}")
+                logger.warning(f"AI assignment gen attempt {attempt + 1} failed for {job_id}: {e}")
                 if attempt < MAX_RETRIES:
                     await asyncio.sleep(RETRY_DELAY)
         
         if response is None:
-            raise HTTPException(
-                status_code=503,
-                detail="AI assignment generation timed out. Please try again."
-            )
+            raise Exception("AI assignment generation timed out after retries")
         
-        # Parse the JSON response
         response_text = response.strip()
         if response_text.startswith("```"):
             response_text = response_text.split("```")[1]
@@ -223,14 +252,23 @@ For matching: include "matching_pairs" object"""
         assignment_data["ai_generated"] = True
         assignment_data["grade_level"] = request.grade_level
         
-        return assignment_data
-            
+        await db.generation_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {"status": "completed", "result": assignment_data}}
+        )
+        
     except json.JSONDecodeError as e:
-        logger.error(f"Failed to parse AI response: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to parse AI-generated assignment")
+        logger.error(f"Failed to parse AI response for job {job_id}: {e}")
+        await db.generation_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {"status": "failed", "error": "Failed to parse AI-generated assignment"}}
+        )
     except Exception as e:
-        logger.error(f"Assignment generation error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to generate assignment: {str(e)}")
+        logger.error(f"Assignment generation error for job {job_id}: {e}")
+        await db.generation_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {"status": "failed", "error": str(e)}}
+        )
 
 
 @router.post("/assignments")

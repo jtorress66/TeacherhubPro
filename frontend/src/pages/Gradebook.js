@@ -626,7 +626,7 @@ const Gradebook = () => {
     }
   };
 
-  // AI Assignment Generation Functions
+  // AI Assignment Generation Functions (async polling to avoid 504 timeouts)
   const handleAIGenerate = async () => {
     if (!aiRequest.topic.trim()) {
       toast.error(language === 'es' ? 'Ingresa un tema' : 'Enter a topic');
@@ -635,13 +635,38 @@ const Gradebook = () => {
     
     setAiGenerating(true);
     try {
+      // Step 1: Start the generation job
       const response = await axios.post(`${API}/ai-grading/generate-assignment`, {
         ...aiRequest,
         language: language
       }, { withCredentials: true });
       
-      setAiAssignment(response.data);
-      toast.success(language === 'es' ? 'Tarea generada con IA' : 'AI Assignment generated');
+      const { job_id } = response.data;
+      
+      // Step 2: Poll for result
+      const maxAttempts = 60;
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        await new Promise(r => setTimeout(r, 2000));
+        try {
+          const pollRes = await axios.get(
+            `${API}/ai-grading/generate-assignment-status/${job_id}`,
+            { withCredentials: true }
+          );
+          
+          if (pollRes.data.status === 'completed') {
+            setAiAssignment(pollRes.data.result);
+            toast.success(language === 'es' ? 'Tarea generada con IA' : 'AI Assignment generated');
+            return;
+          }
+          if (pollRes.data.status === 'failed') {
+            throw new Error(pollRes.data.error || 'Generation failed');
+          }
+        } catch (pollErr) {
+          if (pollErr.response?.status === 404) continue;
+          throw pollErr;
+        }
+      }
+      throw new Error('Generation timed out');
     } catch (error) {
       console.error('AI generation error:', error);
       toast.error(language === 'es' ? 'Error al generar tarea' : 'Failed to generate assignment');
