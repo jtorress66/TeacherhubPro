@@ -149,9 +149,12 @@ const StudentAssignment = () => {
   // Render question based on type
   const renderQuestion = (question, index) => {
     const { question_id, question_type, question_text, points, options, left_items, right_items, instructions } = question;
+    // Use index-based unique key to prevent state collisions even if question_ids duplicate
+    const stateKey = question_id ? `${question_id}_${index}` : `q_idx_${index}`;
+    const radioName = `radio_${index}_${question_id || index}`;
 
     return (
-      <Card key={question_id} className="mb-4" data-testid={`question-${question_id}`}>
+      <Card key={stateKey} className="mb-4" data-testid={`question-${question_id}`}>
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <CardTitle className="text-lg">
@@ -184,7 +187,7 @@ const StudentAssignment = () => {
                 >
                   <input
                     type="radio"
-                    name={question_id}
+                    name={radioName}
                     value={opt.text}
                     checked={answers[question_id] === opt.text}
                     onChange={(e) => handleAnswerChange(question_id, e.target.value)}
@@ -211,7 +214,7 @@ const StudentAssignment = () => {
                 >
                   <input
                     type="radio"
-                    name={question_id}
+                    name={radioName}
                     value={opt}
                     checked={answers[question_id] === opt}
                     onChange={(e) => handleAnswerChange(question_id, e.target.value)}

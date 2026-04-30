@@ -274,9 +274,9 @@ const Gradebook = () => {
   // Question builder helpers
   const addQuestion = () => {
     setAssignmentQuestions(prev => {
-      const nextNum = prev.length + 1;
+      const uid = `q${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
       return [...prev, {
-        question_id: `q${nextNum}`,
+        question_id: uid,
         question_text: '',
         question_type: 'multiple_choice',
         points: 10,

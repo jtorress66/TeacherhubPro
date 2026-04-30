@@ -2039,11 +2039,21 @@ async def create_assignment(assignment_data: AssignmentCreate, user: dict = Depe
         "points": assignment_data.points,
         "due_date": assignment_data.due_date,
         "standards_refs": assignment_data.standards_refs,
-        "questions": assignment_data.questions,
+        "questions": [],
         "attachments": assignment_data.attachments,
         "public_token": public_token,
         "created_at": now
     }
+    
+    # Ensure all questions have unique IDs
+    seen_ids = set()
+    for i, q in enumerate(assignment_data.questions or []):
+        q_dict = q if isinstance(q, dict) else dict(q)
+        qid = q_dict.get("question_id", "")
+        if not qid or qid in seen_ids:
+            q_dict["question_id"] = f"q{i+1}_{uuid.uuid4().hex[:4]}"
+        seen_ids.add(q_dict["question_id"])
+        assignment_doc["questions"].append(q_dict)
     
     await db.assignments.insert_one(assignment_doc)
     return AssignmentResponse(**assignment_doc)
