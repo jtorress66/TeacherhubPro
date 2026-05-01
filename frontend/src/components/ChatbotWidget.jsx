@@ -216,6 +216,20 @@ const ChatbotWidget = () => {
     return () => clearTimeout(timer);
   }, [hasGreeted]);
 
+  // Update greeting message when language changes
+  useEffect(() => {
+    if (messages.length > 0 && step === "role") {
+      setMessages(prev => {
+        const updated = [...prev];
+        // Replace the first bot message (greeting) with current language
+        if (updated[0] && updated[0].role === "bot") {
+          updated[0] = { ...updated[0], content: str.greeting };
+        }
+        return updated;
+      });
+    }
+  }, [language]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Focus input when chat opens
   useEffect(() => {
     if (isOpen && step === "chat") {
