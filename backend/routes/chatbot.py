@@ -32,6 +32,7 @@ class ChatMessage(BaseModel):
     page_url: Optional[str] = ""
     visitor_role: Optional[str] = ""
     visitor_interest: Optional[str] = ""
+    language: Optional[str] = "en"
 
 class LeadCapture(BaseModel):
     session_id: str
@@ -277,8 +278,18 @@ async def chat_message(msg: ChatMessage):
     if msg.page_url:
         context_parts.append(f"Currently viewing: {msg.page_url}")
 
+    # Language mapping
+    LANG_NAMES = {
+        "en": "English", "es": "Spanish", "fr": "French",
+        "pt": "Portuguese", "de": "German", "it": "Italian", "zh": "Chinese"
+    }
+    lang = msg.language or "en"
+    lang_name = LANG_NAMES.get(lang, "English")
+
     context_note = "\n".join(context_parts)
     system = CHATBOT_SYSTEM_PROMPT
+    if lang != "en":
+        system += f"\n\n=== LANGUAGE INSTRUCTION ===\nYou MUST respond ENTIRELY in {lang_name}. All your replies must be in {lang_name}. Do not mix languages. The visitor's preferred language is {lang_name}."
     if context_note:
         system += f"\n\n=== CURRENT VISITOR CONTEXT ===\n{context_note}"
 

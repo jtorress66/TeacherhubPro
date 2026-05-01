@@ -1,33 +1,180 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { MessageCircle, X, Send, ChevronDown, User, ArrowRight } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || "";
 
-const ROLE_OPTIONS = [
-  { label: "Teacher", value: "teacher" },
-  { label: "Tutor", value: "tutor" },
-  { label: "Homeschool Educator", value: "homeschool" },
-  { label: "School Administrator", value: "administrator" },
-  { label: "District / Enterprise", value: "district" },
-  { label: "Other", value: "other" },
-];
+// Translations for chatbot UI (keyed by language code)
+const CHATBOT_STRINGS = {
+  en: {
+    greeting: "Hi there! I'm Ed, your TeacherHubPro assistant. I can help you explore features, answer questions, or get you started with a free trial. Which best describes you?",
+    interest_prompt: "Great! What are you most interested in today?",
+    interest_fallback: "I'd be happy to help with that! Feel free to ask me anything.",
+    lead_prompt: "By the way, I'd love to make sure our team can follow up with you. Would you like to share your contact info? It only takes a moment.",
+    error_msg: "I'm sorry, I'm having trouble connecting. You can reach our team at the Contact page.",
+    lead_accept: "Sure, happy to!",
+    lead_decline: "No thanks",
+    lead_success: "Thank you! Our team will be in touch. Is there anything else I can help with?",
+    lead_error: "Sorry, there was an issue. You can reach us at our Contact page.",
+    type_msg: "Type a message...",
+    title: "Ed",
+    subtitle: "TeacherHubPro Assistant",
+    first_name: "First Name *",
+    last_name: "Last Name",
+    email: "Email *",
+    school: "School / Organization",
+    role_title: "Your Role",
+    submit: "Submit",
+    roles: ["Teacher", "Tutor", "Homeschool Educator", "School Administrator", "District / Enterprise", "Other"],
+    interests: ["Lesson Planning", "Grading & Gradebook", "AI Tools", "Attendance", "Pricing", "School / District Solution", "Book a Demo", "General Questions"]
+  },
+  es: {
+    greeting: "¡Hola! Soy Ed, tu asistente de TeacherHubPro. Puedo ayudarte a explorar funciones, responder preguntas o comenzar con una prueba gratuita. ¿Cuál te describe mejor?",
+    interest_prompt: "¡Genial! ¿Qué te interesa más hoy?",
+    interest_fallback: "¡Con gusto te ayudo! Pregúntame lo que quieras.",
+    lead_prompt: "Por cierto, me encantaría que nuestro equipo pueda contactarte. ¿Te gustaría compartir tu información de contacto? Solo toma un momento.",
+    error_msg: "Lo siento, tengo problemas de conexión. Puedes contactarnos en la página de Contacto.",
+    lead_accept: "¡Claro, con gusto!",
+    lead_decline: "No, gracias",
+    lead_success: "¡Gracias! Nuestro equipo se pondrá en contacto. ¿Hay algo más en lo que pueda ayudarte?",
+    lead_error: "Lo siento, hubo un problema. Puedes contactarnos en la página de Contacto.",
+    type_msg: "Escribe un mensaje...",
+    title: "Ed",
+    subtitle: "Asistente de TeacherHubPro",
+    first_name: "Nombre *",
+    last_name: "Apellido",
+    email: "Correo electrónico *",
+    school: "Escuela / Organización",
+    role_title: "Tu rol",
+    submit: "Enviar",
+    roles: ["Profesor(a)", "Tutor(a)", "Educador(a) en casa", "Administrador(a) escolar", "Distrito / Empresa", "Otro"],
+    interests: ["Planificación de clases", "Calificaciones", "Herramientas de IA", "Asistencia", "Precios", "Solución escolar / distrito", "Agendar una demo", "Preguntas generales"]
+  },
+  fr: {
+    greeting: "Bonjour ! Je suis Ed, votre assistant TeacherHubPro. Je peux vous aider à découvrir nos fonctionnalités, répondre à vos questions ou commencer un essai gratuit. Qu'est-ce qui vous décrit le mieux ?",
+    interest_prompt: "Super ! Qu'est-ce qui vous intéresse le plus aujourd'hui ?",
+    interest_fallback: "Je serai ravi de vous aider ! N'hésitez pas à me poser vos questions.",
+    lead_prompt: "Au fait, j'aimerais m'assurer que notre équipe puisse vous recontacter. Souhaitez-vous partager vos coordonnées ? Cela ne prend qu'un instant.",
+    error_msg: "Désolé, j'ai un problème de connexion. Vous pouvez nous joindre sur la page Contact.",
+    lead_accept: "Bien sûr, avec plaisir !",
+    lead_decline: "Non merci",
+    lead_success: "Merci ! Notre équipe vous contactera. Puis-je vous aider avec autre chose ?",
+    lead_error: "Désolé, il y a eu un problème. Vous pouvez nous contacter via la page Contact.",
+    type_msg: "Écrivez un message...",
+    title: "Ed",
+    subtitle: "Assistant TeacherHubPro",
+    first_name: "Prénom *",
+    last_name: "Nom",
+    email: "E-mail *",
+    school: "École / Organisation",
+    role_title: "Votre rôle",
+    submit: "Envoyer",
+    roles: ["Enseignant(e)", "Tuteur/Tutrice", "Éducateur à domicile", "Administrateur scolaire", "District / Entreprise", "Autre"],
+    interests: ["Planification des cours", "Notes et bulletins", "Outils IA", "Présences", "Tarifs", "Solution école / district", "Réserver une démo", "Questions générales"]
+  },
+  pt: {
+    greeting: "Olá! Sou o Ed, seu assistente TeacherHubPro. Posso ajudá-lo a explorar recursos, responder perguntas ou começar com um teste gratuito. O que melhor descreve você?",
+    interest_prompt: "Ótimo! O que mais interessa você hoje?",
+    interest_fallback: "Ficarei feliz em ajudar! Pergunte o que quiser.",
+    lead_prompt: "A propósito, adoraria garantir que nossa equipe possa entrar em contato. Gostaria de compartilhar suas informações? Leva apenas um momento.",
+    error_msg: "Desculpe, estou com problemas de conexão. Você pode nos contatar na página de Contato.",
+    lead_accept: "Claro, com prazer!",
+    lead_decline: "Não, obrigado",
+    lead_success: "Obrigado! Nossa equipe entrará em contato. Posso ajudar com mais alguma coisa?",
+    lead_error: "Desculpe, houve um problema. Você pode nos contatar na página de Contato.",
+    type_msg: "Digite uma mensagem...",
+    title: "Ed",
+    subtitle: "Assistente TeacherHubPro",
+    first_name: "Nome *",
+    last_name: "Sobrenome",
+    email: "E-mail *",
+    school: "Escola / Organização",
+    role_title: "Seu cargo",
+    submit: "Enviar",
+    roles: ["Professor(a)", "Tutor(a)", "Educador domiciliar", "Administrador escolar", "Distrito / Empresa", "Outro"],
+    interests: ["Planejamento de aulas", "Notas e boletins", "Ferramentas de IA", "Frequência", "Preços", "Solução escolar / distrito", "Agendar uma demo", "Perguntas gerais"]
+  },
+  de: {
+    greeting: "Hallo! Ich bin Ed, Ihr TeacherHubPro-Assistent. Ich kann Ihnen helfen, Funktionen zu entdecken, Fragen zu beantworten oder eine kostenlose Testversion zu starten. Was beschreibt Sie am besten?",
+    interest_prompt: "Großartig! Was interessiert Sie heute am meisten?",
+    interest_fallback: "Ich helfe Ihnen gerne! Fragen Sie mich einfach.",
+    lead_prompt: "Übrigens, ich würde gerne sicherstellen, dass unser Team Sie kontaktieren kann. Möchten Sie Ihre Kontaktdaten teilen? Es dauert nur einen Moment.",
+    error_msg: "Entschuldigung, ich habe Verbindungsprobleme. Sie können uns über die Kontaktseite erreichen.",
+    lead_accept: "Klar, gerne!",
+    lead_decline: "Nein, danke",
+    lead_success: "Vielen Dank! Unser Team wird sich melden. Kann ich Ihnen noch bei etwas anderem helfen?",
+    lead_error: "Entschuldigung, es gab ein Problem. Sie können uns über die Kontaktseite erreichen.",
+    type_msg: "Nachricht eingeben...",
+    title: "Ed",
+    subtitle: "TeacherHubPro-Assistent",
+    first_name: "Vorname *",
+    last_name: "Nachname",
+    email: "E-Mail *",
+    school: "Schule / Organisation",
+    role_title: "Ihre Rolle",
+    submit: "Senden",
+    roles: ["Lehrer/in", "Tutor/in", "Homeschool-Erzieher/in", "Schuladministrator/in", "Bezirk / Unternehmen", "Andere"],
+    interests: ["Unterrichtsplanung", "Noten & Zeugnisse", "KI-Tools", "Anwesenheit", "Preise", "Schul-/Bezirkslösung", "Demo buchen", "Allgemeine Fragen"]
+  },
+  it: {
+    greeting: "Ciao! Sono Ed, il tuo assistente TeacherHubPro. Posso aiutarti a esplorare le funzionalità, rispondere alle domande o iniziare una prova gratuita. Cosa ti descrive meglio?",
+    interest_prompt: "Ottimo! Cosa ti interessa di più oggi?",
+    interest_fallback: "Sarò felice di aiutarti! Chiedimi pure quello che vuoi.",
+    lead_prompt: "A proposito, mi piacerebbe assicurarmi che il nostro team possa ricontattarti. Vuoi condividere i tuoi dati di contatto? Ci vuole solo un momento.",
+    error_msg: "Mi dispiace, ho problemi di connessione. Puoi contattarci dalla pagina Contatti.",
+    lead_accept: "Certo, volentieri!",
+    lead_decline: "No, grazie",
+    lead_success: "Grazie! Il nostro team ti contatterà. C'è altro in cui posso aiutarti?",
+    lead_error: "Mi dispiace, c'è stato un problema. Puoi contattarci dalla pagina Contatti.",
+    type_msg: "Scrivi un messaggio...",
+    title: "Ed",
+    subtitle: "Assistente TeacherHubPro",
+    first_name: "Nome *",
+    last_name: "Cognome",
+    email: "E-mail *",
+    school: "Scuola / Organizzazione",
+    role_title: "Il tuo ruolo",
+    submit: "Invia",
+    roles: ["Insegnante", "Tutor", "Educatore domestico", "Amministratore scolastico", "Distretto / Azienda", "Altro"],
+    interests: ["Pianificazione lezioni", "Voti e pagelle", "Strumenti IA", "Presenze", "Prezzi", "Soluzione scuola / distretto", "Prenota una demo", "Domande generali"]
+  },
+  zh: {
+    greeting: "您好！我是 Ed，您的 TeacherHubPro 助手。我可以帮助您探索功能、回答问题或开始免费试用。哪个最能描述您？",
+    interest_prompt: "太好了！您今天最感兴趣的是什么？",
+    interest_fallback: "很乐意帮助您！请随时问我任何问题。",
+    lead_prompt: "顺便说一下，我很希望我们的团队能跟进联系您。您愿意分享您的联系方式吗？只需要一会儿。",
+    error_msg: "抱歉，连接出现问题。您可以通过联系页面与我们取得联系。",
+    lead_accept: "好的，很乐意！",
+    lead_decline: "不用了，谢谢",
+    lead_success: "谢谢！我们的团队会与您联系。还有其他我可以帮助您的吗？",
+    lead_error: "抱歉，出现了问题。您可以通过联系页面与我们联系。",
+    type_msg: "输入消息...",
+    title: "Ed",
+    subtitle: "TeacherHubPro 助手",
+    first_name: "名字 *",
+    last_name: "姓氏",
+    email: "电子邮件 *",
+    school: "学校 / 组织",
+    role_title: "您的角色",
+    submit: "提交",
+    roles: ["教师", "辅导员", "家庭教育者", "学校管理员", "学区 / 企业", "其他"],
+    interests: ["课程规划", "成绩与成绩单", "AI 工具", "考勤", "价格", "学校/学区方案", "预约演示", "常见问题"]
+  }
+};
 
-const INTEREST_OPTIONS = [
-  { label: "Lesson Planning", value: "lesson_planning" },
-  { label: "Grading & Gradebook", value: "grading" },
-  { label: "AI Tools", value: "ai_tools" },
-  { label: "Attendance", value: "attendance" },
-  { label: "Pricing", value: "pricing" },
-  { label: "School / District Solution", value: "school_solution" },
-  { label: "Book a Demo", value: "demo" },
-  { label: "General Questions", value: "general" },
-];
+const ROLE_VALUES = ["teacher", "tutor", "homeschool", "administrator", "district", "other"];
+const INTEREST_VALUES = ["lesson_planning", "grading", "ai_tools", "attendance", "pricing", "school_solution", "demo", "general"];
 
 function generateSessionId() {
   return "chat_" + Math.random().toString(36).slice(2, 14) + Date.now().toString(36);
 }
 
 const ChatbotWidget = () => {
+  const { language } = useLanguage();
+  const str = CHATBOT_STRINGS[language] || CHATBOT_STRINGS.en;
+  const roleOptions = str.roles.map((label, i) => ({ label, value: ROLE_VALUES[i] }));
+  const interestOptions = str.interests.map((label, i) => ({ label, value: INTEREST_VALUES[i] }));
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -85,7 +232,7 @@ const ChatbotWidget = () => {
     setShowBubblePulse(false);
     if (!hasGreeted) {
       setHasGreeted(true);
-      addBotMessage("Hi there! I'm Ed, your TeacherHubPro assistant. I can help you explore features, answer questions, or get you started with a free trial. Which best describes you?");
+      addBotMessage(str.greeting);
       setStep("role");
     }
   };
@@ -94,7 +241,6 @@ const ChatbotWidget = () => {
     setVisitorRole(role.value);
     setMessages(prev => [...prev, { role: "user", content: role.label }]);
 
-    // Send to AI for context
     setIsLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/chatbot/message`, {
@@ -104,13 +250,14 @@ const ChatbotWidget = () => {
           session_id: sessionId,
           message: `I am a ${role.label}.`,
           page_url: window.location.pathname,
-          visitor_role: role.value
+          visitor_role: role.value,
+          language: language
         })
       });
       const data = await res.json();
-      addBotMessage(data.response || "Great! What are you most interested in today?");
+      addBotMessage(data.response || str.interest_prompt);
     } catch {
-      addBotMessage("Great! What are you most interested in today?");
+      addBotMessage(str.interest_prompt);
     }
     setIsLoading(false);
     setStep("interest");
@@ -130,13 +277,14 @@ const ChatbotWidget = () => {
           message: `I'm most interested in: ${interest.label}`,
           page_url: window.location.pathname,
           visitor_role: visitorRole,
-          visitor_interest: interest.value
+          visitor_interest: interest.value,
+          language: language
         })
       });
       const data = await res.json();
       addBotMessage(data.response);
     } catch {
-      addBotMessage("I'd be happy to help with that! Feel free to ask me anything.");
+      addBotMessage(str.interest_fallback);
     }
     setIsLoading(false);
     setStep("chat");
@@ -161,7 +309,8 @@ const ChatbotWidget = () => {
           message: text,
           page_url: window.location.pathname,
           visitor_role: visitorRole,
-          visitor_interest: visitorInterest
+          visitor_interest: visitorInterest,
+          language: language
         })
       });
       const data = await res.json();
@@ -170,12 +319,12 @@ const ChatbotWidget = () => {
       // After 3 exchanges, suggest lead capture if not already done
       if (messageCount >= 2 && !leadCaptured) {
         setTimeout(() => {
-          addBotMessage("By the way, I'd love to make sure our team can follow up with you. Would you like to share your contact info? It only takes a moment.");
+          addBotMessage(str.lead_prompt);
           setStep("lead_prompt");
         }, 1500);
       }
     } catch {
-      addBotMessage("I'm sorry, I'm having trouble connecting. You can reach our team at the Contact page.");
+      addBotMessage(str.error_msg);
     }
     setIsLoading(false);
   };
@@ -204,14 +353,9 @@ const ChatbotWidget = () => {
       setLeadCaptured(true);
       setStep("chat");
 
-      const isHighPriority = ["administrator", "district"].includes(visitorRole);
-      if (isHighPriority) {
-        addBotMessage(`Thank you, ${leadForm.first_name}! I've flagged your inquiry as a priority. Our team will reach out shortly to schedule a personalized demo. In the meantime, feel free to ask me anything else!`);
-      } else {
-        addBotMessage(`Thanks, ${leadForm.first_name}! You can start your free trial right now — no credit card needed. Just head to our signup page! Is there anything else I can help with?`);
-      }
+      addBotMessage(str.lead_success);
     } catch {
-      addBotMessage("Sorry, I had trouble saving your info. You can reach us directly at the Contact page.");
+      addBotMessage(str.lead_error);
       setStep("chat");
     }
     setIsLoading(false);
@@ -251,8 +395,8 @@ const ChatbotWidget = () => {
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-xs font-bold">Ed</div>
           <div>
-            <p className="text-sm font-semibold leading-tight">Ed</p>
-            <p className="text-[10px] text-teal-200 leading-tight">TeacherHubPro Assistant</p>
+            <p className="text-sm font-semibold leading-tight">{str.title}</p>
+            <p className="text-[10px] text-teal-200 leading-tight">{str.subtitle}</p>
           </div>
         </div>
         <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-teal-600 rounded" data-testid="chatbot-close">
@@ -280,7 +424,7 @@ const ChatbotWidget = () => {
         {/* Role selection buttons */}
         {step === "role" && !isLoading && (
           <div className="space-y-2 pt-1" data-testid="chatbot-role-options">
-            {ROLE_OPTIONS.map(r => (
+            {roleOptions.map(r => (
               <button
                 key={r.value}
                 onClick={() => selectRole(r)}
@@ -295,7 +439,7 @@ const ChatbotWidget = () => {
         {/* Interest selection buttons */}
         {step === "interest" && !isLoading && (
           <div className="grid grid-cols-2 gap-2 pt-1" data-testid="chatbot-interest-options">
-            {INTEREST_OPTIONS.map(i => (
+            {interestOptions.map(i => (
               <button
                 key={i.value}
                 onClick={() => selectInterest(i)}
@@ -314,13 +458,13 @@ const ChatbotWidget = () => {
               onClick={() => setStep("lead_form")}
               className="flex-1 px-3 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors"
             >
-              Sure, happy to!
+              {str.lead_accept}
             </button>
             <button
-              onClick={() => { setStep("chat"); addBotMessage("No problem at all! Feel free to keep asking questions."); }}
+              onClick={() => { setStep("chat"); }}
               className="flex-1 px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-slate-50 transition-colors"
             >
-              Maybe later
+              {str.lead_decline}
             </button>
           </div>
         )}
@@ -328,32 +472,26 @@ const ChatbotWidget = () => {
         {/* Lead capture form */}
         {step === "lead_form" && (
           <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-3 shadow-sm" data-testid="chatbot-lead-form">
-            <p className="text-xs text-slate-500">We'll use this info to follow up and help you get the most out of TeacherHubPro.</p>
             <div className="grid grid-cols-2 gap-2">
-              <input placeholder="First name *" value={leadForm.first_name} onChange={e => setLeadForm(p => ({...p, first_name: e.target.value}))}
+              <input placeholder={str.first_name} value={leadForm.first_name} onChange={e => setLeadForm(p => ({...p, first_name: e.target.value}))}
                 className="px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500" />
-              <input placeholder="Last name" value={leadForm.last_name} onChange={e => setLeadForm(p => ({...p, last_name: e.target.value}))}
+              <input placeholder={str.last_name} value={leadForm.last_name} onChange={e => setLeadForm(p => ({...p, last_name: e.target.value}))}
                 className="px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500" />
             </div>
-            <input placeholder="Email *" type="email" value={leadForm.email} onChange={e => setLeadForm(p => ({...p, email: e.target.value}))}
+            <input placeholder={str.email} type="email" value={leadForm.email} onChange={e => setLeadForm(p => ({...p, email: e.target.value}))}
               className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500" />
-            <input placeholder="School / Organization" value={leadForm.school_org} onChange={e => setLeadForm(p => ({...p, school_org: e.target.value}))}
+            <input placeholder={str.school} value={leadForm.school_org} onChange={e => setLeadForm(p => ({...p, school_org: e.target.value}))}
               className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500" />
-            <div className="grid grid-cols-2 gap-2">
-              <input placeholder="Role / Title" value={leadForm.role_title} onChange={e => setLeadForm(p => ({...p, role_title: e.target.value}))}
-                className="px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500" />
-              <input placeholder="Phone (optional)" value={leadForm.phone} onChange={e => setLeadForm(p => ({...p, phone: e.target.value}))}
-                className="px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500" />
-            </div>
+            <input placeholder={str.role_title} value={leadForm.role_title} onChange={e => setLeadForm(p => ({...p, role_title: e.target.value}))}
+              className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500" />
             <button
               onClick={submitLead}
               disabled={!leadForm.first_name || !leadForm.email || isLoading}
               className="w-full py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
               data-testid="chatbot-submit-lead"
             >
-              {isLoading ? "Submitting..." : <>Submit <ArrowRight className="w-4 h-4" /></>}
+              {isLoading ? "..." : <>{str.submit} <ArrowRight className="w-4 h-4" /></>}
             </button>
-            <p className="text-[10px] text-slate-400 text-center">By submitting, you consent to being contacted about TeacherHubPro.</p>
           </div>
         )}
 
@@ -381,7 +519,7 @@ const ChatbotWidget = () => {
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type a message..."
+            placeholder={str.type_msg}
             className="flex-1 text-sm bg-slate-50 border border-slate-200 rounded-full px-4 py-2 focus:outline-none focus:ring-1 focus:ring-teal-500"
             disabled={isLoading}
             data-testid="chatbot-input"
