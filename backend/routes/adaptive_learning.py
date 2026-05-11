@@ -98,56 +98,85 @@ async def generate_adaptive_learning_path(
     request: AdaptiveLearningRequest,
     user: dict = Depends(get_current_user)
 ):
-    """Generate a personalized adaptive learning path for a student using AI"""
+    """Start adaptive learning path generation (async polling to avoid 504s)."""
     
     if not await check_ai_access(user):
         raise HTTPException(status_code=403, detail="AI features require an active subscription or trial period")
     
-    # Get student info
     student = await db.students.find_one({"student_id": request.student_id}, {"_id": 0})
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
     
-    student_name = student.get("name") or f"{student.get('first_name', '')} {student.get('last_name', '')}".strip()
+    job_id = f"pathgen_{uuid.uuid4().hex[:12]}"
+    await db.generation_jobs.insert_one({
+        "job_id": job_id,
+        "type": "adaptive_path",
+        "status": "processing",
+        "result": None,
+        "error": None,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
     
-    # Get prior learning data
-    prior_progress = await db.adaptive_learning_progress.find_one({
-        "student_id": request.student_id,
-        "subject": request.subject
-    }, {"_id": 0})
+    asyncio.create_task(_run_path_generation(job_id, request, student))
+    return {"job_id": job_id, "status": "processing"}
+
+
+@router.get("/generate-path-status/{job_id}")
+async def get_path_generation_status(job_id: str, user: dict = Depends(get_current_user)):
+    """Poll status of learning path generation."""
+    job = await db.generation_jobs.find_one({"job_id": job_id}, {"_id": 0})
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
     
-    completed_lessons = prior_progress.get("completed_lessons", []) if prior_progress else []
-    current_level = prior_progress.get("current_level", 1) if prior_progress else 1
-    
-    # Subject and grade level mappings
-    subject_names = {
-        "math": {"en": "Mathematics", "es": "Matemáticas"},
-        "language": {"en": "Language Arts", "es": "Lenguaje"},
-        "science": {"en": "Science", "es": "Ciencias"},
-        "reading": {"en": "Reading", "es": "Lectura"}
-    }
-    
-    grade_level_descriptions = {
-        "k-2": {"en": "Kindergarten to 2nd Grade (ages 5-7)", "es": "Kínder a 2do Grado (5-7 años)"},
-        "3-5": {"en": "3rd to 5th Grade (ages 8-10)", "es": "3ro a 5to Grado (8-10 años)"},
-        "6-8": {"en": "6th to 8th Grade (ages 11-13)", "es": "6to a 8vo Grado (11-13 años)"},
-        "9-12": {"en": "9th to 12th Grade (ages 14-18)", "es": "9no a 12vo Grado (14-18 años)"}
-    }
-    
-    subject_display = subject_names.get(request.subject, {"en": request.subject.title(), "es": request.subject.title()})
-    grade_display = grade_level_descriptions.get(request.grade_level, grade_level_descriptions["3-5"])
-    lang_key = "es" if request.language == "es" else "en"
-    
-    language_instruction = "Responde completamente en español." if request.language == "es" else "Respond entirely in English."
-    
-    system_prompt = f"""You are an expert adaptive learning curriculum designer for homeschool education. 
+    if job["status"] == "completed":
+        await db.generation_jobs.delete_one({"job_id": job_id})
+        return {"status": "completed", "result": job.get("result")}
+    if job["status"] == "failed":
+        await db.generation_jobs.delete_one({"job_id": job_id})
+        return {"status": "failed", "error": job.get("error", "Generation failed")}
+    return {"status": "processing"}
+
+
+async def _run_path_generation(job_id: str, request: AdaptiveLearningRequest, student: dict):
+    """Background task for adaptive learning path generation."""
+    try:
+        student_name = student.get("name") or f"{student.get('first_name', '')} {student.get('last_name', '')}".strip()
+        
+        prior_progress = await db.adaptive_learning_progress.find_one({
+            "student_id": request.student_id,
+            "subject": request.subject
+        }, {"_id": 0})
+        
+        completed_lessons = prior_progress.get("completed_lessons", []) if prior_progress else []
+        current_level = prior_progress.get("current_level", 1) if prior_progress else 1
+        
+        subject_names = {
+            "math": {"en": "Mathematics", "es": "Matemáticas"},
+            "language": {"en": "Language Arts", "es": "Lenguaje"},
+            "science": {"en": "Science", "es": "Ciencias"},
+            "reading": {"en": "Reading", "es": "Lectura"}
+        }
+        grade_level_descriptions = {
+            "k-2": {"en": "Kindergarten to 2nd Grade (ages 5-7)", "es": "Kínder a 2do Grado (5-7 años)"},
+            "3-5": {"en": "3rd to 5th Grade (ages 8-10)", "es": "3ro a 5to Grado (8-10 años)"},
+            "6-8": {"en": "6th to 8th Grade (ages 11-13)", "es": "6to a 8vo Grado (11-13 años)"},
+            "9-12": {"en": "9th to 12th Grade (ages 14-18)", "es": "9no a 12vo Grado (14-18 años)"}
+        }
+        
+        subject_display = subject_names.get(request.subject, {"en": request.subject.title(), "es": request.subject.title()})
+        grade_display = grade_level_descriptions.get(request.grade_level, grade_level_descriptions["3-5"])
+        lang_key = "es" if request.language == "es" else "en"
+        
+        language_instruction = "Responde completamente en español." if request.language == "es" else "Respond entirely in English."
+        
+        system_prompt = f"""You are an expert adaptive learning curriculum designer for homeschool education. 
 Your task is to create a personalized learning path that adapts to the student's pace and level.
 
 {language_instruction}
 
 Return ONLY a valid JSON object with no additional text."""
 
-    user_prompt = f"""Create an adaptive learning path for:
+        user_prompt = f"""Create an adaptive learning path for:
 - Student: {student_name}
 - Subject: {subject_display[lang_key]}
 - Grade Level: {grade_display[lang_key]}
@@ -184,72 +213,68 @@ Return JSON in this exact format:
 
 IMPORTANT: Each question MUST include a "correct_answer" field that matches exactly one of the options."""
 
-    try:
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
-            session_id=f"adaptive_{request.student_id}_{uuid.uuid4().hex[:8]}",
+            session_id=f"adaptive_{job_id}",
             system_message=system_prompt
         ).with_model("anthropic", "claude-sonnet-4-20250514")
         
-        user_message = UserMessage(text=user_prompt)
-        
-        # Apply 90-second timeout with retry logic
         response = None
-        last_error = None
-        
         for attempt in range(MAX_RETRIES + 1):
             try:
                 response = await asyncio.wait_for(
-                    chat.send_message(user_message),
+                    chat.send_message(UserMessage(text=user_prompt)),
                     timeout=AI_TIMEOUT_SECONDS
                 )
                 break
             except asyncio.TimeoutError:
-                last_error = "AI timed out after 90 seconds"
-                logger.warning(f"Adaptive learning attempt {attempt + 1} timed out")
+                logger.warning(f"Adaptive learning attempt {attempt + 1} timed out for {job_id}")
                 if attempt < MAX_RETRIES:
                     await asyncio.sleep(RETRY_DELAY)
             except Exception as e:
-                last_error = str(e)
-                logger.warning(f"Adaptive learning attempt {attempt + 1} failed: {str(e)}")
+                logger.warning(f"Adaptive learning attempt {attempt + 1} failed for {job_id}: {e}")
                 if attempt < MAX_RETRIES:
                     await asyncio.sleep(RETRY_DELAY)
         
         if response is None:
-            raise HTTPException(
-                status_code=503,
-                detail="AI learning path generation timed out. Please try again."
-            )
+            raise Exception("AI learning path generation timed out")
         
-        response_text = response.text.strip()
+        response_text = response.strip() if isinstance(response, str) else response.text.strip() if hasattr(response, 'text') else str(response).strip()
         if response_text.startswith("```"):
             lines = response_text.split("\n")
             response_text = "\n".join(lines[1:-1] if lines[-1] == "```" else lines[1:])
         
         learning_path = json.loads(response_text)
         
-        # Add metadata
         path_id = f"path_{uuid.uuid4().hex[:12]}"
         learning_path["path_id"] = path_id
         learning_path["student_id"] = request.student_id
         learning_path["subject"] = request.subject
         learning_path["created_at"] = datetime.now(timezone.utc).isoformat()
         
-        # Save to database
         await db.adaptive_learning_paths.update_one(
             {"student_id": request.student_id, "subject": request.subject},
             {"$set": learning_path},
             upsert=True
         )
         
-        return learning_path
+        await db.generation_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {"status": "completed", "result": learning_path}}
+        )
         
     except json.JSONDecodeError as e:
-        logger.error(f"Failed to parse learning path JSON: {e}")
-        raise HTTPException(status_code=500, detail="Error parsing AI response")
+        logger.error(f"Failed to parse learning path JSON for {job_id}: {e}")
+        await db.generation_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {"status": "failed", "error": "Error parsing AI response"}}
+        )
     except Exception as e:
-        logger.error(f"Error generating learning path: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error generating learning path: {str(e)}")
+        logger.error(f"Error generating learning path for {job_id}: {e}")
+        await db.generation_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {"status": "failed", "error": str(e)}}
+        )
 
 
 @router.post("/complete-lesson")

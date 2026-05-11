@@ -78,6 +78,7 @@ const AdaptiveLearning = () => {
 
     setGenerating(true);
     try {
+      // Step 1: Start the generation job
       const res = await axios.post(`${API}/adaptive-learning/generate-path`, {
         student_id: selectedStudent,
         subject: selectedSubject,
@@ -85,18 +86,39 @@ const AdaptiveLearning = () => {
         language: language
       }, { withCredentials: true });
       
-      setLearningPath(res.data);
-      toast.success(language === 'es' ? '¡Ruta de aprendizaje generada!' : 'Learning path generated!');
+      const { job_id } = res.data;
+
+      // Step 2: Poll for result
+      const maxAttempts = 60;
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        await new Promise(r => setTimeout(r, 2000));
+        try {
+          const pollRes = await axios.get(
+            `${API}/adaptive-learning/generate-path-status/${job_id}`,
+            { withCredentials: true }
+          );
+          if (pollRes.data.status === 'completed') {
+            setLearningPath(pollRes.data.result);
+            toast.success(language === 'es' ? '¡Ruta de aprendizaje generada!' : 'Learning path generated!');
+            setGenerating(false);
+            return;
+          }
+          if (pollRes.data.status === 'failed') {
+            throw new Error(pollRes.data.error || 'Generation failed');
+          }
+        } catch (pollErr) {
+          if (pollErr.response?.status === 404) continue;
+          throw pollErr;
+        }
+      }
+      throw new Error('Generation timed out');
     } catch (error) {
       console.error('Error generating path:', error);
-      // Show more detailed error message
       const errorMessage = error.response?.data?.detail || error.message || 'Unknown error';
       if (error.response?.status === 404) {
         toast.error(language === 'es' ? 'Estudiante no encontrado' : 'Student not found');
       } else if (error.response?.status === 403) {
         toast.error(language === 'es' ? 'Requiere suscripción activa' : 'Requires active subscription');
-      } else if (error.response?.status === 500) {
-        toast.error(language === 'es' ? `Error del servidor: ${errorMessage}` : `Server error: ${errorMessage}`);
       } else {
         toast.error(language === 'es' ? `Error al generar ruta: ${errorMessage}` : `Error generating path: ${errorMessage}`);
       }
