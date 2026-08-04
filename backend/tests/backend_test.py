@@ -1,27 +1,40 @@
 """Regression tests for authentication and Claude 4.6 AI integrations."""
 
 import os
+import re
 import time
 import uuid
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
 import requests
 from dotenv import dotenv_values
+from pymongo import MongoClient
 
 FRONTEND_ENV = dotenv_values("/app/frontend/.env")
+BACKEND_ENV = dotenv_values("/app/backend/.env")
+CREDENTIALS_PATH = Path("/app/memory/test_credentials.md")
 BASE_URL = (
     os.environ.get("REACT_APP_BACKEND_URL")
     or FRONTEND_ENV.get("REACT_APP_BACKEND_URL")
     or ""
 ).rstrip("/")
-TEST_EMAIL = os.environ.get("TEST_EMAIL")
-TEST_PASSWORD = os.environ.get("TEST_PASSWORD")
+
+credential_text = CREDENTIALS_PATH.read_text(encoding="utf-8") if CREDENTIALS_PATH.exists() else ""
+email_match = re.search(r"(?im)^\s*[-*]\s*Email:\s*(\S+)", credential_text)
+password_match = re.search(r"(?im)^\s*[-*]\s*Password:\s*(\S+)", credential_text)
+TEST_EMAIL = os.environ.get("TEST_EMAIL") or (email_match.group(1) if email_match else None)
+TEST_PASSWORD = os.environ.get("TEST_PASSWORD") or (password_match.group(1) if password_match else None)
+MONGO_URL = os.environ.get("MONGO_URL") or BACKEND_ENV.get("MONGO_URL")
+DB_NAME = os.environ.get("DB_NAME") or BACKEND_ENV.get("DB_NAME")
 
 if not BASE_URL:
     raise RuntimeError("REACT_APP_BACKEND_URL is missing")
 if not TEST_EMAIL or not TEST_PASSWORD:
-    raise RuntimeError("TEST_EMAIL and TEST_PASSWORD must be supplied by the test runner")
+    raise RuntimeError("Test credentials are missing from environment and /app/memory/test_credentials.md")
+if not MONGO_URL or not DB_NAME:
+    raise RuntimeError("MONGO_URL and DB_NAME are required for deterministic job-state tests")
 
 
 @pytest.fixture(scope="session")
@@ -46,7 +59,60 @@ def authenticated_session():
 
 
 @pytest.fixture(scope="session")
-def completed_lesson_generation(authenticated_session):
+def mongo_db():
+    """Use the configured database only to seed deterministic TEST_ job states."""
+    client = MongoClient(MONGO_URL, serverSelectionTimeoutMS=10000)
+    client.admin.command("ping")
+    yield client[DB_NAME]
+    client.close()
+
+
+@pytest.fixture
+def deterministic_jobs(mongo_db):
+    """Create processing and failed jobs that exercise polling without mocking the API."""
+    suffix = uuid.uuid4().hex[:12]
+    processing_id = f"job_TEST_processing_{suffix}"
+    failed_id = f"job_TEST_failed_{suffix}"
+    aged_failed_id = f"job_TEST_aged_failed_{suffix}"
+    now = datetime.now(timezone.utc).isoformat()
+    ninety_seconds_ago = (datetime.now(timezone.utc) - timedelta(seconds=90)).isoformat()
+    mongo_db.generation_jobs.insert_many([
+        {
+            "job_id": processing_id,
+            "status": "processing",
+            "user_id": "TEST_polling_state",
+            "created_at": now,
+            "updated_at": now,
+        },
+        {
+            "job_id": failed_id,
+            "status": "failed",
+            "user_id": "TEST_polling_state",
+            "error": "TEST_forced generation failure",
+            "created_at": now,
+            "updated_at": now,
+        },
+        {
+            "job_id": aged_failed_id,
+            "status": "failed",
+            "user_id": "TEST_polling_state",
+            "error": "TEST_aged generation failure",
+            "created_at": now,
+            "updated_at": now,
+            "retrieved_at": ninety_seconds_ago,
+        },
+    ])
+    job_ids = [processing_id, failed_id, aged_failed_id]
+    yield {
+        "processing": processing_id,
+        "failed": failed_id,
+        "aged_failed": aged_failed_id,
+    }
+    mongo_db.generation_jobs.delete_many({"job_id": {"$in": job_ids}})
+
+
+@pytest.fixture(scope="session")
+def completed_lesson_generation(authenticated_session, mongo_db):
     """Start one async lesson job and poll until it produces persisted content."""
     payload = {
         "tool_type": "lesson_plan",
@@ -87,13 +153,14 @@ def completed_lesson_generation(authenticated_session):
     if final_response is None:
         pytest.fail(f"AI job {job_id} did not complete within 180 seconds")
 
-    yield {"start": start_data, "final": final_response}
+    yield {"start": start_data, "final": final_response, "job_id": job_id}
 
     generation_id = final_response.get("generation_id")
     if generation_id:
         authenticated_session.delete(
             f"{BASE_URL}/api/ai/generations/{generation_id}", timeout=30
         )
+    mongo_db.generation_jobs.delete_one({"job_id": job_id})
 
 
 # Authentication and cookie behavior
@@ -131,6 +198,87 @@ def test_ai_lesson_generation_completes_with_content(completed_lesson_generation
     assert isinstance(data.get("metadata"), dict)
     assert data["metadata"]["difficulty"] == "easy"
     assert data["metadata"]["duration"] == 20
+
+
+
+# Polling state, completed-result idempotency, and failure response contract
+def test_ai_job_returns_processing_while_running(authenticated_session, deterministic_jobs):
+    response = authenticated_session.get(
+        f"{BASE_URL}/api/ai/generate-async/{deterministic_jobs['processing']}", timeout=30
+    )
+    assert response.status_code == 200, response.text
+    assert response.json() == {"status": "processing"}
+
+
+def test_completed_ai_job_can_be_polled_second_and_third_time(
+    authenticated_session, completed_lesson_generation
+):
+    expected = completed_lesson_generation["final"]
+    job_id = completed_lesson_generation["job_id"]
+
+    for poll_number in (2, 3):
+        response = authenticated_session.get(
+            f"{BASE_URL}/api/ai/generate-async/{job_id}", timeout=30
+        )
+        assert response.status_code == 200, (
+            f"Completed job returned {response.status_code} on poll {poll_number}: {response.text}"
+        )
+        data = response.json()
+        assert data["status"] == "completed"
+        assert data["generation_id"] == expected["generation_id"]
+        assert data["content"] == expected["content"]
+        assert data["tool_type"] == expected["tool_type"]
+        assert data["metadata"] == expected["metadata"]
+
+
+def test_failed_ai_job_returns_body_and_is_idempotent(authenticated_session, deterministic_jobs):
+    job_id = deterministic_jobs["failed"]
+    for poll_number in (1, 2, 3):
+        response = authenticated_session.get(
+            f"{BASE_URL}/api/ai/generate-async/{job_id}", timeout=30
+        )
+        assert response.status_code == 200, (
+            f"Failed job returned HTTP {response.status_code} on poll {poll_number}: {response.text}"
+        )
+        assert response.json() == {
+            "status": "failed",
+            "error": "TEST_forced generation failure",
+        }
+
+
+
+
+def test_failed_job_is_retained_for_full_two_minute_retry_window(
+    authenticated_session, deterministic_jobs
+):
+    """A failed job first retrieved 90s ago must still survive retry before the 2m TTL."""
+    job_id = deterministic_jobs["aged_failed"]
+    first_retry = authenticated_session.get(
+        f"{BASE_URL}/api/ai/generate-async/{job_id}", timeout=30
+    )
+    second_retry = authenticated_session.get(
+        f"{BASE_URL}/api/ai/generate-async/{job_id}", timeout=30
+    )
+    assert first_retry.status_code == 200, first_retry.text
+    assert first_retry.json() == {
+        "status": "failed",
+        "error": "TEST_aged generation failure",
+    }
+    assert second_retry.status_code == 200, (
+        "Failed job was deleted after 60 seconds instead of the required 120-second retry window: "
+        f"{second_retry.text}"
+    )
+    assert second_retry.json() == first_retry.json()
+
+def test_removed_ai_grading_debug_endpoints_return_404():
+    token_list = requests.get(f"{BASE_URL}/api/ai-grading/debug/tokens", timeout=30)
+    assignment = requests.get(
+        f"{BASE_URL}/api/ai-grading/debug/assignment/TEST_nonexistent_token", timeout=30
+    )
+    assert token_list.status_code == 404, token_list.text
+    assert assignment.status_code == 404, assignment.text
+    assert token_list.json().get("detail") == "Not Found"
+    assert assignment.json().get("detail") == "Not Found"
 
 
 def test_ai_job_poll_requires_auth(completed_lesson_generation):

@@ -1,0 +1,56 @@
+{
+  "summary": "Backend-only regression of async AI polling completed against the public URL. POST creation, processing state, completed content, second/third completed polls, immediate repeated failed polls, auth enforcement, and both removed debug routes passed. 8/9 focused tests passed. Failed jobs do not meet the stated two-minute retry window: a job first retrieved 90 seconds earlier is deleted and the next poll returns 404.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "/api/ai/generate-async/{job_id}",
+        "issue": "Failed jobs use a 1-minute retention threshold instead of the required 2 minutes. Reproduction: seed failed job with retrieved_at 90 seconds ago; first poll returns the failure but deletes the record, and the immediate retry returns 404.",
+        "priority": "HIGH"
+      },
+      {
+        "endpoint": "/api/ai/generate-async/{job_id}",
+        "issue": "Polling is not scoped to current_user.user_id. During deterministic state tests, test@school.edu could retrieve jobs stored with a different user_id, confirming cross-user job access remains possible when a job_id is known.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": [
+      {
+        "endpoint": "/api/ai/generate-async/{job_id}",
+        "issue": "Retention cleanup only runs on a later poll. A client normally stops polling after completed/failed, so retrieved jobs can remain indefinitely without a TTL index or scheduled cleanup."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results_iteration_92.xml"
+  ],
+  "action_items": [
+    "Change failed-job retention from timedelta(minutes=1) to the stated two-minute window and rerun the focused polling suite.",
+    "Filter polling and job updates/deletes by both job_id and current_user.user_id; return 404 or 403 for another user's job.",
+    "Add database TTL-based or scheduled cleanup so retrieved jobs expire even when no later poll occurs."
+  ],
+  "critical_code_review_comments": [
+    "routes/ai.py lines 210-221 explicitly retain failed jobs for only one minute, contradicting the two-minute completed/failed retry-window requirement.",
+    "routes/ai.py lines 185, 195, 204, 213 and 221 query/update/delete only by job_id and never enforce job ownership.",
+    "The current delete-on-next-poll design is not actual timed expiry; successfully retrieved jobs are never removed if the client stops polling after receiving the terminal response."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results_iteration_92.xml",
+    "/app/test_reports/iteration_92.json"
+  ],
+  "success_rate": {
+    "backend": "89% (8/9 focused tests passed)",
+    "frontend": "N/A - backend-only request"
+  },
+  "seed_data_creation": "Created TEST_ processing, failed, and aged-failed generation_jobs records directly in the configured MongoDB for deterministic status testing; fixture teardown removed them. The end-to-end AI generation and generation job were also cleaned up.",
+  "should_call_test_agent_after_fix": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Public URL health returned 200. Real AI lesson generation completed in about 20 seconds and the same completed job returned byte-identical content on its second and third terminal polls. A freshly failed job returned HTTP 200 with {status: failed, error: ...} three times. Both /api/ai-grading/debug/tokens and /api/ai-grading/debug/assignment/{token} returned 404. Re-run the nine selected tests in backend_test.py after changing failed retention and ownership enforcement.",
+  "rca_of_the_issue": "The failed branch in routes/ai.py compares retrieved_at against timedelta(minutes=1), while the required proxy-retry window is two minutes. At 90 seconds, the first retry executes delete_one but still returns the cached local job body; the following retry performs find_one, finds no record, and returns 404. Separately, every job lookup/mutation filters only on job_id, causing the ownership defect."
+}

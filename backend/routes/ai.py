@@ -188,13 +188,40 @@ async def get_generation_status(job_id: str, current_user: dict = Depends(get_cu
     
     if job["status"] == "completed":
         result = job.get("result", {})
-        # Clean up after retrieval
-        await db.generation_jobs.delete_one({"job_id": job_id})
+        # Mark as retrieved but keep for 2 minutes (in case response is dropped by proxy)
+        # This makes polling idempotent - client can retry if response was lost
+        retrieved_at = job.get("retrieved_at")
+        if not retrieved_at:
+            await db.generation_jobs.update_one(
+                {"job_id": job_id},
+                {"$set": {"retrieved_at": datetime.now(timezone.utc).isoformat()}}
+            )
+        elif retrieved_at:
+            # Delete if retrieved more than 2 minutes ago
+            try:
+                retrieved_time = datetime.fromisoformat(retrieved_at.replace('Z', '+00:00'))
+                if datetime.now(timezone.utc) - retrieved_time > timedelta(minutes=2):
+                    await db.generation_jobs.delete_one({"job_id": job_id})
+            except ValueError:
+                pass
         return {"status": "completed", **result}
     elif job["status"] == "failed":
         error = job.get("error", "Unknown error")
-        await db.generation_jobs.delete_one({"job_id": job_id})
-        raise HTTPException(status_code=500, detail=error)
+        # Keep failed jobs for 1 minute so client can see the error if response was dropped
+        retrieved_at = job.get("retrieved_at")
+        if not retrieved_at:
+            await db.generation_jobs.update_one(
+                {"job_id": job_id},
+                {"$set": {"retrieved_at": datetime.now(timezone.utc).isoformat()}}
+            )
+        elif retrieved_at:
+            try:
+                retrieved_time = datetime.fromisoformat(retrieved_at.replace('Z', '+00:00'))
+                if datetime.now(timezone.utc) - retrieved_time > timedelta(minutes=1):
+                    await db.generation_jobs.delete_one({"job_id": job_id})
+            except ValueError:
+                pass
+        return {"status": "failed", "error": error}
     
     # Check for stale jobs (processing > 5 minutes)
     created_at = job.get("created_at", "")
@@ -202,8 +229,11 @@ async def get_generation_status(job_id: str, current_user: dict = Depends(get_cu
         try:
             created_time = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
             if datetime.now(timezone.utc) - created_time > timedelta(minutes=5):
-                await db.generation_jobs.delete_one({"job_id": job_id})
-                raise HTTPException(status_code=500, detail="AI generation timed out. Please try again.")
+                await db.generation_jobs.update_one(
+                    {"job_id": job_id},
+                    {"$set": {"status": "failed", "error": "AI generation timed out. Please try again."}}
+                )
+                return {"status": "failed", "error": "AI generation timed out. Please try again."}
         except ValueError:
             pass
     

@@ -249,21 +249,21 @@ const AIAssistant = () => {
             setIsLoading(false);
             return;
           }
+          // Handle failed status returned in response body (not as HTTP error)
+          if (pollRes.data.status === 'failed') {
+            const errorMsg = pollRes.data.error || (language === 'es' ? 'La generación falló.' : 'Generation failed.');
+            toast.error(errorMsg);
+            setIsLoading(false);
+            return;
+          }
         } catch (pollErr) {
           // Handle server errors - check if it's a real failure vs transient
           const pollStatus = pollErr.response?.status;
           const errorDetail = pollErr.response?.data?.detail || '';
           
-          // If we get a 500 with an actual error message, that's a real failure - stop polling
-          if (pollStatus === 500 && errorDetail && !errorDetail.includes('timeout')) {
-            toast.error(errorDetail);
-            setIsLoading(false);
-            return;
-          }
-          
           // For 404, only retry a few times then fail (job may have been cleaned up)
           if (pollStatus === 404) {
-            if (i > 10) {
+            if (i > 15) {
               toast.error(language === 'es' ? 'La generación falló. Por favor intenta de nuevo.' : 'Generation failed. Please try again.');
               setIsLoading(false);
               return;
@@ -273,6 +273,13 @@ const AIAssistant = () => {
           
           // Transient errors (502, 503, 504, network) - keep polling
           if (pollStatus >= 502 || pollErr.code === 'ECONNABORTED') continue;
+          
+          // Real 500 error with message - show it and stop
+          if (pollStatus === 500 && errorDetail) {
+            toast.error(errorDetail);
+            setIsLoading(false);
+            return;
+          }
           
           throw pollErr;
         }

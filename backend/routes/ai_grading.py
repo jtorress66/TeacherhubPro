@@ -1166,41 +1166,4 @@ async def get_pdf_parse_status(job_id: str, user: dict = Depends(get_current_use
     
     return {"status": "processing"}
 
-
-# ==================== Debug Endpoint ====================
-
-@router.get("/debug/tokens")
-async def debug_list_tokens():
-    """Debug endpoint to list all assignment tokens"""
-    if db is None:
-        raise HTTPException(status_code=500, detail="Database not initialized")
-    
-    assignments = await db.ai_assignments.find({}, {"_id": 0, "public_token": 1, "title": 1, "created_at": 1}).to_list(50)
-    return {
-        "count": len(assignments),
-        "assignments": assignments
-    }
-
-@router.get("/debug/assignment/{token}")
-async def debug_get_assignment(token: str):
-    """Debug endpoint to get raw assignment data by token"""
-    if db is None:
-        raise HTTPException(status_code=500, detail="Database not initialized")
-    
-    assignment = await db.ai_assignments.find_one({"public_token": token}, {"_id": 0})
-    if not assignment:
-        return {"found": False, "token": token, "message": "Assignment not found"}
-    
-    return {
-        "found": True,
-        "token": token,
-        "assignment_id": assignment.get("assignment_id"),
-        "title": assignment.get("title"),
-        "class_id": assignment.get("class_id"),
-        "has_questions": len(assignment.get("questions", [])) > 0,
-        "question_count": len(assignment.get("questions", [])),
-        "has_description": bool(assignment.get("description")),
-        "has_instructions": bool(assignment.get("instructions")),
-        "fields": list(assignment.keys())
-    }
-
+# Debug endpoints removed for security - they exposed all tenants' assignment tokens without authentication
