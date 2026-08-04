@@ -4489,7 +4489,7 @@ Make the content engaging, age-appropriate, and educational. Start from the stud
                 api_key=EMERGENT_LLM_KEY,
                 session_id=f"adaptive_{request.student_id}_{uuid.uuid4().hex[:8]}",
                 system_message=system_prompt
-            ).with_model("anthropic", "claude-sonnet-4-20250514")
+            ).with_model("anthropic", "claude-sonnet-4-6")
             
             user_message = UserMessage(text=user_prompt)
             

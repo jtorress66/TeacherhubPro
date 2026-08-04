@@ -115,7 +115,7 @@ def get_llm_chat(session_id: str, system_message: str) -> LlmChat:
         api_key=api_key,
         session_id=session_id,
         system_message=system_message
-    ).with_model("anthropic", "claude-sonnet-4-20250514")
+    ).with_model("anthropic", "claude-sonnet-4-6")
     
     return chat
 

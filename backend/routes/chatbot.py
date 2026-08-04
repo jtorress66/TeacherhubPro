@@ -318,7 +318,7 @@ async def chat_message(msg: ChatMessage):
             session_id=f"ed_{uuid.uuid4().hex}",
             system_message=system,
             initial_messages=initial_messages
-        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        ).with_model("anthropic", "claude-sonnet-4-6")
 
         response = await asyncio.wait_for(
             chat.send_message(UserMessage(text=msg.message)),

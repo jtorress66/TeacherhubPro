@@ -1,0 +1,52 @@
+{
+  "summary": "Backend regression testing verified the Claude Sonnet 4.6 fix for login, async lesson generation/polling, the public chatbot, and AI assignment generation. 8/9 tests passed. AI lesson and assignment jobs completed with generated content, and a normal chatbot request returned a real response without model-error fallbacks. One chatbot intent bug remains: lesson-planning questions are incorrectly replaced by the pricing fallback.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "/api/chatbot/message",
+        "issue": "A lesson-planning question containing the word 'plan' is incorrectly classified as a pricing question and replaced with the full pricing fallback instead of answering the teaching question. Reproduced twice.",
+        "priority": "HIGH"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results_iteration_91.xml"
+  ],
+  "action_items": [
+    "Fix chatbot pricing-intent detection so 'plan' in 'lesson plan/plan lessons/planning' does not trigger the pricing fallback; use phrase or word-boundary intent logic.",
+    "Bind async generation jobs to the authenticated user when polling; /api/ai/generate-async/{job_id} currently queries only job_id, allowing another authenticated user who learns an ID to retrieve and delete the result.",
+    "Apply the same job-ownership check to AI grading and adaptive-learning polling jobs.",
+    "Remove plaintext password logging from routes/auth.py login.",
+    "Preserve HTTPException status codes in synchronous AI handlers instead of converting intended 503 responses into generic 500 responses."
+  ],
+  "critical_code_review_comments": [
+    "routes/chatbot.py _sanitize_response uses substring matching for 'plan'; this matches ordinary lesson-planning requests and forces _PRICING_FALLBACK whenever the AI answer lacks all configured prices.",
+    "routes/ai.py get_generation_status loads and deletes by job_id without checking job.user_id against current_user.user_id; this is an authorization/data-isolation defect.",
+    "routes/ai_grading.py generation jobs do not store user_id and status polling also queries only job_id, so ownership cannot be enforced.",
+    "routes/auth.py lines 90-94 print the submitted plaintext password. Secrets must never be written to application logs.",
+    "routes/ai.py synchronous /generate and /chat catch Exception around HTTPException, converting explicit service errors to HTTP 500 and obscuring root status/details.",
+    "server.py is over 5,500 lines and duplicates functionality also registered from modular route files; route ownership and maintenance risk are high."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/iteration_91.json",
+    "/app/test_reports/pytest/pytest_results_iteration_91.xml"
+  ],
+  "success_rate": {
+    "backend": "89% (8/9 passed)",
+    "frontend": "N/A - backend-only request"
+  },
+  "seed_data_creation": "Created two TEST_ chatbot sessions. Async AI generation content was deleted during teardown; completed AI assignment and generation job records were consumed by polling.",
+  "should_call_test_agent_after_fix": true,
+  "should_main_agent_self_test": false,
+  "test_credentials": "Missing /app/memory/test_credentials.md; used the credentials explicitly supplied in the review request.",
+  "context_for_next_testing_agent": "The invalid dated model identifier is absent from all six referenced runtime files, and each contains claude-sonnet-4-6. Current post-reload backend logs showed no new model errors. POST /api/ai/generate-async completed in the regression run with substantial lesson content; POST /api/ai-grading/generate-assignment also completed with two valid multiple-choice questions. A neutral chatbot prompt passed, while a lesson-planning prompt deterministically returned pricing content.",
+  "rca_of_the_issue": "In routes/chatbot.py, _sanitize_response computes is_pricing_question with any(w in user_lower for w in [..., 'plan', ...]). The prompt 'how can TeacherHubPro help a fifth-grade teacher plan lessons?' therefore matches 'plan'. Because the valid AI answer does not contain the configured price combinations, the next condition treats it as inaccurate pricing and replaces it with _PRICING_FALLBACK. Reproduction: POST /api/chatbot/message with that message returns plan prices rather than lesson-planning help."
+}

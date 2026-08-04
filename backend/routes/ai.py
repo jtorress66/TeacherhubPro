@@ -68,7 +68,7 @@ Please generate high-quality, ready-to-use educational content."""
             api_key=EMERGENT_LLM_KEY,
             session_id=f"gen_{job_id}",
             system_message=system_prompt
-        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        ).with_model("anthropic", "claude-sonnet-4-6")
         
         response = None
         for attempt in range(MAX_RETRIES + 1):
@@ -308,7 +308,7 @@ Please generate high-quality, ready-to-use educational content.
             api_key=EMERGENT_LLM_KEY,
             session_id=f"gen_{uuid.uuid4().hex[:8]}",
             system_message=system_prompt
-        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        ).with_model("anthropic", "claude-sonnet-4-6")
         
         # Send the message with retry logic and 90-second timeout
         user_message = UserMessage(text=user_prompt)
@@ -419,7 +419,7 @@ async def ai_chat(request: AIChatRequest, current_user: dict = Depends(get_curre
             api_key=EMERGENT_LLM_KEY,
             session_id=request.session_id,
             system_message=system_message
-        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        ).with_model("anthropic", "claude-sonnet-4-6")
         
         # Send message with retry logic and 90-second timeout
         user_message = UserMessage(text=request.message)
@@ -1295,7 +1295,7 @@ FORMAT each day as:
             api_key=EMERGENT_LLM_KEY,
             session_id=f"customize_{template_id}_{uuid.uuid4().hex[:8]}",
             system_message="You are an expert curriculum designer. Adapt lesson plan templates to new topics while preserving their successful structure."
-        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        ).with_model("anthropic", "claude-sonnet-4-6")
         
         user_message = UserMessage(text=prompt)
         response = None
@@ -1477,7 +1477,7 @@ Make sure each slide has educational value while being fun and engaging."""
             api_key=EMERGENT_LLM_KEY,
             session_id=f"pres_{uuid.uuid4().hex[:8]}",
             system_message=system_prompt
-        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        ).with_model("anthropic", "claude-sonnet-4-6")
         
         user_message = UserMessage(text=user_prompt)
         response = None

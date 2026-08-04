@@ -217,7 +217,7 @@ IMPORTANT: Each question MUST include a "correct_answer" field that matches exac
             api_key=EMERGENT_LLM_KEY,
             session_id=f"adaptive_{job_id}",
             system_message=system_prompt
-        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        ).with_model("anthropic", "claude-sonnet-4-6")
         
         response = None
         for attempt in range(MAX_RETRIES + 1):
