@@ -250,10 +250,30 @@ const AIAssistant = () => {
             return;
           }
         } catch (pollErr) {
-          // Ignore transient poll errors, keep polling
-          // Treat 404 as transient too (server may have restarted, job is in MongoDB)
+          // Handle server errors - check if it's a real failure vs transient
           const pollStatus = pollErr.response?.status;
-          if (pollStatus >= 500 || pollStatus === 404 || pollErr.code === 'ECONNABORTED') continue;
+          const errorDetail = pollErr.response?.data?.detail || '';
+          
+          // If we get a 500 with an actual error message, that's a real failure - stop polling
+          if (pollStatus === 500 && errorDetail && !errorDetail.includes('timeout')) {
+            toast.error(errorDetail);
+            setIsLoading(false);
+            return;
+          }
+          
+          // For 404, only retry a few times then fail (job may have been cleaned up)
+          if (pollStatus === 404) {
+            if (i > 10) {
+              toast.error(language === 'es' ? 'La generación falló. Por favor intenta de nuevo.' : 'Generation failed. Please try again.');
+              setIsLoading(false);
+              return;
+            }
+            continue;
+          }
+          
+          // Transient errors (502, 503, 504, network) - keep polling
+          if (pollStatus >= 502 || pollErr.code === 'ECONNABORTED') continue;
+          
           throw pollErr;
         }
       }

@@ -70,7 +70,10 @@ Please generate high-quality, ready-to-use educational content."""
             system_message=system_prompt
         ).with_model("anthropic", "claude-sonnet-4-6")
         
+        logger.info(f"Starting AI generation for job {job_id} with model claude-sonnet-4-6")
+        
         response = None
+        last_error = None
         for attempt in range(MAX_RETRIES + 1):
             try:
                 response = await asyncio.wait_for(
@@ -79,14 +82,17 @@ Please generate high-quality, ready-to-use educational content."""
                 )
                 break
             except (asyncio.TimeoutError, Exception) as e:
-                logger.warning(f"Async AI attempt {attempt + 1} failed: {e}")
+                last_error = str(e)
+                logger.warning(f"Async AI attempt {attempt + 1} failed for job {job_id}: {e}")
                 if attempt < MAX_RETRIES:
                     await asyncio.sleep(RETRY_DELAY)
         
         if not response:
+            error_msg = f"AI generation failed: {last_error}" if last_error else "AI generation failed after all retries. Please try again."
+            logger.error(f"Job {job_id} failed: {error_msg}")
             await db.generation_jobs.update_one(
                 {"job_id": job_id},
-                {"$set": {"status": "failed", "error": "AI generation failed after all retries. Please try again.", "updated_at": datetime.now(timezone.utc).isoformat()}}
+                {"$set": {"status": "failed", "error": error_msg, "updated_at": datetime.now(timezone.utc).isoformat()}}
             )
             return
         
