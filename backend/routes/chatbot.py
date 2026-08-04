@@ -244,7 +244,9 @@ def _sanitize_response(response: str, user_message: str) -> str:
     
     # Layer 2: If user asked about pricing but response doesn't have real prices, replace
     user_lower = user_message.lower()
-    is_pricing_question = any(w in user_lower for w in ["price", "pricing", "cost", "how much", "plan", "plans", "subscribe", "subscription"])
+    # Use specific pricing phrases to avoid false positives with "lesson plan", "plan lessons", etc.
+    pricing_phrases = ["price", "pricing", "cost", "how much", "subscribe", "subscription", "payment plan", "monthly plan", "annual plan", "school plan", "district plan", "individual plan", "what are your plans", "pricing plan"]
+    is_pricing_question = any(phrase in user_lower for phrase in pricing_phrases)
     if is_pricing_question:
         has_real_prices = ("9.99" in response and "$79" in response) or ("$6" in response and "$4" in response)
         has_fake_plans = any(p in lower for p in ["basic plan", "professional plan", "premium plan", "starter plan", "pro plan"])

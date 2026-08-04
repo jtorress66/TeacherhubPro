@@ -10,11 +10,24 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 - Frontend: React (CRA) + Shadcn/UI + Tailwind
 - Backend: FastAPI + MongoDB
 - Auth: Cookie-based (Emergent Google Auth + local)
-- LLM: Anthropic Claude Sonnet 4.6 via Emergent LLM Key
+- LLM: Anthropic Claude Sonnet 4-6 via Emergent LLM Key (model string: `claude-sonnet-4-6`)
 - Payments: Stripe
 - Email: Resend (test mode)
 - TTS: OpenAI
 - PDF: jsPDF (client-side), pdfplumber (server-side extraction)
+
+## Update 2026-08-04 - P0 FIX: AI Assistant Model Name Error
+- Root cause: All AI files were using invalid model name `claude-sonnet-4-20250514` which doesn't exist in Anthropic API
+- Fix: Updated to correct model name `claude-sonnet-4-6` across ALL backend files:
+  - `/app/backend/routes/ai.py` (5 occurrences)
+  - `/app/backend/routes/chatbot.py` (1 occurrence)
+  - `/app/backend/routes/ai_grading.py` (1 occurrence)
+  - `/app/backend/routes/adaptive_learning.py` (1 occurrence)
+  - `/app/backend/routes/games.py` (1 occurrence)
+  - `/app/backend/server.py` (1 occurrence)
+- Also fixed chatbot pricing detection: "plan" keyword was triggering pricing fallback for "lesson plan" queries
+- Tested: AI generation works (lesson content generated successfully), chatbot responds correctly to both lesson planning and pricing questions
+- 8/9 backend tests passed
 
 ## Key Files
 - `/app/frontend/src/pages/Gradebook.js` - Assignment builder, PDF-to-test conversion, grading UI
