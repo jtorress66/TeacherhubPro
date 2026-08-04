@@ -182,8 +182,15 @@ async def generate_content_async(request: AIGenerationRequest, current_user: dic
 @router.get("/generate-async/{job_id}")
 async def get_generation_status(job_id: str, current_user: dict = Depends(get_current_user)):
     """Poll for async generation result - reads from MongoDB shared across all workers"""
-    job = await db.generation_jobs.find_one({"job_id": job_id}, {"_id": 0})
+    user_id = current_user.get("user_id")
+    
+    # Query by both job_id and user_id for security (prevent cross-user job access)
+    job = await db.generation_jobs.find_one({"job_id": job_id, "user_id": user_id}, {"_id": 0})
     if not job:
+        # Check if job exists but belongs to another user
+        other_job = await db.generation_jobs.find_one({"job_id": job_id}, {"_id": 0})
+        if other_job:
+            raise HTTPException(status_code=403, detail="Access denied")
         raise HTTPException(status_code=404, detail="Job not found")
     
     if job["status"] == "completed":
@@ -193,7 +200,7 @@ async def get_generation_status(job_id: str, current_user: dict = Depends(get_cu
         retrieved_at = job.get("retrieved_at")
         if not retrieved_at:
             await db.generation_jobs.update_one(
-                {"job_id": job_id},
+                {"job_id": job_id, "user_id": user_id},
                 {"$set": {"retrieved_at": datetime.now(timezone.utc).isoformat()}}
             )
         elif retrieved_at:
@@ -201,24 +208,24 @@ async def get_generation_status(job_id: str, current_user: dict = Depends(get_cu
             try:
                 retrieved_time = datetime.fromisoformat(retrieved_at.replace('Z', '+00:00'))
                 if datetime.now(timezone.utc) - retrieved_time > timedelta(minutes=2):
-                    await db.generation_jobs.delete_one({"job_id": job_id})
+                    await db.generation_jobs.delete_one({"job_id": job_id, "user_id": user_id})
             except ValueError:
                 pass
         return {"status": "completed", **result}
     elif job["status"] == "failed":
         error = job.get("error", "Unknown error")
-        # Keep failed jobs for 1 minute so client can see the error if response was dropped
+        # Keep failed jobs for 2 minutes so client can see the error if response was dropped
         retrieved_at = job.get("retrieved_at")
         if not retrieved_at:
             await db.generation_jobs.update_one(
-                {"job_id": job_id},
+                {"job_id": job_id, "user_id": user_id},
                 {"$set": {"retrieved_at": datetime.now(timezone.utc).isoformat()}}
             )
         elif retrieved_at:
             try:
                 retrieved_time = datetime.fromisoformat(retrieved_at.replace('Z', '+00:00'))
-                if datetime.now(timezone.utc) - retrieved_time > timedelta(minutes=1):
-                    await db.generation_jobs.delete_one({"job_id": job_id})
+                if datetime.now(timezone.utc) - retrieved_time > timedelta(minutes=2):
+                    await db.generation_jobs.delete_one({"job_id": job_id, "user_id": user_id})
             except ValueError:
                 pass
         return {"status": "failed", "error": error}
@@ -230,7 +237,7 @@ async def get_generation_status(job_id: str, current_user: dict = Depends(get_cu
             created_time = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
             if datetime.now(timezone.utc) - created_time > timedelta(minutes=5):
                 await db.generation_jobs.update_one(
-                    {"job_id": job_id},
+                    {"job_id": job_id, "user_id": user_id},
                     {"$set": {"status": "failed", "error": "AI generation timed out. Please try again."}}
                 )
                 return {"status": "failed", "error": "AI generation timed out. Please try again."}
