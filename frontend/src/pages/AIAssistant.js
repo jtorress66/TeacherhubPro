@@ -343,17 +343,71 @@ const AIAssistant = () => {
     // Create a new window for printing
     const printWindow = window.open('', '_blank');
     
-    // Convert markdown to HTML for printing (simple conversion)
-    const htmlContent = content
-      .replace(/^### (.*$)/gim, '<h3 style="font-size: 16px; font-weight: 600; margin: 16px 0 8px 0; color: #1e293b;">$1</h3>')
-      .replace(/^## (.*$)/gim, '<h2 style="font-size: 18px; font-weight: 600; margin: 20px 0 10px 0; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">$1</h2>')
-      .replace(/^# (.*$)/gim, '<h1 style="font-size: 22px; font-weight: 700; margin: 24px 0 12px 0; color: #0f172a;">$1</h1>')
+    // Helper function to convert markdown table to HTML table
+    const convertMarkdownTable = (tableText) => {
+      const lines = tableText.trim().split('\n');
+      if (lines.length < 2) return tableText;
+      
+      let html = '<table style="width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 10pt;">';
+      
+      lines.forEach((line, index) => {
+        // Skip separator row (|---|---|)
+        if (line.match(/^\|[\s-:|]+\|$/)) return;
+        
+        const cells = line.split('|').filter(cell => cell.trim() !== '');
+        if (cells.length === 0) return;
+        
+        const isHeader = index === 0;
+        const tag = isHeader ? 'th' : 'td';
+        const style = isHeader 
+          ? 'background: #f1f5f9; font-weight: 600; padding: 10px; border: 1px solid #e2e8f0; text-align: left;'
+          : 'padding: 8px 10px; border: 1px solid #e2e8f0; vertical-align: top;';
+        
+        html += '<tr>';
+        cells.forEach(cell => {
+          html += `<${tag} style="${style}">${cell.trim()}</${tag}>`;
+        });
+        html += '</tr>';
+      });
+      
+      html += '</table>';
+      return html;
+    };
+    
+    // Process content - fix escaped underscores and convert tables
+    let processedContent = content
+      // Fix escaped underscores (\_) -> clean underscores for fill-in lines
+      .replace(/\\_/g, '_')
+      // Convert sequences of underscores to proper fill-in blanks
+      .replace(/_{5,}/g, (match) => `<span style="display: inline-block; min-width: ${Math.min(match.length * 8, 200)}px; border-bottom: 1px solid #1e293b;"></span>`);
+    
+    // Convert markdown tables to HTML tables
+    const tableRegex = /(\|[^\n]+\|\n)+/g;
+    processedContent = processedContent.replace(tableRegex, (match) => {
+      // Check if it looks like a table (has at least header and separator)
+      if (match.includes('|---') || match.includes('| ---')) {
+        return convertMarkdownTable(match);
+      }
+      return match;
+    });
+    
+    // Remove code block markers
+    processedContent = processedContent
+      .replace(/```[a-z]*\n?/gi, '')
+      .replace(/```/g, '');
+    
+    // Convert remaining markdown to HTML
+    const htmlContent = processedContent
+      .replace(/^### (.*$)/gim, '<h3 style="font-size: 14px; font-weight: 600; margin: 16px 0 8px 0; color: #1e293b;">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 style="font-size: 16px; font-weight: 600; margin: 20px 0 10px 0; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 style="font-size: 20px; font-weight: 700; margin: 24px 0 12px 0; color: #0f172a;">$1</h1>')
       .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/gim, '<em>$1</em>')
       .replace(/^- (.*$)/gim, '<li style="margin: 4px 0; margin-left: 20px;">$1</li>')
       .replace(/^\d+\. (.*$)/gim, '<li style="margin: 4px 0; margin-left: 20px; list-style-type: decimal;">$1</li>')
+      .replace(/^> (.*$)/gim, '<blockquote style="border-left: 3px solid #10b981; padding-left: 12px; margin: 12px 0; color: #475569; font-style: italic;">$1</blockquote>')
       .replace(/^---$/gim, '<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 16px 0;">')
-      .replace(/\n\n/g, '</p><p style="margin: 12px 0;">')
+      .replace(/\n\n/g, '</p><p style="margin: 10px 0;">')
       .replace(/\n/g, '<br>');
 
     printWindow.document.write(`
@@ -432,6 +486,11 @@ const AIAssistant = () => {
           .content p { margin: 10px 0; }
           .content hr { border: none; border-top: 1px solid #e2e8f0; margin: 16px 0; }
           .content strong { font-weight: 600; }
+          .content table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 10pt; }
+          .content th { background: #f1f5f9; font-weight: 600; padding: 10px; border: 1px solid #e2e8f0; text-align: left; }
+          .content td { padding: 8px 10px; border: 1px solid #e2e8f0; vertical-align: top; }
+          .content blockquote { border-left: 3px solid #10b981; padding-left: 12px; margin: 12px 0; color: #475569; font-style: italic; }
+          .fill-blank { display: inline-block; min-width: 100px; border-bottom: 1px solid #1e293b; }
           .footer {
             margin-top: 30px;
             padding-top: 16px;

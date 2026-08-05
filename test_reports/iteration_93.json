@@ -1,0 +1,58 @@
+{
+  "summary": "Frontend AI Assistant print regression completed. The print fix passed on both a deterministic saved worksheet and the actual generated ELA worksheet: tables rendered as HTML, escaped blanks became clean underlines, code fences were removed, a new print window opened, and its Print / Save PDF control invoked window.print(). The end-to-end generation flow failed its user-visible time budget: the UI was still generating after 130 seconds while the backend job completed about 377 seconds after creation.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "/api/ai/generate-async/{job_id}",
+        "issue": "Worksheet generation blocked backend responsiveness long enough for every 15-second UI poll to abort. The job created at 00:05:25 completed at 00:11:42 (~377 seconds), beyond the frontend's ~125-second polling window, so the user flow did not produce content.",
+        "priority": "HIGH"
+      },
+      {
+        "endpoint": "/api/subscription/status",
+        "issue": "Returns HTTP 500 repeatedly for test@school.edu during login and AI Assistant navigation. Backend traceback shows KeyError: 'subscription_id' at server.py:2865.",
+        "priority": "HIGH"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Generate ELA worksheet",
+        "issue": "Clicking Generate Content remained in 'Generating...' beyond 130 seconds and did not expose the generated content or Print button within the UI polling window. The backend eventually completed the job after ~377 seconds.",
+        "affected_selectors": [
+          "[data-testid='ai-generate-btn']",
+          "[title='Print / PDF']"
+        ]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Make async AI generation non-blocking and complete or fail within the frontend polling budget; offload any synchronous SDK operation from the event loop and enforce an effective wall-clock timeout.",
+    "Fix /api/subscription/status to handle subscription records without subscription_id instead of raising KeyError.",
+    "Escape or sanitize AI content and metadata before inserting them into printWindow.document.write.",
+    "Use process.env.REACT_APP_BACKEND_URL rather than window.location.origin for frontend API configuration."
+  ],
+  "critical_code_review_comments": [
+    "AIAssistant.js inserts AI-controlled content, topic, subject, and grade directly into document.write without HTML escaping; raw HTML/script-like model output can execute in the same-origin print window.",
+    "AIAssistant.js defines API_URL as window.location.origin, violating the required REACT_APP_BACKEND_URL deployment configuration.",
+    "AIAssistant.js is 1,118 lines, above the 700-line maintainability limit; extract print formatting and the generate/chat/saved panels into focused modules.",
+    "The AI polling UI can wait only about 125 seconds, but the observed backend job took about 377 seconds; the timeout contracts are inconsistent and leave users without the completed result.",
+    "Several interactive controls relevant to this flow, including tool-selection and print buttons, lack data-testid attributes."
+  ],
+  "updated_files": [
+    "/app/test_reports/iteration_93.json"
+  ],
+  "success_rate": {
+    "backend": "N/A - frontend-only request; integration failures observed",
+    "frontend": "80% (4/5 requested behaviors passed)"
+  },
+  "seed_data_creation": "Inserted TEST_print_format_iteration_93 as a saved deterministic worksheet and temporarily marked generated worksheet gen_05cf08750d5b saved for real-output print verification. Both generations and job_d4302ceba53a were deleted after testing.",
+  "should_call_test_agent_after_fix": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Print formatting is verified on actual AI output: 6 HTML tables, 47 underline spans, no raw |--- separators, no backslash-underscore text, and no triple-backtick markers. The print-window button also invoked window.print(). Re-test generation latency and backend responsiveness after the async fix; use the supplied teacher credentials from /app/memory/test_credentials.md.",
+  "rca_of_the_issue": "The POST returned job_d4302ceba53a, but all subsequent browser polls aborted at their 15-second timeout while even /api/health became unresponsive. The job nevertheless completed after ~377 seconds, confirming that the background LLM operation monopolized backend responsiveness and outlived the frontend's ~125-second polling loop. Separately, /api/subscription/status dereferences subscription['subscription_id'] even though the test account's subscription document lacks that field."
+}
