@@ -2860,9 +2860,10 @@ async def get_subscription_status(user: dict = Depends(get_current_user)):
         if subscription.get("status") == "trialing" and subscription.get("trial_end"):
             trial_end = datetime.fromisoformat(subscription["trial_end"].replace('Z', '+00:00'))
             if datetime.now(timezone.utc) > trial_end:
-                # Update subscription status
+                # Update subscription status - handle both subscription_id and user_id as identifiers
+                update_filter = {"subscription_id": subscription["subscription_id"]} if subscription.get("subscription_id") else {"user_id": subscription.get("user_id")}
                 await db.subscriptions.update_one(
-                    {"subscription_id": subscription["subscription_id"]},
+                    update_filter,
                     {"$set": {"status": "expired"}}
                 )
                 return {

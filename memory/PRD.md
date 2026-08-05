@@ -16,6 +16,25 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 - TTS: OpenAI
 - PDF: jsPDF (client-side), pdfplumber (server-side extraction)
 
+## Update 2026-08-04 - FIX: Print Formatting (Escaped Underscores & Tables)
+- Issue: When printing AI-generated content, backslash characters appeared (e.g., `\_\_\_\_` instead of clean underlines)
+- Issue: Markdown tables showed as raw syntax `|---|---|` instead of rendered HTML tables
+- Fix: Updated `handlePrint` function in `/app/frontend/src/pages/AIAssistant.js`:
+  - Added markdown table to HTML table conversion
+  - Fixed escaped underscores (`\_`) to clean underscores
+  - Replaced underscore sequences with proper fill-in-the-blank spans
+  - Removed code block markers (```)
+  - Added CSS for tables, blockquotes, and fill-blank styling
+- Testing: 4/5 print tests passed (tables rendered, blanks clean, no backslashes, print window works)
+
+## Update 2026-08-04 - FIX: Idempotent Job Polling (Production 404 Fix)
+- Root cause: Jobs were deleted immediately after first successful poll - if proxy dropped response, subsequent polls got 404
+- Fix: Jobs now kept for 2 minutes after retrieval (idempotent polling)
+- Fix: Failed status returned in response body (not HTTP 500)
+- Fix: Added user ownership check (prevent cross-user job access)
+- Fix: Removed insecure debug endpoints in ai_grading.py
+- Testing: 8/9 backend tests passed
+
 ## Update 2026-08-04 - P0 FIX: AI Assistant Model Name Error
 - Root cause: All AI files were using invalid model name `claude-sonnet-4-20250514` which doesn't exist in Anthropic API
 - Fix: Updated to correct model name `claude-sonnet-4-6` across ALL backend files:
