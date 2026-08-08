@@ -16,6 +16,14 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 - TTS: OpenAI
 - PDF: jsPDF (client-side), pdfplumber (server-side extraction)
 
+## Update 2026-08-04 - FEATURE: Edit Class Names
+- Added edit button (pencil icon) to each class card in the Classes page
+- Clicking edit opens a dialog with pre-filled class details (name, grade, section, subject, year)
+- Teachers can update any field and save changes
+- Added whitespace validation to prevent blank class names
+- Added accessibility labels to edit buttons
+- Backend PUT /api/classes/{class_id} endpoint already existed
+
 ## Update 2026-08-04 - FIX: Print Formatting (Escaped Underscores & Tables)
 - Issue: When printing AI-generated content, backslash characters appeared (e.g., `\_\_\_\_` instead of clean underlines)
 - Issue: Markdown tables showed as raw syntax `|---|---|` instead of rendered HTML tables

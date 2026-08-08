@@ -123,18 +123,18 @@ const Classes = () => {
   };
 
   const handleUpdateClass = async () => {
-    if (!editingClass || !editingClass.name || !editingClass.grade || !editingClass.section) {
+    if (!editingClass || !editingClass.name?.trim() || !editingClass.grade?.trim() || !editingClass.section?.trim()) {
       toast.error(language === 'es' ? 'Completa los campos requeridos' : 'Complete required fields');
       return;
     }
 
     try {
       const res = await axios.put(`${API}/classes/${editingClass.class_id}`, {
-        name: editingClass.name,
-        grade: editingClass.grade,
-        section: editingClass.section,
-        subject: editingClass.subject,
-        year_term: editingClass.year_term
+        name: editingClass.name.trim(),
+        grade: editingClass.grade.trim(),
+        section: editingClass.section.trim(),
+        subject: editingClass.subject?.trim() || '',
+        year_term: editingClass.year_term?.trim() || '2024-2025'
       }, { withCredentials: true });
       
       setClasses(prev => prev.map(c => c.class_id === editingClass.class_id ? res.data : c));
@@ -478,6 +478,8 @@ const Classes = () => {
                               e.stopPropagation();
                               setEditingClass({ ...cls });
                             }}
+                            aria-label={language === 'es' ? `Editar ${cls.name}` : `Edit ${cls.name}`}
+                            title={language === 'es' ? 'Editar clase' : 'Edit class'}
                             data-testid={`edit-class-btn-${cls.class_id}`}
                           >
                             <Edit className="h-4 w-4" />
