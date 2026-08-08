@@ -33,6 +33,7 @@ const Classes = () => {
   const [showNewClass, setShowNewClass] = useState(false);
   const [showNewStudent, setShowNewStudent] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
+  const [editingClass, setEditingClass] = useState(null);
   
   const [newClass, setNewClass] = useState({
     name: '',
@@ -116,6 +117,32 @@ const Classes = () => {
       setShowNewClass(false);
       setNewClass({ name: '', grade: '', section: '', subject: '', year_term: '2024-2025' });
       toast.success(language === 'es' ? 'Clase creada' : 'Class created');
+    } catch (error) {
+      toast.error(t('error'));
+    }
+  };
+
+  const handleUpdateClass = async () => {
+    if (!editingClass || !editingClass.name || !editingClass.grade || !editingClass.section) {
+      toast.error(language === 'es' ? 'Completa los campos requeridos' : 'Complete required fields');
+      return;
+    }
+
+    try {
+      const res = await axios.put(`${API}/classes/${editingClass.class_id}`, {
+        name: editingClass.name,
+        grade: editingClass.grade,
+        section: editingClass.section,
+        subject: editingClass.subject,
+        year_term: editingClass.year_term
+      }, { withCredentials: true });
+      
+      setClasses(prev => prev.map(c => c.class_id === editingClass.class_id ? res.data : c));
+      if (selectedClass?.class_id === editingClass.class_id) {
+        setSelectedClass(res.data);
+      }
+      setEditingClass(null);
+      toast.success(language === 'es' ? 'Clase actualizada' : 'Class updated');
     } catch (error) {
       toast.error(t('error'));
     }
@@ -337,6 +364,72 @@ const Classes = () => {
               </div>
             </DialogContent>
           </Dialog>
+
+          {/* Edit Class Dialog */}
+          <Dialog open={!!editingClass} onOpenChange={(open) => !open && setEditingClass(null)}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{language === 'es' ? 'Editar Clase' : 'Edit Class'}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <Label>{t('className')}</Label>
+                  <Input 
+                    value={editingClass?.name || ''}
+                    onChange={(e) => setEditingClass(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder={language === 'es' ? 'Ej: English' : 'Ex: English'}
+                    data-testid="edit-class-name-input"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>{t('grade')}</Label>
+                    <Input 
+                      value={editingClass?.grade || ''}
+                      onChange={(e) => setEditingClass(prev => ({ ...prev, grade: e.target.value }))}
+                      placeholder="4"
+                      data-testid="edit-class-grade-input"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t('section')}</Label>
+                    <Input 
+                      value={editingClass?.section || ''}
+                      onChange={(e) => setEditingClass(prev => ({ ...prev, section: e.target.value }))}
+                      placeholder="A"
+                      data-testid="edit-class-section-input"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('subject')}</Label>
+                  <Input 
+                    value={editingClass?.subject || ''}
+                    onChange={(e) => setEditingClass(prev => ({ ...prev, subject: e.target.value }))}
+                    placeholder={language === 'es' ? 'Inglés' : 'English'}
+                    data-testid="edit-class-subject-input"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('yearTerm')}</Label>
+                  <Input 
+                    value={editingClass?.year_term || ''}
+                    onChange={(e) => setEditingClass(prev => ({ ...prev, year_term: e.target.value }))}
+                    placeholder="2024-2025"
+                    data-testid="edit-class-year-input"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setEditingClass(null)} className="flex-1" data-testid="edit-class-cancel">
+                    {language === 'es' ? 'Cancelar' : 'Cancel'}
+                  </Button>
+                  <Button onClick={handleUpdateClass} className="flex-1" data-testid="update-class-submit">
+                    {language === 'es' ? 'Guardar Cambios' : 'Save Changes'}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -370,13 +463,27 @@ const Classes = () => {
                   >
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-slate-800">{cls.name}</p>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-slate-800 truncate">{cls.name}</p>
                           <p className="text-sm text-slate-500">
                             {cls.grade}-{cls.section} • {cls.year_term}
                           </p>
                         </div>
-                        <ChevronRight className="h-5 w-5 text-slate-400" />
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-slate-400 hover:text-emerald-600"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingClass({ ...cls });
+                            }}
+                            data-testid={`edit-class-btn-${cls.class_id}`}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <ChevronRight className="h-5 w-5 text-slate-400" />
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

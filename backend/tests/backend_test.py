@@ -411,3 +411,151 @@ def test_backend_runtime_uses_claude_sonnet_46_only():
         content = runtime_file.read_text(encoding="utf-8")
         assert invalid_model not in content, f"Invalid model remains in {runtime_file}"
         assert expected_model in content, f"Claude 4.6 model missing from {runtime_file}"
+
+
+
+# Class editing API: create, update persistence, validation, authorization, and cleanup
+@pytest.fixture
+def editable_test_class(authenticated_session):
+    suffix = uuid.uuid4().hex[:10]
+    payload = {
+        "name": f"TEST_Edit_Class_{suffix}",
+        "grade": "5",
+        "section": "QA",
+        "subject": "Science",
+        "year_term": "2026-2027",
+    }
+    create_response = authenticated_session.post(
+        f"{BASE_URL}/api/classes", json=payload, timeout=30
+    )
+    assert create_response.status_code == 200, create_response.text
+    created = create_response.json()
+    assert isinstance(created.get("class_id"), str) and created["class_id"].startswith("class_")
+    assert created["name"] == payload["name"]
+    assert created["grade"] == payload["grade"]
+    assert created["section"] == payload["section"]
+    assert created["subject"] == payload["subject"]
+    assert created["year_term"] == payload["year_term"]
+
+    yield created
+
+    delete_response = authenticated_session.delete(
+        f"{BASE_URL}/api/classes/{created['class_id']}", timeout=30
+    )
+    assert delete_response.status_code in (200, 404), delete_response.text
+    verify_deleted = authenticated_session.get(
+        f"{BASE_URL}/api/classes/{created['class_id']}", timeout=30
+    )
+    assert verify_deleted.status_code == 404, verify_deleted.text
+
+
+def test_class_update_persists_and_appears_in_list(authenticated_session, editable_test_class):
+    class_id = editable_test_class["class_id"]
+    updated_payload = {
+        "name": f"{editable_test_class['name']}_Updated",
+        "grade": "6",
+        "section": "QB",
+        "subject": "Mathematics",
+        "year_term": "2027-2028",
+    }
+    update_response = authenticated_session.put(
+        f"{BASE_URL}/api/classes/{class_id}", json=updated_payload, timeout=30
+    )
+    assert update_response.status_code == 200, update_response.text
+    updated = update_response.json()
+    assert updated["class_id"] == class_id
+    for field, expected in updated_payload.items():
+        assert updated[field] == expected
+    assert "_id" not in updated
+
+    get_response = authenticated_session.get(
+        f"{BASE_URL}/api/classes/{class_id}", timeout=30
+    )
+    assert get_response.status_code == 200, get_response.text
+    persisted = get_response.json()
+    for field, expected in updated_payload.items():
+        assert persisted[field] == expected
+
+    list_response = authenticated_session.get(f"{BASE_URL}/api/classes", timeout=30)
+    assert list_response.status_code == 200, list_response.text
+    listed = next((item for item in list_response.json() if item["class_id"] == class_id), None)
+    assert listed is not None
+    assert listed["name"] == updated_payload["name"]
+
+
+def test_class_update_rejects_missing_required_name(authenticated_session, editable_test_class):
+    class_id = editable_test_class["class_id"]
+    invalid_payload = {
+        "grade": editable_test_class["grade"],
+        "section": editable_test_class["section"],
+        "subject": editable_test_class["subject"],
+        "year_term": editable_test_class["year_term"],
+    }
+    response = authenticated_session.put(
+        f"{BASE_URL}/api/classes/{class_id}", json=invalid_payload, timeout=30
+    )
+    assert response.status_code == 422, response.text
+    details = response.json().get("detail")
+    assert isinstance(details, list)
+    assert any(error.get("loc", [])[-1:] == ["name"] for error in details)
+
+    verify = authenticated_session.get(f"{BASE_URL}/api/classes/{class_id}", timeout=30)
+    assert verify.status_code == 200, verify.text
+    assert verify.json()["name"] == editable_test_class["name"]
+
+
+def test_class_update_requires_authentication(editable_test_class):
+    payload = {
+        "name": "TEST_Unauthorized_Update",
+        "grade": editable_test_class["grade"],
+        "section": editable_test_class["section"],
+        "subject": editable_test_class["subject"],
+        "year_term": editable_test_class["year_term"],
+    }
+    response = requests.put(
+        f"{BASE_URL}/api/classes/{editable_test_class['class_id']}",
+        json=payload,
+        timeout=30,
+    )
+    assert response.status_code == 401, response.text
+    assert "authenticated" in response.json().get("detail", "").lower()
+
+
+def test_class_update_unknown_id_returns_404(authenticated_session):
+    response = authenticated_session.put(
+        f"{BASE_URL}/api/classes/class_TEST_missing",
+        json={
+            "name": "TEST_Missing",
+            "grade": "5",
+            "section": "QA",
+            "subject": "Science",
+            "year_term": "2026-2027",
+        },
+        timeout=30,
+    )
+    assert response.status_code == 404, response.text
+    assert response.json().get("detail") == "Class not found"
+
+
+
+def test_class_update_rejects_whitespace_only_name(authenticated_session, editable_test_class):
+    class_id = editable_test_class["class_id"]
+    response = authenticated_session.put(
+        f"{BASE_URL}/api/classes/{class_id}",
+        json={
+            "name": "   ",
+            "grade": editable_test_class["grade"],
+            "section": editable_test_class["section"],
+            "subject": editable_test_class["subject"],
+            "year_term": editable_test_class["year_term"],
+        },
+        timeout=30,
+    )
+    assert response.status_code == 422, (
+        "Whitespace-only class names should fail required-field validation; "
+        f"received {response.status_code}: {response.text}"
+    )
+
+    verify = authenticated_session.get(f"{BASE_URL}/api/classes/{class_id}", timeout=30)
+    assert verify.status_code == 200, verify.text
+    assert verify.json()["name"] == editable_test_class["name"]
