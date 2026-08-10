@@ -150,19 +150,13 @@ const Layout = ({ children }) => {
                     alt="TeacherHubPro" 
                     className="h-14 w-14 object-contain rounded-xl border-2 border-white/80 bg-white p-1.5 shadow-lg group-hover:shadow-xl transition-all duration-200"
                   />
-                ) : school?.logo_url ? (
-                  <img 
-                    src={school.logo_url} 
-                    alt={school.name} 
-                    className="h-14 w-14 object-contain rounded-xl border-2 border-white/80 bg-white p-1.5 shadow-lg group-hover:shadow-xl transition-all duration-200"
-                  />
                 ) : (
-                  <div 
-                    className="p-3 rounded-xl shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-200"
-                    style={{ background: `linear-gradient(135deg, ${branding.primary_color}, ${branding.secondary_color})` }}
-                  >
-                    <BookOpen className="h-7 w-7 text-white" />
-                  </div>
+                  <img 
+                    src={school?.logo_url || '/school-logo.png'} 
+                    alt={school?.name || 'School'} 
+                    className="h-14 w-14 object-contain rounded-xl border-2 border-white/80 bg-white p-1.5 shadow-lg group-hover:shadow-xl transition-all duration-200"
+                    data-testid="sidebar-school-logo"
+                  />
                 )}
                 <div className="flex flex-col">
                   <span 

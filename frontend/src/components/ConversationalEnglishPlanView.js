@@ -165,8 +165,10 @@ const ConversationalEnglishPlanView = ({ plan, classInfo, school, onClose }) => 
             <div className="lesson-plan-container">
               {/* School Header */}
               <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-                {school?.logo_url && (
+                {school?.logo_url ? (
                   <img src={school.logo_url} alt="Logo" style={{ height: '45px', objectFit: 'contain', marginBottom: '5px' }} />
+                ) : (
+                  <img src="/school-logo.png" alt="Logo" style={{ height: '45px', objectFit: 'contain', marginBottom: '5px' }} />
                 )}
                 <div style={{ fontWeight: 'bold', fontSize: '12pt' }}>{school?.name || 'Colegio Inmaculada de la Concepcion'}</div>
                 {school?.address && <div style={{ fontSize: '9pt' }}>{school.address}</div>}
