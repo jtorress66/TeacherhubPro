@@ -1436,10 +1436,12 @@ async def create_plan(plan_data: LessonPlanCreate, user: dict = Depends(get_curr
         "subject_integration": plan_data.subject_integration,
         "is_template": plan_data.is_template,
         "template_name": plan_data.template_name,
+        "folder_id": plan_data.folder_id,  # For organizing plans into folders
         # Conversational English specific fields
         "lesson_date": plan_data.lesson_date,
         "lesson_date_end": plan_data.lesson_date_end,
         "subject": plan_data.subject,
+        "title": plan_data.title,  # Title for Conversational English plans
         "lesson_topic": plan_data.lesson_topic,
         "learning_objectives": plan_data.learning_objectives,
         "materials_text": plan_data.materials_text,
@@ -1498,10 +1500,12 @@ async def update_plan(plan_id: str, plan_data: LessonPlanCreate, user: dict = De
         "subject_integration": plan_data.subject_integration,
         "is_template": plan_data.is_template,
         "template_name": plan_data.template_name,
+        "folder_id": plan_data.folder_id,  # For organizing plans into folders
         # Conversational English specific fields
         "lesson_date": plan_data.lesson_date,
         "lesson_date_end": plan_data.lesson_date_end,
         "subject": plan_data.subject,
+        "title": plan_data.title,  # Title for Conversational English plans
         "lesson_topic": plan_data.lesson_topic,
         "learning_objectives": plan_data.learning_objectives,
         "materials_text": plan_data.materials_text,

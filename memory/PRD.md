@@ -16,6 +16,18 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 - TTS: OpenAI
 - PDF: jsPDF (client-side), pdfplumber (server-side extraction)
 
+## Update 2026-08-04 - FEATURE: Lesson Plan Title & Folder Organization
+- **Conversational English Title:** Added title input field in the Conversational English lesson plan form
+  - Title is persisted in the database and displayed in the plan list
+  - Model changes: `title` field added to LessonPlanCreate and LessonPlanResponse
+- **Folder Organization:** Added folder system for organizing lesson plans
+  - New endpoints: GET/POST/PUT/DELETE /api/plan-folders, PUT /api/plans/{plan_id}/folder
+  - New model: PlanFolderCreate, PlanFolderResponse with name, color, plan_count
+  - PlannerList.js completely updated with folder sidebar, folder dialogs, and move-to-folder functionality
+  - Folders support: create, rename, change color, delete (moves plans to unfiled)
+  - Filtering: All Plans, Unfiled, or specific folder view
+- Testing: Title persistence verified via curl, folder CRUD verified
+
 ## Update 2026-08-04 - FEATURE: Edit Class Names
 - Added edit button (pencil icon) to each class card in the Classes page
 - Clicking edit opens a dialog with pre-filled class details (name, grade, section, subject, year)
