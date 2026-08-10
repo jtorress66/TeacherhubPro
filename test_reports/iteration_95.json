@@ -1,0 +1,87 @@
+{
+  "summary": "Tested Conversational English title and lesson-plan folder organization against the public URL. Folder create/list/update, move, filtering, count updates, deletion, and unfiled behavior work end to end. The title field renders and accepts input, but the backend drops title during create/update, so the saved plan reloads with an empty title. Focused backend tests passed 5/7; blank folder names are also accepted.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "/api/plans and /api/plans/{plan_id}",
+        "issue": "Conversational English title is accepted by LessonPlanCreate but omitted from create_plan and update_plan persistence dictionaries. POST returned title=null and GET returned title=null, so user-entered titles are lost.",
+        "priority": "HIGH"
+      }
+    ],
+    "minor": [
+      {
+        "endpoint": "/api/plan-folders",
+        "issue": "POST accepts a whitespace-only name, strips it to an empty string, persists it, and returns HTTP 200 instead of validation error."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Planner folder sidebar",
+        "issue": "Each folder is rendered as a button containing another button for its menu. React reports invalid nested <button> markup and a hydration warning; the icon-only menu also has no accessible name or data-testid.",
+        "selector": "[data-testid^='folder-folder_'] button",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "Folder and move dialogs",
+        "issue": "Opening both dialogs emits Radix warnings because DialogContent has no DialogDescription or explicit aria-describedby configuration; several color, cancel, move-target, edit, and delete controls also lack data-testid attributes.",
+        "selector": "[role='dialog']",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Create and save a Conversational English plan with a title",
+        "issue": "The title input appears and accepts text, POST succeeds and navigates to the saved plan, but the title field reloads empty because API responses persist title as null.",
+        "affected_selectors": [
+          "[data-testid='ce-title-input']",
+          "[data-testid='save-plan-btn']"
+        ]
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "Conversational English plan editor",
+        "issues": [
+          "The page heading remains 'Weekly Plan' after selecting Conversational English.",
+          "Lesson Date Range uses native browser date inputs rather than the application's calendar component."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results_iteration_95.xml"
+  ],
+  "action_items": [
+    "Persist title in both create_plan and update_plan, then verify POST/PUT/GET and UI reload preserve it; also persist folder_id on plan creation if that model field is intended to be supported.",
+    "Constrain PlanFolderCreate.name to trimmed non-empty text and reject blank values with 422.",
+    "Replace the nested folder buttons with sibling controls and give icon-only/menu/dialog controls accessible names and data-testid attributes.",
+    "Add DialogDescription or explicit aria-describedby handling to folder dialogs.",
+    "Build frontend API URLs from process.env.REACT_APP_BACKEND_URL instead of window.location.origin."
+  ],
+  "critical_code_review_comments": [
+    "LessonPlanCreate/Response define title and folder_id, but server.py create_plan/update_plan manually enumerate fields and omit title; create_plan also omits folder_id. Updating only Pydantic models does not persist either field.",
+    "PlanFolderCreate uses unconstrained str and strips only after validation, allowing an empty persisted folder name.",
+    "PlannerList.js lines 272-305 place DropdownMenuTrigger's button inside the folder selection button, producing invalid interactive nesting and observed React hydration warnings.",
+    "PlannerList.js and LessonPlanner.js derive API from window.location.origin, contrary to the required REACT_APP_BACKEND_URL deployment contract.",
+    "LessonPlanner.js is 2,706 lines, far above the 700-line maintainability limit; extract Conversational English, templates, AI, and weekly-plan sections into focused components.",
+    "PlannerList initial loading uses one Promise.all and only console.error on failure, so one failed folder request hides plans/classes too and presents an empty screen without a user-visible error state."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results_iteration_95.xml",
+    "/app/test_reports/iteration_95.json"
+  ],
+  "success_rate": {
+    "backend": "71% (5/7 focused tests passed)",
+    "frontend": "86% (6/7 focused behavior/integration checks passed)"
+  },
+  "seed_data_creation": "Backend tests created isolated TEST_ folders and plans and removed them in fixture teardown. Browser testing created a transient teacher, class, two plans, and folder; plans/folder/class were cleaned through APIs and the user/school/session were removed directly from MongoDB. No test data remains.",
+  "should_call_test_agent_after_fix": true,
+  "should_main_agent_self_test": false,
+  "test_credentials": "The supplied test@school.edu credentials authenticate but redirect /planner to pricing because the trial is expired. E2E feature testing used a transient teacher account that was fully removed afterward.",
+  "context_for_next_testing_agent": "Re-run: pytest /app/backend/tests/backend_test.py -v -k 'plan_folder or conversational_english_title or move_plan_to_folder or delete_folder_moves or move_plan_rejects'. On UI, create/select Conversational English, fill ce-title-input, save, and assert the input and planner card retain the title after reload. Folder E2E create/move/filter/delete passed.",
+  "rca_of_the_issue": "The title defect is deterministic: LessonPlanner includes title in its payload and the Pydantic model parses it, but server.py constructs plan_doc/update_data field by field without title. MongoDB therefore never receives it and LessonPlanResponse supplies the optional default null. Blank folders occur because name is stripped only while constructing folder_doc, with no post-strip non-empty validation."
+}

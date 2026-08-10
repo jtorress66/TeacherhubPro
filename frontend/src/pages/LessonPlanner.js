@@ -153,6 +153,7 @@ const LessonPlanner = () => {
     lesson_date: '',
     lesson_date_end: '',
     subject: 'Conversational English',
+    title: '',  // Title for Conversational English plans
     lesson_topic: '',
     learning_objectives: '',
     materials_text: '',
@@ -335,6 +336,7 @@ const LessonPlanner = () => {
       lesson_date: plan.lesson_date || '',
       lesson_date_end: plan.lesson_date_end || '',
       subject: plan.subject || 'Conversational English',
+      title: plan.title || '',  // Title for Conversational English plans
       lesson_topic: plan.lesson_topic || '',
       learning_objectives: plan.learning_objectives || '',
       materials_text: plan.materials_text || '',
@@ -1924,6 +1926,16 @@ ${language === 'es' ? 'IMPORTANTE: Responde completamente en español.' : 'Pleas
             {formData.plan_type === 'conversational_english' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                 {/* Conversational English Form Fields */}
+                <div className="space-y-2">
+                  <Label>{language === 'es' ? 'Título del Plan' : 'Plan Title'}</Label>
+                  <Input 
+                    value={formData.title}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder={language === 'es' ? 'Ej: Capítulo 1 - Vocabulario' : 'Ex: Chapter 1 - Vocabulary'}
+                    data-testid="ce-title-input"
+                  />
+                </div>
+                
                 <div className="space-y-2">
                   <Label>{language === 'es' ? 'Rango de Fechas de la Lección' : 'Lesson Date Range'}</Label>
                   <div className="flex items-center gap-2">

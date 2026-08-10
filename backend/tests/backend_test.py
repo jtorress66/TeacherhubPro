@@ -559,3 +559,165 @@ def test_class_update_rejects_whitespace_only_name(authenticated_session, editab
     verify = authenticated_session.get(f"{BASE_URL}/api/classes/{class_id}", timeout=30)
     assert verify.status_code == 200, verify.text
     assert verify.json()["name"] == editable_test_class["name"]
+
+
+
+# Plan folders and Conversational English title persistence
+@pytest.fixture
+def plan_folder_feature_data(authenticated_session):
+    """Create isolated TEST_ folder/plan data and remove it after focused tests."""
+    suffix = uuid.uuid4().hex[:10]
+    folder_payload = {"name": f"TEST_Planner_Folder_{suffix}", "color": "#3b82f6"}
+    folder_response = authenticated_session.post(
+        f"{BASE_URL}/api/plan-folders", json=folder_payload, timeout=30
+    )
+    assert folder_response.status_code == 200, folder_response.text
+    folder = folder_response.json()
+
+    plan_payload = {
+        "class_id": f"class_TEST_folder_{suffix}",
+        "plan_type": "conversational_english",
+        "week_start": "2026-08-10",
+        "week_end": "2026-08-14",
+        "lesson_date": "2026-08-10",
+        "lesson_date_end": "2026-08-14",
+        "subject": "Conversational English",
+        "title": f"TEST_Conversation_Title_{suffix}",
+        "lesson_topic": "TEST_Greetings and Introductions",
+        "learning_objectives": "TEST_Students introduce themselves.",
+    }
+    plan_response = authenticated_session.post(
+        f"{BASE_URL}/api/plans", json=plan_payload, timeout=30
+    )
+    assert plan_response.status_code == 200, plan_response.text
+    plan = plan_response.json()
+
+    yield {"folder": folder, "folder_payload": folder_payload, "plan": plan, "plan_payload": plan_payload}
+
+    authenticated_session.delete(f"{BASE_URL}/api/plans/{plan['plan_id']}", timeout=30)
+    authenticated_session.delete(f"{BASE_URL}/api/plan-folders/{folder['folder_id']}", timeout=30)
+
+
+def test_plan_folder_create_and_list_persists(authenticated_session, plan_folder_feature_data):
+    folder = plan_folder_feature_data["folder"]
+    expected = plan_folder_feature_data["folder_payload"]
+    assert isinstance(folder.get("folder_id"), str) and folder["folder_id"].startswith("folder_")
+    assert folder["name"] == expected["name"]
+    assert folder["color"] == expected["color"]
+    assert folder["plan_count"] == 0
+    assert "_id" not in folder
+
+    listed_response = authenticated_session.get(f"{BASE_URL}/api/plan-folders", timeout=30)
+    assert listed_response.status_code == 200, listed_response.text
+    listed = next((item for item in listed_response.json() if item["folder_id"] == folder["folder_id"]), None)
+    assert listed is not None
+    assert listed["name"] == expected["name"]
+    assert listed["color"] == expected["color"]
+
+
+def test_conversational_english_title_persists(authenticated_session, plan_folder_feature_data):
+    plan = plan_folder_feature_data["plan"]
+    expected_title = plan_folder_feature_data["plan_payload"]["title"]
+    assert plan["title"] == expected_title
+
+    fetched = authenticated_session.get(f"{BASE_URL}/api/plans/{plan['plan_id']}", timeout=30)
+    assert fetched.status_code == 200, fetched.text
+    data = fetched.json()
+    assert data["title"] == expected_title
+    assert data["plan_type"] == "conversational_english"
+    assert data["lesson_topic"] == "TEST_Greetings and Introductions"
+
+
+def test_move_plan_to_folder_and_count_persists(authenticated_session, plan_folder_feature_data):
+    folder = plan_folder_feature_data["folder"]
+    plan = plan_folder_feature_data["plan"]
+    moved = authenticated_session.put(
+        f"{BASE_URL}/api/plans/{plan['plan_id']}/folder",
+        json={"folder_id": folder["folder_id"]},
+        timeout=30,
+    )
+    assert moved.status_code == 200, moved.text
+    assert moved.json() == {"status": "moved", "folder_id": folder["folder_id"]}
+
+    fetched = authenticated_session.get(f"{BASE_URL}/api/plans/{plan['plan_id']}", timeout=30)
+    assert fetched.status_code == 200, fetched.text
+    assert fetched.json()["folder_id"] == folder["folder_id"]
+
+    folders = authenticated_session.get(f"{BASE_URL}/api/plan-folders", timeout=30)
+    assert folders.status_code == 200, folders.text
+    persisted_folder = next(item for item in folders.json() if item["folder_id"] == folder["folder_id"])
+    assert persisted_folder["plan_count"] == 1
+
+
+def test_delete_folder_moves_plan_to_unfiled(authenticated_session, plan_folder_feature_data):
+    folder = plan_folder_feature_data["folder"]
+    plan = plan_folder_feature_data["plan"]
+    move = authenticated_session.put(
+        f"{BASE_URL}/api/plans/{plan['plan_id']}/folder",
+        json={"folder_id": folder["folder_id"]},
+        timeout=30,
+    )
+    assert move.status_code == 200, move.text
+
+    deleted = authenticated_session.delete(
+        f"{BASE_URL}/api/plan-folders/{folder['folder_id']}", timeout=30
+    )
+    assert deleted.status_code == 200, deleted.text
+    assert deleted.json() == {"status": "deleted"}
+
+    fetched = authenticated_session.get(f"{BASE_URL}/api/plans/{plan['plan_id']}", timeout=30)
+    assert fetched.status_code == 200, fetched.text
+    assert fetched.json()["folder_id"] is None
+
+    folders = authenticated_session.get(f"{BASE_URL}/api/plan-folders", timeout=30)
+    assert folders.status_code == 200, folders.text
+    assert all(item["folder_id"] != folder["folder_id"] for item in folders.json())
+
+
+def test_plan_folder_rejects_blank_name(authenticated_session):
+    response = authenticated_session.post(
+        f"{BASE_URL}/api/plan-folders", json={"name": "   ", "color": "#6366f1"}, timeout=30
+    )
+    if response.status_code == 200 and response.json().get("folder_id"):
+        authenticated_session.delete(
+            f"{BASE_URL}/api/plan-folders/{response.json()['folder_id']}", timeout=30
+        )
+    assert response.status_code == 422, (
+        "Whitespace-only folder names should fail validation; "
+        f"received {response.status_code}: {response.text}"
+    )
+
+
+
+def test_plan_folder_update_persists(authenticated_session, plan_folder_feature_data):
+    folder = plan_folder_feature_data["folder"]
+    updated_payload = {"name": f"{folder['name']}_Updated", "color": "#22c55e"}
+    response = authenticated_session.put(
+        f"{BASE_URL}/api/plan-folders/{folder['folder_id']}", json=updated_payload, timeout=30
+    )
+    assert response.status_code == 200, response.text
+    updated = response.json()
+    assert updated["folder_id"] == folder["folder_id"]
+    assert updated["name"] == updated_payload["name"]
+    assert updated["color"] == updated_payload["color"]
+
+    listed_response = authenticated_session.get(f"{BASE_URL}/api/plan-folders", timeout=30)
+    assert listed_response.status_code == 200, listed_response.text
+    listed = next(item for item in listed_response.json() if item["folder_id"] == folder["folder_id"])
+    assert listed["name"] == updated_payload["name"]
+    assert listed["color"] == updated_payload["color"]
+
+
+def test_move_plan_rejects_unknown_folder_without_changing_plan(authenticated_session, plan_folder_feature_data):
+    plan = plan_folder_feature_data["plan"]
+    response = authenticated_session.put(
+        f"{BASE_URL}/api/plans/{plan['plan_id']}/folder",
+        json={"folder_id": "folder_TEST_missing"},
+        timeout=30,
+    )
+    assert response.status_code == 404, response.text
+    assert response.json().get("detail") == "Folder not found"
+
+    fetched = authenticated_session.get(f"{BASE_URL}/api/plans/{plan['plan_id']}", timeout=30)
+    assert fetched.status_code == 200, fetched.text
+    assert fetched.json()["folder_id"] is None

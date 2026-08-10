@@ -311,10 +311,12 @@ class LessonPlanCreate(BaseModel):
     subject_integration: List[str] = []  # Mathematics, Spanish, Social Studies, etc.
     is_template: bool = False
     template_name: Optional[str] = None
+    folder_id: Optional[str] = None  # For organizing plans into folders
     # Conversational English specific fields
     lesson_date: Optional[str] = None
     lesson_date_end: Optional[str] = None
     subject: Optional[str] = "Conversational English"
+    title: Optional[str] = None  # Title for Conversational English plans
     lesson_topic: Optional[str] = None
     learning_objectives: Optional[str] = None
     materials_text: Optional[str] = None
@@ -348,10 +350,12 @@ class LessonPlanResponse(BaseModel):
     subject_integration: List[str] = []
     is_template: bool = False
     template_name: Optional[str] = None
+    folder_id: Optional[str] = None  # For organizing plans into folders
     # Conversational English specific fields
     lesson_date: Optional[str] = None
     lesson_date_end: Optional[str] = None
     subject: Optional[str] = None
+    title: Optional[str] = None  # Title for Conversational English plans
     lesson_topic: Optional[str] = None
     learning_objectives: Optional[str] = None
     materials_text: Optional[str] = None
@@ -362,6 +366,20 @@ class LessonPlanResponse(BaseModel):
     additional_notes: Optional[str] = None
     created_at: str
     updated_at: str
+
+# Plan Folder Models
+class PlanFolderCreate(BaseModel):
+    name: str
+    color: Optional[str] = "#6366f1"  # Default indigo color
+
+class PlanFolderResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    folder_id: str
+    teacher_id: str
+    name: str
+    color: Optional[str] = "#6366f1"
+    plan_count: Optional[int] = 0
+    created_at: str
 
 # Attendance Models
 class AttendanceRecord(BaseModel):
@@ -1785,6 +1803,109 @@ async def export_plan_to_calendar(plan_id: str, user: dict = Depends(get_current
             "Content-Type": "text/calendar; charset=utf-8"
         }
     )
+
+# ==================== PLAN FOLDERS ENDPOINTS ====================
+
+@api_router.get("/plan-folders", response_model=List[PlanFolderResponse])
+async def get_plan_folders(user: dict = Depends(get_current_user)):
+    """Get all plan folders for the current teacher"""
+    folders = await db.plan_folders.find({"teacher_id": user["user_id"]}, {"_id": 0}).sort("name", 1).to_list(100)
+    
+    # Get plan counts for each folder
+    for folder in folders:
+        count = await db.lesson_plans.count_documents({
+            "teacher_id": user["user_id"],
+            "folder_id": folder["folder_id"],
+            "is_template": False
+        })
+        folder["plan_count"] = count
+    
+    return [PlanFolderResponse(**f) for f in folders]
+
+@api_router.post("/plan-folders", response_model=PlanFolderResponse)
+async def create_plan_folder(folder: PlanFolderCreate, user: dict = Depends(get_current_user)):
+    """Create a new plan folder"""
+    folder_id = f"folder_{uuid.uuid4().hex[:8]}"
+    now = datetime.now(timezone.utc).isoformat()
+    
+    folder_doc = {
+        "folder_id": folder_id,
+        "teacher_id": user["user_id"],
+        "name": folder.name.strip(),
+        "color": folder.color or "#6366f1",
+        "created_at": now
+    }
+    
+    await db.plan_folders.insert_one(folder_doc)
+    folder_doc["plan_count"] = 0
+    return PlanFolderResponse(**folder_doc)
+
+@api_router.put("/plan-folders/{folder_id}", response_model=PlanFolderResponse)
+async def update_plan_folder(folder_id: str, folder: PlanFolderCreate, user: dict = Depends(get_current_user)):
+    """Update a plan folder"""
+    existing = await db.plan_folders.find_one({"folder_id": folder_id, "teacher_id": user["user_id"]}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Folder not found")
+    
+    update_data = {
+        "name": folder.name.strip(),
+        "color": folder.color or existing.get("color", "#6366f1")
+    }
+    
+    await db.plan_folders.update_one({"folder_id": folder_id}, {"$set": update_data})
+    updated = await db.plan_folders.find_one({"folder_id": folder_id}, {"_id": 0})
+    
+    # Get plan count
+    count = await db.lesson_plans.count_documents({
+        "teacher_id": user["user_id"],
+        "folder_id": folder_id,
+        "is_template": False
+    })
+    updated["plan_count"] = count
+    
+    return PlanFolderResponse(**updated)
+
+@api_router.delete("/plan-folders/{folder_id}")
+async def delete_plan_folder(folder_id: str, user: dict = Depends(get_current_user)):
+    """Delete a plan folder (plans will be moved to 'unfiled')"""
+    existing = await db.plan_folders.find_one({"folder_id": folder_id, "teacher_id": user["user_id"]}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Folder not found")
+    
+    # Move all plans in this folder to unfiled (null folder_id)
+    await db.lesson_plans.update_many(
+        {"folder_id": folder_id, "teacher_id": user["user_id"]},
+        {"$set": {"folder_id": None}}
+    )
+    
+    await db.plan_folders.delete_one({"folder_id": folder_id})
+    return {"status": "deleted"}
+
+@api_router.put("/plans/{plan_id}/folder")
+async def move_plan_to_folder(plan_id: str, request: Request, user: dict = Depends(get_current_user)):
+    """Move a plan to a folder (or unfiled if folder_id is null)"""
+    plan = await db.lesson_plans.find_one({"plan_id": plan_id}, {"_id": 0})
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    
+    if plan["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    body = await request.json()
+    folder_id = body.get("folder_id")  # Can be null to move to unfiled
+    
+    # Verify folder exists if provided
+    if folder_id:
+        folder = await db.plan_folders.find_one({"folder_id": folder_id, "teacher_id": user["user_id"]}, {"_id": 0})
+        if not folder:
+            raise HTTPException(status_code=404, detail="Folder not found")
+    
+    await db.lesson_plans.update_one(
+        {"plan_id": plan_id},
+        {"$set": {"folder_id": folder_id}}
+    )
+    
+    return {"status": "moved", "folder_id": folder_id}
 
 # ==================== ATTENDANCE ENDPOINTS ====================
 
