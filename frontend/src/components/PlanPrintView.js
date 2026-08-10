@@ -232,7 +232,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
   const WeekPage = ({ days, weekNum, weekStart, weekEnd, objective, skills }) => (
     <div className="page" style={pageStyle}>
       <div className="header" style={headerStyle}>
-        <img src={school?.logo_url || '/school-logo.png'} alt="" style={{ height: '38px' }} />
+        <img src={school?.logo_url || '/school-logo.jpg'} alt="" style={{ height: '38px' }} />
         <div className="name" style={{ fontSize: '14px', fontWeight: 'bold' }}>{school?.name || 'School Name'}</div>
         {school?.address && <div className="info" style={{ fontSize: '9px' }}>{school.address}</div>}
         <div className="info" style={{ fontSize: '9px' }}>{school?.phone && `Tel. ${school.phone}`}{school?.email && ` | ${school.email}`}</div>
@@ -321,7 +321,7 @@ export const PlanPrintView = ({ plan, classInfo, school: propSchool, onClose }) 
   const StandardsPage = () => (
     <div className="page" style={pageStyle}>
       <div className="header" style={headerStyle}>
-        <img src={school?.logo_url || '/school-logo.png'} alt="" style={{ height: '38px' }} />
+        <img src={school?.logo_url || '/school-logo.jpg'} alt="" style={{ height: '38px' }} />
         <div className="name" style={{ fontSize: '14px', fontWeight: 'bold' }}>{school?.name || 'School Name'}</div>
         {school?.address && <div className="info" style={{ fontSize: '9px' }}>{school.address}</div>}
         <div className="info" style={{ fontSize: '9px' }}>{school?.phone && `Tel. ${school.phone}`}{school?.email && ` | ${school.email}`}</div>

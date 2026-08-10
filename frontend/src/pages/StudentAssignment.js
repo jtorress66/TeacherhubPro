@@ -344,7 +344,7 @@ const StudentAssignment = () => {
           <CardHeader>
             <div className="flex items-start gap-4">
               <img 
-                src={assignment.school_logo_url || '/school-logo.png'} 
+                src={assignment.school_logo_url || '/school-logo.jpg'} 
                 alt={assignment.school_name || 'School'}
                 className="w-16 h-16 object-contain rounded-xl border bg-white p-1"
                 data-testid="school-logo"

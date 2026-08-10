@@ -152,7 +152,7 @@ const Layout = ({ children }) => {
                   />
                 ) : (
                   <img 
-                    src={school?.logo_url || '/school-logo.png'} 
+                    src={school?.logo_url || '/school-logo.jpg'} 
                     alt={school?.name || 'School'} 
                     className="h-14 w-14 object-contain rounded-xl border-2 border-white/80 bg-white p-1.5 shadow-lg group-hover:shadow-xl transition-all duration-200"
                     data-testid="sidebar-school-logo"

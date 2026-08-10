@@ -184,7 +184,7 @@ const ParentPortal = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img 
-                src={school?.logo_url || '/school-logo.png'} 
+                src={school?.logo_url || '/school-logo.jpg'} 
                 alt={school?.name || 'School'} 
                 className="h-12 w-12 object-contain rounded-lg border bg-white p-1" 
               />

@@ -106,7 +106,7 @@ const Dashboard = () => {
               />
             ) : (
               <img 
-                src={dashboardSchool?.logo_url || '/school-logo.png'} 
+                src={dashboardSchool?.logo_url || '/school-logo.jpg'} 
                 alt={dashboardSchool?.name || 'School'} 
                 className="h-16 w-16 object-contain rounded-xl border border-slate-200 bg-white p-2 shadow-sm"
                 data-testid="school-logo"

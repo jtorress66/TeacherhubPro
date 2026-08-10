@@ -292,7 +292,7 @@ const ReportCards = () => {
           printWindow.document.write(`
             <div class="${i < selectedStudents.length - 1 ? 'page-break' : ''}">
               <div class="header">
-                <img src="${school?.logo_url || '/school-logo.png'}" alt="School Logo" class="school-logo">
+                <img src="${school?.logo_url || '/school-logo.jpg'}" alt="School Logo" class="school-logo">
                 <h1 class="school-name">${school?.name || 'School Name'}</h1>
                 <p>${school?.address || ''}</p>
                 <h2 class="report-title">${language === 'es' ? 'NOTAS' : 'REPORT CARD'}</h2>
@@ -553,7 +553,7 @@ const ReportCards = () => {
                     {/* Header */}
                     <div className="header text-center border-b-2 border-slate-800 pb-4 mb-4">
                       <img 
-                        src={school?.logo_url || '/school-logo.png'} 
+                        src={school?.logo_url || '/school-logo.jpg'} 
                         alt="School Logo" 
                         className="school-logo mx-auto h-20 object-contain mb-2" 
                       />
