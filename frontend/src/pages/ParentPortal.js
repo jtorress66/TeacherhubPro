@@ -183,13 +183,11 @@ const ParentPortal = () => {
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {school?.logo_url ? (
-                <img src={school.logo_url} alt={school.name} className="h-12 w-12 object-contain" />
-              ) : (
-                <div className="h-12 w-12 rounded-xl bg-green-100 flex items-center justify-center">
-                  <School className="h-6 w-6 text-green-600" />
-                </div>
-              )}
+              <img 
+                src={school?.logo_url || '/school-logo.png'} 
+                alt={school?.name || 'School'} 
+                className="h-12 w-12 object-contain rounded-lg border bg-white p-1" 
+              />
               <div>
                 <h1 className="font-bold text-slate-800">{school?.name || 'TeacherHubPro'}</h1>
                 <p className="text-sm text-slate-500">{t('studentPortal')}</p>

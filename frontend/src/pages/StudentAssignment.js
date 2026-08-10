@@ -343,18 +343,12 @@ const StudentAssignment = () => {
         <Card className="mb-6" data-testid="assignment-header">
           <CardHeader>
             <div className="flex items-start gap-4">
-              {assignment.school_logo_url ? (
-                <img 
-                  src={assignment.school_logo_url} 
-                  alt={assignment.school_name || 'School'}
-                  className="w-16 h-16 object-contain rounded-xl border bg-white p-1"
-                  data-testid="school-logo"
-                />
-              ) : (
-                <div className="p-3 bg-violet-100 rounded-xl">
-                  <GraduationCap className="w-8 h-8 text-violet-600" />
-                </div>
-              )}
+              <img 
+                src={assignment.school_logo_url || '/school-logo.png'} 
+                alt={assignment.school_name || 'School'}
+                className="w-16 h-16 object-contain rounded-xl border bg-white p-1"
+                data-testid="school-logo"
+              />
               <div className="flex-1">
                 <CardTitle className="text-2xl">{assignment.title}</CardTitle>
                 <CardDescription className="mt-1">

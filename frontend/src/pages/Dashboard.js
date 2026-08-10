@@ -104,14 +104,14 @@ const Dashboard = () => {
                 alt="TeacherHubPro" 
                 className="h-16 w-16 rounded-xl shadow-md object-contain bg-white p-1"
               />
-            ) : dashboardSchool?.logo_url ? (
+            ) : (
               <img 
-                src={dashboardSchool.logo_url} 
-                alt={dashboardSchool.name} 
+                src={dashboardSchool?.logo_url || '/school-logo.png'} 
+                alt={dashboardSchool?.name || 'School'} 
                 className="h-16 w-16 object-contain rounded-xl border border-slate-200 bg-white p-2 shadow-sm"
                 data-testid="school-logo"
               />
-            ) : null}
+            )}
             <div>
               {user?.role === 'super_admin' ? (
                 <p 
