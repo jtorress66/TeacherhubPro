@@ -1496,6 +1496,12 @@ const PresentationCreator = () => {
                     <SelectItem value="4th">{language === 'es' ? '4to Grado' : '4th Grade'}</SelectItem>
                     <SelectItem value="5th">{language === 'es' ? '5to Grado' : '5th Grade'}</SelectItem>
                     <SelectItem value="6th">{language === 'es' ? '6to Grado' : '6th Grade'}</SelectItem>
+                    <SelectItem value="7th">{language === 'es' ? '7mo Grado' : '7th Grade'}</SelectItem>
+                    <SelectItem value="8th">{language === 'es' ? '8vo Grado' : '8th Grade'}</SelectItem>
+                    <SelectItem value="9th">{language === 'es' ? '9no Grado' : '9th Grade'}</SelectItem>
+                    <SelectItem value="10th">{language === 'es' ? '10mo Grado' : '10th Grade'}</SelectItem>
+                    <SelectItem value="11th">{language === 'es' ? '11mo Grado' : '11th Grade'}</SelectItem>
+                    <SelectItem value="12th">{language === 'es' ? '12mo Grado' : '12th Grade'}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
