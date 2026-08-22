@@ -31,7 +31,8 @@ import {
   TrendingUp,
   Gamepad2,
   Rocket,
-  MessageCircle
+  MessageCircle,
+  Wand2
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -46,6 +47,7 @@ const Layout = ({ children }) => {
 
   const navItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: t('dashboard'), gradient: 'from-blue-400 to-blue-600' },
+    { path: '/prep-agent', icon: Wand2, label: language === 'es' ? 'Agente de Prep' : 'Prep Agent', gradient: 'from-violet-500 to-purple-600', isNew: true },
     { path: '/ai-assistant', icon: Sparkles, label: language === 'es' ? 'Asistente IA' : 'AI Assistant', gradient: 'from-purple-500 to-pink-500', isNew: true },
     { path: '/adaptive-learning', icon: Brain, label: language === 'es' ? 'Aprendizaje Adaptativo' : 'Adaptive Learning', gradient: 'from-pink-400 to-purple-600', isNew: true },
     { path: '/student-progress', icon: TrendingUp, label: language === 'es' ? 'Progreso Estudiante' : 'Student Progress', gradient: 'from-indigo-400 to-purple-500', isNew: true },

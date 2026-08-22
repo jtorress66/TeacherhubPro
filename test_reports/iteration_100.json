@@ -1,0 +1,66 @@
+{
+  "summary": "Retested Prep Agent through the public URL. POST creation and immediate list/detail GETs are now non-blocking (0.078s, 0.084s, and 0.083s respectively), and the undefined fetchBatches regression is absent. However, every created workflow fails immediately because the thread runs the shared async Mongo/Motor client on a different event loop. The required account also remains expired and /prep-agent redirects to /pricing, so the page/form cannot be runtime-verified.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "/api/prep-agent/batches",
+        "issue": "POST returns pending quickly, but the background workflow immediately changes to failed with 'Future ... attached to a different loop'. The thread creates a new asyncio loop while run_prep_agent_workflow uses the server's shared async Motor database client, so no LLM workflow can complete.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Open /prep-agent with test@school.edu",
+        "issue": "Login succeeds, but /api/subscription/status still returns has_access=false/status=trial_expired and ProtectedRoute redirects /prep-agent to /pricing. The claimed active 60-day subscription is not present in the public environment.",
+        "affected_selectors": [
+          "[data-testid='prep-prompt-input']",
+          "[data-testid='prep-class-select']",
+          "[data-testid='start-prep-btn']"
+        ]
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "Prep Agent form",
+        "issues": [
+          "The form still uses the browser-native input[type=date] rather than the app's shadcn calendar/popover component.",
+          "The five checkbox controls have no data-testid attributes, limiting reliable runtime coverage of the requested options."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_prep_agent.py",
+    "/app/test_reports/pytest/pytest_prep_agent_iteration_100.xml"
+  ],
+  "action_items": [
+    "Keep Mongo/Motor operations on the server event loop and isolate only blocking LLM execution, or use a proper worker with its own database client; do not reuse the shared async DB client from a newly-created thread event loop.",
+    "Actually update the public environment subscription for test@school.edu to active/trialing with a future end date, then retest /prep-agent and form submission.",
+    "Add data-testid attributes to each Prep Agent checkbox and consider replacing the native date input with the standard calendar component."
+  ],
+  "critical_code_review_comments": [
+    "routes/prep_agent.py creates a new event loop in ThreadPoolExecutor and passes run_prep_agent_workflow into it, but that coroutine calls the shared Motor client initialized on Uvicorn's event loop. This is the direct cause of the cross-loop Future failure.",
+    "The thread wrapper catches and prints exceptions without retaining/observing the Future, making worker failures dependent on batch status updates and logs rather than structured job supervision.",
+    "routes/prep_agent.py is 893 lines and should be split into route, workflow, prompts/standards, and publishing modules.",
+    "PrepAgent.js statically passes lint and consistently references fetchBatchesUpdate; no undefined fetchBatches call remains."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_prep_agent.py",
+    "/app/test_reports/pytest/pytest_prep_agent_iteration_100.xml",
+    "/app/test_reports/iteration_100.json"
+  ],
+  "success_rate": {
+    "backend": "67% (2/3 pytest tests passed; all latency assertions passed, but create-to-processing workflow failed)",
+    "frontend": "0% of requested runtime page/form outcomes (redirected to pricing; static lint passed)"
+  },
+  "seed_data_creation": "Created isolated TEST_ Prep Agent batches during regression runs and deleted them in test teardown; no test batch was retained.",
+  "should_call_test_agent_after_fix": true,
+  "should_main_agent_self_test": false,
+  "test_credentials": "Read /app/memory/test_credentials.md and authenticated successfully as test@school.edu. Public subscription status is still trial_expired.",
+  "context_for_next_testing_agent": "Use the public URL from frontend/.env. The focused test now asserts POST/list/detail/progress responses are each under one second and that a created workflow leaves pending without failing. Current measured latencies are 0.078s/0.084s/0.083s, but status becomes failed with a cross-event-loop Motor error. Browser login and direct /prep-agent navigation both resolve to /pricing.",
+  "rca_of_the_issue": "The responsiveness fix moved the entire async workflow to a ThreadPoolExecutor and creates a new asyncio event loop there. run_prep_agent_workflow immediately calls get_db().classes.find_one using the shared async Motor client associated with the backend event loop. Awaiting that Future from the thread loop raises 'attached to a different loop', and the batch is marked failed. Separately, a read-only DB check found the test user's subscriptions record still has status=expired; the status endpoint therefore correctly denies access and the frontend redirect is expected."
+}

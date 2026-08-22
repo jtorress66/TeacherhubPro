@@ -42,6 +42,7 @@ from routes.google_classroom import google_classroom_router, init_google_classro
 from routes.play_to_learn import router as play_to_learn_router, init_play_to_learn_routes
 from routes.ai_grading import router as ai_grading_router, init_ai_grading_routes
 from routes.chatbot import router as chatbot_router, init_db as init_chatbot_db
+from routes.prep_agent import router as prep_agent_router, init_prep_agent_routes
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
@@ -224,6 +225,11 @@ class ClassCreate(BaseModel):
     subject: Optional[str] = None
     year_term: str = "2024-2025"
     semester_id: Optional[str] = None
+    # Schedule fields for daily class periods
+    period: Optional[int] = None  # 1-8 for period number
+    start_time: Optional[str] = None  # "08:00" format
+    end_time: Optional[str] = None  # "08:45" format
+    days_of_week: Optional[List[str]] = None  # ["Mon", "Tue", "Wed", "Thu", "Fri"]
 
 class ClassResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -236,6 +242,10 @@ class ClassResponse(BaseModel):
     subject: Optional[str] = None
     year_term: str
     semester_id: Optional[str] = None
+    period: Optional[int] = None
+    start_time: Optional[str] = None
+    end_time: Optional[str] = None
+    days_of_week: Optional[List[str]] = None
     created_at: str
 
 # Student Models
@@ -1089,6 +1099,10 @@ async def create_class(class_data: ClassCreate, user: dict = Depends(get_current
         "subject": class_data.subject,
         "year_term": class_data.year_term,
         "semester_id": class_data.semester_id,
+        "period": class_data.period,
+        "start_time": class_data.start_time,
+        "end_time": class_data.end_time,
+        "days_of_week": class_data.days_of_week or ["Mon", "Tue", "Wed", "Thu", "Fri"],
         "created_at": now
     }
     
@@ -2937,6 +2951,310 @@ async def get_dashboard(user: dict = Depends(get_current_user)):
             "total_plans": total_plans,
             "attendance_complete": len(attendance_today),
             "attendance_pending": len(classes) - len(attendance_today)
+        }
+    }
+
+# ==================== COMMAND CENTER ENDPOINT ====================
+
+@api_router.get("/command-center")
+async def get_command_center(user: dict = Depends(get_current_user)):
+    """Get comprehensive Command Center data for teacher's daily operations"""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    today_weekday = datetime.now(timezone.utc).strftime("%a")  # Mon, Tue, etc.
+    user_id = user["user_id"]
+    
+    # Get all classes for this teacher
+    classes = await db.classes.find({"teacher_id": user_id}, {"_id": 0}).to_list(50)
+    class_ids = [c["class_id"] for c in classes]
+    
+    # ==================== TODAY'S SCHEDULE ====================
+    # Filter classes that meet today and sort by period/start_time
+    todays_classes = []
+    for cls in classes:
+        days = cls.get("days_of_week") or ["Mon", "Tue", "Wed", "Thu", "Fri"]
+        if today_weekday in days:
+            todays_classes.append(cls)
+    
+    # Sort by period first, then by start_time
+    todays_classes.sort(key=lambda x: (x.get("period") or 99, x.get("start_time") or "23:59"))
+    
+    # Get today's attendance status for schedule items
+    attendance_today = await db.attendance_sessions.find({
+        "class_id": {"$in": class_ids},
+        "date": today
+    }, {"_id": 0}).to_list(50)
+    attendance_taken_ids = {a["class_id"] for a in attendance_today}
+    
+    # Enrich schedule with attendance status and student count
+    schedule = []
+    for cls in todays_classes:
+        student_count = await db.students.count_documents({"class_id": cls["class_id"]})
+        schedule.append({
+            **cls,
+            "student_count": student_count,
+            "attendance_taken": cls["class_id"] in attendance_taken_ids
+        })
+    
+    # ==================== STUDENTS AT RISK ====================
+    # Identify students with concerning patterns (low grades, absences)
+    at_risk_students = []
+    
+    for cls in classes:
+        class_id = cls["class_id"]
+        students = await db.students.find({"class_id": class_id}, {"_id": 0}).to_list(100)
+        
+        # Get all assignments for this class
+        assignments = await db.assignments.find({"class_id": class_id}, {"_id": 0}).to_list(100)
+        assignment_ids = [a["assignment_id"] for a in assignments]
+        
+        if not assignment_ids or not students:
+            continue
+        
+        # Get grades for this class
+        grades = await db.grades.find({"assignment_id": {"$in": assignment_ids}}, {"_id": 0}).to_list(10000)
+        grades_by_student = {}
+        for g in grades:
+            sid = g["student_id"]
+            if sid not in grades_by_student:
+                grades_by_student[sid] = []
+            if g.get("score") is not None:
+                grades_by_student[sid].append(g)
+        
+        # Get attendance records for the last 30 days
+        thirty_days_ago = (datetime.now(timezone.utc) - timedelta(days=30)).strftime("%Y-%m-%d")
+        attendance_sessions = await db.attendance_sessions.find({
+            "class_id": class_id,
+            "date": {"$gte": thirty_days_ago}
+        }, {"_id": 0}).to_list(100)
+        
+        # Build attendance record by student
+        attendance_by_student = {}
+        for session in attendance_sessions:
+            for record in session.get("records", []):
+                sid = record["student_id"]
+                if sid not in attendance_by_student:
+                    attendance_by_student[sid] = {"present": 0, "absent": 0, "tardy": 0, "total": 0}
+                attendance_by_student[sid]["total"] += 1
+                status = record.get("status", "present")
+                if status == "present":
+                    attendance_by_student[sid]["present"] += 1
+                elif status == "absent":
+                    attendance_by_student[sid]["absent"] += 1
+                elif status == "tardy":
+                    attendance_by_student[sid]["tardy"] += 1
+        
+        # Analyze each student
+        for student in students:
+            sid = student["student_id"]
+            risk_factors = []
+            risk_score = 0
+            
+            # Check grade average
+            student_grades = grades_by_student.get(sid, [])
+            if student_grades:
+                total_points = sum(g.get("score", 0) for g in student_grades)
+                max_points = len(student_grades) * 100  # Assuming 100 point scale
+                avg_grade = (total_points / max_points) * 100 if max_points > 0 else 0
+                
+                if avg_grade < 60:
+                    risk_factors.append({"type": "failing_grade", "value": round(avg_grade, 1), "severity": "high"})
+                    risk_score += 3
+                elif avg_grade < 70:
+                    risk_factors.append({"type": "low_grade", "value": round(avg_grade, 1), "severity": "medium"})
+                    risk_score += 2
+            
+            # Check missing assignments
+            graded_assignment_ids = {g["assignment_id"] for g in student_grades}
+            missing_count = len(set(assignment_ids) - graded_assignment_ids)
+            if missing_count >= 3:
+                risk_factors.append({"type": "missing_assignments", "value": missing_count, "severity": "high"})
+                risk_score += 2
+            elif missing_count >= 1:
+                risk_factors.append({"type": "missing_assignments", "value": missing_count, "severity": "low"})
+                risk_score += 1
+            
+            # Check attendance
+            att = attendance_by_student.get(sid, {})
+            if att.get("total", 0) > 0:
+                absence_rate = att.get("absent", 0) / att["total"]
+                if absence_rate >= 0.2:  # 20%+ absences
+                    risk_factors.append({"type": "high_absences", "value": att["absent"], "severity": "high"})
+                    risk_score += 3
+                elif att.get("absent", 0) >= 3:
+                    risk_factors.append({"type": "absences", "value": att["absent"], "severity": "medium"})
+                    risk_score += 1
+                
+                if att.get("tardy", 0) >= 5:
+                    risk_factors.append({"type": "frequent_tardies", "value": att["tardy"], "severity": "low"})
+                    risk_score += 1
+            
+            # Only add students with risk factors
+            if risk_factors and risk_score >= 2:
+                at_risk_students.append({
+                    "student_id": sid,
+                    "first_name": student.get("first_name", ""),
+                    "last_name": student.get("last_name", ""),
+                    "class_id": class_id,
+                    "class_name": cls.get("name", ""),
+                    "risk_factors": risk_factors,
+                    "risk_score": risk_score
+                })
+    
+    # Sort by risk score (highest first) and limit
+    at_risk_students.sort(key=lambda x: -x["risk_score"])
+    at_risk_students = at_risk_students[:10]
+    
+    # ==================== ASSIGNMENTS TO GRADE ====================
+    # Get assignments with pending submissions
+    all_assignments = await db.assignments.find({"teacher_id": user_id}, {"_id": 0}).to_list(200)
+    
+    assignments_to_grade = []
+    for assignment in all_assignments:
+        assign_id = assignment["assignment_id"]
+        class_id = assignment["class_id"]
+        
+        # Get student count for this class
+        student_count = await db.students.count_documents({"class_id": class_id})
+        
+        # Get graded count
+        graded_count = await db.grades.count_documents({
+            "assignment_id": assign_id,
+            "status": "graded"
+        })
+        
+        # Also check AI submissions
+        ai_graded = await db.ai_submissions.count_documents({
+            "assignment_id": assign_id,
+            "status": "graded"
+        })
+        
+        total_graded = graded_count + ai_graded
+        pending_count = max(0, student_count - total_graded)
+        
+        if pending_count > 0:
+            # Find class name
+            cls = next((c for c in classes if c["class_id"] == class_id), None)
+            assignments_to_grade.append({
+                "assignment_id": assign_id,
+                "title": assignment.get("title", "Untitled"),
+                "class_id": class_id,
+                "class_name": cls.get("name", "") if cls else "",
+                "due_date": assignment.get("due_date"),
+                "total_students": student_count,
+                "graded_count": total_graded,
+                "pending_count": pending_count,
+                "points": assignment.get("points", 100)
+            })
+    
+    # Sort by due date (past due first, then upcoming)
+    assignments_to_grade.sort(key=lambda x: x.get("due_date") or "9999-99-99")
+    assignments_to_grade = assignments_to_grade[:10]
+    
+    # ==================== UPCOMING LESSONS ====================
+    # Get lesson plans for the next 7 days
+    next_week = (datetime.now(timezone.utc) + timedelta(days=7)).strftime("%Y-%m-%d")
+    upcoming_plans = await db.lesson_plans.find({
+        "teacher_id": user_id,
+        "is_template": False,
+        "$or": [
+            {"week_start": {"$gte": today, "$lte": next_week}},
+            {"lesson_date": {"$gte": today, "$lte": next_week}}
+        ]
+    }, {"_id": 0}).sort("week_start", 1).to_list(10)
+    
+    # Enrich with class names
+    for plan in upcoming_plans:
+        cls = next((c for c in classes if c["class_id"] == plan.get("class_id")), None)
+        plan["class_name"] = cls.get("name", "") if cls else ""
+    
+    # ==================== AI RECOMMENDATIONS ====================
+    # Generate contextual recommendations based on current data
+    recommendations = []
+    
+    # Attendance recommendation
+    attendance_pending = [c for c in todays_classes if c["class_id"] not in attendance_taken_ids]
+    if attendance_pending:
+        recommendations.append({
+            "type": "attendance",
+            "priority": "high",
+            "title": "Take Attendance",
+            "description": f"You have {len(attendance_pending)} class(es) without attendance today",
+            "action_url": "/attendance",
+            "icon": "clipboard-check"
+        })
+    
+    # At-risk students recommendation
+    if at_risk_students:
+        high_risk = [s for s in at_risk_students if s["risk_score"] >= 4]
+        if high_risk:
+            recommendations.append({
+                "type": "intervention",
+                "priority": "high",
+                "title": "Student Intervention Needed",
+                "description": f"{len(high_risk)} student(s) showing significant struggles - consider reaching out",
+                "action_url": "/classes",
+                "icon": "alert-triangle"
+            })
+    
+    # Grading recommendation
+    overdue_assignments = [a for a in assignments_to_grade if a.get("due_date") and a["due_date"] < today]
+    if overdue_assignments:
+        recommendations.append({
+            "type": "grading",
+            "priority": "medium",
+            "title": "Overdue Grading",
+            "description": f"{len(overdue_assignments)} assignment(s) past due date need grading",
+            "action_url": "/gradebook",
+            "icon": "edit"
+        })
+    
+    # Lesson planning recommendation
+    unplanned_classes = []
+    planned_class_ids = {p.get("class_id") for p in upcoming_plans}
+    for cls in classes:
+        if cls["class_id"] not in planned_class_ids:
+            unplanned_classes.append(cls)
+    
+    if unplanned_classes:
+        recommendations.append({
+            "type": "planning",
+            "priority": "low",
+            "title": "Plan Next Week",
+            "description": f"{len(unplanned_classes)} class(es) don't have lessons planned for next week",
+            "action_url": "/planner/new",
+            "icon": "calendar"
+        })
+    
+    # ==================== QUICK STATS ====================
+    total_students = await db.students.count_documents({"class_id": {"$in": class_ids}})
+    total_plans = await db.lesson_plans.count_documents({"teacher_id": user_id, "is_template": False})
+    
+    # Get school info
+    school = None
+    if user.get("school_id"):
+        school = await db.schools.find_one({"school_id": user.get("school_id")}, {"_id": 0})
+    
+    return {
+        "user": {
+            "name": user["name"],
+            "role": user.get("role", "teacher")
+        },
+        "school": school,
+        "today": today,
+        "today_weekday": today_weekday,
+        "schedule": schedule,
+        "at_risk_students": at_risk_students,
+        "assignments_to_grade": assignments_to_grade,
+        "upcoming_lessons": upcoming_plans,
+        "recommendations": recommendations,
+        "stats": {
+            "total_classes": len(classes),
+            "total_students": total_students,
+            "total_plans": total_plans,
+            "classes_today": len(todays_classes),
+            "attendance_complete": len(attendance_taken_ids),
+            "at_risk_count": len(at_risk_students),
+            "pending_grading": sum(a["pending_count"] for a in assignments_to_grade)
         }
     }
 
@@ -5377,6 +5695,7 @@ init_google_classroom_routes(db, get_current_user)
 init_play_to_learn_routes(db)
 init_ai_grading_routes(db, get_current_user)
 init_chatbot_db(db)
+init_prep_agent_routes(db, get_current_user)
 
 # ==================== CONTACT FORM ====================
 
@@ -5613,6 +5932,7 @@ api_router.include_router(google_classroom_router)
 api_router.include_router(play_to_learn_router)
 api_router.include_router(ai_grading_router)
 api_router.include_router(chatbot_router)
+api_router.include_router(prep_agent_router)
 
 # Include the main api_router in the app
 app.include_router(api_router)

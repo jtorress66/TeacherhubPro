@@ -1,0 +1,67 @@
+{
+  "summary": "Tested the new Prep Agent through the public URL. Common Core standards, authenticated empty batch listing, POST creation with a pending response, authentication enforcement, and sidebar presence passed. The intended progress-polling flow failed because the long-running background workflow blocked subsequent GET and DELETE requests for more than 30 seconds. The supplied teacher account also cannot load /prep-agent because its expired trial redirects to /pricing.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "/api/prep-agent/batches/{batch_id}",
+        "issue": "Immediately after a valid POST /batches returned HTTP 200 with status=pending, GET batch details timed out after 30s; DELETE then also timed out after 30s. The POST-triggered LLM BackgroundTask monopolizes the sole API worker/event loop, so the UI's 5-second progress polling cannot work while generation is active.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Open Prep Agent with the supplied teacher account",
+        "issue": "Authentication succeeds, but /prep-agent redirects to /pricing because the required test account's free trial is expired. The form cannot be reached or tested with the provided credentials.",
+        "affected_selectors": [
+          "[data-testid='nav-prep-agent']",
+          "[data-testid='prep-prompt-input']",
+          "[data-testid='start-prep-btn']"
+        ]
+      },
+      {
+        "flow": "Live batch progress",
+        "issue": "fetchBatches updates only the batches array; selectedBatch remains the original pending object. Even after backend polling recovers, the open detail panel will not advance unless the teacher reselects the card.",
+        "affected_selectors": [
+          "[data-testid^='batch-card-']"
+        ]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_prep_agent.py",
+    "/app/test_reports/pytest/pytest_prep_agent.xml"
+  ],
+  "action_items": [
+    "Move Prep Agent generation to a non-blocking worker/job queue (or isolate blocking LLM SDK calls from the API event loop) so GET progress remains responsive during generation.",
+    "Provide an active subscription/trial on the required test account, or explicitly make /prep-agent accessible for that account, then retest the real form flow.",
+    "Synchronize selectedBatch from each polling response and fix the stale batches closure used by the 5-second interval.",
+    "Validate that class_id belongs to the authenticated teacher and add constraints for non-empty prompt, ISO week_start, and a safe num_days range."
+  ],
+  "critical_code_review_comments": [
+    "PrepAgent.js defines API from window.location.origin instead of process.env.REACT_APP_BACKEND_URL, contrary to the deployment contract.",
+    "POST /batches does not verify class ownership before starting costly generation; another teacher's class_id can be submitted.",
+    "The polling interval captures the initial batches state, which can repeatedly detect the same completed batch and show duplicate completion toasts.",
+    "publish_worksheets exists in the request contract, but approve_and_publish never inserts worksheets and published.worksheets always remains 0.",
+    "The requested email notification to the teacher is not implemented: completion inserts only an in-app notification; the only email record is a parent email queued later during publish."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_prep_agent.py",
+    "/app/test_reports/pytest/pytest_prep_agent.xml",
+    "/app/test_reports/iteration_98.json"
+  ],
+  "success_rate": {
+    "backend": "75% (3/4 requested backend outcomes passed; progress GET failed during active processing)",
+    "frontend": "50% (sidebar item passed; Prep Agent page/form was redirected and inaccessible)"
+  },
+  "seed_data_creation": "Created one TEST_ prep batch using an existing class with all optional outputs disabled. The timed-out DELETE was later processed; a final authenticated GET confirmed batches=[].",
+  "should_call_test_agent_after_fix": true,
+  "should_main_agent_self_test": false,
+  "test_credentials": "Read /app/memory/test_credentials.md and authenticated successfully as test@school.edu; the account's trial is expired.",
+  "context_for_next_testing_agent": "Initial GET /api/prep-agent/batches returned [] and final cleanup verification also returned []. POST returned a batch_* id with status=pending, current_step=0, total_steps=4, and the expected prompt/class fields. Re-test GET details concurrently while the workflow runs; it must respond well within the UI's 5-second polling interval. Then use an account with access to test the real /prep-agent form and class dropdown.",
+  "rca_of_the_issue": "Reproduction: login, confirm batches=[], get an existing class, POST a valid 5-day batch, then immediately GET /batches/{id}. POST returns pending, but the GET and a following DELETE each exceed 30s. Backend access logs show POST 200 but no handling of those requests during the LLM operation. The workflow is registered as a Starlette BackgroundTask and executes long LLM calls in the same single-worker process; the call path does not yield sufficient capacity for polling. Separately, ProtectedRoute enforces subscription status, and the provided account returns no access due to an expired trial, causing the frontend redirect."
+}

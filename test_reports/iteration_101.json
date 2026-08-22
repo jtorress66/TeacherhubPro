@@ -1,0 +1,65 @@
+{
+  "summary": "Retested Prep Agent through the public URL. The focused Prep APIs are responsive and non-blocking: POST 0.092s, immediate list GET 0.067s, and detail GET 0.067s; the workflow entered processing without the prior cross-event-loop failure. Production UI access is still blocked because the required test account returns trial_expired and redirects /prep-agent to /pricing. With only the subscription-status gate isolated in Playwright, the real Prep Agent page and APIs passed: page rendered without the ErrorBoundary, all form controls worked, and UI POST returned in 0.170s.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "/api/subscription/status",
+        "issue": "The required test@school.edu account still returns has_access=false/status=trial_expired, contrary to the requested active subscription setup; this caused 1 of 4 focused pytest tests to fail and blocks production UI access."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Authenticated navigation to /prep-agent",
+        "issue": "The real production flow redirects to /pricing because the required account is trial_expired. Prep Agent runtime behavior passed only in a diagnostic browser run that mocked /api/subscription/status as active while keeping classes, batches, notifications, create, and delete APIs real.",
+        "affected_selectors": [
+          "[data-testid='prep-prompt-input']",
+          "[data-testid='prep-class-select']",
+          "[data-testid='start-prep-btn']"
+        ]
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "Prep Agent form",
+        "issues": [
+          "Week Starts uses the browser-native input[type=date] rather than the app's shadcn calendar/popover component, resulting in browser-dependent date-picker UX."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_prep_agent.py",
+    "/app/test_reports/pytest/pytest_prep_agent_iteration_101.xml"
+  ],
+  "action_items": [
+    "Update the public-environment subscription record for test@school.edu to active or trialing with a valid future end date, then rerun the unmocked /prep-agent browser flow.",
+    "Consider replacing the native date input with the standard shadcn calendar component.",
+    "Add an explicit UI error state for initial Prep Agent data-load failures instead of only logging to the console."
+  ],
+  "critical_code_review_comments": [
+    "The new run_llm_in_executor boundary correctly keeps Mongo/Motor operations on the server event loop while running only each LLM SDK call in the thread pool; the prior cross-loop failure was not reproduced.",
+    "PrepAgent.js no longer references the undefined fetchBatches function; polling consistently calls fetchBatchesUpdate and the page rendered without the Something went wrong boundary in the isolated subscription diagnostic.",
+    "fetchData catches initial classes/batches/notifications failures and only console.error logs them, then clears loading; users would see misleading empty form/list states without an error or retry control.",
+    "routes/prep_agent.py is 897 lines and should be split into route, workflow, prompt/standards, and publishing modules."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_prep_agent.py",
+    "/app/frontend/src/pages/PrepAgent.js",
+    "/app/test_reports/pytest/pytest_prep_agent_iteration_101.xml",
+    "/app/test_reports/iteration_101.json"
+  ],
+  "success_rate": {
+    "backend": "75% (3/4 focused tests passed; all Prep Agent endpoint tests passed, subscription access setup failed)",
+    "frontend": "0% unmocked requested route access; 100% isolated Prep Agent page/form/create/delete diagnostic after mocking only the broken subscription gate"
+  },
+  "seed_data_creation": "Created uniquely named TEST_ Prep Agent batches in pytest and the isolated UI run; both were deleted during cleanup.",
+  "should_call_test_agent_after_fix": true,
+  "should_main_agent_self_test": false,
+  "test_credentials": "Read /app/memory/test_credentials.md and authenticated successfully with the required teacher account; subscription status remains trial_expired.",
+  "context_for_next_testing_agent": "Use the public URL from frontend/.env. Focused API tests are in test_prep_agent.py. Current measured API latencies are POST 0.092s/list GET 0.067s/detail GET 0.067s, and no cross-event-loop failure occurred. Unmocked browser navigation still lands on /pricing. The diagnostic browser run mocked only subscription/status and then used real Prep APIs; it rendered all fields and created a batch in 0.170s. Five checkbox data-testid attributes and delete-selected-batch-btn were added for maintainable retesting.",
+  "rca_of_the_issue": "ProtectedRoute calls /api/subscription/status before mounting PrepAgent. That endpoint finds no active/trialing subscription for the required user and the user's initial trial period has elapsed, so it returns has_access=false/status=trial_expired; ProtectedRoute then intentionally redirects to /pricing. The Prep Agent responsiveness defect itself appears fixed because only LLM calls now execute in the thread pool while async Mongo operations remain on the main server loop."
+}

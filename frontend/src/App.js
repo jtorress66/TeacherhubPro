@@ -13,6 +13,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Landing from "./pages/Landing";
 import AuthCallback from "./pages/AuthCallback";
 import Dashboard from "./pages/Dashboard";
+import CommandCenter from "./pages/CommandCenter";
 import PlannerList from "./pages/PlannerList";
 import LessonPlanner from "./pages/LessonPlanner";
 import Templates from "./pages/Templates";
@@ -82,6 +83,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import LeadsDashboard from "./pages/LeadsDashboard";
 // Chatbot Widget for marketing pages
 import ChatbotWidget from "./components/ChatbotWidget";
+// Prep Agent - Autonomous Weekly Prep
+import PrepAgent from "./pages/PrepAgent";
 // Feature Detail Pages
 import LessonPlanningFeature from "./pages/features/LessonPlanningFeature";
 import GradebookFeature from "./pages/features/GradebookFeature";
@@ -276,7 +279,7 @@ const AppRouter = () => {
       <Route path="/auth" element={<Auth />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/dashboard" element={
-        <ProtectedRoute><Dashboard /></ProtectedRoute>
+        <ProtectedRoute><CommandCenter /></ProtectedRoute>
       } />
       <Route path="/planner" element={
         <ProtectedRoute><PlannerList /></ProtectedRoute>
@@ -343,6 +346,9 @@ const AppRouter = () => {
       } />
       <Route path="/games" element={
         <ProtectedRoute><GamesCreator /></ProtectedRoute>
+      } />
+      <Route path="/prep-agent" element={
+        <ProtectedRoute><PrepAgent /></ProtectedRoute>
       } />
       <Route path="/admin" element={
         <ProtectedRoute requireSubscription={false}><AdminPanel /></ProtectedRoute>

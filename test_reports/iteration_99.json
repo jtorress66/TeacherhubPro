@@ -1,0 +1,66 @@
+{
+  "summary": "Retested the Prep Agent fix through the public URL. Static lint/code review confirms the undefined fetchBatches reference is gone and API URLs use REACT_APP_BACKEND_URL. Authenticated GET /api/prep-agent/batches returns 200 and POST returns a valid pending batch, but the POST-triggered LLM task still blocks follow-up list/detail/delete requests for over 30 seconds. The supplied account still redirects /prep-agent to /pricing because its trial is expired, so the real form could not be rendered or submitted in-browser.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "/api/prep-agent/batches",
+        "issue": "After POST returned HTTP 200 with a valid pending batch, the immediate authenticated GET list timed out after 30s and cleanup DELETE also timed out. Progress polling is unavailable while generation runs.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Open /prep-agent with the supplied teacher account",
+        "issue": "Login succeeds, but /prep-agent redirects to /pricing because /api/subscription/status returns has_access=false and status=trial_expired. The requested form and browser creation flow remain untestable with the required credentials.",
+        "affected_selectors": [
+          "[data-testid='prep-prompt-input']",
+          "[data-testid='prep-class-select']",
+          "[data-testid='prep-week-start-input']",
+          "[data-testid='start-prep-btn']"
+        ]
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "Prep Agent form",
+        "issues": [
+          "Code uses the browser-native input[type=date] instead of the app's shadcn calendar/popover component, producing browser-dependent date-picker UX."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_prep_agent.py",
+    "/app/test_reports/pytest/pytest_prep_agent_iteration_99.xml"
+  ],
+  "action_items": [
+    "Offload the Prep Agent LLM workflow to a worker/job queue or thread/process boundary; asyncio.create_task alone does not prevent the LLM SDK call from blocking the sole API event loop.",
+    "Provide an active trial/subscription for test@school.edu, then rerun the real /prep-agent form and creation flow.",
+    "Replace the native date input with the standard shadcn calendar component for consistent date selection."
+  ],
+  "critical_code_review_comments": [
+    "PrepAgent.js no longer calls undefined fetchBatches; polling and post-publish paths consistently call fetchBatchesUpdate, and the selected batch is synchronized from polling results.",
+    "PrepAgent.js now derives its API base from process.env.REACT_APP_BACKEND_URL with /api appended; the current environment value produces the correct public endpoints.",
+    "routes/prep_agent.py uses asyncio.create_task(run_prep_agent_workflow(...)), but the observed request starvation proves the awaited LLM SDK path still blocks the single worker; task scheduling is not equivalent to execution isolation."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_prep_agent.py",
+    "/app/frontend/src/pages/PrepAgent.js",
+    "/app/test_reports/pytest/pytest_prep_agent_iteration_99.xml",
+    "/app/test_reports/iteration_99.json"
+  ],
+  "success_rate": {
+    "backend": "67% (2/3 focused pytest tests passed; create returned valid data but post-create polling/cleanup timed out)",
+    "frontend": "0% of requested page/form outcomes (route redirected to pricing; static regression review passed)"
+  },
+  "seed_data_creation": "Created one uniquely named TEST_ prep batch. The initially timed-out DELETE was subsequently processed; authenticated listing confirmed no new TEST_ batch remained.",
+  "should_call_test_agent_after_fix": true,
+  "should_main_agent_self_test": false,
+  "test_credentials": "Read /app/memory/test_credentials.md and authenticated successfully as test@school.edu; /api/subscription/status reports trial_expired.",
+  "context_for_next_testing_agent": "Use the public URL from frontend/.env. GET batches is responsive when idle (200 in about 0.14s). Reproduce blocking by POSTing a valid batch and immediately polling GET; iteration 99 timed out at 30s. Browser login redirects to /pricing. The prior stale completed batch batch_356eece6ee65 remains and was not modified.",
+  "rca_of_the_issue": "POST /api/prep-agent/batches inserts and returns a valid pending record, then schedules run_prep_agent_workflow with asyncio.create_task. The workflow awaits emergentintegrations LLM calls that still monopolize the only reload-mode Uvicorn worker/event loop, so concurrent GET and DELETE requests wait until the LLM call yields/completes. Separately, ProtectedRoute reads has_access=false for the supplied account and intentionally redirects before PrepAgent mounts; therefore the original crash regression cannot be exercised through the UI with these credentials."
+}

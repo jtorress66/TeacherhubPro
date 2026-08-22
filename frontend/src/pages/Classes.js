@@ -40,7 +40,10 @@ const Classes = () => {
     grade: '',
     section: '',
     subject: '',
-    year_term: '2024-2025'
+    year_term: '2024-2025',
+    period: '',
+    start_time: '',
+    end_time: ''
   });
   
   const [newStudent, setNewStudent] = useState({
@@ -112,13 +115,28 @@ const Classes = () => {
     }
 
     try {
-      const res = await axios.post(`${API}/classes`, newClass, { withCredentials: true });
+      // Clean up schedule fields - omit empty values to avoid 422 errors
+      const payload = {
+        name: newClass.name,
+        grade: newClass.grade,
+        section: newClass.section,
+        subject: newClass.subject || '',
+        year_term: newClass.year_term || '2024-2025'
+      };
+      
+      // Only include schedule fields if they have values
+      if (newClass.period) payload.period = parseInt(newClass.period);
+      if (newClass.start_time) payload.start_time = newClass.start_time;
+      if (newClass.end_time) payload.end_time = newClass.end_time;
+      
+      const res = await axios.post(`${API}/classes`, payload, { withCredentials: true });
       setClasses(prev => [...prev, res.data]);
       setShowNewClass(false);
-      setNewClass({ name: '', grade: '', section: '', subject: '', year_term: '2024-2025' });
+      setNewClass({ name: '', grade: '', section: '', subject: '', year_term: '2024-2025', period: '', start_time: '', end_time: '' });
       toast.success(language === 'es' ? 'Clase creada' : 'Class created');
     } catch (error) {
-      toast.error(t('error'));
+      const detail = error.response?.data?.detail;
+      toast.error(detail || (language === 'es' ? 'Error al crear clase' : 'Error creating class'));
     }
   };
 
@@ -129,13 +147,21 @@ const Classes = () => {
     }
 
     try {
-      const res = await axios.put(`${API}/classes/${editingClass.class_id}`, {
+      // Build payload including schedule fields
+      const payload = {
         name: editingClass.name.trim(),
         grade: editingClass.grade.trim(),
         section: editingClass.section.trim(),
         subject: editingClass.subject?.trim() || '',
         year_term: editingClass.year_term?.trim() || '2024-2025'
-      }, { withCredentials: true });
+      };
+      
+      // Include schedule fields - send null if empty to clear them
+      if (editingClass.period) payload.period = parseInt(editingClass.period);
+      if (editingClass.start_time) payload.start_time = editingClass.start_time;
+      if (editingClass.end_time) payload.end_time = editingClass.end_time;
+      
+      const res = await axios.put(`${API}/classes/${editingClass.class_id}`, payload, { withCredentials: true });
       
       setClasses(prev => prev.map(c => c.class_id === editingClass.class_id ? res.data : c));
       if (selectedClass?.class_id === editingClass.class_id) {
@@ -358,6 +384,49 @@ const Classes = () => {
                     data-testid="class-year-input"
                   />
                 </div>
+                
+                {/* Schedule Section */}
+                <div className="border-t pt-4 mt-4">
+                  <Label className="text-sm font-medium text-slate-700 mb-3 block">
+                    {language === 'es' ? '📅 Horario (Opcional)' : '📅 Schedule (Optional)'}
+                  </Label>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-2">
+                      <Label className="text-xs text-slate-500">{language === 'es' ? 'Período' : 'Period'}</Label>
+                      <Input 
+                        type="number"
+                        min="1"
+                        max="12"
+                        value={newClass.period}
+                        onChange={(e) => setNewClass(prev => ({ ...prev, period: e.target.value ? parseInt(e.target.value) : '' }))}
+                        placeholder="1"
+                        data-testid="class-period-input"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs text-slate-500">{language === 'es' ? 'Inicio' : 'Start'}</Label>
+                      <Input 
+                        type="time"
+                        value={newClass.start_time}
+                        onChange={(e) => setNewClass(prev => ({ ...prev, start_time: e.target.value }))}
+                        data-testid="class-start-time-input"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs text-slate-500">{language === 'es' ? 'Fin' : 'End'}</Label>
+                      <Input 
+                        type="time"
+                        value={newClass.end_time}
+                        onChange={(e) => setNewClass(prev => ({ ...prev, end_time: e.target.value }))}
+                        data-testid="class-end-time-input"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-2">
+                    {language === 'es' ? 'El horario aparecerá en tu Centro de Comando' : 'Schedule will appear in your Command Center'}
+                  </p>
+                </div>
+                
                 <Button onClick={handleCreateClass} className="w-full" data-testid="create-class-submit">
                   {t('save')}
                 </Button>
@@ -419,6 +488,49 @@ const Classes = () => {
                     data-testid="edit-class-year-input"
                   />
                 </div>
+                
+                {/* Schedule Section */}
+                <div className="border-t pt-4 mt-4">
+                  <Label className="text-sm font-medium text-slate-700 mb-3 block">
+                    {language === 'es' ? '📅 Horario (Opcional)' : '📅 Schedule (Optional)'}
+                  </Label>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-2">
+                      <Label className="text-xs text-slate-500">{language === 'es' ? 'Período' : 'Period'}</Label>
+                      <Input 
+                        type="number"
+                        min="1"
+                        max="12"
+                        value={editingClass?.period || ''}
+                        onChange={(e) => setEditingClass(prev => ({ ...prev, period: e.target.value ? parseInt(e.target.value) : null }))}
+                        placeholder="1"
+                        data-testid="edit-class-period-input"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs text-slate-500">{language === 'es' ? 'Inicio' : 'Start'}</Label>
+                      <Input 
+                        type="time"
+                        value={editingClass?.start_time || ''}
+                        onChange={(e) => setEditingClass(prev => ({ ...prev, start_time: e.target.value }))}
+                        data-testid="edit-class-start-time-input"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs text-slate-500">{language === 'es' ? 'Fin' : 'End'}</Label>
+                      <Input 
+                        type="time"
+                        value={editingClass?.end_time || ''}
+                        onChange={(e) => setEditingClass(prev => ({ ...prev, end_time: e.target.value }))}
+                        data-testid="edit-class-end-time-input"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-2">
+                    {language === 'es' ? 'El horario aparecerá en tu Centro de Comando' : 'Schedule will appear in your Command Center'}
+                  </p>
+                </div>
+                
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => setEditingClass(null)} className="flex-1" data-testid="edit-class-cancel">
                     {language === 'es' ? 'Cancelar' : 'Cancel'}

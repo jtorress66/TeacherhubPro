@@ -1,0 +1,51 @@
+{
+  "summary": "Tested new Command Center (backend /api/command-center + /dashboard UI) and Class schedule fields. Backend: 10/11 pytest checks pass (structure, stats consistency, schedule sorting/enrichment, at-risk, assignments-to-grade, recommendations, class schedule create/update persistence, auth guard). Frontend: login as test@school.edu lands on /dashboard rendering Command Center with Quick Stats (0 Classes Today, 0/0 Attendance, 17 To Grade, 3 At Risk), 'No classes today' empty state (Saturday - expected), Students at Risk with severity badges, Assignments to Grade with progress bars, AI Recommendations (2 items), and all 4 Quick Actions navigating correctly. Two real defects found in Classes schedule fields: (1) creating a class with the Period field left blank returns 422 and blocks creation, (2) Class Edit dialog populates schedule values but handleUpdateClass never sends period/start_time/end_time so schedule edits are silently discarded while showing a success toast.",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "POST /api/classes", "issue": "422 int_parsing when frontend sends period:'' (blank Period field in Add Class dialog). Class creation without a period is impossible from the UI. Fix in frontend (send null/omit) or coerce empty string to None in ClassCreate validator.", "priority": "HIGH"}
+    ],
+    "minor": [
+      {"endpoint": "GET /api/command-center", "issue": "today/today_weekday computed in UTC (datetime.now(timezone.utc)); for a Puerto Rico/US teacher the 'today' schedule and attendance date can be off by one day late evening/early morning."},
+      {"endpoint": "GET /api/command-center", "issue": "At-risk grade average assumes every assignment is out of 100 points (max_points = len(grades)*100) instead of using each assignment's 'points'; averages/severity can be wrong for non-100-point assignments."},
+      {"endpoint": "GET /api/command-center", "issue": "N+1 query pattern: per-class students/assignments/grades/attendance loops plus per-assignment count_documents (2 queries each). Will not scale for teachers with many classes/assignments; consider aggregation."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Classes.js handleCreateClass", "issue": "newClass.period defaults to '' and is posted as-is -> POST /api/classes 422; only a generic 'Error' toast is shown (no field-level message), user cannot create a class without entering a Period.", "selector": "[data-testid=\"create-class-submit\"]", "priority": "HIGH"},
+      {"component": "Classes.js handleUpdateClass", "issue": "PUT payload only contains name/grade/section/subject/year_term. Verified request body: {\"name\":\"TEST_UI_WithSchedule\",\"grade\":\"6\",\"section\":\"Q\",\"subject\":\"\",\"year_term\":\"2024-2025\"} - period/start_time/end_time are dropped, so schedule edits never persist (values reverted to 2/09:00 after reload) while a 'Class updated' success toast is shown.", "selector": "[data-testid=\"update-class-submit\"]", "priority": "HIGH"},
+      {"component": "Classes.js schedule section", "issue": "No UI control for days_of_week; classes always default to Mon-Fri, so a class meeting only on some days (or Sat/Sun) cannot be configured, yet Command Center filters strictly by day of week.", "selector": "[data-testid=\"class-period-input\"]", "priority": "MEDIUM"},
+      {"component": "CommandCenter.js", "issue": "Missing data-testid on Quick Stats cards, Today's Schedule / Students at Risk / Assignments to Grade / AI Recommendations containers and their empty states; verification had to rely on body text matching.", "selector": "n/a", "priority": "LOW"}
+    ],
+    "integration_issues": [
+      {"flow": "Command Center data load", "issue": "CommandCenter.js uses `const API = ${window.location.origin}/api` instead of process.env.REACT_APP_BACKEND_URL (violates env-var rule; breaks if frontend is served from a different origin than the API).", "affected_selectors": ["/api/command-center"]},
+      {"flow": "Command Center error handling", "issue": "fetchCommandCenter only console.errors on failure; loading ends with data=null and the page silently renders all-zero stats/empty panels with no error state or retry.", "affected_selectors": ["[data-testid=\"new-plan-btn\"]"]}
+    ],
+    "design_issues": [
+      {"screen": "Command Center /dashboard", "issues": ["Today's Schedule card is stretched to match the right column height, leaving ~400px of empty whitespace under the 'No classes today' empty state on weekends", "Duplicate student entry ('Maria Garcia' listed twice from English 4A) in Students at Risk - likely duplicate student records; consider de-duplicating or showing student number for disambiguation", "Student with 63.5% average + 5 missing is badged 'High' risk which reads inconsistently with its per-factor 'medium/low' severity chips"]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_command_center.py", "/app/backend/tests/cleanup_cc_test_data.py", "/app/test_reports/pytest/cc_results.xml"],
+  "action_items": [
+    "Classes.js: omit/null period (and empty time strings) when blank before POST /api/classes, or add a Pydantic validator coercing '' -> None; surface the API detail in the error toast.",
+    "Classes.js handleUpdateClass: include period, start_time, end_time (and days_of_week) in the PUT payload so schedule edits persist.",
+    "CommandCenter.js: use process.env.REACT_APP_BACKEND_URL instead of window.location.origin and add an error/retry state when /api/command-center fails.",
+    "Add days_of_week selection to Class create/edit dialogs so schedule filtering is usable.",
+    "Command center: use teacher/school timezone (not UTC) for today/weekday and use assignment.points for at-risk grade averages.",
+    "Add data-testid attributes to Command Center stat cards and section panels."
+  ],
+  "critical_code_review_comments": [
+    "handleUpdateClass silently drops the new schedule fields while showing a success toast - user-visible data loss.",
+    "period:'' in newClass initial state guarantees a 422 for the default create path; validate/normalize before POST.",
+    "/api/command-center performs unbounded per-class and per-assignment queries (N+1); aggregate or cache.",
+    "server.py is 5962 lines - the Command Center aggregation should be extracted into its own router/module."
+  ],
+  "updated_files": ["/app/backend/tests/test_command_center.py", "/app/backend/tests/cleanup_cc_test_data.py"],
+  "success_rate": {"backend": "91% (10/11)", "frontend": "80% (Command Center render/stats/panels/quick-actions pass; 2 Class schedule dialog defects)"},
+  "seed_data_creation": "Created and deleted temporary classes TEST_CC_* / TEST_UI_* via API and UI; all cleaned up (cleanup_cc_test_data.py run, 0 TEST_ classes remaining).",
+  "should_call_test_agent_after_fix": true,
+  "should_main_agent_self_test": false,
+  "test_credentials": "test@school.edu / testpassword (login is at /auth -> 'Sign In' tab; /login redirects to landing page)",
+  "context_for_next_testing_agent": "Login flow: go to /auth, click 'Sign In' tab, fill input[type=email]/input[type=password], submit -> /dashboard (Command Center). Backend regression tests live in /app/backend/tests/test_command_center.py; the single expected failure test_create_with_empty_string_period_frontend_payload documents the blank-period 422 bug and should pass after the fix. Command Center schedule is empty on Sat/Sun because days_of_week defaults to Mon-Fri; to test a populated schedule create a class via API with days_of_week=[current weekday abbrev]. Gradebook page emits pre-existing React hydration warnings (span/th/tr nesting) unrelated to this feature.",
+  "rca_of_the_issue": "Bug 1: Classes.js initialises newClass.period to '' and posts the state object unchanged; ClassCreate.period is Optional[int] so Pydantic raises int_parsing 422 for ''. Bug 2: handleUpdateClass builds an explicit payload object that was never extended with the new schedule keys, so the PUT (which the backend does persist correctly - verified by test_update_schedule_persist) never receives them."
+}

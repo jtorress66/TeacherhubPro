@@ -16,7 +16,54 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 - TTS: OpenAI
 - PDF: jsPDF (client-side), pdfplumber (server-side extraction)
 
-## Update 2026-08-04 - FEATURE: Lesson Plan Title & Folder Organization
+
+## Update 2026-08-22 - FEATURE: Personal Teacher Command Center
+**Complete dashboard redesign - The teacher's daily operating workspace**
+- **Replaces old Dashboard**: Now shows everything teachers need to start their day
+- **Today's Schedule**: Primary view showing classes for the current day, sorted by period/time
+  - Shows class name, subject, grade-section, student count
+  - Attendance status indicator (Done/Take) with quick-action buttons
+  - Smart filtering: Only shows classes scheduled for the current weekday
+- **Quick Stats Row**: 4 key metrics at a glance
+  - Classes Today, Attendance (completed/total), To Grade count, At-Risk Students
+- **Students at Risk Panel**: AI-powered detection of struggling students
+  - Analyzes grades, missing assignments, and attendance patterns
+  - Risk factors: failing_grade (<60%), low_grade (<70%), missing_assignments (3+), high_absences (20%+), tardies
+  - Risk score calculation for prioritization (High/Medium/Low)
+  - Shows specific issues per student with severity badges
+- **Assignments to Grade**: 
+  - Shows pending submissions with progress bars
+  - Highlights overdue assignments
+  - Links directly to gradebook
+- **AI Recommendations**: Contextual suggestions based on current data
+  - Attendance reminders, intervention alerts, grading prompts, planning suggestions
+- **Quick Actions**: 4-button grid for frequent tasks (New Lesson, Attendance, Gradebook, Prep Agent)
+- **Upcoming Lessons**: Preview of planned lessons for the next 7 days
+- **Schedule Fields Added to Classes**:
+  - period (1-12), start_time, end_time (HH:MM format)
+  - days_of_week array (default: Mon-Fri)
+  - Schedule inputs added to Create/Edit Class dialogs
+- Backend: New `/api/command-center` endpoint with comprehensive data aggregation
+- Frontend: `/app/frontend/src/pages/CommandCenter.js` - New component
+- Route: `/dashboard` now renders CommandCenter instead of old Dashboard
+
+## Update 2026-08-10 - FEATURE: Sunday Night Lesson Prep Agent
+**Major new feature - completely separate from existing functionality**
+- **Autonomous Workflow**: Single prompt like "Prep next week for Unit 3 History (Civil War)" triggers 4-step agent
+- **Step 1 - Research & Plan**: Reads Common Core standards, checks last week's lessons, generates sequential daily plans
+- **Step 2 - Create Materials**: Auto-generates slide decks and worksheets for each lesson
+- **Step 3 - Assessments**: Creates a Friday quiz based on the week's content
+- **Step 4 - Syncing**: Prepares calendar events and parent email summary
+- **UI Dashboard**: Progress tracker, side-by-side preview, edit capability, "Approve & Publish" button
+- **Common Core Standards**: Pre-built US standards for Math, ELA, Science, Social Studies (K-12)
+- **Teacher Customization**: Editable parent email content, configurable options (quiz, presentations, worksheets)
+- **Notifications**: In-app notification when prep batch is ready
+- Backend: `/app/backend/routes/prep_agent.py` - Fully isolated from existing code
+- Frontend: `/app/frontend/src/pages/PrepAgent.js` - New dashboard page
+- Route: `/prep-agent` - Protected route in App.js
+- Sidebar: Added "Prep Agent" nav item with Wand2 icon
+
+## Update 2026-08-10 - FEATURE: Lesson Plan Title & Folder Organization
 - **Conversational English Title:** Added title input field in the Conversational English lesson plan form
   - Title is persisted in the database and displayed in the plan list
   - Model changes: `title` field added to LessonPlanCreate and LessonPlanResponse
@@ -209,6 +256,14 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 - Emailing Parent Portal links
 
 ## Future (P2)
+- Student 360° View - Click any student → see grades, attendance, assignments, notes in one timeline
+- One-click Weekly Report - Auto-generate summary of what was taught, grades, attendance
+- Emergency Lesson Mode - "I need a lesson in 5 minutes" using existing curriculum/grade/subject
+- Automatic Student Intervention Detection - Flag struggling students based on grade/attendance trends
+- Integrated Parent Communication - Generate personalized parent emails from real classroom data
+- Class Performance Intelligence - "62% struggled with fractions, consider reteaching..."
+- Automatic Lesson Continuity - Post-lesson reflection → adapts next lesson
+- Teacher Portfolio Generator - Organize evidence for evaluations
 - Refactor LanguageContext.js into separate JSON files per language
 - Refactor monolithic server.py
 - Refactor large GamesCreator.js component
