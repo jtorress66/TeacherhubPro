@@ -178,7 +178,7 @@ const CommandCenter = () => {
                 </p>
               )}
               <h1 className="text-2xl md:text-3xl font-heading font-bold text-slate-800">
-                {language === 'es' ? 'Centro de Comando' : 'Command Center'}
+                {language === 'es' ? '¡Hola' : 'Welcome'}, <span style={{ color: branding.primary_color }}>{user?.name?.split(' ')[0] || (language === 'es' ? 'Maestro' : 'Teacher')}</span>!
               </h1>
               <p className="text-slate-500 text-sm flex items-center gap-2">
                 <Clock className="h-4 w-4" />
