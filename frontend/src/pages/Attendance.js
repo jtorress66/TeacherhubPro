@@ -258,7 +258,7 @@ const Attendance = () => {
                       className="flex flex-col md:flex-row md:items-center gap-3 p-4 rounded-lg bg-stone-50 border border-slate-100"
                       data-testid={`student-row-${student.student_id}`}
                     >
-                      <div className="flex items-center gap-3 flex-1">
+                      <div className="flex items-center gap-3 flex-1 cursor-pointer" onClick={() => navigate(`/students/${student.student_id}`)} data-testid={`student-360-link-${student.student_id}`}>
                         <span className="text-sm text-slate-500 w-6">{index + 1}</span>
                         <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center">
                           <span className="text-sm font-medium text-slate-600">
@@ -266,7 +266,7 @@ const Attendance = () => {
                           </span>
                         </div>
                         <div>
-                          <p className="font-medium text-slate-800">
+                          <p className="font-medium text-slate-800 hover:text-blue-600 hover:underline transition-colors">
                             {student.first_name} {student.last_name}
                           </p>
                           {student.student_number && (

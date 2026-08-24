@@ -14,6 +14,7 @@ import Landing from "./pages/Landing";
 import AuthCallback from "./pages/AuthCallback";
 import Dashboard from "./pages/Dashboard";
 import CommandCenter from "./pages/CommandCenter";
+import Student360 from "./pages/Student360";
 import PlannerList from "./pages/PlannerList";
 import LessonPlanner from "./pages/LessonPlanner";
 import Templates from "./pages/Templates";
@@ -315,6 +316,9 @@ const AppRouter = () => {
       } />
       <Route path="/classes" element={
         <ProtectedRoute><Classes /></ProtectedRoute>
+      } />
+      <Route path="/students/:studentId" element={
+        <ProtectedRoute><Student360 /></ProtectedRoute>
       } />
       <Route path="/classes/:classId" element={
         <ProtectedRoute><Classes /></ProtectedRoute>

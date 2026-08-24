@@ -6,6 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 import asyncio
+import json
 import base64
 from pathlib import Path
 
@@ -1401,6 +1402,235 @@ async def delete_student(student_id: str, user: dict = Depends(get_current_user)
     
     await db.students.delete_one({"student_id": student_id})
     return {"message": "Student deleted"}
+
+# ==================== STUDENT 360 VIEW ====================
+
+async def _get_student_with_access(student_id: str, user: dict):
+    student = await db.students.find_one({"student_id": student_id}, {"_id": 0})
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    class_doc = await db.classes.find_one({"class_id": student["class_id"]}, {"_id": 0})
+    if not class_doc:
+        raise HTTPException(status_code=404, detail="Class not found")
+    if class_doc["teacher_id"] != user["user_id"] and user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    return student, class_doc
+
+def _build_student_360_data(student, class_doc, assignments, grades, sessions, notes):
+    student_id = student["student_id"]
+    assignment_map = {a["assignment_id"]: a for a in assignments}
+    grade_map = {g["assignment_id"]: g for g in grades}
+
+    # Grade average
+    total_score, total_points = 0.0, 0.0
+    for g in grades:
+        if g.get("score") is not None:
+            a = assignment_map.get(g["assignment_id"])
+            if a and a.get("points"):
+                total_score += g["score"]
+                total_points += a["points"]
+    grade_average = round((total_score / total_points) * 100, 1) if total_points > 0 else None
+
+    # Attendance
+    counts = {"present": 0, "absent": 0, "tardy": 0, "excused": 0}
+    attendance_events = []
+    for session in sessions:
+        for rec in session.get("records", []):
+            if rec.get("student_id") == student_id:
+                status = rec.get("status")
+                if status in counts:
+                    counts[status] += 1
+                if status in ("absent", "tardy", "excused"):
+                    attendance_events.append({
+                        "type": "attendance",
+                        "date": session["date"],
+                        "status": status,
+                        "note": rec.get("note"),
+                        "minutes_late": rec.get("minutes_late")
+                    })
+                break
+    total_sessions = sum(counts.values())
+    attendance_rate = round(((counts["present"] + counts["tardy"]) / total_sessions) * 100, 1) if total_sessions > 0 else None
+
+    # Missing assignments
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    missing = []
+    for a in assignments:
+        g = grade_map.get(a["assignment_id"])
+        if g and g.get("status") == "missing":
+            missing.append(a)
+        elif (g is None or g.get("score") is None) and a.get("due_date") and a["due_date"] < today and (g is None or g.get("status") not in ("excused", "graded")):
+            missing.append(a)
+
+    # Timeline
+    timeline = []
+    for g in grades:
+        if g.get("score") is None and g.get("status") in (None, "pending"):
+            continue
+        a = assignment_map.get(g["assignment_id"])
+        if not a:
+            continue
+        pct = round((g["score"] / a["points"]) * 100, 1) if g.get("score") is not None and a.get("points") else None
+        timeline.append({
+            "type": "grade",
+            "date": (g.get("updated_at") or g.get("created_at") or "")[:10],
+            "title": a["title"],
+            "score": g.get("score"),
+            "points": a.get("points"),
+            "percentage": pct,
+            "status": g.get("status"),
+            "comment": g.get("comment")
+        })
+    for ev in attendance_events:
+        timeline.append({
+            "type": "attendance",
+            "date": ev["date"],
+            "status": ev["status"],
+            "note": ev.get("note"),
+            "minutes_late": ev.get("minutes_late")
+        })
+    for a in assignments:
+        if a.get("due_date"):
+            g = grade_map.get(a["assignment_id"])
+            timeline.append({
+                "type": "assignment_due",
+                "date": a["due_date"],
+                "title": a["title"],
+                "points": a.get("points"),
+                "graded": bool(g and g.get("score") is not None)
+            })
+    for n in notes:
+        timeline.append({
+            "type": "note",
+            "date": (n.get("created_at") or "")[:10],
+            "content": n.get("content"),
+            "note_id": n.get("note_id")
+        })
+    timeline.sort(key=lambda x: x.get("date") or "", reverse=True)
+
+    return {
+        "student": student,
+        "class": {
+            "class_id": class_doc["class_id"],
+            "name": class_doc.get("name"),
+            "grade": class_doc.get("grade"),
+            "subject": class_doc.get("subject")
+        },
+        "stats": {
+            "grade_average": grade_average,
+            "attendance_rate": attendance_rate,
+            "attendance_counts": counts,
+            "total_sessions": total_sessions,
+            "missing_count": len(missing),
+            "graded_count": sum(1 for g in grades if g.get("score") is not None),
+            "total_assignments": len(assignments)
+        },
+        "missing_assignments": [{"assignment_id": m["assignment_id"], "title": m["title"], "due_date": m.get("due_date"), "points": m.get("points")} for m in missing],
+        "notes": notes,
+        "timeline": timeline
+    }
+
+@api_router.get("/students/{student_id}/360")
+async def get_student_360(student_id: str, user: dict = Depends(get_current_user)):
+    """Complete 360 view of a student: stats, timeline, notes"""
+    student, class_doc = await _get_student_with_access(student_id, user)
+    class_id = class_doc["class_id"]
+
+    assignments = await db.assignments.find({"class_id": class_id}, {"_id": 0}).to_list(500)
+    assignment_ids = [a["assignment_id"] for a in assignments]
+    grades = await db.grades.find({"assignment_id": {"$in": assignment_ids}, "student_id": student_id}, {"_id": 0}).to_list(1000)
+    sessions = await db.attendance_sessions.find({"class_id": class_id}, {"_id": 0}).to_list(1000)
+    notes = await db.student_notes.find({"student_id": student_id, "teacher_id": user["user_id"]}, {"_id": 0}).sort("created_at", -1).to_list(200)
+
+    return _build_student_360_data(student, class_doc, assignments, grades, sessions, notes)
+
+@api_router.post("/students/{student_id}/notes")
+async def add_student_note(student_id: str, request: Request, user: dict = Depends(get_current_user)):
+    """Add a private teacher note about a student"""
+    await _get_student_with_access(student_id, user)
+    body = await request.json()
+    content = (body.get("content") or "").strip()
+    if not content:
+        raise HTTPException(status_code=400, detail="Note content is required")
+    now = datetime.now(timezone.utc).isoformat()
+    note_doc = {
+        "note_id": f"snote_{uuid.uuid4().hex[:8]}",
+        "student_id": student_id,
+        "teacher_id": user["user_id"],
+        "content": content,
+        "created_at": now
+    }
+    await db.student_notes.insert_one(note_doc)
+    note_doc.pop("_id", None)
+    return note_doc
+
+@api_router.delete("/students/{student_id}/notes/{note_id}")
+async def delete_student_note(student_id: str, note_id: str, user: dict = Depends(get_current_user)):
+    """Delete a teacher note"""
+    result = await db.student_notes.delete_one({"note_id": note_id, "student_id": student_id, "teacher_id": user["user_id"]})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Note not found")
+    return {"message": "Note deleted"}
+
+@api_router.post("/students/{student_id}/insight")
+async def generate_student_insight(student_id: str, user: dict = Depends(get_current_user)):
+    """Generate an AI insight summary for a student based on real classroom data"""
+    student, class_doc = await _get_student_with_access(student_id, user)
+    class_id = class_doc["class_id"]
+
+    assignments = await db.assignments.find({"class_id": class_id}, {"_id": 0}).to_list(500)
+    assignment_ids = [a["assignment_id"] for a in assignments]
+    grades = await db.grades.find({"assignment_id": {"$in": assignment_ids}, "student_id": student_id}, {"_id": 0}).to_list(1000)
+    sessions = await db.attendance_sessions.find({"class_id": class_id}, {"_id": 0}).sort("date", -1).to_list(1000)
+    notes = await db.student_notes.find({"student_id": student_id, "teacher_id": user["user_id"]}, {"_id": 0}).sort("created_at", -1).to_list(200)
+
+    data = _build_student_360_data(student, class_doc, assignments, grades, sessions, notes)
+    stats = data["stats"]
+
+    recent_grades = [t for t in data["timeline"] if t["type"] == "grade"][:15]
+    recent_attendance = [t for t in data["timeline"] if t["type"] == "attendance"][:15]
+
+    lang = "Spanish" if (user.get("language") or "en") == "es" else "English"
+    prompt = f"""You are an experienced instructional coach. Analyze this student's data and write a brief, actionable insight summary for their teacher (3-5 short bullet points max). Be specific about trends. Respond in {lang}.
+
+Student: {student['first_name']} {student['last_name']} — Class: {class_doc.get('name')} (Grade {class_doc.get('grade')})
+Overall grade average: {stats['grade_average']}%
+Attendance rate: {stats['attendance_rate']}% ({stats['attendance_counts']})
+Missing assignments: {stats['missing_count']}
+Accommodations: {student.get('accommodations') or 'None'}
+
+Recent grades (newest first): {json.dumps(recent_grades, default=str)}
+Recent attendance events (newest first): {json.dumps(recent_attendance, default=str)}
+Teacher notes: {json.dumps([n.get('content') for n in notes[:5]], default=str)}
+
+Focus on: performance trends (improving/declining), attendance patterns, risk flags, and 1-2 concrete next steps for the teacher. If data is limited, say so briefly."""
+
+    try:
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"insight_{student_id}_{uuid.uuid4().hex[:8]}",
+            system_message="You are a concise instructional coach who gives teachers actionable student insights."
+        ).with_model("anthropic", "claude-sonnet-4-6")
+        response = await asyncio.wait_for(chat.send_message(UserMessage(text=prompt)), timeout=60)
+        insight_text = str(response)
+    except Exception as e:
+        logger.error(f"Student insight generation failed: {e}")
+        raise HTTPException(status_code=503, detail="AI insight generation failed. Please try again.")
+
+    now = datetime.now(timezone.utc).isoformat()
+    await db.student_insights.update_one(
+        {"student_id": student_id, "teacher_id": user["user_id"]},
+        {"$set": {"insight": insight_text, "generated_at": now}},
+        upsert=True
+    )
+    return {"insight": insight_text, "generated_at": now}
+
+@api_router.get("/students/{student_id}/insight")
+async def get_student_insight(student_id: str, user: dict = Depends(get_current_user)):
+    """Get the last cached AI insight for a student"""
+    await _get_student_with_access(student_id, user)
+    cached = await db.student_insights.find_one({"student_id": student_id, "teacher_id": user["user_id"]}, {"_id": 0})
+    return cached or {"insight": None, "generated_at": None}
 
 # ==================== LESSON PLAN ENDPOINTS ====================
 

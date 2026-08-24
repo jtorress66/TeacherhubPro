@@ -17,6 +17,16 @@ AI-powered workspace for teachers: lesson planning, gradebook, attendance, class
 - PDF: jsPDF (client-side), pdfplumber (server-side extraction)
 
 
+## Update 2026-08-24 - FEATURE: Student 360° View
+- Full-page view at /students/:studentId (Student360.js) — click any student name from Classes, Gradebook, or Attendance
+- Overview cards: grade average, attendance rate (present+tardy / total), missing assignments count
+- Chronological timeline (newest first): grades, absences/tardies/excused, assignment due dates, teacher notes
+- Private teacher notes: add/delete (db.student_notes), scoped to teacher
+- On-demand AI insight (claude-sonnet-4-6, Emergent LLM key), cached in db.student_insights
+- Backend: GET /api/students/{id}/360, POST/DELETE notes, POST/GET /api/students/{id}/insight (server.py ~line 1405)
+- Back button uses navigate(-1) to return to originating page
+- Tested: 13/13 backend pytest (tests/test_student_360.py), all frontend flows passed (iteration_103.json)
+
 ## Update 2026-08-22 - FEATURE: Personal Teacher Command Center
 **Complete dashboard redesign - The teacher's daily operating workspace**
 - **Replaces old Dashboard**: Now shows everything teachers need to start their day

@@ -1632,13 +1632,13 @@ const Gradebook = () => {
                     {students.map(student => (
                       <tr key={student.student_id} className="border-b border-slate-100 hover:bg-stone-50">
                         <td className="p-3 sticky left-0 bg-white">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate(`/students/${student.student_id}`)} data-testid={`student-360-link-${student.student_id}`}>
                             <div className="h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center">
                               <span className="text-xs font-medium text-slate-600">
                                 {student.first_name?.charAt(0)}{student.last_name?.charAt(0)}
                               </span>
                             </div>
-                            <span className="font-medium text-slate-800">
+                            <span className="font-medium text-slate-800 hover:text-blue-600 hover:underline transition-colors">
                               {student.first_name} {student.last_name}
                             </span>
                           </div>
